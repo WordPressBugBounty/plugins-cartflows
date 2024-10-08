@@ -47,6 +47,14 @@ class Cartflows_Tracking {
 	private static $ga_settings;
 
 	/**
+	 * Member Variable
+	 *
+	 * @since x.x.x
+	 * @var array gads_settings
+	 */
+	private static $gads_settings;
+
+	/**
 	 *  Initiator
 	 */
 	public static function get_instance() {
@@ -64,6 +72,7 @@ class Cartflows_Tracking {
 		self::$fb_pixel_settings  = Cartflows_Helper::get_facebook_settings();
 		self::$tik_pixel_settings = Cartflows_Helper::get_tiktok_settings();
 		self::$ga_settings        = Cartflows_Helper::get_google_analytics_settings();
+		self::$gads_settings      = Cartflows_Helper::get_google_ads_settings();
 
 		add_action( 'wp_head', array( $this, 'add_tracking_code' ) );
 
@@ -90,6 +99,10 @@ class Cartflows_Tracking {
 			$vars['tiktok_add_payment_info_data'] = wp_json_encode( $this->prepare_cart_data_tiktok_response() );
 		}
 
+		if ( 'enable' === self::$gads_settings['enable_google_ads_add_payment_info'] ) {
+			$vars['gads_add_payment_info_data'] = wp_json_encode( $this->prepare_cart_data_gads_response() );
+		}
+
 		return $vars;
 	}
 
@@ -107,6 +120,7 @@ class Cartflows_Tracking {
 		$this->add_facebook_pixel_tracking_code();
 		$this->add_google_analytics_tracking_code();
 		$this->add_tiktok_pixel_tracking_code();
+		$this->add_google_ads_tracking_code();
 	}
 
 
@@ -165,7 +179,7 @@ class Cartflows_Tracking {
 	public function trigger_viewcontent_events() {
 
 		$event_script = '';
-		
+
 		// Check if ViewContent is enable or disable.
 		if ( 'enable' === self::$fb_pixel_settings['facebook_pixel_view_content'] ) {
 			$view_content  = wp_json_encode( $this->prepare_viewcontent_data_fb_response() );
@@ -520,6 +534,53 @@ class Cartflows_Tracking {
 	}
 
 	/**
+	 * Prepare cart data for GA response.
+	 *
+	 * @since x.x.x
+	 * @param int $order_id order id.
+	 * @return array $purchase_data The Purchase data of the Google Ads Event
+	 */
+	public function get_gads_purchase_transactions_data( $order_id ) {
+
+		$purchase_data = array();
+		$order         = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return $purchase_data;
+		}
+
+		$is_checkout_tracked = $order->get_meta( '_wcf_gads_checkout_tracked' );
+		if ( $is_checkout_tracked ) {
+			return $purchase_data;
+		}
+
+		$purchase_data['items'] = array();
+		$gads_tracking_id       = sanitize_text_field( self::$gads_settings['google_ads_id'] );
+		$gads_conversion_label  = sanitize_text_field( self::$gads_settings['google_ads_label'] );
+		$purchase_data          = array(
+			'send_to'         => $gads_tracking_id . '/' . $gads_conversion_label,
+			'event_category'  => 'Enhanced-Ecommerce',
+			'transaction_id'  => $order_id,
+			'affiliation'     => get_bloginfo( 'name' ),
+			'value'           => self::format_number( $order->get_total() ),
+			'currency'        => $order->get_currency(),
+			'tax'             => self::format_number( $order->get_total_tax() ),
+			'shipping'        => self::format_number( $order->get_shipping_total() + $order->get_shipping_tax() ),
+			'coupon'          => $order->get_coupon_codes(),
+			'non_interaction' => true,
+		);
+
+		$items                  = $order->get_items();
+		$items_data             = $this->get_required_product_data_for_ga( $items );
+		$purchase_data['items'] = $items_data;
+
+		$order->update_meta_data( '_wcf_gads_checkout_tracked', true );
+		$order->save();
+
+		return $purchase_data;
+	}
+
+	/**
 	 * Prepare Ecommerce data for GA response.
 	 *
 	 * @return array
@@ -549,6 +610,41 @@ class Cartflows_Tracking {
 
 		return $cart_data;
 	}
+
+
+	/**
+	 * Prepare Ecommerce data for GA response.
+	 *
+	 * @since x.x.x
+	 * @return array
+	 */
+	public function prepare_cart_data_gads_response() {
+
+		$items_data = array();
+		$cart_data  = array();
+
+		if ( ! wcf()->is_woo_active ) {
+			return $cart_data;
+		}
+
+		$items = WC()->cart->get_cart();
+
+		$items_data            = $this->get_required_product_data_for_ga( $items );
+		$gads_tracking_id      = sanitize_text_field( self::$gads_settings['google_ads_id'] );
+		$gads_conversion_label = sanitize_text_field( self::$gads_settings['google_ads_label'] );
+		$cart_data             = array(
+			'send_to'         => $gads_tracking_id . '/' . $gads_conversion_label,
+			'event_category'  => 'Enhanced-Ecommerce',
+			'currency'        => get_woocommerce_currency(),
+			'coupon'          => WC()->cart->get_applied_coupons(),
+			'value'           => self::format_number( WC()->cart->cart_contents_total + WC()->cart->tax_total ),
+			'items'           => $items_data,
+			'non_interaction' => true,
+		);
+
+		return $cart_data;
+	}
+
 
 	/**
 	 * Get product data.
@@ -680,14 +776,14 @@ class Cartflows_Tracking {
 				if ( isset( $_GET['wcf-order'] ) && ! empty( $_GET['wcf-order'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$order_id = intval( $_GET['wcf-order'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$order    = wc_get_order( $order_id );
-				
+
 					// Check if the order exists.
 					if ( $order ) {
 						$total_value = $order->get_total();
 
 						foreach ( $order->get_items() as $item_id => $item ) {
 							$product = $item->get_product();
-					
+
 							$contents[] = array(
 								'content_id'   => $product->get_id(),
 								'content_name' => $product->get_name(),
@@ -704,11 +800,11 @@ class Cartflows_Tracking {
 					foreach ( $items as $item ) {
 						$product_id   = $item['product_id'];
 						$product_name = get_the_title( $product_id );
-	
+
 						$contents[] = array(
 							'content_id'   => (string) $product_id,
 							'content_name' => $product_name,
-							'content_type' => 'product', 
+							'content_type' => 'product',
 						);
 					}
 				}
@@ -738,15 +834,15 @@ class Cartflows_Tracking {
 	public function prepare_identify_data_for_tiktok() {
 		$user          = wp_get_current_user();
 		$identify_data = array();
-		
+
 		if ( ! empty( $user ) && 0 !== $user->ID ) {
 			// Check if user has an email, and hash it using SHA-256.
 			if ( ! empty( $user->user_email ) ) {
 				$identify_data['email'] = hash( 'sha256', $user->user_email );
 			} else {
-				$identify_data['email'] = hash( 'sha256', $user->get( 'billing_email' ) );  
+				$identify_data['email'] = hash( 'sha256', $user->get( 'billing_email' ) );
 			}
-		
+
 			// Check if user has an phone number, and hash it using SHA-256.
 			$phone_number = get_user_meta( $user->ID, 'user_phone', true );
 			if ( ! empty( $phone_number ) ) {
@@ -755,7 +851,7 @@ class Cartflows_Tracking {
 				$identify_data['phone_number'] = hash( 'sha256', $user->get( 'billing_phone' ) );
 			}
 		}
-	
+
 		return $identify_data;
 	}
 
@@ -784,7 +880,7 @@ class Cartflows_Tracking {
 			$product    = $cart_item['data'];
 			$contents[] = array(
 				'content_id'   => $cart_item['product_id'],
-				'content_name' => $product->get_name(), 
+				'content_name' => $product->get_name(),
 				'quantity'     => $cart_item['quantity'],
 				'price'        => wc_get_price_to_display( $product ),
 				'content_type' => 'product',
@@ -794,12 +890,12 @@ class Cartflows_Tracking {
 		// Prepare params.
 		$params['contents'] = $contents;
 		$params['value']    = $cart_total;
-		$params['currency'] = get_woocommerce_currency(); 
+		$params['currency'] = get_woocommerce_currency();
 
 		if ( 'add_to_cart' !== $event ) {
 			$params['num_items'] = WC()->cart->get_cart_contents_count();
 		}
-	
+
 		return $params;
 	}
 
@@ -814,37 +910,37 @@ class Cartflows_Tracking {
 
 		$purchase_data = array();
 		$order         = wc_get_order( $order_id );
-	
+
 		if ( ! $order ) {
 			return $purchase_data;
 		}
-	
+
 		// Check if the checkout has already been tracked.
 		$is_checkout_tracked = $order->get_meta( '_wcf_tiktok_checkout_tracked' );
 		if ( $is_checkout_tracked ) {
 			return $purchase_data;
 		}
-	
+
 		// Do not trigger purchase event if it is an opt-in.
 		$is_optin = $order->get_meta( '_wcf_optin_id' );
 		if ( $is_optin ) {
 			return $purchase_data;
 		}
-	
+
 		// Prepare data for TikTok CompletePayment event.
 		$purchase_data['transaction_id'] = $order_id;
 		$purchase_data['currency']       = $order->get_currency();
 		$purchase_data['value']          = $order->get_total();
 		$purchase_data['content_type']   = 'product';  // Set content type to 'product'.
 		$purchase_data['plugin']         = 'CartFlows';
-	
+
 		// Initialize contents array.
 		$contents = array();
-	
+
 		// Iterating through each WC_Order_Item_Product objects.
 		foreach ( $order->get_items() as $item_key => $item ) {
 			$product = $item->get_product(); // Get the WC_Product object.
-	
+
 			// Append each product details to contents array.
 			$contents[] = array(
 				'content_id'   => (string) $product->get_id(),
@@ -854,14 +950,14 @@ class Cartflows_Tracking {
 				'content_type' => 'product',
 			);
 		}
-	
+
 		// Add contents to the purchase data.
 		$purchase_data['contents'] = $contents;
-	
+
 		// Mark the order as tracked for this event.
 		$order->update_meta_data( '_wcf_tiktok_checkout_tracked', true );
 		$order->save();
-	
+
 		return $purchase_data;
 	}
 
@@ -873,7 +969,7 @@ class Cartflows_Tracking {
 	public function trigger_other_tiktok_events( $tiktok_id ) {
 
 		$event_script = '';
-		
+
 		if ( _is_wcf_checkout_type() && 'enable' === self::$tik_pixel_settings['enable_tiktok_add_to_cart'] ) {
 			$cart_data = $this->prepare_cart_data_tiktok_response( 'add_to_cart' );
 			if ( ! empty( $cart_data ) ) {
@@ -918,6 +1014,102 @@ class Cartflows_Tracking {
 	}
 
 	/**
+	 * Render google tag framework.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function add_google_ads_tracking_code() {
+
+		$gads_tracking_id = esc_attr( self::$gads_settings['google_ads_id'] );
+
+		if ( 'enable' === self::$gads_settings['google_ads_tracking'] ) {
+			// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$gads_script =
+			'<!-- Google Ads Script By CartFlows start-->
+				<script async src="https://www.googletagmanager.com/gtag/js?id=' . esc_js( $gads_tracking_id ) . '"></script>
+
+				<script>
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag( "js", new Date() );
+					gtag("config","' . esc_js( $gads_tracking_id ) . '");
+				</script>
+
+			<!-- Google Ads Script By CartFlows -->
+			';
+
+			//phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
+
+			if ( 'enable' === self::$gads_settings['google_ads_for_site'] ) {
+				echo $gads_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$this->trigger_gads_viewcontent_events();
+			} elseif ( wcf()->utils->is_step_post_type() ) {
+				echo $gads_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$this->trigger_gads_viewcontent_events();
+			}
+
+			// Trigger other events on CartFlows pages only.
+			if ( wcf()->is_woo_active && wcf()->utils->is_step_post_type() ) {
+				$this->trigger_other_gads_events();
+			}
+		}
+	}
+
+	/**
+	 * Trigger the other events for facebook pixel.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function trigger_other_gads_events() {
+		$event_script = '';
+
+		if ( _is_wcf_checkout_type() ) {
+
+			$cart_data = $this->prepare_cart_data_gads_response();
+
+			$event_data = wp_json_encode( $cart_data );
+
+			if ( 'enable' === self::$gads_settings['enable_google_ads_add_to_cart'] ) {
+				$event_script .= "
+				<script type='text/javascript'>
+					gtag( 'event', 'add_to_cart', $event_data );
+				</script>
+				";
+			}
+			if ( 'enable' === self::$gads_settings['enable_google_ads_begin_checkout'] ) {
+				$event_script .= "
+				<script type='text/javascript'>
+					gtag( 'event', 'begin_checkout', $event_data );
+				</script>";
+			}
+		}
+
+		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$gads_settings['enable_google_ads_purchase_event'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			$order_id = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			$purchase_details = $this->get_gads_purchase_transactions_data( $order_id );
+
+			if ( ! empty( $purchase_details ) ) {
+
+				$purchase_data = wp_json_encode( $purchase_details );
+
+				$event_script .= "
+					<script type='text/javascript'>
+					gtag( 'event', 'purchase', $purchase_data );
+			 		</script>";
+			}
+		}
+
+		do_action( 'cartflows_google_ads_events' );
+
+		echo $event_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+
+	/**
 	 * Get decimal of price.
 	 *
 	 * @param integer $price price.
@@ -925,6 +1117,23 @@ class Cartflows_Tracking {
 	public static function format_number( $price ) {
 
 		return number_format( floatval( $price ), wc_get_price_decimals(), '.', '' );
+
+	}
+
+	/**
+	 * Trigger the View Content events for gads tracking.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function trigger_gads_viewcontent_events() {
+		$gads_tracking_id      = sanitize_text_field( self::$gads_settings['google_ads_id'] );
+		$gads_conversion_label = sanitize_text_field( self::$gads_settings['google_ads_label'] );
+		$script                = "<script type='text/javascript'>
+					gtag( 'event', 'page_view',{ 'send_to': '.$gads_tracking_id.'/'.$gads_conversion_label.'} );
+			 		</script>";
+
+		echo $script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	}
 }

@@ -51,10 +51,6 @@
 	width: 100%;
 }
 
-.wcf-embed-checkout-form .woocommerce form .wcf-column-33 {
-	width: 33.33%;
-}
-
 /* To test divi and all */
 .wcf-embed-checkout-form .woocommerce form .form-row-first,
 .woocommerce-page form .form-row-first {
@@ -1296,13 +1292,13 @@ a.et_pb_more_button::after {
 * ***********************************
 */
 
-.wcf-embed-checkout-form form .wcf-column-33 {
+.wcf-embed-checkout-form .woocommerce form .wcf-column-33 {
 	width: 33.33%;
 }
-.wcf-embed-checkout-form form .wcf-column-50 {
+.wcf-embed-checkout-form .woocommerce form .wcf-column-50 {
 	width: 50%;
 }
-.wcf-embed-checkout-form form .wcf-column-100 {
+.wcf-embed-checkout-form .woocommerce form .wcf-column-100 {
 	width: 100%;
 	margin-top: 0 !important;
 }
@@ -1482,9 +1478,6 @@ a.et_pb_more_button::after {
 	width: 40%;
 	padding: 0 15px 0 0;
 	vertical-align: top;
-	position: sticky;
-	top: 15px;
-	height: 100%;
 }
 
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .wcf-cartflows-review-order-wrapper {
@@ -1536,6 +1529,8 @@ a.et_pb_more_button::after {
 }
 
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout.wcf-modern-skin-two-column .woocommerce-checkout #order_review {
+	position: sticky;
+	top: 60px;
 	padding: 0;
 }
 
@@ -1554,7 +1549,10 @@ a.et_pb_more_button::after {
 }
 
 /* Headings */
-
+.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout.wcf-modern-skin-two-column #order_review_heading {
+	position: sticky;
+	top: 15px;
+}
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout h3,
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout #ship-to-different-address,
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout #order_review_heading {

@@ -751,6 +751,210 @@ class GlobalSettings {
 					),
 				),
 			),
+			'google-ads'             => array(
+				'title'  => '',
+				'fields' => array(
+					'enable-google-ads'                  => array(
+						'type'     => 'toggle',
+						'label'    => __( 'Enable For CartFlows Pages', 'cartflows' ),
+						'name'     => '_cartflows_google_ads[google_ads_tracking]',
+						'backComp' => true,
+					),
+					'google-ads-separator'               => array(
+						'type'       => 'separator',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+					),
+					'enable-google-ads-for-site'         => array(
+						'type'       => 'toggle',
+						'label'      => __( 'Enable For the whole site', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[google_ads_for_site]',
+						'desc'       => __( 'If checked, PageView event will also be triggered for other pages/posts of site.', 'cartflows' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+						'backComp'   => true,
+					),
+					'google-ads-for-site-separator'      => array(
+						'type'       => 'separator',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+					),
+					'google-ads-id'                      => array(
+						'type'       => 'text',
+						'label'      => __( 'Enter Google Ads Conversion ID', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[google_ads_id]',
+						'class'      => 'input-field',
+						/* translators: %1$1s: link html start, %2$12: link html end*/
+						'desc'       => sprintf( __( 'Log into your %1$1s Google Ads account %2$2s to find your conversion ID.', 'cartflows' ), '<a href="https://ads.google.com/home/" target="_blank">', '</a>' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+					),
+					'google-ads-label'                   => array(
+						'type'       => 'text',
+						'label'      => __( 'Enter Google Ads Conversion Label', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[google_ads_label]',
+						'class'      => 'input-field',
+						/* translators: %1$1s: link html start, %2$12: link html end*/
+						'desc'       => sprintf( __( 'Log into your %1$1s Google Ads account %2$2s to find your conversion label.', 'cartflows' ), '<a href="https://ads.google.com/home/" target="_blank">', '</a>' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+					),
+					'google-ads-id-separator'            => array(
+						'type'       => 'separator',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+					),
+					
+					'google-ads-event-heading'           => array(
+						'type'       => 'heading',
+						'label'      => __( 'Google Ads Events', 'cartflows' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+					),
+					'google-ads-event-begin-checkout'    => array(
+						'type'       => 'checkbox',
+						'label'      => __( 'Begin Checkout', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[enable_google_ads_begin_checkout]',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+						'backComp'   => true,
+					),
+
+					'google-ads-event-add-to-cart'       => array(
+						'type'       => 'checkbox',
+						'label'      => __( 'Add To Cart', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[enable_google_ads_add_to_cart]',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+						'backComp'   => true,
+					),
+					'google-ads-event-view-content'      => array(
+						'type'       => 'checkbox',
+						'label'      => __( 'View Content', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[enable_google_ads_view_content]',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+						'backComp'   => true,
+					),
+					'google-ads-event-payment-info'      => array(
+						'type'       => 'checkbox',
+						'label'      => __( 'Add Payment Info', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[enable_google_ads_add_payment_info]',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+						'backComp'   => true,
+					),
+					'google-ads-event-purchase-complete' => array(
+						'type'       => 'checkbox',
+						'label'      => __( 'Purchase', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[enable_google_ads_purchase_event]',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+						'backComp'   => true,
+					),
+
+					'google-ads-event-lead-info'         => array(
+						'type'       => 'checkbox',
+						'label'      => __( 'Optin Lead', 'cartflows' ),
+						'name'       => '_cartflows_google_ads[enable_google_ads_optin_lead]',
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_google_ads[google_ads_tracking]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+						'backComp'   => true,
+						'tooltip'    => __( 'Optin Lead event will be triggered for optin page.', 'cartflows' ),
+					),
+				),
+			),
 			'other'                  => array(
 				'title'  => '',
 				'fields' => array(

@@ -471,7 +471,7 @@ class Importer extends AjaxBase {
 	/**
 	 * Activate theme
 	 *
-	 * @since x.x.x
+	 * @since 2.0.12
 	 * @return void
 	 */
 	public function activate_theme() {

@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, elementor, beaver builder
 Requires at least: 5.8
 Tested up to: 6.6
-Stable tag: 2.0.11
+Stable tag: 2.0.12
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -321,6 +321,12 @@ This includes, but is not limited to:
 5. Easily edit anything with your page builder.
 
 == Changelog ==
+
+= Version 2.0.12 - Tuesday, 8th October 2024 =
+* New: Introduced native support for Google Ads to track activities on CartFlows Optin, Landing, Checkout, and Thank You pages.
+* Improvement: Users are now automatically redirected to the default editor if the selected builder plugin is missing.
+* Fix: Addressed an issue where the radio button field wasn't appearing in Optin Forms.
+* Fix: Fixed the loading issue with search functionality and pagination on the CartFlows funnel page (backend).
 
 = Version 2.0.11 - Monday, 16th September 2024 =
 * New: Introduced native support for TikTok Pixel to track activities on CartFlows Optin, Landing, Checkout, and Thank You pages.

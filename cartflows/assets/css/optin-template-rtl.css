@@ -477,12 +477,12 @@
 
 .wcf-optin-form .woocommerce .wcf-input-radio-field-wrapper input[type="radio"].input-radio {
 	float: right;
-	margin: 0 0 0 10px;
+	margin: 8px 0 0 10px;
 	cursor: pointer;
 }
 
 .wcf-optin-form .woocommerce .wcf-input-radio-field-wrapper label.radio.input-radio {
-	margin: 15px 0;
+	margin: 0 0 15px 0;
 	cursor: pointer;
 }
 

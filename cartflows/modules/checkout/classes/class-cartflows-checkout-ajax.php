@@ -210,7 +210,7 @@ class Cartflows_Checkout_Ajax {
 	 * Update billing email address before applying the coupon. This is used for coupon conditions.
 	 *
 	 * @return void
-	 * @since x.x.x
+	 * @since 2.0.12
 	 */
 	public function update_billing_email() {
 

@@ -427,7 +427,6 @@ class AdminMenu {
 			)
 		);
 
-		$page_builder = \Cartflows_Helper::get_common_setting( 'default_page_builder' );
 
 		$page_builder      = \Cartflows_Helper::get_common_setting( 'default_page_builder' );
 		$page_builder_name = \Cartflows_Helper::get_page_builder_name( $page_builder );

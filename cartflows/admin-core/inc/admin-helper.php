@@ -61,6 +61,14 @@ class AdminHelper {
 	public static $google_analytics_settings = null;
 
 	/**
+	 * Google_ads_settings.
+	 *
+	 * @since x.x.x
+	 * @var object instance
+	 */
+	public static $google_ads_settings_data = null;
+
+	/**
 	 * Options.
 	 *
 	 * @var object instance
@@ -354,6 +362,43 @@ class AdminHelper {
 	}
 
 	/**
+	 * Get Common settings.
+	 *
+	 * @since x.x.x
+	 * @return array.
+	 */
+	public static function get_google_ads_settings() {
+
+		$options = array();
+
+		$google_ads_settings_default = apply_filters(
+			'cartflows_google_ads_settings_default',
+			array(
+				'google_ads_id'                      => '',
+				'google_ads_label'                   => '',
+				'enable_google_ads_begin_checkout'   => 'disable',
+				'enable_google_ads_add_to_cart'      => 'disable',
+				'enable_google_ads_view_content'     => 'disable',
+				'enable_google_ads_add_payment_info' => 'disable',
+				'enable_google_ads_purchase_event'   => 'disable',
+				'enable_google_ads_optin_lead'       => 'disable',
+				'google_ads_tracking'                => 'disable',
+				'google_ads_for_site'                => 'disable',
+			)
+		);
+
+		$google_ads_settings_data = self::get_admin_settings_option( '_cartflows_google_ads', false, false );
+
+		$google_ads_settings_data = wp_parse_args( $google_ads_settings_data, $google_ads_settings_default );
+
+		foreach ( $google_ads_settings_data as $key => $data ) {
+			$options[ '_cartflows_google_ads[' . $key . ']' ] = $data;
+		}
+
+		return $options;
+	}
+
+	/**
 	 * Get User role settings.
 	 *
 	 * @return array.
@@ -533,9 +578,10 @@ class AdminHelper {
 		$fb_settings        = self::get_facebook_settings();
 		$tik_settings       = self::get_tiktok_settings();
 		$ga_settings        = self::get_google_analytics_settings();
+		$gads_settings      = self::get_google_ads_settings();
 		$urm_settings       = self::get_user_role_management_settings();
 		$auto_fields        = self::get_google_auto_fields_settings();
-		$options            = array_merge( $general_settings, $permalink_settings, $fb_settings, $tik_settings, $ga_settings, $urm_settings, $auto_fields );
+		$options            = array_merge( $general_settings, $permalink_settings, $fb_settings, $tik_settings, $ga_settings, $gads_settings, $urm_settings, $auto_fields );
 		$options            = apply_filters( 'cartflows_admin_global_data_options', $options );
 
 		return $options;

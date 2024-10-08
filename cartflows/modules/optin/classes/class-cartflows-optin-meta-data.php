@@ -717,7 +717,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 			'default'           => isset( $field_data['default'] ) ? $field_data['default'] : '',
 			'required'          => ( isset( $field_data['required'] ) && true == $field_data['required'] ) ? 'yes' : 'no',
 			'optimized'         => ( isset( $field_data['optimized'] ) && true == $field_data['optimized'] ) ? 'yes' : 'no',
-			'options'           => ( isset( $field_data['options'] ) && ! empty( $field_data['options'] ) ) ? implode( ',', $field_data['options'] ) : '',
+			'options'           => ( isset( $field_data['options'] ) && ! empty( $field_data['options'] ) && is_array( $field_data['options'] ) ) ? implode( '|', $field_data['options'] ) : $field_data['options'],
 			'show_in_email'     => ( isset( $field_data['show_in_email'] ) && true == $field_data['show_in_email'] ) ? 'yes' : 'no',
 		);
 

@@ -142,6 +142,38 @@
 		}
 	};
 
+	// Trigger google ads events on form submit.
+	const trigger_google_ads_events = function () {
+		if ( cartflows.gads_setting.google_ads_tracking === 'enable' ) {
+			if (
+				cartflows.is_checkout_page &&
+				'enable' ===
+					cartflows.gads_setting.enable_google_ads_add_payment_info
+			) {
+				jQuery( 'form.woocommerce-checkout' ).on(
+					'submit',
+					function () {
+						gtag(
+							'event',
+							'add_payment_info',
+							JSON.parse( cartflows.add_payment_info_data )
+						);
+					}
+				);
+			} else if (
+				cartflows.is_optin &&
+				'enable' === cartflows.gads_setting.enable_google_ads_optin_lead
+			) {
+				jQuery( 'form.woocommerce-checkout' ).on(
+					'submit',
+					function () {
+						gtag( 'event', 'Lead', { plugin: 'CartFlows' } );
+					}
+				);
+			}
+		}
+	};
+
 	/**
 	 *
 	 * @param {string} next_step_url
@@ -214,6 +246,7 @@
 			trigger_facebook_events();
 			trigger_google_events();
 			trigger_tiktok_events();
+			trigger_google_ads_events();
 		}
 	} );
 } )( jQuery );

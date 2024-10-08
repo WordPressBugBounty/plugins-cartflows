@@ -96,6 +96,14 @@ class Cartflows_Helper {
 	 */
 	private static $tiktok = null;
 
+	/**
+	 * Google Ads settings
+	 *
+	 * @since x.x.x
+	 * @var array|null
+	 */
+	private static $google_ads_settings = null;
+
 
 	/**
 	 * Returns an option from the database for the admin settings page.
@@ -773,6 +781,47 @@ class Cartflows_Helper {
 	}
 
 	/**
+	 * Get debug settings data.
+	 *
+	 * @since x.x.x
+	 * @return array $google_ads_settings The Google Ads settings array.
+	 */
+	public static function get_google_ads_settings() {
+
+		if ( null === self::$google_ads_settings ) {
+
+
+			$google_ads_settings_default = apply_filters(
+				'cartflows_google_ads_settings_default',
+				array(
+					'google_ads_id'                      => '',
+					'google_ads_label'                   => '',
+					'enable_google_ads_begin_checkout'   => 'disable',
+					'enable_google_ads_add_to_cart'      => 'disable',
+					'enable_google_ads_view_content'     => 'disable',
+					'enable_google_ads_add_payment_info' => 'disable',
+					'enable_google_ads_purchase_event'   => 'disable',
+					'enable_google_ads_optin_lead'       => 'disable',
+					'google_ads_tracking'                => 'disable',
+					'google_ads_for_site'                => 'disable',
+				)
+			);
+
+			$google_ads_settings_data = self::get_admin_settings_option( '_cartflows_google_ads', false, true );
+
+			$google_ads_settings_data = wp_parse_args( $google_ads_settings_data, $google_ads_settings_default );
+
+			if ( ! did_action( 'wp' ) ) {
+				return $google_ads_settings_data;
+			} else {
+				self::$google_ads_settings = $google_ads_settings_data;
+			}
+		}
+
+		return self::$google_ads_settings;
+	}
+
+	/**
 	 * Prepare response data for facebook.
 	 *
 	 * @todo Remove this function in 1.6.18 as it is added in cartflows-tracking file.
@@ -1412,10 +1461,14 @@ class Cartflows_Helper {
 
 		switch ( $page_builder ) {
 			case 'beaver-builder':
-				$page_builder_edit = strpos( $view_step, '?' ) ? $view_step . '&fl_builder' : $view_step . '?fl_builder';
+				if ( is_plugin_active( 'beaver-builder-lite-version/fl-builder.php' ) ) {
+					$page_builder_edit = strpos( $view_step, '?' ) ? $view_step . '&fl_builder' : $view_step . '?fl_builder';
+				}
 				break;
 			case 'elementor':
-				$page_builder_edit = admin_url( 'post.php?post=' . $step_id . '&action=elementor' );
+				if ( is_plugin_active( 'elementor/elementor.php' ) ) {
+					$page_builder_edit = admin_url( 'post.php?post=' . $step_id . '&action=elementor' );
+				}
 				break;
 		}
 

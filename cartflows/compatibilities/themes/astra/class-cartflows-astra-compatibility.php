@@ -222,7 +222,7 @@ if ( ! class_exists( 'Cartflows_Astra_Compatibility' ) ) :
 		 * @param bool $bool Determines whether to override Astra's actions. If true, actions are overridden.
 		 * @return bool Returns the passed boolean parameter.
 		 *
-		 * @since x.x.x
+		 * @since 2.0.12
 		 */
 		public function override_order_review_checkout( $bool ) {
 			if ( _is_wcf_checkout_type() ) {
