@@ -363,31 +363,31 @@ class Cartflows_Checkout_Form extends Widget_Base {
 			)
 		);
 
-			$this->add_control(
-				'heading_text_color',
-				array(
-					'label'     => __( 'Color', 'cartflows' ),
-					'type'      => Controls_Manager::COLOR,
-					'default'   => self::$gcp_secondary_theme_color,
-					'selectors' => array(
-						'{{WRAPPER}} .wcf-embed-checkout-form, {{WRAPPER}} .wcf-embed-checkout-form-modern-checkout' => '--wcf-heading-color: {{VALUE}};',
-					),
-				)
-			);
+		$this->add_control(
+			'heading_text_color',
+			array(
+				'label'     => __( 'Color', 'cartflows' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => self::$gcp_secondary_theme_color,
+				'selectors' => array(
+					'{{WRAPPER}} .wcf-embed-checkout-form, {{WRAPPER}} .wcf-embed-checkout-form-modern-checkout' => '--wcf-heading-color: {{VALUE}};',
+				),
+			)
+		);
 
-			$this->add_group_control(
-				Group_Control_Typography::get_type(),
-				array(
-					'name'     => 'heading_typography',
-					'label'    => 'Typography',
-					'selector' => '{{WRAPPER}} .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce h3,
-					{{WRAPPER}} .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce h3 span,
-					{{WRAPPER}} .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce-checkout #order_review_heading,
-					{{WRAPPER}} .cartflows-elementor__checkout-form .wcf-embed-checkout-form-two-step .wcf-embed-checkout-form-steps .step-name,
-					{{WRAPPER}} .wcf-embed-checkout-form .woocommerce .col2-set .col-1 h3,
-					{{WRAPPER}} .wcf-embed-checkout-form .woocommerce .col2-set .col-2 h3',
-				)
-			);
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			array(
+				'name'     => 'heading_typography',
+				'label'    => 'Typography',
+				'selector' => '{{WRAPPER}} .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce h3,
+				{{WRAPPER}} .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce h3 span,
+				{{WRAPPER}} .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce-checkout #order_review_heading,
+				{{WRAPPER}} .cartflows-elementor__checkout-form .wcf-embed-checkout-form-two-step .wcf-embed-checkout-form-steps .step-name,
+				{{WRAPPER}} .wcf-embed-checkout-form .woocommerce .col2-set .col-1 h3,
+				{{WRAPPER}} .wcf-embed-checkout-form .woocommerce .col2-set .col-2 h3',
+			)
+		);
 
 		$this->end_controls_section();
 	}

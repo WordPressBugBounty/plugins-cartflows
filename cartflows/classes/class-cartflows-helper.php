@@ -97,13 +97,27 @@ class Cartflows_Helper {
 	private static $tiktok = null;
 
 	/**
+	 * Pinterest tag global data
+	 *
+	 * @var tiktok
+	 */
+	private static $pinterest = null;
+
+	/**
 	 * Google Ads settings
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @var array|null
 	 */
 	private static $google_ads_settings = null;
 
+	/**
+	 * Snapchat pixel global data
+	 *
+	 * @since 2.1.0
+	 * @var array|null
+	 */
+	private static $snapchat = null;
 
 	/**
 	 * Returns an option from the database for the admin settings page.
@@ -781,9 +795,42 @@ class Cartflows_Helper {
 	}
 
 	/**
+	 * Get pinterest tag settings.
+	 *
+	 * @return pinterest pinterest settings array.
+	 */
+	public static function get_pinterest_settings() {
+
+		if ( null === self::$pinterest ) {
+
+			$pinterest_default = array(
+				'pinterest_tag_id'                  => '',
+				'enable_pinterest_consent'          => 'disable',
+				'enable_pinterest_begin_checkout'   => 'disable',
+				'enable_pinterest_add_to_cart'      => 'disable',
+				'enable_pinterest_add_payment_info' => 'disable',
+				'enable_pinterest_purchase_event'   => 'disable',
+				'enable_pinterest_signup'           => 'disable',
+				'enable_pinterest_optin_lead'       => 'disable',
+				'pinterest_tag_tracking'            => 'disable',
+				'pinterest_tag_tracking_for_site'   => 'disable',
+			);
+
+			$pinterest = self::get_admin_settings_option( '_cartflows_pinterest', false, false );
+
+			$pinterest = wp_parse_args( $pinterest, $pinterest_default );
+
+			self::$pinterest = apply_filters( 'cartflows_pinterest_settings_default', $pinterest );
+
+		}
+
+		return self::$pinterest;
+	}
+
+	/**
 	 * Get debug settings data.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @return array $google_ads_settings The Google Ads settings array.
 	 */
 	public static function get_google_ads_settings() {
@@ -819,6 +866,38 @@ class Cartflows_Helper {
 		}
 
 		return self::$google_ads_settings;
+	}
+
+	/**
+	 * Get snapchat pixel settings.
+	 *
+	 * @return snapchat snapchat settings array.
+	 */
+	public static function get_snapchat_settings() {
+
+		if ( null === self::$snapchat ) {
+
+			$snapchat_default = array(
+				'snapchat_pixel_id'               => '',
+				'enable_snapchat_begin_checkout'  => 'disable',
+				'enable_snapchat_add_to_cart'     => 'disable',
+				'enable_snapchat_view_content'    => 'disable',
+				'enable_snapchat_purchase_event'  => 'disable',
+				'enable_snapchat_optin_lead'      => 'disable',
+				'enable_snapchat_subscribe_event' => 'disable',
+				'snapchat_pixel_tracking'         => 'disable',
+				'snapchat_pixel_for_site'         => 'disable',
+			);
+
+			$snapchat = self::get_admin_settings_option( '_cartflows_snapchat', false, false );
+
+			$snapchat = wp_parse_args( $snapchat, $snapchat_default );
+
+			self::$snapchat = apply_filters( 'cartflows_snapchat_settings_default', $snapchat );
+
+		}
+
+		return self::$snapchat;
 	}
 
 	/**
@@ -1080,6 +1159,7 @@ class Cartflows_Helper {
 			'gutenberg'      => 'Spectra',
 			'beaver-builder' => 'Beaver Builder',
 			'divi'           => 'Divi',
+			'bricks-builder' => 'Bricks',
 		);
 
 		if ( isset( $pb_data[ $page_builder ] ) ) {
@@ -1470,6 +1550,11 @@ class Cartflows_Helper {
 					$page_builder_edit = admin_url( 'post.php?post=' . $step_id . '&action=elementor' );
 				}
 				break;
+			case 'bricks-builder':
+				if ( Cartflows_Compatibility::is_bricks_enabled() ) {
+					$page_builder_edit = strpos( $view_step, '?' ) ? $view_step . '&bricks=run' : $view_step . '?bricks=run';
+				}
+				break;
 		}
 
 		return $page_builder_edit;
@@ -1612,5 +1697,51 @@ class Cartflows_Helper {
 
 		return esc_url( $url );
 	}
+
+	/**
+	 * Get current page's template
+	 *
+	 * @param int $post_id The current page id.
+	 * @return string
+	 *
+	 * @since 2.1.0
+	 */
+	public static function get_current_page_template( $post_id = 0 ) {
+
+		if ( empty( $post_id ) ) {
+			$post_id = _get_wcf_step_id();
+		}
+
+		return apply_filters( 'cartflows_page_template', get_post_meta( $post_id, '_wp_page_template', true ) );
+
+	}
+
+	/**
+	 * Check the Instant layout is enabled or not.
+	 *
+	 * @param int $flow_id Current flow id.
+	 * @return boolean Returns true if instant layout is enabled, false otherwise.
+	 */
+	public static function is_instant_layout_enabled( $flow_id = 0 ) {
+
+		// Get the flow ID if not set.
+		if ( empty( $flow_id ) ) {
+			$flow_id = wcf()->utils->get_flow_id();
+		}
+
+		// Return false if flow ID is not set.
+		if ( empty( $flow_id ) ) {
+			return false;
+		}
+
+		// Return false if wcf()->options is not set.
+		if ( ! isset( wcf()->options ) || ! is_object( wcf()->options ) || ! is_callable( array( wcf()->options, 'get_flow_meta_value' ) ) ) {
+			return false;
+		}
+
+		// Return true or false based on the instant layout style.
+		return 'yes' === wcf()->options->get_flow_meta_value( $flow_id, 'instant-layout-style', 'no' );
+	}
+
 }
 

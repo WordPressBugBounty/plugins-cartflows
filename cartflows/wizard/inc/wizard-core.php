@@ -359,6 +359,12 @@ class WizardCore {
 				'active'  => is_plugin_active( 'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php' ) ? 'yes' : 'no',
 				'install' => isset( $installed_plugins['ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php'] ) ? 'yes' : 'no',
 			),
+			'bricks-builder' => array(
+				'slug'    => 'bricks',
+				'init'    => 'bricks',
+				'active'  => 'yes',
+				'install' => 'NA',
+			),
 			// Intentionally installing the GB plugin when the other option is selected.
 			'other'          => array(
 				'slug'    => 'ultimate-addons-for-gutenberg',

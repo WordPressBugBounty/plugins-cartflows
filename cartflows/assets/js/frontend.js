@@ -1,4 +1,86 @@
 ( function ( $ ) {
+	const wcf_order_review_toggler = function () {
+		const mobile_order_review_section = $(
+				'.wcf-collapsed-order-review-section'
+			),
+			mobile_order_review_wrap = $(
+				'.wcf-cartflows-review-order-wrapper'
+			),
+			desktop_order_review_wrap = $( '.wcf-order-wrap' );
+
+		let timeout = false;
+		const resizeEvent =
+			'onorientationchange' in window ? 'orientationchange' : 'resize';
+
+		$( '.wcf-order-review-toggle' ).on(
+			'click',
+			function wcf_show_order_summary( e ) {
+				e.preventDefault();
+
+				if ( mobile_order_review_section.hasClass( 'wcf-show' ) ) {
+					mobile_order_review_wrap.slideUp( 400 );
+					mobile_order_review_section.removeClass( 'wcf-show' );
+					$( '.wcf-order-review-toggle-text' ).text(
+						cartflows.order_review_toggle_texts.toggle_show_text
+					);
+				} else {
+					mobile_order_review_wrap.slideDown( 400 );
+					mobile_order_review_section.addClass( 'wcf-show' );
+					$( '.wcf-order-review-toggle-text' ).text(
+						cartflows.order_review_toggle_texts.toggle_hide_text
+					);
+				}
+			}
+		);
+
+		$( window ).on( resizeEvent, function () {
+			clearTimeout( timeout );
+
+			timeout = setTimeout( function () {
+				const width = window.innerWidth || $( window ).width();
+
+				if ( width >= 769 ) {
+					mobile_order_review_wrap.css( { display: 'none' } );
+					mobile_order_review_wrap.removeClass( 'wcf-show' );
+					$( '.wcf-order-review-toggle' ).removeClass( 'wcf-show' );
+					$( '.wcf-order-review-toggle-text' ).text(
+						cartflows.order_review_toggle_texts.toggle_show_text
+					);
+				}
+			}, 200 );
+		} );
+
+		// Update checkout when shipping methods changes.
+		mobile_order_review_wrap.on(
+			'change',
+			'select.shipping_method, input[name^="shipping_method"]',
+			function () {
+				/**
+				 * Uncheck all shipping radio buttons of desktop. Those will be auto updated by update_checkout action.
+				 * While performing the update checkout, it searches for the selected shipping method in whole page.
+				 */
+				desktop_order_review_wrap
+					.find(
+						'input[name^="shipping_method"][type="radio"]:checked'
+					)
+					.each( function () {
+						$( this ).removeAttr( 'checked' );
+					} );
+
+				$( document.body ).trigger( 'update_checkout', {
+					update_shipping_method: true,
+				} );
+			}
+		);
+	};
+
+	function setCookie( cName, cValue, expDays ) {
+		const date = new Date();
+		date.setTime( date.getTime() + expDays * 24 * 60 * 60 * 1000 );
+		const expires = 'expires=' + date.toUTCString();
+		document.cookie = cName + '=' + cValue + '; ' + expires + '; path=/';
+	}
+
 	/* It will redirect if anyone clicked on link before ready */
 	$( document ).on( 'click', 'a[href*="wcf-next-step"]', function ( e ) {
 		e.preventDefault();
@@ -174,6 +256,89 @@
 		}
 	};
 
+	// Trigger Snapchat events on form submit.
+	const trigger_snapchat_events = function () {
+		if (
+			'enable' === cartflows.snap_settings.snapchat_pixel_tracking &&
+			cartflows.snap_settings.snapchat_pixel_id !== ''
+		) {
+			/* global snaptr */
+			if (
+				cartflows.is_optin &&
+				'enable' === cartflows.snap_settings.enable_snapchat_optin_lead
+			) {
+				jQuery( 'form.woocommerce-checkout' ).on(
+					'submit',
+					function () {
+						snaptr( 'track', 'SIGN_UP', {
+							sign_up_method: 'CartFlows Optin Lead',
+						} );
+					}
+				);
+			}
+		}
+	};
+
+	// Trigger pinterest events on form submit.
+	const trigger_pinterest_events = function () {
+		if (
+			'enable' === cartflows.pin_settings.pinterest_tag_tracking &&
+			cartflows.pin_settings.pinterest_tag_id !== '' &&
+			typeof pintrk !== 'undefined'
+		) {
+			/* global pintrk */
+			const add_payment_info_event =
+				cartflows.pin_settings.enable_pinterest_add_payment_info;
+			if (
+				'enable' === add_payment_info_event &&
+				cartflows.is_checkout_page
+			) {
+				jQuery( 'form.woocommerce-checkout' ).on(
+					'submit',
+					function () {
+						pintrk(
+							'track',
+							'AddPaymentInfo',
+							JSON.parse(
+								cartflows.pinterest_add_payment_info_data
+							)
+						);
+					}
+				);
+			} else if ( cartflows.is_optin ) {
+				if (
+					'enable' ===
+					cartflows.pin_settings.enable_pinterest_optin_lead
+				) {
+					jQuery( 'form.woocommerce-checkout' ).on(
+						'submit',
+						function () {
+							pintrk( 'track', 'Lead', {
+								lead_type: 'CartFlows Optin',
+							} );
+						}
+					);
+				}
+				if (
+					'enable' === cartflows.pin_settings.enable_pinterest_signup
+				) {
+					jQuery( 'form.woocommerce-checkout' ).on(
+						'submit',
+						function () {
+							pintrk(
+								'track',
+								'Signup',
+								JSON.parse(
+									cartflows.pinterest_signup_info_data
+								)
+							);
+						}
+					);
+				}
+			}
+		}
+	};
+
 	/**
 	 *
 	 * @param {string} next_step_url
@@ -239,6 +404,30 @@
 		}
 	};
 
+	// Event listener for accepting or declining Pinterest consent.
+	$( document ).on( 'click', '.wcf-pinterest-consent-button', function () {
+		const consentButton = $( this );
+		const consentAction = consentButton.data( 'action' );
+
+		setCookie(
+			cartflows?.pinterest_consent_cookie,
+			'accept' === consentAction ? 'true' : 'false',
+			30
+		);
+
+		// Hide the consent popup.
+		$( '#cartflows-pinterest-consent-wrapper' ).hide();
+
+		// Dispatch a custom event to notify that consent has changed.
+		if ( 'accept' === consentAction ) {
+			document.dispatchEvent(
+				new CustomEvent( 'cartflows_pinterest_consent_changed', {
+					detail: 'true',
+				} )
+			);
+		}
+	} );
+
 	$( function () {
 		setup_next_step_url();
 		remove_oceanwp_custom_style();
@@ -247,6 +436,9 @@
 			trigger_google_events();
 			trigger_tiktok_events();
 			trigger_google_ads_events();
+			trigger_snapchat_events();
+			trigger_pinterest_events();
 		}
+		wcf_order_review_toggler();
 	} );
 } )( jQuery );

@@ -62,10 +62,17 @@ function PluginsInstallStep() {
 			'wcf-plugins-install-success',
 			function () {
 				setProcessing( false );
-				history.push( {
-					pathname: 'index.php',
-					search: `?page=cartflow-setup&step=store-checkout`,
-				} );
+				if ( 'bricks-builder' === selected_page_builder ) {
+					history.push( {
+						pathname: 'index.php',
+						search: `?page=cartflow-setup&step=optin`,
+					} );
+				} else {
+					history.push( {
+						pathname: 'index.php',
+						search: `?page=cartflow-setup&step=store-checkout`,
+					} );
+				}
 
 				dispatch( {
 					status: 'RESET',
@@ -96,7 +103,6 @@ function PluginsInstallStep() {
 
 	const handleRedirection = function ( e ) {
 		e.preventDefault();
-
 		setProcessing( {
 			isProcessing: true,
 			buttonText: __( 'Continuing…', 'cartflows' ),

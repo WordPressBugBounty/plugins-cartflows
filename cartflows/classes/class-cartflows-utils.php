@@ -491,7 +491,7 @@ class Cartflows_Utils {
 	 *
 	 * @param int $length    Length.
 	 *
-	 * @return string
+	 * @return string|false
 	 */
 	public function get_unique_id( $length = 8 ) {
 

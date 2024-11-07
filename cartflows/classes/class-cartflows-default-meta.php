@@ -110,59 +110,73 @@ class Cartflows_Default_Meta {
 
 		if ( null === self::$checkout_fields ) {
 			self::$checkout_fields = array(
-				'wcf-enable-design-settings'           => array(
+				'wcf-enable-design-settings'               => array(
 					'default'  => $this->get_show_design_meta_value(),
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-field-google-font-url'            => array(
+				'wcf-field-google-font-url'                => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_URL',
 				),
-				'wcf-checkout-products'                => array(
+				'wcf-checkout-products'                    => array(
 					'default'  => array(),
 					'sanitize' => 'FILTER_CARTFLOWS_CHECKOUT_PRODUCTS',
 				),
-				'wcf-checkout-layout'                  => array(
+				'wcf-checkout-layout'                      => array(
 					'default'  => 'modern-checkout',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-input-font-family'                => array(
+				'wcf-input-font-family'                    => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_FONT_FAMILY',
 				),
-				'wcf-input-font-weight'                => array(
+				'wcf-input-font-weight'                    => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-heading-font-family'              => array(
+				'wcf-heading-font-family'                  => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_FONT_FAMILY',
 				),
-				'wcf-heading-font-weight'              => array(
+				'wcf-heading-font-weight'                  => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-base-font-family'                 => array(
+				'wcf-base-font-family'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_FONT_FAMILY',
 				),
-				'wcf-advance-options-fields'           => array(
+				'wcf-advance-options-fields'               => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-remove-product-field'             => array(
+				'wcf-remove-product-field'                 => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-order-review-show-product-images' => array(
+				// Custom Shipping error message start.
+				'wcf-custom-no-shipping-method-message-toggle' => array(
+					'default'  => 'no',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+				'wcf-no-shipping-method-message'           => array(
+					'default'  => __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'cartflows' ),
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+				// Custom Shipping error message end.
+				'wcf-order-review-show-product-images'     => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-checkout-place-order-button-text' => array(
+				'wcf-order-review-summary-position'        => array(
+					'default'  => 'top',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+				'wcf-checkout-place-order-button-text'     => array(
 					'default'  => __( 'Place Order', 'cartflows' ),
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-checkout-place-order-button-lock' => array(
+				'wcf-checkout-place-order-button-lock'     => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
@@ -170,178 +184,178 @@ class Cartflows_Default_Meta {
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-base-font-weight'                 => array(
+				'wcf-base-font-weight'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-button-font-family'               => array(
+				'wcf-button-font-family'                   => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_FONT_FAMILY',
 				),
-				'wcf-button-font-weight'               => array(
+				'wcf-button-font-weight'                   => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-primary-color'                    => array(
+				'wcf-primary-color'                        => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-heading-color'                    => array(
+				'wcf-heading-color'                        => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-section-bg-color'                 => array(
+				'wcf-section-bg-color'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-hl-bg-color'                      => array(
+				'wcf-hl-bg-color'                          => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-field-tb-padding'                 => array(
+				'wcf-field-tb-padding'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-field-lr-padding'                 => array(
+				'wcf-field-lr-padding'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-fields-skins'                     => array(
+				'wcf-fields-skins'                         => array(
 					'default'  => 'modern-label',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-input-field-size'                 => array(
+				'wcf-input-field-size'                     => array(
 					'default'  => '33px',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-field-color'                      => array(
+				'wcf-field-color'                          => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-field-bg-color'                   => array(
+				'wcf-field-bg-color'                       => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-field-border-color'               => array(
+				'wcf-field-border-color'                   => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-box-border-color'                 => array(
+				'wcf-box-border-color'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-field-label-color'                => array(
+				'wcf-field-label-color'                    => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-submit-tb-padding'                => array(
+				'wcf-submit-tb-padding'                    => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-submit-lr-padding'                => array(
+				'wcf-submit-lr-padding'                    => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-input-button-size'                => array(
+				'wcf-input-button-size'                    => array(
 					'default'  => '33px',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-submit-color'                     => array(
+				'wcf-submit-color'                         => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-submit-hover-color'               => array(
+				'wcf-submit-hover-color'                   => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-submit-bg-color'                  => array(
+				'wcf-submit-bg-color'                      => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-submit-bg-hover-color'            => array(
+				'wcf-submit-bg-hover-color'                => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-submit-border-color'              => array(
+				'wcf-submit-border-color'                  => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-submit-border-hover-color'        => array(
+				'wcf-submit-border-hover-color'            => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-header-logo-image'                => array(
+				'wcf-header-logo-image'                    => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_URL',
 				),
-				'wcf-header-logo-width'                => array(
+				'wcf-header-logo-width'                    => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-custom-script'                    => array(
+				'wcf-custom-script'                        => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SCRIPT',
 				),
-				'wcf-step-note'                        => array(
+				'wcf-step-note'                            => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
 
-				'wcf-custom-checkout-fields'           => array(
+				'wcf-custom-checkout-fields'               => array(
 					'default'  => 'no',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-show-coupon-field'                => array(
+				'wcf-show-coupon-field'                    => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-optimize-coupon-field'            => array(
+				'wcf-optimize-coupon-field'                => array(
 					'default'  => 'no',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf_field_order_billing'              => array(
+				'wcf_field_order_billing'                  => array(
 					'default'  => array(),
 					'sanitize' => 'FILTER_CARTFLOWS_CHECKOUT_FIELDS',
 				),
-				'wcf_field_order_shipping'             => array(
+				'wcf_field_order_shipping'                 => array(
 					'default'  => array(),
 					'sanitize' => 'FILTER_CARTFLOWS_CHECKOUT_FIELDS',
 				),
-				'wcf-google-autoaddress'               => array(
+				'wcf-google-autoaddress'                   => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
 
-				'wcf-checkout-additional-fields'       => array(
+				'wcf-checkout-additional-fields'           => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-optimize-order-note-field'        => array(
+				'wcf-optimize-order-note-field'            => array(
 					'default'  => 'no',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
 
-				'wcf-shipto-diff-addr-fields'          => array(
+				'wcf-shipto-diff-addr-fields'              => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-checkout-customer-info-text'      => array(
+				'wcf-checkout-customer-info-text'          => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-checkout-billing-details-text'    => array(
+				'wcf-checkout-billing-details-text'        => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-checkout-shipping-details-text'   => array(
+				'wcf-checkout-shipping-details-text'       => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-checkout-your-order-text'         => array(
+				'wcf-checkout-your-order-text'             => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-checkout-payment-text'            => array(
+				'wcf-checkout-payment-text'                => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
@@ -349,10 +363,26 @@ class Cartflows_Default_Meta {
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-checkout-field-validation-text'   => array(
+				'wcf-checkout-field-validation-text'       => array(
 					'default'  => __( 'is required', 'cartflows' ),
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
+
+				/** Start Instant checkout section titles */
+				'wcf-instant-checkout-shipping-options-text' => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+
+				'wcf-instant-checkout-left-side-bg-color'  => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+				'wcf-instant-checkout-right-side-bg-color' => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+				/** End Instant checkout section titles */
 
 			);
 
@@ -372,58 +402,53 @@ class Cartflows_Default_Meta {
 
 		if ( null === self::$flow_fields ) {
 			self::$flow_fields = array(
-				'wcf-steps'                                => array(
+				'wcf-steps'                        => array(
 					'default'  => array(),
 					'sanitize' => '', // This key always updated from prepared array. Not from user input and save button click.
 				),
-				'wcf-flow-indexing'                        => array(
+				'wcf-flow-indexing'                => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-testing'                              => array(
+				'wcf-testing'                      => array(
 					'default'  => 'no',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-enable-analytics'                     => array(
+				'wcf-enable-analytics'             => array(
 					'default'  => 'no',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-flow-custom-script'                   => array(
+				'wcf-flow-custom-script'           => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SCRIPT',
 				),
 				// Global Color Pallet color options.
-				'wcf-enable-gcp-styling'                   => array(
+				'wcf-enable-gcp-styling'           => array(
 					'default'  => 'no',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-gcp-primary-color'                    => array(
+				'wcf-gcp-primary-color'            => array(
 					'default'  => '#f16334',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-gcp-secondary-color'                  => array(
+				'wcf-gcp-secondary-color'          => array(
 					'default'  => '#000000',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-gcp-text-color'                       => array(
+				'wcf-gcp-text-color'               => array(
 					'default'  => '#4B5563',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-gcp-accent-color'                     => array(
+				'wcf-gcp-accent-color'             => array(
 					'default'  => '#1F2937',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-gcp-primary-base-font-family'         => array(
+				'wcf-gcp-primary-base-font-family' => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_FONT_FAMILY',
 				),
-				// Custom Shipping error message.
-				'enable-custom-no-shipping-method-message' => array(
+				'instant-layout-style'             => array(
 					'default'  => 'no',
-					'sanitize' => 'FILTER_SANITIZE_STRING',
-				),
-				'custom-no-shipping-method-message'        => array(
-					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
 			);
@@ -509,85 +534,113 @@ class Cartflows_Default_Meta {
 
 		if ( null === self::$thankyou_fields ) {
 			self::$thankyou_fields = array(
-				'wcf-enable-design-settings'    => array(
+				'wcf-enable-design-settings'               => array(
 					'default'  => $this->get_show_design_meta_value(),
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-field-google-font-url'     => array(
+				'wcf-field-google-font-url'                => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_URL',
 				),
-				'wcf-tq-text-color'             => array(
+				'wcf-tq-primary-color'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-tq-font-family'            => array(
+				'wcf-tq-text-color'                        => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_COLOR',
+				),
+				'wcf-tq-font-family'                       => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_FONT_FAMILY',
 				),
-				'wcf-tq-font-size'              => array(
+				'wcf-tq-font-size'                         => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-tq-heading-color'          => array(
+				'wcf-tq-heading-color'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-tq-heading-font-family'    => array(
+				'wcf-tq-heading-font-family'               => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_FONT_FAMILY',
 				),
-				'wcf-tq-heading-font-wt'        => array(
+				'wcf-tq-heading-font-wt'                   => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-tq-container-width'        => array(
+				'wcf-tq-container-width'                   => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
-				'wcf-tq-section-bg-color'       => array(
+				'wcf-tq-section-bg-color'                  => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
-				'wcf-tq-advance-options-fields' => array(
+				'wcf-tq-advance-options-fields'            => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-show-overview-section'     => array(
+				'wcf-show-overview-section'                => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-show-details-section'      => array(
+				'wcf-show-details-section'                 => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-show-billing-section'      => array(
+				'wcf-show-billing-section'                 => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-show-shipping-section'     => array(
+				'wcf-show-shipping-section'                => array(
 					'default'  => 'yes',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-show-tq-redirect-section'  => array(
+				'wcf-show-tq-redirect-section'             => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
-				'wcf-tq-redirect-link'          => array(
+				'wcf-tq-redirect-link'                     => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_URL',
 				),
-				'wcf-tq-text'                   => array(
+				'wcf-tq-text'                              => array(
 					'default'  => __( 'Thank you. Your order has been received.', 'cartflows' ),
 					'sanitize' => 'FILTER_WP_KSES_POST',
 				),
-				'wcf-custom-script'             => array(
+				'wcf-custom-script'                        => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SCRIPT',
 				),
-				'wcf-step-note'                 => array(
+				'wcf-step-note'                            => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+				'wcf-instant-thankyou-order-review-summary-position' => array(
+					'default'  => 'top',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+				'wcf-instant-thankyou-right-side-bg-color' => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_COLOR',
+				),
+				'wcf-instant-thankyou-left-side-bg-color'  => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_COLOR',
+				),
+				'wcf-tq-button-text-color'                 => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_COLOR',
+				),
+				'wcf-tq-button-background-color'           => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_COLOR',
+				),
+				'wcf-tq-button-font-family'                => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_FONT_FAMILY',
 				),
 			);
 		}

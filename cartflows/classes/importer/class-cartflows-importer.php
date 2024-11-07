@@ -476,12 +476,14 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 				// insert post meta.
 				update_post_meta( $new_step_id, 'wcf-flow-id', $flow_id );
 				update_post_meta( $new_step_id, 'wcf-step-type', $step_type );
+				update_post_meta( $new_step_id, '_wp_page_template', 'cartflows-default' );
 
 				wp_set_object_terms( $new_step_id, $step_type, CARTFLOWS_TAXONOMY_STEP_TYPE );
 				wp_set_object_terms( $new_step_id, 'flow-' . $flow_id, CARTFLOWS_TAXONOMY_STEP_FLOW );
 			}
 
 			update_post_meta( $flow_id, 'wcf-steps', $flow_steps );
+			do_action( 'cartflows_after_create_step', $new_step_id, $step_type );
 
 			return $new_step_id;
 		}

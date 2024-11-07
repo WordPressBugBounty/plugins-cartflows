@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, elementor, beaver builder
 Requires at least: 5.8
 Tested up to: 6.6
-Stable tag: 2.0.12
+Stable tag: 2.1.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -321,6 +321,17 @@ This includes, but is not limited to:
 5. Easily edit anything with your page builder.
 
 == Changelog ==
+
+= Version 2.1.0 - Thursday, 7th November 2024 =
+* New: Instant Checkout & Thank You Layouts for distraction free and conversion focused checkout experience.
+* New: Introduced Bricks Builder integration to easily design and build CartFlows steps.
+* New: Added support for Dynamic Content Tags in CartFlows steps using Bricks Builder.
+* New: SureTriggers Integration for adding workflows for each steps if required.
+* New: Introduced native support for Pinterest Pixel to track activities on CartFlows Optin, Landing, Checkout, and Thank You pages.
+* New: Introduced native support for Snapchat Pixel to track activities on CartFlows Optin, Landing, Checkout, and Thank You pages.
+* Improvement: Enhanced user experience by moving the Shipping Methods section below the checkout fields.
+* Improvement: Enhanced slide-in content display consistency across different funnel steps and tabs.
+* Fix: Resolved the issue of knowledge base articles not being found when searching with lowercase terms.
 
 = Version 2.0.12 - Tuesday, 8th October 2024 =
 * New: Introduced native support for Google Ads to track activities on CartFlows Optin, Landing, Checkout, and Thank You pages.

@@ -65,6 +65,7 @@ class Flows extends AjaxBase {
 			'export_flows_in_bulk',
 			'update_status',
 			'update_store_checkout_status',
+			'hide_instant_checkout_notice',
 		);
 
 		$this->init_ajax_events( $ajax_events );
@@ -162,6 +163,13 @@ class Flows extends AjaxBase {
 
 			$post_meta = wcf()->options->get_flow_fields( $flow_id );
 			MetaOps::save_meta_fields( $flow_id, $post_meta, 'cartflows_save_flow_meta_settings' );
+
+			$instant_layout_style = isset( $_POST['instant-layout-style'] ) ? sanitize_text_field( wp_unslash( $_POST['instant-layout-style'] ) ) : null;
+		
+			if ( 'yes' === $instant_layout_style ) {
+				update_post_meta( $flow_id, 'wcf-instant-checkout-notice-skipped', 'yes' );
+				update_option( 'wcf-instant-checkout-notice-skipped', 'yes' );
+			}
 
 			$new_flow_data = array(
 				'ID'         => $flow_id,
@@ -1104,6 +1112,52 @@ class Flows extends AjaxBase {
 			/* translators: %s flow id */
 			'text'   => sprintf( __( 'Steps sorted for flow - %s', 'cartflows' ), $flow_id ),
 			'steps'  => $steps,
+		);
+
+		wp_send_json( $result );
+	}
+
+	/**
+	 * Hide the instant Checkout Notice.
+	 *
+	 * @since X.X.X
+	 * @return void
+	 */
+	public function hide_instant_checkout_notice() {
+
+		$response_data = array( 'message' => $this->get_error_msg( 'permission' ) );
+
+		/**
+		 * Check permission
+		 */
+		if ( ! current_user_can( 'cartflows_manage_flows_steps' ) ) {
+			wp_send_json_error( $response_data );
+		}
+
+		/**
+		 * Nonce verification
+		 */
+		if ( ! check_ajax_referer( 'cartflows_hide_instant_checkout_notice', 'security', false ) ) {
+			$response_data = array( 'message' => $this->get_error_msg( 'nonce' ) );
+			wp_send_json_error( $response_data );
+		}
+
+		if ( ! isset( $_POST['flow_id'] ) ) {
+			$response_data = array( 'message' => __( 'No Funnel ID is been supplied', 'cartflows' ) );
+			wp_send_json_error( $response_data );
+		}
+
+		$flow_id = isset( $_POST['flow_id'] ) ? intval( $_POST['flow_id'] ) : 0;
+
+		// Set dismiss notice option for all flows.
+		update_post_meta( $flow_id, 'wcf-instant-checkout-notice-skipped', 'yes' );
+		update_option( 'wcf-instant-checkout-notice-skipped', 'yes' );
+
+		$result = array(
+			'status'                => true,
+			/* translators: %s flow id */
+			'text'                  => __( 'Notice Dismissed', 'cartflows' ),
+			'instant_notice_status' => 'yes',
 		);
 
 		wp_send_json( $result );

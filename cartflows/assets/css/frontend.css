@@ -436,3 +436,74 @@ body.cartflows-default {
 .wcf-product-atc form.cart {
 	margin-bottom: 15px;
 }
+
+.wcf-pinterest-consent-wrapper {
+	position: fixed;
+	z-index: 999;
+	right: 1rem;
+	left: 1rem;
+	bottom: 1rem;
+	max-width: 40rem;
+	padding: 1rem;
+	margin: 0 auto;
+	background-color: #fff;
+	border: 1px solid #bbb;
+	border-radius: 10px;
+	-js-display: flex;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+
+.wcf-pinterest-consent-wrapper p {
+	margin: 0;
+	font-size: 0.875rem;
+	color: #424b4d;
+}
+
+.wcf-pinterest-consent-buttons {
+	-js-display: flex;
+	display: flex;
+	gap: 1rem;
+	width: 100%;
+	justify-content: flex-start;
+}
+
+.wcf-pinterest-consent-buttons #cartflows-pinterest-consent-accept {
+	background-color: #1f2937;
+	color: #fff;
+	border: none;
+}
+.wcf-pinterest-consent-buttons #cartflows-pinterest-consent-decline {
+	border: 1px solid #1f2937;
+	background-color: #fff;
+	color: #424b4d;
+}
+.wcf-pinterest-consent-buttons button {
+	border-radius: 6px;
+	cursor: pointer;
+	width: 50%;
+	transition: background-color 0.3s;
+	font-size: 0.75rem;
+	padding: 0.625rem 1.25rem;
+}
+
+@media ( min-width: 768px ) {
+	.wcf-pinterest-consent-wrapper {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		left: unset;
+	}
+
+	.wcf-pinterest-consent-buttons {
+		width: auto;
+		flex-shrink: 0;
+		margin-left: auto;
+	}
+
+	.wcf-pinterest-consent-buttons button {
+		width: auto;
+	}
+}

@@ -7,6 +7,7 @@ import Elementor from '@WizardImages/elementor.svg';
 import BeaverBuilder from '@WizardImages/beaver-builder.svg';
 import BlockEditor from '@WizardImages/block-editor.png';
 import otherPageBuilders from '@WizardImages/other.svg';
+import Bricks from '@WizardImages/bricks.png';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const mailingLists = [
@@ -24,6 +25,12 @@ const mailingLists = [
 	},
 	{
 		id: 3,
+		slug: 'bricks-builder',
+		title: 'Bricks',
+		image: Bricks,
+	},
+	{
+		id: 4,
 		slug: 'beaver-builder',
 		title: 'Beaver Builder',
 		image: BeaverBuilder,
@@ -46,7 +53,6 @@ function PageBuilderStep() {
 	);
 	const [ { action_button }, dispatch ] = useStateValue();
 	const history = useHistory();
-
 	const handleChange = ( value ) => {
 		setSelectedMailingLists( value );
 

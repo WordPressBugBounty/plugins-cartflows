@@ -38,6 +38,12 @@ class Cartflows_Tracking {
 	 */
 	private static $tik_pixel_settings;
 
+	/**
+	 * Member Variable
+	 *
+	 * @var object pin_tag_settings
+	 */
+	private static $pin_tag_settings;
 
 	/**
 	 * Member Variable
@@ -49,10 +55,18 @@ class Cartflows_Tracking {
 	/**
 	 * Member Variable
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @var array gads_settings
 	 */
 	private static $gads_settings;
+
+	/**
+	 * Member Variable
+	 *
+	 * @since 2.1.0
+	 * @var array snapchat_settings
+	 */
+	private static $snapchat_settings;
 
 	/**
 	 *  Initiator
@@ -72,12 +86,15 @@ class Cartflows_Tracking {
 		self::$fb_pixel_settings  = Cartflows_Helper::get_facebook_settings();
 		self::$tik_pixel_settings = Cartflows_Helper::get_tiktok_settings();
 		self::$ga_settings        = Cartflows_Helper::get_google_analytics_settings();
+		self::$pin_tag_settings   = Cartflows_Helper::get_pinterest_settings();
 		self::$gads_settings      = Cartflows_Helper::get_google_ads_settings();
+		self::$snapchat_settings  = Cartflows_Helper::get_snapchat_settings();
 
 		add_action( 'wp_head', array( $this, 'add_tracking_code' ) );
 
 		add_filter( 'global_cartflows_js_localize', array( $this, 'add_localize_vars' ) );
 
+		add_action( 'wp_footer', array( $this, 'render_pinterest_consent_popup' ) );
 	}
 
 	/**
@@ -86,6 +103,9 @@ class Cartflows_Tracking {
 	 * @param array $vars localised vars.
 	 */
 	public function add_localize_vars( $vars ) {
+
+		// Add the dynamic cookie name in the localize vars for frontend use.
+		$vars['pinterest_consent_cookie'] = CARTFLOWS_PINTEREST_CONSENT;
 
 		if ( 'enable' === self::$fb_pixel_settings['facebook_pixel_add_payment_info'] ) {
 			$vars['fb_add_payment_info_data'] = wp_json_encode( $this->prepare_cart_data_fb_response( 'add_payment_info' ) );
@@ -97,6 +117,14 @@ class Cartflows_Tracking {
 
 		if ( 'enable' === self::$tik_pixel_settings['enable_tiktok_add_payment_info'] ) {
 			$vars['tiktok_add_payment_info_data'] = wp_json_encode( $this->prepare_cart_data_tiktok_response() );
+		}
+
+		if ( 'enable' === self::$pin_tag_settings['enable_pinterest_add_payment_info'] ) {
+			$vars['pinterest_add_payment_info_data'] = wp_json_encode( $this->prepare_cart_data_pinterest_response() );
+		}
+
+		if ( 'enable' === self::$pin_tag_settings['enable_pinterest_signup'] ) {
+			$vars['pinterest_signup_info_data'] = wp_json_encode( $this->prepare_cart_data_pinterest_response( 'signup' ) );
 		}
 
 		if ( 'enable' === self::$gads_settings['enable_google_ads_add_payment_info'] ) {
@@ -120,10 +148,10 @@ class Cartflows_Tracking {
 		$this->add_facebook_pixel_tracking_code();
 		$this->add_google_analytics_tracking_code();
 		$this->add_tiktok_pixel_tracking_code();
+		$this->add_pinterest_tag_tracking_code();
 		$this->add_google_ads_tracking_code();
+		$this->add_snapchat_pixel_tracking_code();
 	}
-
-
 
 	/**
 	 * Function for facebook pixel.
@@ -536,7 +564,7 @@ class Cartflows_Tracking {
 	/**
 	 * Prepare cart data for GA response.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @param int $order_id order id.
 	 * @return array $purchase_data The Purchase data of the Google Ads Event
 	 */
@@ -615,7 +643,7 @@ class Cartflows_Tracking {
 	/**
 	 * Prepare Ecommerce data for GA response.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @return array
 	 */
 	public function prepare_cart_data_gads_response() {
@@ -693,9 +721,8 @@ class Cartflows_Tracking {
 
 		if ( 'enable' === self::$tik_pixel_settings['tiktok_pixel_tracking'] ) {
 
-			$sanitized_tiktok_id = isset( self::$tik_pixel_settings['tiktok_pixel_id'] ) ? esc_attr( self::$tik_pixel_settings['tiktok_pixel_id'] ) : '';
-			$tiktok_id           = trim( $sanitized_tiktok_id );
-			$identify_data       = wp_json_encode( $this->prepare_identify_data_for_tiktok() );
+			$tiktok_id     = isset( self::$tik_pixel_settings['tiktok_pixel_id'] ) ? trim( (string) sanitize_text_field( self::$tik_pixel_settings['tiktok_pixel_id'] ) ) : '';
+			$identify_data = wp_json_encode( $this->prepare_identity_data_for_pixel_events() );
 
 			$tik_script = "
 			<!-- TikTok Pixel Script By CartFlows -->
@@ -827,29 +854,26 @@ class Cartflows_Tracking {
 	}
 
 	/**
-	 * Prepare identify data for tiktok response.
+	 * Prepare identity data for pixel events.
 	 *
 	 * @return array
 	 */
-	public function prepare_identify_data_for_tiktok() {
+	public function prepare_identity_data_for_pixel_events() {
 		$user          = wp_get_current_user();
 		$identify_data = array();
 
 		if ( ! empty( $user ) && 0 !== $user->ID ) {
+
 			// Check if user has an email, and hash it using SHA-256.
-			if ( ! empty( $user->user_email ) ) {
-				$identify_data['email'] = hash( 'sha256', $user->user_email );
-			} else {
-				$identify_data['email'] = hash( 'sha256', $user->get( 'billing_email' ) );
-			}
+			$user_email = ! empty( $user->user_email ) ? $user->user_email : $user->get( 'billing_email' );
 
 			// Check if user has an phone number, and hash it using SHA-256.
-			$phone_number = get_user_meta( $user->ID, 'user_phone', true );
-			if ( ! empty( $phone_number ) ) {
-				$identify_data['phone_number'] = hash( 'sha256', $phone_number );
-			} else {
-				$identify_data['phone_number'] = hash( 'sha256', $user->get( 'billing_phone' ) );
-			}
+			$user_contact = get_user_meta( $user->ID, 'user_phone', true );
+			$phone_number = ! empty( $user_contact ) ? $user_contact : $user->get( 'billing_phone' );
+
+			$identify_data['email']        = ! empty( $user_email ) ? hash( 'sha256', $user_email ) : '';
+			$identify_data['phone_number'] = ! empty( $phone_number ) ? hash( 'sha256', $phone_number ) : '';
+
 		}
 
 		return $identify_data;
@@ -1016,7 +1040,7 @@ class Cartflows_Tracking {
 	/**
 	 * Render google tag framework.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @return void
 	 */
 	public function add_google_ads_tracking_code() {
@@ -1059,7 +1083,7 @@ class Cartflows_Tracking {
 	/**
 	 * Trigger the other events for facebook pixel.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @return void
 	 */
 	public function trigger_other_gads_events() {
@@ -1108,6 +1132,212 @@ class Cartflows_Tracking {
 		echo $event_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
+	/**
+	 * Function for Pinterest tag.
+	 */
+	public function add_pinterest_tag_tracking_code() {
+		if ( 'enable' === self::$pin_tag_settings['pinterest_tag_tracking'] ) {
+			$identify_data = $this->prepare_identity_data_for_pixel_events();
+
+			// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+			$pinterest_consent_cookie = isset( $_COOKIE[ CARTFLOWS_PINTEREST_CONSENT ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ CARTFLOWS_PINTEREST_CONSENT ] ) ) : 'false';
+			$pinterest_id             = isset( self::$pin_tag_settings['pinterest_tag_id'] ) ? trim( sanitize_text_field( self::$pin_tag_settings['pinterest_tag_id'] ) ) : '';
+			$pinterest_email          = isset( $identify_data['email'] ) ? $identify_data['email'] : '';
+
+			$pinterest_consent = 'enable' === self::$pin_tag_settings['enable_pinterest_consent']
+				? $pinterest_consent_cookie
+				: 'true';
+
+			$pinterest_script = "
+				<!-- Pinterest Tag -->
+				<script>
+				function loadPinterestTag(consent = '" . esc_js( $pinterest_consent ) . "') {
+					if (typeof pintrk === 'undefined') {
+						!function(e){if(!window.pintrk){window.pintrk = function () {
+						window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var
+						n=window.pintrk;n.queue=[],n.version='3.0';var
+						t=document.createElement('script');t.async=!0,t.src=e;var
+						r=document.getElementsByTagName('script')[0];
+						r.parentNode.insertBefore(t,r)}}('https://s.pinimg.com/ct/core.js');
+						pintrk('setconsent', consent);
+						pintrk('load', '" . esc_js( $pinterest_id ) . "');
+						pintrk('page');
+						pintrk('track', 'pagevisit');
+					}
+				}
+
+				// Load Pinterest Tag immediately if consent is already given.
+				if ( 'true' === '" . esc_js( $pinterest_consent ) . "' ) {
+					loadPinterestTag();
+				}
+
+				// Listen for changes in the consent cookie.
+				document.addEventListener('cartflows_pinterest_consent_changed', function(e) {
+					if (e.detail === 'true') {
+						loadPinterestTag(e.detail);
+					}
+				});
+				</script>
+				<noscript>
+					<img height='1' width='1' style='display:none;' alt='' src='https://ct.pinterest.com/v3/?event=init&tid=" . esc_js( $pinterest_id ) . '&pd[em]=' . esc_js( $pinterest_email ) . "&noscript=1' />
+				</noscript>
+				<!-- end Pinterest Tag -->
+			";
+
+			if ( 'enable' === self::$pin_tag_settings['pinterest_tag_tracking_for_site'] ) {
+				echo $pinterest_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			} elseif ( wcf()->utils->is_step_post_type() ) {
+				echo $pinterest_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+
+			// Trigger other events on CartFlows pages only.
+			if ( wcf()->is_woo_active && wcf()->utils->is_step_post_type() && $pinterest_id ) {
+				$this->trigger_other_pinterest_events( $pinterest_id );
+			}
+		}
+	}
+
+	/**
+	 * Trigger the other events for Pinterest.
+	 *
+	 * @param string $pinterest_id Pinterest ID.
+	 */
+	public function trigger_other_pinterest_events( $pinterest_id ) {
+		$event_script = '';
+
+		if ( _is_wcf_checkout_type() && 'enable' === self::$pin_tag_settings['enable_pinterest_add_to_cart'] ) {
+			$cart_data = $this->prepare_cart_data_pinterest_response();
+			if ( ! empty( $cart_data ) ) {
+				$cart_data = wp_json_encode( $cart_data );
+
+				$event_script .= "
+				<script type='text/javascript'>
+					if (typeof pintrk !== 'undefined') {
+						pintrk('track', 'AddToCart', $cart_data );
+					}
+				</script>
+				";
+			}
+		}
+
+		if ( _is_wcf_checkout_type() && 'enable' === self::$pin_tag_settings['enable_pinterest_begin_checkout'] ) {
+			$checkout_data = $this->prepare_cart_data_pinterest_response();
+			if ( ! empty( $checkout_data ) ) {
+				$checkout_data = wp_json_encode( $checkout_data );
+
+				$event_script .= "
+				<script type='text/javascript'>
+					if (typeof pintrk !== 'undefined') {
+						pintrk('track', 'BeginCheckout', $checkout_data );
+					}
+				</script>";
+			}
+		}
+
+		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$pin_tag_settings['enable_pinterest_purchase_event'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$order_id         = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$purchase_details = $this->prepare_purchase_data_pinterest_response( $order_id );
+			if ( ! empty( $purchase_details ) ) {
+				$purchase_details = wp_json_encode( $purchase_details );
+				$event_script    .= "
+				<script type='text/javascript'>
+					if (typeof pintrk !== 'undefined') {
+						pintrk('track', 'Checkout', $purchase_details );
+					}
+				</script>";
+			}
+		}
+
+		do_action( 'cartflows_pinterest_tag_events' );
+
+		echo $event_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Prepare cart data for Pinterest response.
+	 *
+	 * @param string $event Event type.
+	 * @return array
+	 */
+	public function prepare_cart_data_pinterest_response( $event = '' ) {
+		// Calculate cart total and get cart items.
+		$cart_total = self::format_number( WC()->cart->cart_contents_total + WC()->cart->tax_total );
+		$cart_items = WC()->cart->get_cart();
+
+		$params = array(
+			'event_id'       => 'eventId' . gmdate( 'YmdHis' ),
+			'value'          => $cart_total,
+			'order_quantity' => WC()->cart->get_cart_contents_count(),
+			'currency'       => get_woocommerce_currency(),
+			'line_items'     => array(),
+		);
+
+		if ( 'signup' === $event ) {
+			$params['lead_type'] = 'CartFlows Optin';
+		}
+
+		// Loop through each cart item to get the required data.
+		foreach ( $cart_items as $cart_item ) {
+			$product   = $cart_item['data'];
+			$line_item = array(
+				'product_id'       => $cart_item['product_id'],
+				'product_name'     => $product->get_name(),
+				'product_category' => $product->get_category_ids() ? wp_get_post_terms( $product->get_id(), 'product_cat', array( 'fields' => 'names' ) )[0] : '',
+			);
+
+			if ( 'signup' !== $event ) {
+				$line_item['product_variant']  = $product->get_id() !== $cart_item['variation_id'] ? $cart_item['variation_id'] : '';
+				$line_item['product_price']    = wc_get_price_to_display( $product );
+				$line_item['product_quantity'] = $cart_item['quantity'];
+				$line_item['product_brand']    = '';
+			}
+
+			$params['line_items'][] = $line_item;
+		}
+
+		return $params;
+	}
+
+	/**
+	 * Prepare purchase data for Pinterest response.
+	 *
+	 * @param integer $order_id order id.
+	 *
+	 * @return array
+	 */
+	public function prepare_purchase_data_pinterest_response( $order_id ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order || $order->get_meta( '_wcf_pinterest_checkout_tracked' ) || $order->get_meta( '_wcf_optin_id' ) ) {
+			return array();
+		}
+
+		$purchase_data = array(
+			'event_id'       => 'eventId' . $order_id,
+			'event_name'     => 'checkout',
+			'value'          => self::format_number( $order->get_total() ),
+			'order_quantity' => $order->get_item_count(),
+			'currency'       => $order->get_currency(),
+			'order_id'       => $order->get_order_number(),
+			'line_items'     => array(),
+		);
+
+		foreach ( $order->get_items() as $item ) {
+			$product                       = $item->get_product();
+			$purchase_data['line_items'][] = array(
+				'product_id'       => $item->get_product_id(),
+				'product_name'     => $item->get_name(),
+				'product_variant'  => $item->get_variation_id(),
+				'product_price'    => self::format_number( $order->get_item_total( $item, true ) ),
+				'product_quantity' => $item->get_quantity(),
+				'product_category' => $product->get_category_ids() ? wp_get_post_terms( $product->get_id(), 'product_cat', array( 'fields' => 'names' ) )[0] : '',
+			);
+		}
+
+		$order->update_meta_data( '_wcf_pinterest_checkout_tracked', true );
+		$order->save();
+
+		return $purchase_data;
+	}
 
 	/**
 	 * Get decimal of price.
@@ -1121,9 +1351,58 @@ class Cartflows_Tracking {
 	}
 
 	/**
+	 * Render Pinterest consent popup.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function render_pinterest_consent_popup() {
+
+		// Return if not on a CartFlows step.
+		if ( ! wcf()->utils->is_step_post_type() ) {
+			return;
+		}
+
+		// Return if Pinterest is not enabled.
+		if ( 'enable' !== self::$pin_tag_settings['enable_pinterest_consent'] ) {
+			return;
+		}
+
+		// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+		$consent_cookie = isset( $_COOKIE[ CARTFLOWS_PINTEREST_CONSENT ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ CARTFLOWS_PINTEREST_CONSENT ] ) ) : '';
+
+		// Return if consent is already given. We don't want to show the popup.
+		if ( boolval( $consent_cookie ) ) {
+			return;
+		}
+
+		// Default consent strings.
+		$consent_strings = apply_filters(
+			'cartflows_pinterest_tag_consent_strings',
+			array(
+				'message' => __( 'We use Pinterest tags to improve your experience. Do you consent to our use of Pinterest tags?', 'cartflows' ),
+				'accept'  => __( 'Accept', 'cartflows' ),
+				'decline' => __( 'Decline', 'cartflows' ),
+			)
+		);
+
+		?>
+		<div id="cartflows-pinterest-consent-wrapper" class="wcf-pinterest-consent-wrapper" role="dialog" aria-label="<?php echo esc_attr__( 'Pinterest Consent', 'cartflows' ); ?>">
+			<div class="wcf-pinterest-consent-message">
+				<p><?php echo esc_html( $consent_strings['message'] ); ?></p>
+			</div>
+			<div class="wcf-pinterest-consent-buttons">
+				<button id="cartflows-pinterest-consent-accept" class="wcf-pinterest-consent-button" data-action="accept"><?php echo esc_html( $consent_strings['accept'] ); ?></button>
+				<button id="cartflows-pinterest-consent-decline" class="wcf-pinterest-consent-button" data-action="decline"><?php echo esc_html( $consent_strings['decline'] ); ?></button>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Trigger the View Content events for gads tracking.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @return void
 	 */
 	public function trigger_gads_viewcontent_events() {
@@ -1136,8 +1415,332 @@ class Cartflows_Tracking {
 		echo $script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	}
-}
 
+	/**
+	 * Prepare common data for Snapchat response.
+	 *
+	 * @since 2.1.0
+	 * @return array
+	 */
+	public function prepare_common_data_snapchat_response() {
+		global $post, $wcf_step;
+
+		$identify_data = $this->prepare_identity_data_for_pixel_events();
+		$step_id       = $wcf_step ? $wcf_step->get_current_step() : $post->ID;
+
+		$common_data = array(
+			'price'       => 0,
+			'description' => ! empty( $step_id ) ? sanitize_text_field( get_post_field( 'post_name', $step_id ) ) : '',
+		);
+
+		// Add user's hashed email if available.
+		if ( ! empty( $identify_data['email'] ) ) {
+			$common_data['user_hashed_email'] = $identify_data['email'];
+		}
+
+		// Add user's hashed phone number if available.
+		if ( ! empty( $identify_data['phone_number'] ) ) {
+			$common_data['user_hashed_phone_number'] = $identify_data['phone_number'];
+		}
+
+		// Add uuid_c1 value only if the Snapchat cookie '_scid' is available.
+		if ( isset( $_COOKIE['_scid'] ) ) {
+			// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+			$common_data['uuid_c1'] = sanitize_text_field( wp_unslash( $_COOKIE['_scid'] ) );
+		}
+
+		// Add currency if available.
+		if ( ! empty( get_woocommerce_currency() ) ) {
+			$common_data['currency'] = get_woocommerce_currency();
+		}
+
+		return $common_data;
+	}
+
+	/**
+	 * Function for Snapchat pixel.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function add_snapchat_pixel_tracking_code() {
+
+		if ( 'enable' === self::$snapchat_settings['snapchat_pixel_tracking'] ) {
+			$common_data = $this->prepare_common_data_snapchat_response();
+
+			$snapchat_id       = isset( self::$snapchat_settings['snapchat_pixel_id'] ) ? trim( (string) sanitize_text_field( self::$snapchat_settings['snapchat_pixel_id'] ) ) : '';
+			$user_hashed_email = isset( $common_data['user_hashed_email'] ) ? $common_data['user_hashed_email'] : '';
+			$page_description  = $common_data['description'];
+
+			$snapchat_script = "
+			<!-- Snapchat Pixel Script By CartFlows -->
+
+			<script type='text/javascript'>
+				(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
+				{a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+				a.queue=[];var s='script';r=t.createElement(s);r.async=!0;
+				r.src=n;var u=t.getElementsByTagName(s)[0];
+				u.parentNode.insertBefore(r,u);})(window,document,
+				'https://sc-static.net/scevent.min.js');
+
+				snaptr('init', '" . esc_js( $snapchat_id ) . "', {
+					'integration': 'woocommerce',
+					'user_hashed_email': '" . esc_js( $user_hashed_email ) . "'
+				});
+
+				snaptr('track', 'PAGE_VIEW', {description: '" . esc_js( $page_description ) . "'});
+			</script>
+
+			<!-- End Snapchat Pixel Script By CartFlows -->";
+
+			if ( 'enable' === self::$snapchat_settings['snapchat_pixel_tracking_for_site'] ) {
+				echo $snapchat_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$this->trigger_snapchat_viewcontent_events();
+			} elseif ( wcf()->utils->is_step_post_type() ) {
+				echo $snapchat_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$this->trigger_snapchat_viewcontent_events();
+			}
+
+			// Trigger other events on CartFlows pages only.
+			if ( wcf()->is_woo_active && wcf()->utils->is_step_post_type() ) {
+				$this->trigger_other_snapchat_events();
+			}
+		}
+	}
+
+	/**
+	 * Trigger the View Content events for Snapchat pixel.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function trigger_snapchat_viewcontent_events() {
+
+		$event_script = '';
+
+		// Check if ViewContent is enable or disable.
+		if ( 'enable' === self::$snapchat_settings['enable_snapchat_view_content'] ) {
+			global $post, $wcf_step;
+			$step_id = ( $wcf_step ) ? ( $wcf_step->get_current_step() ) : ( get_the_ID() );
+			// Added filter for offer pages view content event compatibility.
+			$view_content = apply_filters( 'cartflows_snapchat_view_content_offer', $this->prepare_event_data_snapchat_response(), $step_id );
+
+			if ( ! empty( $view_content ) ) {
+				$view_content_data = wp_json_encode( $view_content );
+				$event_script     .= "
+				<script type='text/javascript'>
+					snaptr('track', 'VIEW_CONTENT', $view_content_data);
+				</script>";
+			}
+		}
+
+		echo $event_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Prepare event data for Snapchat response.
+	 *
+	 * @since 2.1.0
+	 * @return array
+	 */
+	public function prepare_event_data_snapchat_response() {
+		// Initialize parameters with default values.
+		$params = $this->prepare_common_data_snapchat_response();
+
+		// Handle data for different types of pages.
+		if ( _is_wcf_thankyou_type() ) {
+			// Check if order ID is present in the URL.
+			if ( isset( $_GET['wcf-order'] ) && ! empty( $_GET['wcf-order'] ) ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$order_id = intval( $_GET['wcf-order'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$order    = wc_get_order( $order_id );
+
+				// If the order exists, prepare order details.
+				if ( $order ) {
+					$items         = $order->get_items();
+					$item_category = implode(
+						',',
+						array_map(
+							function( $item ) {
+								return wp_strip_all_tags( wc_get_product_category_list( $item['product_id'] ) );
+							},
+							$items
+						)
+					);
+
+					$params['item_ids']      = array_column( $items, 'product_id' );
+					$params['item_category'] = $item_category;
+					$params['number_items']  = array_sum( array_column( $items, 'qty' ) );
+					$params['price']         = $order->get_total();
+				}
+			}
+		} elseif ( _is_wcf_checkout_type() || _is_wcf_landing_type() ) {
+			$items = WC()->cart->get_cart();
+
+			// If there are items in the cart, prepare cart details.
+			if ( $items ) {
+				$item_category = implode(
+					',',
+					array_map(
+						function( $item ) {
+							return wp_strip_all_tags( wc_get_product_category_list( $item['product_id'] ) );
+						},
+						$items
+					)
+				);
+
+				$params['price']         = self::format_number( WC()->cart->cart_contents_total + WC()->cart->tax_total );
+				$params['item_ids']      = array_column( $items, 'product_id' );
+				$params['item_category'] = $item_category;
+				$params['number_items']  = count( $items );
+			}
+		}
+
+		return $params;
+	}
+
+	/**
+	 * Prepare purchase data for Snapchat response.
+	 *
+	 * @param integer $order_id order id.
+	 *
+	 * @since 2.1.0
+	 * @return array
+	 */
+	public function prepare_purchase_data_snapchat_response( $order_id ) {
+		$order               = wc_get_order( $order_id );
+		$is_checkout_tracked = $order->get_meta( '_wcf_snapchat_checkout_tracked' );
+		$is_optin            = $order->get_meta( '_wcf_optin_id' );
+
+		if ( ! $order || $is_checkout_tracked || $is_optin ) {
+			return array();
+		}
+
+		// Initialize parameters with default values.
+		$purchase_data = $this->prepare_common_data_snapchat_response();
+
+		// Retrieve order items.
+		$items = $order->get_items();
+
+		// Prepare item categories.
+		$item_category = implode(
+			',',
+			array_map(
+				function( $item ) {
+					return wp_strip_all_tags( wc_get_product_category_list( $item['product_id'] ) );
+				},
+				$items
+			)
+		);
+
+		// Set customer ID if available.
+		if ( $order->get_customer_id() ) {
+			$purchase_data['uuid_c1'] = $order->get_customer_id();
+		}
+
+		$purchase_data['transaction_id'] = $order_id;
+		$purchase_data['currency']       = $order->get_currency();
+		$purchase_data['item_ids']       = array_column( $items, 'product_id' );
+		$purchase_data['item_category']  = $item_category;
+		$purchase_data['number_items']   = array_sum( array_column( $items, 'qty' ) );
+		$purchase_data['price']          = $order->get_total();
+
+		// Mark the order as tracked for this event.
+		$order->update_meta_data( '_wcf_snapchat_checkout_tracked', true );
+		$order->save();
+
+		return $purchase_data;
+	}
+
+	/**
+	 * Trigger other events for Snapchat pixel.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function trigger_other_snapchat_events() {
+		$event_script = '';
+
+		// Check if the current page is a checkout type and if Snapchat add to cart event is enabled.
+		if ( _is_wcf_checkout_type() && 'enable' === self::$snapchat_settings['enable_snapchat_add_to_cart'] ) {
+			$cart_data = $this->prepare_event_data_snapchat_response();
+			if ( ! empty( $cart_data ) ) {
+				$cart_data = wp_json_encode( $cart_data );
+
+				$event_script .= "
+				<script type='text/javascript'>
+					snaptr('track', 'ADD_CART', $cart_data);
+				</script>";
+			}
+		}
+
+		// Check if the current page is a checkout type and if Snapchat begin checkout event is enabled.
+		if ( _is_wcf_checkout_type() && 'enable' === self::$snapchat_settings['enable_snapchat_begin_checkout'] ) {
+			$checkout_data = $this->prepare_event_data_snapchat_response();
+			if ( ! empty( $checkout_data ) ) {
+				$checkout_data = wp_json_encode( $checkout_data );
+
+				$event_script .= "
+				<script type='text/javascript'>
+					snaptr('track', 'START_CHECKOUT', $checkout_data);
+				</script>";
+			}
+		}
+
+		// Check if the order ID is present in the URL and if Snapchat purchase event is enabled.
+		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$snapchat_settings['enable_snapchat_purchase_event'] ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$order_id         = intval( $_GET['wcf-order'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$purchase_details = $this->prepare_purchase_data_snapchat_response( $order_id );
+			if ( ! empty( $purchase_details ) ) {
+				$purchase_details = wp_json_encode( $purchase_details );
+				$event_script    .= "
+				<script type='text/javascript'>
+					snaptr('track', 'PURCHASE', $purchase_details);
+				</script>";
+			}
+		}
+
+		// Check if the order ID is present in the URL and if Snapchat subscribe event is enabled.
+		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$snapchat_settings['enable_snapchat_subscribe_event'] ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$order_id                = intval( $_GET['wcf-order'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$order                   = wc_get_order( $order_id );
+			$is_subscription_tracked = $order && $order->get_meta( '_wcf_snapchat_is_subscription_tracked' );
+
+			if ( ! $is_subscription_tracked && function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
+				// Get all subscriptions related to this order.
+				$subscriptions = function_exists( 'wcs_get_subscriptions_for_order' ) ? wcs_get_subscriptions_for_order( $order_id ) : null;
+
+				if ( ! empty( $subscriptions ) ) {
+					$subscription_data = $this->prepare_common_data_snapchat_response();
+
+					// Set customer ID if available.
+					if ( $order->get_customer_id() ) {
+						$subscription_data['uuid_c1'] = $order->get_customer_id();
+					}
+
+					$subscription_data['price']          = $order->get_total();
+					$subscription_data['transaction_id'] = $order_id;
+					$subscription_data['currency']       = $order->get_currency();
+
+					$subscription_data = wp_json_encode( $subscription_data );
+
+					$event_script .= "
+					<script type='text/javascript'>
+						snaptr('track', 'SUBSCRIBE', $subscription_data);
+					</script>";
+
+					// Mark the order as tracked for this event.
+					$order->update_meta_data( '_wcf_snapchat_is_subscription_tracked', true );
+					$order->save();
+				}
+			}
+		}
+
+		do_action( 'cartflows_snapchat_pixel_events' );
+
+		echo $event_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+}
 /**
  *  Kicking this off by calling 'get_instance()' method
  */

@@ -51,7 +51,7 @@ defined( 'ABSPATH' ) || exit;
 		?>
 	</tbody>
 	<tfoot>
-
+		<?php do_action( 'cartflows_woocommerce_review_order_before_cart_subtotal' ); ?>
 		<tr class="cart-subtotal">
 			<th><?php esc_html_e( 'Subtotal', 'woocommerce' ); ?></th>
 			<td><?php wc_cart_totals_subtotal_html(); ?></td>
@@ -63,13 +63,10 @@ defined( 'ABSPATH' ) || exit;
 				<td><?php wc_cart_totals_coupon_html( $coupon ); ?></td>
 			</tr>
 		<?php endforeach; ?>
-
 		<?php if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) : ?>
 
 			<?php do_action( 'woocommerce_review_order_before_shipping' ); ?>
-
 			<?php wc_cart_totals_shipping_html(); ?>
-
 			<?php do_action( 'woocommerce_review_order_after_shipping' ); ?>
 
 		<?php endif; ?>
@@ -80,7 +77,6 @@ defined( 'ABSPATH' ) || exit;
 				<td><?php wc_cart_totals_fee_html( $fee ); ?></td>
 			</tr>
 		<?php endforeach; ?>
-
 		<?php if ( wc_tax_enabled() && ! WC()->cart->display_prices_including_tax() ) : ?>
 			<?php if ( 'itemized' === get_option( 'woocommerce_tax_total_display' ) ) : ?>
 				<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited ?>

@@ -49,7 +49,9 @@ class Cartflows_Checkout {
 
 		require_once CARTFLOWS_CHECKOUT_DIR . 'classes/class-cartflows-checkout-ajax.php';
 
+		// Load layout files.
 		require_once CARTFLOWS_CHECKOUT_DIR . 'classes/layouts/class-cartflows-modern-checkout.php';
+		require_once CARTFLOWS_CHECKOUT_DIR . 'classes/layouts/class-cartflows-instant-checkout.php';
 	}
 }
 /**

@@ -19,7 +19,7 @@ $output .= "
 	.wcf-embed-checkout-form .woocommerce #payment input[type=radio]:not(:checked):focus{
 		box-shadow: 0 0 2px rgba( " . $r . ',' . $g . ',' . $b . ", .8);
 	}
-	
+
 	.wcf-embed-checkout-form .woocommerce-checkout #payment div.payment_box{
 		background-color: {$hl_bg_color};
 		font-family: {$input_font_family};
@@ -71,14 +71,13 @@ $output .= "
 	    font-weight: {$input_font_weight};
 	}
 
-	
+
 	.wcf-embed-checkout-form .woocommerce form p.form-row label {
 		font-family: {$input_font_family};
 	    font-weight: {$input_font_weight};
 	}
 	.wcf-embed-checkout-form .woocommerce #payment button,
-	.wcf-embed-checkout-form .woocommerce form.woocommerce-form-login .form-row button,
-	.wcf-embed-checkout-form .woocommerce #order_review button.wcf-btn-small {
+	.wcf-embed-checkout-form .woocommerce form.woocommerce-form-login .form-row button {
 		padding-top: {$submit_tb_padding}px;
 		padding-bottom: {$submit_tb_padding}px;
 		padding-left: {$submit_lr_padding}px;

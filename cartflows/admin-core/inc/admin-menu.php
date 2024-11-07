@@ -272,6 +272,15 @@ class AdminMenu {
 
 			add_submenu_page(
 				$parent_slug,
+				__( 'Automations', 'cartflows' ),
+				// Here the inline CSS is added to make sure that the menu's tag css should display correctly on all pages.
+				__( 'Automations', 'cartflows' ) . '<span class="submenu-tag" style="margin-left: 4px; color: #f06434; vertical-align: super; font-size: 9px;">' . __( 'New', 'cartflows' ) . '</span>',
+				$capability,
+				'admin.php?page=' . $this->menu_slug . '&path=automations'
+			);
+
+			add_submenu_page(
+				$parent_slug,
 				__( 'Add-ons', 'cartflows' ),
 				__( 'Add-ons', 'cartflows' ),
 				$capability,
@@ -411,6 +420,8 @@ class AdminMenu {
 
 		wp_enqueue_script( $admin_slug . '-common-script', CARTFLOWS_ADMIN_CORE_URL . 'assets/js/common.js', array( 'jquery' ), CARTFLOWS_VER, false );
 
+		wp_enqueue_script( $admin_slug . '-suretriggers-integration', CARTFLOWS_SURETRIGGERS_INTEGRATION_BASE_URL . 'js/v2/embed.js', array(), CARTFLOWS_VER, true );
+
 		$current_flow_steps = array();
 		$flow_id            = isset( $_GET['flow_id'] ) ? intval( $_GET['flow_id'] ) : 0; //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( $flow_id ) {
@@ -490,7 +501,7 @@ class AdminMenu {
 				'currentFlowSteps'                  => $current_flow_steps,
 				// Delete this code after 3 major update. Added in 1.10.4.
 				'license_status'                    => \_is_cartflows_pro_license_activated(),
-				'license_popup_url'                 => admin_url( 'admin.php?page=cartflows&settings=1&license=1' ),
+				'license_popup_url'                 => admin_url( 'admin.php?page=cartflows&settings=1&tab=license' ),
 				'store_checkout_show_product_tab'   => \Cartflows_Helper::display_product_tab_in_store_checkout(),
 				'cf_domain_url'                     => CARTFLOWS_DOMAIN_URL,
 				'cf_upgrade_to_pro_url'             => \Cartflows_Helper::get_upgrade_to_pro_link(),
@@ -522,12 +533,15 @@ class AdminMenu {
 				'cpsw_status'                       => $this->get_plugin_status( 'checkout-plugins-stripe-woo/checkout-plugins-stripe-woo.php' ),
 				'cppw_status'                       => $this->get_plugin_status( 'checkout-paypal-woo/checkout-paypal-woo.php' ),
 				'ca_status'                         => $this->get_plugin_status( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php' ),
+				'suretriggers_status'               => $this->get_plugin_status( 'suretriggers/suretriggers.php' ),
 				'cpsw_connection_status'            => 'success' === get_option( 'cpsw_test_con_status', false ) || 'success' === get_option( 'cpsw_con_status', false ),
 				'current_user_can_manage_cartflows' => current_user_can( 'cartflows_manage_settings' ),
 				'is_set_report_email_ids'           => get_option( 'cartflows_stats_report_email_ids', false ),
 				'cf_docs_data'                      => get_option( 'cartflows_docs_data', false ),
 				'woo_order_url'                     => $order_url,
 				'integrations'                      => $this->get_recommendation_integrations(),
+				'plugin_installer_nonce'            => wp_create_nonce( 'updates' ),
+				'instant_checkout_notice_status'    => \Cartflows_Helper::get_admin_settings_option( 'wcf-instant-checkout-notice-skipped', false, false ),
 			)
 		);
 
@@ -898,6 +912,19 @@ class AdminMenu {
 						'redirection' => admin_url( 'admin.php?page=wc-admin' ),
 						'logoPath'    => array(
 							'icon_path' => CARTFLOWS_ADMIN_CORE_URL . 'assets/images/plugins/woo.svg',
+						),
+					),
+					array(
+						'title'       => __( 'SureTriggers', 'cartflows' ),
+						'subtitle'    => __( 'SureTriggers helps people automate their work by integrating multiple apps and plugins, allowing them to share data and perform tasks automatically.', 'cartflows' ),
+						'isPro'       => true,
+						'status'      => $this->get_plugin_status( 'suretriggers/suretriggers.php' ),
+						'slug'        => 'suretriggers',
+						'path'        => 'suretriggers/suretriggers.php',
+						'link'        => 'https://suretriggers.com/pricing/',
+						'redirection' => admin_url( 'admin.php?page=suretriggers' ),
+						'logoPath'    => array(
+							'icon_path' => CARTFLOWS_ADMIN_CORE_URL . 'assets/images/plugins/suretriggers-emblem.svg',
 						),
 					),
 					array(

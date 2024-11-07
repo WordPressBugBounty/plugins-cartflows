@@ -67,7 +67,7 @@ class Cartflows_Global_Checkout {
 				$edit_node = $wp_admin_bar->get_node( 'edit' );
 
 				if ( $edit_node ) {
-					$edit_node->href = get_edit_post_link( $post->ID );
+					$edit_node->href = wcf()->flow->get_prepared_edit_step_url( $post->ID );
 					$wp_admin_bar->add_node( $edit_node );
 				}
 			}

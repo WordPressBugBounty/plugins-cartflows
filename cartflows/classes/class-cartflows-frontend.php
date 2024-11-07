@@ -152,9 +152,7 @@ class Cartflows_Frontend {
 			return;
 		}
 
-		$page_template = get_post_meta( _get_wcf_step_id(), '_wp_page_template', true );
-
-		$page_template = apply_filters( 'cartflows_page_template', $page_template );
+		$page_template = Cartflows_Helper::get_current_page_template();
 
 		if ( ! _wcf_supported_template( $page_template ) ) {
 			return;
@@ -430,7 +428,9 @@ class Cartflows_Frontend {
 		$fb_tracking_settings = Cartflows_Helper::get_facebook_settings();
 		$ga_tracking_settings = Cartflows_Helper::get_google_analytics_settings();
 		$tik_pixel_settings   = Cartflows_Helper::get_tiktok_settings();
+		$pinterest_settings   = Cartflows_Helper::get_pinterest_settings();
 		$gads_settings        = Cartflows_Helper::get_google_ads_settings();
+		$snapchat_settings    = Cartflows_Helper::get_snapchat_settings();
 
 		$localize = array(
 			'ajax_url'               => admin_url( 'admin-ajax.php', 'relative' ),
@@ -441,11 +441,14 @@ class Cartflows_Frontend {
 			'control_step'           => $control_step,
 			'next_step'              => $next_step_link,
 			'page_template'          => $page_template,
+			'default_page_builder'   => \Cartflows_Helper::get_common_setting( 'default_page_builder' ),
 			'is_checkout_page'       => $is_checkout,
 			'fb_setting'             => $fb_tracking_settings,
 			'ga_setting'             => $ga_tracking_settings,
 			'tik_setting'            => $tik_pixel_settings,
+			'pin_settings'           => $pinterest_settings,
 			'gads_setting'           => $gads_settings,
+			'snap_settings'          => $snapchat_settings,
 			'active_checkout_cookie' => CARTFLOWS_ACTIVE_CHECKOUT,
 			'is_optin'               => $is_optin,
 		);
@@ -469,8 +472,10 @@ class Cartflows_Frontend {
 		echo $localize_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		if ( _wcf_supported_template( $page_template ) ) {
-
-			wp_enqueue_style( 'wcf-normalize-frontend-global', wcf()->utils->get_css_url( 'cartflows-normalize' ), array(), CARTFLOWS_VER );
+			$page_builder = Cartflows_Helper::get_common_setting( 'default_page_builder' );
+			if ( ! ( 'bricks-builder' === $page_builder && function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) ) {
+				wp_enqueue_style( 'wcf-normalize-frontend-global', wcf()->utils->get_css_url( 'cartflows-normalize' ), array(), CARTFLOWS_VER );
+			}
 		}
 
 		if ( ! wcf()->is_woo_active ) {

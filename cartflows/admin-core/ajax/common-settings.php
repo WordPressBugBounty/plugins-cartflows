@@ -185,9 +185,19 @@ class CommonSettings extends AjaxBase {
 			AdminHelper::update_admin_settings_option( '_cartflows_tiktok', $new_settings, false );
 		}
 
+		if ( isset( $_POST['_cartflows_pinterest'] ) ) { //phpcs:ignore
+			$new_settings = $this->sanitize_form_inputs( wp_unslash( $_POST['_cartflows_pinterest'] ) ); //phpcs:ignore
+			AdminHelper::update_admin_settings_option( '_cartflows_pinterest', $new_settings, false );
+		}
+
 		if ( isset( $_POST['_cartflows_google_ads'] ) ) { //phpcs:ignore
 			$new_settings = $this->sanitize_form_inputs( wp_unslash( $_POST['_cartflows_google_ads'] ) ); //phpcs:ignore
 			AdminHelper::update_admin_settings_option( '_cartflows_google_ads', $new_settings, false );
+		}
+
+		if ( isset( $_POST['_cartflows_snapchat'] ) ) { //phpcs:ignore
+			$new_settings = $this->sanitize_form_inputs( wp_unslash( $_POST['_cartflows_snapchat'] ) ); //phpcs:ignore
+			AdminHelper::update_admin_settings_option( '_cartflows_snapchat', $new_settings, false );
 		}
 	}
 

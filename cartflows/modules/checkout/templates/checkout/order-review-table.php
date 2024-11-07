@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) : ?>
 			<?php do_action( 'woocommerce_review_order_before_shipping' ); ?>
 
-			<?php $this->wcf_cart_totals_shipping_html(); ?>
+			<?php do_action( 'cartflows_order_review_shipping_methods' ); ?>
 
 			<?php do_action( 'woocommerce_review_order_after_shipping' ); ?>
 		<?php endif; ?>

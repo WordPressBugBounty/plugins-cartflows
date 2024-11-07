@@ -41,6 +41,106 @@ class FlowMeta {
 	public static function get_settings_fields( $flow_id ) {
 
 		$settings = array(
+			'instant-layout'          => array(
+				'title'    => __( 'Instant Layout ', 'cartflows' ),
+				'slug'     => 'instant_layout',
+				'fields'   => array(
+					'instant-layout-style' => array(
+						'type'         => 'toggle',
+						'label'        => __( 'Enable Instant Checkout Layout', 'cartflows' ),
+						'name'         => 'instant-layout-style',
+						'value'        => get_post_meta( $flow_id, 'instant-layout-style', true ),
+						'tooltip'      => sprintf(
+							/* translators: %1$s: Break like html */
+							__( 'Instant Checkout layout offers templates for your Checkout and Thank You pages. %sCustomize them using the Design settings in the Step Settings.', 'cartflows' ),
+							'<br>'
+						),
+						'desc'         => sprintf(
+							/* translators: %1$s: Break line, %2$s: link html Start, %3$s: Link html end. */
+							__( 'This layout will replace the default page template for both the checkout and thank you steps. You can customize the design %1$sin the Checkout & Thank You step\'s settings, under the Design tab. %2$sRead More.%3$s', 'cartflows' ),
+							'<br>',
+							'<a href="https://cartflows.com/docs/cartflows-instant-checkout-layout/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">',
+							'</a>'
+						),
+						'is_fullwidth' => true,
+					),
+				),
+				'priority' => 10,
+			),
+			'funnel-advanced-options' => array(
+				'title'    => __( 'Global Styling', 'cartflows' ),
+				'slug'     => 'funnel_advanced_options',
+				'fields'   => array(
+					'gcp-enable-option'      => array(
+						'type'         => 'toggle',
+						'label'        => __( 'Enable Global Styling', 'cartflows' ),
+						'name'         => 'wcf-enable-gcp-styling',
+						'value'        => get_post_meta( $flow_id, 'wcf-enable-gcp-styling', true ),
+						'is_fullwidth' => true,
+					),
+					'gcp-primary-color'      => array(
+						'type'       => 'color-picker',
+						'name'       => 'wcf-gcp-primary-color',
+						'label'      => __( 'Primary Color', 'cartflows' ),
+						'value'      => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-gcp-primary-color' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => 'wcf-enable-gcp-styling',
+									'operator' => '===',
+									'value'    => 'yes',
+								),
+							),
+						),
+					),
+					'gcp-secondary-color'    => array(
+						'type'       => 'color-picker',
+						'name'       => 'wcf-gcp-secondary-color',
+						'label'      => __( 'Secondary Color', 'cartflows' ),
+						'value'      => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-gcp-secondary-color' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => 'wcf-enable-gcp-styling',
+									'operator' => '===',
+									'value'    => 'yes',
+								),
+							),
+						),
+					),
+					'gcp-primary-text-color' => array(
+						'type'       => 'color-picker',
+						'name'       => 'wcf-gcp-text-color',
+						'label'      => __( 'Text Color', 'cartflows' ),
+						'value'      => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-gcp-text-color' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => 'wcf-enable-gcp-styling',
+									'operator' => '===',
+									'value'    => 'yes',
+								),
+							),
+						),
+					),
+					'gcp-accent-color'       => array(
+						'type'       => 'color-picker',
+						'name'       => 'wcf-gcp-accent-color',
+						'label'      => __( 'Heading/Accent Color', 'cartflows' ),
+						'value'      => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-gcp-accent-color' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => 'wcf-enable-gcp-styling',
+									'operator' => '===',
+									'value'    => 'yes',
+								),
+							),
+						),
+					),
+				),
+				'priority' => 20,
+			),
 			'general'                 => array(
 				'title'    => __( 'General ', 'cartflows' ),
 				'slug'     => 'general',
@@ -91,109 +191,9 @@ class FlowMeta {
 						'display_align' => 'vertical',
 					),
 				),
-				'priority' => 10,
-			),
-			'funnel-advanced-options' => array(
-				'title'    => __( 'Global Styling', 'cartflows' ),
-				'slug'     => 'funnel_advanced_options',
-				'fields'   => array(
-					'gcp-enable-option'                 => array(
-						'type'         => 'toggle',
-						'label'        => __( 'Enable Global Styling', 'cartflows' ),
-						'name'         => 'wcf-enable-gcp-styling',
-						'value'        => get_post_meta( $flow_id, 'wcf-enable-gcp-styling', true ),
-						'is_fullwidth' => true,
-					),
-					'gcp-primary-color'                 => array(
-						'type'       => 'color-picker',
-						'name'       => 'wcf-gcp-primary-color',
-						'label'      => __( 'Primary Color', 'cartflows' ),
-						'value'      => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-gcp-primary-color' ),
-						'conditions' => array(
-							'fields' => array(
-								array(
-									'name'     => 'wcf-enable-gcp-styling',
-									'operator' => '===',
-									'value'    => 'yes',
-								),
-							),
-						),
-					),
-					'gcp-secondary-color'               => array(
-						'type'       => 'color-picker',
-						'name'       => 'wcf-gcp-secondary-color',
-						'label'      => __( 'Secondary Color', 'cartflows' ),
-						'value'      => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-gcp-secondary-color' ),
-						'conditions' => array(
-							'fields' => array(
-								array(
-									'name'     => 'wcf-enable-gcp-styling',
-									'operator' => '===',
-									'value'    => 'yes',
-								),
-							),
-						),
-					),
-					'gcp-primary-text-color'            => array(
-						'type'       => 'color-picker',
-						'name'       => 'wcf-gcp-text-color',
-						'label'      => __( 'Text Color', 'cartflows' ),
-						'value'      => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-gcp-text-color' ),
-						'conditions' => array(
-							'fields' => array(
-								array(
-									'name'     => 'wcf-enable-gcp-styling',
-									'operator' => '===',
-									'value'    => 'yes',
-								),
-							),
-						),
-					),
-					'gcp-accent-color'                  => array(
-						'type'       => 'color-picker',
-						'name'       => 'wcf-gcp-accent-color',
-						'label'      => __( 'Heading/Accent Color', 'cartflows' ),
-						'value'      => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-gcp-accent-color' ),
-						'conditions' => array(
-							'fields' => array(
-								array(
-									'name'     => 'wcf-enable-gcp-styling',
-									'operator' => '===',
-									'value'    => 'yes',
-								),
-							),
-						),
-					),
-					'enable-custom-no-shipping-method-message' => array(
-						'type'         => 'toggle',
-						'label'        => __( 'Enable Custom Shipping Message', 'cartflows' ),
-						'name'         => 'enable-custom-no-shipping-method-message',
-						'value'        => wcf()->options->get_flow_meta_value( $flow_id, 'enable-custom-no-shipping-method-message' ),
-						'is_fullwidth' => true,
-						'tooltip'      => __( 'Enable this option to show custom message when there are no shipping method is available.', 'cartflows' ),
-					),
-					'custom-no-shipping-method-message' => array(
-						'type'          => 'text',
-						'label'         => __( 'No Shipping Message', 'cartflows' ),
-						'name'          => 'custom-no-shipping-method-message',
-						'value'         => wcf()->options->get_flow_meta_value( $flow_id, 'custom-no-shipping-method-message' ),
-						'tooltip'       => __( 'This message will be displayed when no shipping method is available.', 'cartflows' ),
-						'display_align' => 'vertical',
-						'conditions'    => array(
-							'fields' => array(
-								array(
-									'name'     => 'enable-custom-no-shipping-method-message',
-									'operator' => '===',
-									'value'    => 'yes',
-								),
-							),
-						),
-					),
-				),
-				'priority' => 40,
+				'priority' => 30,
 			),
 		);
-
-		return $settings;
+		return apply_filters( 'cartflows_admin_flow_settings', $settings, $flow_id );
 	}
 }

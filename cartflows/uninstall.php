@@ -45,6 +45,7 @@ if ( 'enable' === $is_delete ) {
 		'cf_analytics_installed_time',
 		'cf_analytics_optin',
 		'cartflows_delete_plugin_data',
+		'wcf-instant-checkout-notice-skipped',
 	);
 
 	foreach ( $options as $index => $key ) {

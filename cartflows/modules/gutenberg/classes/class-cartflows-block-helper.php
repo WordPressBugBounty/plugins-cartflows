@@ -501,6 +501,10 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 			 */
 		public static function get_checkout_form_css( $attr, $id ) {
 
+			if ( wcf()->utils->is_step_post_type() && Cartflows_Helper::is_instant_layout_enabled() ) {
+				return;
+			}
+			
 			$defaults = Cartflows_Gb_Helper::$block_list['wcfb/checkout-form']['attributes'];
 
 			$attr = array_merge( $defaults, (array) $attr );

@@ -107,7 +107,7 @@ function UploadSiteLogo( props ) {
 					// multiple={ false }
 					render={ ( { open } ) => (
 						<>
-							<div className="wcf-media-upload-wrapper flex gap-4">
+							<div className="wcf-media-upload-wrapper flex gap-4 items-center">
 								{ '' !== site_logo.url &&
 								undefined !== site_logo.url ? (
 									<div className="wcf-site-logo-wrapper">
@@ -133,7 +133,7 @@ function UploadSiteLogo( props ) {
 													alt={
 														'wcf-selected-logo-preview'
 													}
-													className="wcf-selected-image w-11 h-11"
+													className="wcf-selected-image w-4/5 h-4/5"
 													data-logo-data={ JSON.stringify(
 														site_logo
 													) }

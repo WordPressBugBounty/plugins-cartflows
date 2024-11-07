@@ -38,6 +38,8 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 		 */
 		public function __construct() {
 
+			$this->load_compatibility_constants();
+
 			$this->load_files();
 
 			add_action( 'init', array( $this, 'load_cartflows_theme_support' ), 100 );
@@ -46,6 +48,8 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 			add_action( 'wp', array( $this, 'override_meta' ), 0 );
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'load_fontawesome' ), 10000 );
+
+			add_filter( 'cartflows_admin_localized_vars', array( $this, 'localize_required_compatibility_vars' ), 10, 1 );
 
 			// Let WooCommerce know, CartFlows is compatible with HPOS.
 			add_action( 'before_woocommerce_init', array( $this, 'declare_woo_hpos_compatibility' ) );
@@ -70,6 +74,19 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 
 		}
 
+		/**
+		 * Add localized data for SureTriggers
+		 *
+		 * @param array $localize localized variables.
+		 * @return array $localize localized variables.
+		 */
+		public function localize_required_compatibility_vars( $localize ) {
+
+			$localize['get_suretriggers_data_nonce'] = wp_create_nonce( 'cartflows_get_suretriggers_data' );
+
+			return $localize;
+
+		}
 
 		/**
 		 *  Declare the woo HPOS compatibility.
@@ -79,6 +96,16 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 			if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
 				\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', CARTFLOWS_FILE, true );
 			}
+		}
+
+		/**
+		 * Define compatibility constants.
+		 *
+		 * @since 2.1.0
+		 * @return void
+		 */
+		public function load_compatibility_constants() {
+			define( 'CARTFLOWS_SURETRIGGERS_INTEGRATION_BASE_URL', 'https://app.suretriggers.com/' );
 		}
 
 		/**
@@ -105,6 +132,10 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-learndash-compatibility.php';
 			}
 
+			if ( defined( 'ASTRA_EXT_VER' ) ) {
+				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-astra-addon-compatibility.php';
+			}
+
 			// Compatibility to allow of Modern Cart to redirect the user to flow from single product page.
 			if ( class_exists( 'ModernCart\Plugin_Loader' ) ) {
 				add_filter(
@@ -113,6 +144,20 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 						return 'yes';
 					}
 				);
+			}
+
+			$page_builder = Cartflows_Helper::get_common_setting( 'default_page_builder' );
+			
+			if ( $this->is_bricks_enabled() ) {
+				include_once CARTFLOWS_DIR . 'compatibilities/themes/bricks/class-cartflows-bricks-compatibility.php';
+				if ( 'bricks-builder' === $page_builder ) {
+					include_once CARTFLOWS_DIR . 'modules/bricks/class-cartflows-bricks-elements-loader.php';
+				}
+			}
+			
+
+			if ( defined( 'SURE_TRIGGERS_VER' ) ) {
+				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-suretriggers-compatibility.php';
 			}
 		}
 
@@ -379,6 +424,21 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 			return false;
 		}
 
+		/**
+		 * Check if brick builder enabled.
+		 *
+		 * @return boolean
+		 */
+		public static function is_bricks_enabled() {
+
+			$theme = wp_get_theme();
+			if ( 'Bricks' == $theme->name || 'Bricks' == $theme->parent_theme ) {
+				return true;
+			}
+
+			return false;
+		}
+
 
 		/**
 		 *  Check for thrive architect edit page.
@@ -515,6 +575,8 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 				wp_add_inline_style( 'wcf-frontend-global', $custom_css );
 			}
 		}
+
+
 	}
 }
 

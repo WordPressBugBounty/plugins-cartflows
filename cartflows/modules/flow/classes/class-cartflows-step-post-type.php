@@ -88,9 +88,7 @@ class Cartflows_Step_Post_Type {
 			add_filter( 'next_post_rel_link', '__return_empty_string' );
 			add_filter( 'previous_post_rel_link', '__return_empty_string' );
 
-			$page_template = get_post_meta( _get_wcf_step_id(), '_wp_page_template', true );
-
-			$page_template = apply_filters( 'cartflows_page_template', $page_template );
+			$page_template = Cartflows_Helper::get_current_page_template();
 
 			$file = '';
 
@@ -127,13 +125,20 @@ class Cartflows_Step_Post_Type {
 				*/
 			}
 
+			$file               = apply_filters( 'cartflows_page_template_file', $file );
+			$this->body_classes = apply_filters( 'cartflows_page_template_body_classes', $this->body_classes );
+
+
 			// Just to be safe, we check if the file exist first.
 			if ( file_exists( $file ) ) {
 
 				/* Add Body Class */
 				add_filter( 'body_class', array( $this, 'body_class' ) );
 
-				return $file;
+				if ( apply_filters( 'cartflows_allow_to_change_page_template', true ) ) {
+					$template = $file;
+				}
+				return $template;
 			} else {
 				echo wp_kses_post( $file );
 			}
@@ -247,35 +252,35 @@ class Cartflows_Step_Post_Type {
 					),
 				),
 				array(
-					'name' => __( 'Optin (Woo)', 'cartflows' ),
+					'name' => __( 'Optin', 'cartflows' ),
 					'slug' => 'optin',
 					'args' => array(
 						'slug' => 'optin',
 					),
 				),
 				array(
-					'name' => __( 'Checkout (Woo)', 'cartflows' ),
+					'name' => __( 'Checkout', 'cartflows' ),
 					'slug' => 'checkout',
 					'args' => array(
 						'slug' => 'checkout',
 					),
 				),
 				array(
-					'name' => __( 'Thank You (Woo)', 'cartflows' ),
+					'name' => __( 'Thank You', 'cartflows' ),
 					'slug' => 'thankyou',
 					'args' => array(
 						'slug' => 'thankyou',
 					),
 				),
 				array(
-					'name' => __( 'Upsell (Woo)', 'cartflows' ),
+					'name' => __( 'Upsell', 'cartflows' ),
 					'slug' => 'upsell',
 					'args' => array(
 						'slug' => 'upsell',
 					),
 				),
 				array(
-					'name' => __( 'Downsell (Woo)', 'cartflows' ),
+					'name' => __( 'Downsell', 'cartflows' ),
 					'slug' => 'downsell',
 					'args' => array(
 						'slug' => 'downsell',

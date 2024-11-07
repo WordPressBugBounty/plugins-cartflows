@@ -30,7 +30,7 @@ $calculator_text          = '';
 <tr class="woocommerce-shipping-totals shipping wcf-shipping-methods">
 	<th colspan="2" data-title="<?php echo esc_attr( $package_name ); ?>">
 		<div class="wcf-shipping-methods-wrapper">
-			<div class="wcf-shipping-methods-title"><?php echo wp_kses_post( $package_name ); ?></div>
+			<h3 class="wcf-shipping-methods-title"><?php echo wp_kses_post( $package_name ); ?></h3>
 			<div class="wcf-shipping-method-options">
 				<?php if ( $available_methods ) : ?>
 					<ul id="shipping_method" class="woocommerce-shipping-methods">

@@ -259,11 +259,13 @@ class Cartflows_Flow_Frontend {
 				$edit_node = $wp_admin_bar->get_node( 'edit' );
 
 				if ( $edit_node ) {
+					$post_id = $post->ID;
+					$flow_id = wcf()->utils->get_flow_id_from_step_id( $post_id );
 
 					// Show the edit node only if the page builder option is set to other and gutenberg, else remove/hide the node.
-					if ( in_array( Cartflows_Helper::get_common_setting( 'default_page_builder' ), array( 'other', 'gutenberg' ) ) ) {
+					if ( in_array( Cartflows_Helper::get_common_setting( 'default_page_builder' ), array( 'other', 'gutenberg' ) ) || Cartflows_Helper::is_instant_layout_enabled( intval( $flow_id ) ) ) {
 						$edit_node->title = esc_html__( 'Edit Design', 'cartflows' );
-						$edit_node->href  = Cartflows_Helper::get_page_builder_edit_link( $post->ID );
+						$edit_node->href  = $this->get_prepared_edit_step_url( $post->ID );
 						$wp_admin_bar->add_node( $edit_node );
 					} else {
 						$wp_admin_bar->remove_node( 'edit' );
@@ -307,6 +309,33 @@ class Cartflows_Flow_Frontend {
 			}
 		}
 	}
+
+	/**
+	 * Generates the edit URL for a step based on the page builder and Instant Checkout features.
+	 *
+	 * @since 2.1.0
+	 * @param int $step_id The ID of the step to generate the edit URL for.
+	 * @return string $edit_url The edit URL for the specified step.
+	 */
+	public function get_prepared_edit_step_url( $step_id ) {
+		// Default Edit Step URL.
+		$edit_url = Cartflows_Helper::get_page_builder_edit_link( $step_id );
+
+		// Get the current flow ID from the step.
+		$flow_id = (int) wcf()->utils->get_flow_id_from_step_id( $step_id );
+
+		// Update the edit URL if instant Checkout is enabled.
+		if ( Cartflows_Helper::is_instant_layout_enabled( (int) $flow_id ) ) {
+			$store_checkout      = Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' );
+			$store_checkout_path = intval( $store_checkout ) === intval( $flow_id ) ? 'store-checkout' : 'flows';
+
+			$edit_url = admin_url( 'admin.php?page=' . CARTFLOWS_SLUG . '&path=' . $store_checkout_path . '&action=wcf-edit-flow&flow_id=' . $flow_id . '&step_id=' . $step_id . '&tab=design' );
+		}
+
+		// Return the updated edit URL.
+		return $edit_url;
+	}
+
 
 }
 

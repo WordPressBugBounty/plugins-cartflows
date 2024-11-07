@@ -67,7 +67,14 @@ class Cartflows_Modern_Checkout {
 			add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'customer_info_parent_wrapper_close' ), 99, 1 );
 
 			/* Add the collapsable order review section at the top of Checkout form */
-			add_action( 'woocommerce_before_checkout_form', array( $this, 'add_custom_collapsed_order_review_table' ), 8 );
+			$order_summary_position        = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-order-review-summary-position' );
+			$order_summery_position_action = 'woocommerce_before_checkout_form';
+
+			if ( 'bottom' === $order_summary_position ) {
+				$order_summery_position_action = 'woocommerce_checkout_after_customer_details';
+			}
+
+			add_action( $order_summery_position_action, array( $this, 'add_custom_collapsed_order_review_table' ), 8 );
 
 			// Re-arrange the position of payment section only for two column layout of modern checkout & not for one column.
 			if ( 'modern-checkout' === $checkout_layout ) {
@@ -293,6 +300,12 @@ class Cartflows_Modern_Checkout {
 	 * @return void
 	 */
 	public function add_custom_collapsed_order_review_table() {
+
+		$checkout_id = _get_wcf_checkout_id();
+
+		if ( ! $checkout_id ) {
+			$checkout_id = isset( $_GET['wcf_checkout_id'] ) && ! empty( $_GET['wcf_checkout_id'] ) ? intval( wp_unslash( $_GET['wcf_checkout_id'] ) ) : 0; //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
 
 		include CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/collapsed-order-summary.php';
 	}

@@ -78,6 +78,7 @@ class Importer extends AjaxBase {
 		$this->init_ajax_events( $ajax_events );
 
 		add_action( 'admin_footer', array( $this, 'json_importer_popup_wrapper' ) );
+		add_action( 'wp_ajax_cartflows_install_plugin', 'wp_ajax_install_plugin' );
 	}
 
 	/**
@@ -580,11 +581,11 @@ class Importer extends AjaxBase {
 						'type'  => 'landing',
 					),
 					'order-form'         => array(
-						'title' => __( 'Checkout (Woo)', 'cartflows' ),
+						'title' => __( 'Checkout', 'cartflows' ),
 						'type'  => 'checkout',
 					),
 					'order-confirmation' => array(
-						'title' => __( 'Thank You (Woo)', 'cartflows' ),
+						'title' => __( 'Thank You', 'cartflows' ),
 						'type'  => 'thankyou',
 					),
 				);
@@ -643,6 +644,12 @@ class Importer extends AjaxBase {
 		}
 
 		update_post_meta( $flow_id, 'wcf-steps', $flow_steps );
+
+		// Checking the default page builder setting and updates the instant checkout status accordingly.
+		$page_builder = \Cartflows_Helper::get_common_setting( 'default_page_builder' );
+		if ( 'bricks-builder' === $page_builder ) {
+			update_post_meta( $flow_id, 'instant-layout-style', 'yes' );
+		}
 
 		/**
 		 * Redirect to the new flow edit screen

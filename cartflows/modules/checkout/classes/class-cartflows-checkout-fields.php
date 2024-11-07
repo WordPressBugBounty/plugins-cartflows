@@ -447,11 +447,10 @@ class Cartflows_Checkout_Fields {
 					if ( is_array( $value ) && isset( $fieldset[ $type . '_' . $key ] ) ) {
 						if ( isset( $value['required'] ) ) {
 							$fieldset[ $type . '_' . $key ]['required'] = $value['required'];
-							
 						}
 						if ( ! empty( $country ) && 'state' === $key ) {
 							$fieldset[ $type . '_' . $key ]['country'] = $country;
-						}                   
+						}
 					}
 				}
 			}

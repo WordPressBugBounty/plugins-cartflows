@@ -548,7 +548,7 @@ function _wcf_check_is_optin_by_id( $post_id ) {
  */
 function _wcf_supported_template( $page_template ) {
 
-	if ( in_array( $page_template, array( 'cartflows-default', 'cartflows-canvas' ), true ) ) {
+	if ( in_array( $page_template, array( 'cartflows-default', 'cartflows-canvas', 'instant-checkout' ), true ) ) {
 
 		return true;
 	}
@@ -675,4 +675,43 @@ function wcf_feature_notice( $title, $message, $classes ) {
 	$output         .= '</div>';
 
 	echo wp_kses_post( $output );
+}
+
+/**
+ * Get checkout layout type.
+ *
+ * @since 2.1.0
+ * @return string
+ */
+function wcf_get_checkout_layout() {
+
+	$checkout_id = _is_wcf_checkout_type();
+
+	if ( ! $checkout_id ) {
+		$checkout_id = isset( $_GET['wcf_checkout_id'] ) && ! empty( $_GET['wcf_checkout_id'] ) ? intval( wp_unslash( $_GET['wcf_checkout_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
+	}
+
+	$checkout_layout = 'modern-checkout';
+
+	if ( ! empty( $checkout_id ) ) {
+		// Get checkout layout skin.
+		$checkout_layout = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-checkout-layout' );
+	}
+
+	return $checkout_layout;
+}
+
+/** Check weather the SureTriggers is installed and Connected.
+ *
+ * @return bool
+ */
+function _is_suretriggers_connected() {
+
+	// Check is the plugin installed.
+	if ( ! defined( 'SURE_TRIGGERS_VER' ) ) {
+		return false;
+	}
+
+	// If installed then check is it connected or not.
+	return apply_filters( 'suretriggers_is_user_connected', '' );
 }

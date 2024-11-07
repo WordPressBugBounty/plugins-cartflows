@@ -96,9 +96,13 @@ class Cartflows_Checkout_Markup {
 			$this->bb_editor_compatibility();
 		}
 
+		$page_builder = Cartflows_Helper::get_common_setting( 'default_page_builder' );
+		if ( Cartflows_Compatibility::is_bricks_enabled() && 'bricks-builder' === $page_builder ) {
+			$this->bricks_editor_compatibility();
+		}
+
 		// Load Google Auto fill address fields actions.
 		add_action( 'cartflows_checkout_scripts', array( $this, 'load_google_places_library' ) );
-
 	}
 
 	/**
@@ -205,6 +209,7 @@ class Cartflows_Checkout_Markup {
 		if ( _is_wcf_doing_checkout_ajax() ) {
 			add_filter( 'woocommerce_order_button_text', array( $this, 'place_order_button_text' ), 99, 1 );
 		}
+
 	}
 
 	/**
@@ -288,6 +293,16 @@ class Cartflows_Checkout_Markup {
 	}
 
 	/**
+	 * Function for bricks editor compatibility.
+	 *
+	 * @return void
+	 */
+	public function bricks_editor_compatibility() {
+		remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form' );
+		add_action( 'woocommerce_checkout_order_review', array( $this, 'display_custom_coupon_field' ) );
+	}
+
+	/**
 	 * Change PayPal Express cancel URL.
 	 *
 	 * @param array  $data button data.
@@ -360,6 +375,7 @@ class Cartflows_Checkout_Markup {
 
 					// Add wrapper to image and add some css.
 					$image = '<div class="wcf-product-thumbnail">' . $thumbnail . $remove_label . ' </div>';
+					$image = apply_filters( 'cartflows_checkout_order_review_item_image', $image, $thumbnail, $remove_label, $cart_item, $checkout_id );
 				} else {
 					/**
 					 * If no product image is enabled but remove_label is enabled
@@ -372,7 +388,7 @@ class Cartflows_Checkout_Markup {
 			}
 		}
 
-		return $product_name;
+		return apply_filters( 'cartflows_checkout_order_review_item_summary', $product_name, $cart_item );
 	}
 
 	/**
@@ -557,7 +573,7 @@ class Cartflows_Checkout_Markup {
 
 				if ( ! empty( $store_checkout ) && ( intval( $store_checkout ) === intval( $flow_id ) ) ) {
 
-					if ( WC()->cart->is_empty() && ! isset( $_GET['wcf-add-to-cart'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					if ( WC()->cart->is_empty() && ! isset( $_GET['wcf-add-to-cart'] ) && apply_filters( 'cartflows_checkout_show_empty_cart_notice', true ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						wc_add_notice( __( 'Your cart is currently empty.', 'cartflows' ), 'error' );
 					}
 
@@ -590,7 +606,7 @@ class Cartflows_Checkout_Markup {
 					/* Empty the current cart */
 					WC()->cart->empty_cart();
 
-					if ( is_array( $products ) && empty( $products[0]['product'] ) ) {
+					if ( is_array( $products ) && empty( $products[0]['product'] ) && apply_filters( 'cartflows_checkout_show_empty_cart_notice', true ) ) {
 
 						$a_start = '';
 						$a_close = '';
@@ -807,6 +823,19 @@ class Cartflows_Checkout_Markup {
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'checkout_fields_actions' ), 10, 1 );
 
 		$this->update_the_checkout_strings();
+		$this->add_customized_shipping_section();
+	}
+
+	/**
+	 * Add actions to introduced new customized shipping section for all checkout styles.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function add_customized_shipping_section() {
+
+		add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'add_custom_shipping_section' ), 10 );
+		add_action( 'cartflows_order_review_shipping_methods', array( $this, 'show_selected_shipping_method' ), 20 );
 
 	}
 
@@ -1112,6 +1141,7 @@ class Cartflows_Checkout_Markup {
 		/*Output css variable */
 		$output = '';
 
+		$flow_id                        = wcf()->utils->is_step_post_type() ? wcf()->utils->get_flow_id() : 0;
 		$enable_design_setting          = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-enable-design-settings' );
 		$enable_place_order_button_lock = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-checkout-place-order-button-lock' );
 
@@ -1231,10 +1261,21 @@ class Cartflows_Checkout_Markup {
 				list($r, $g, $b) = sscanf( $primary_color, '#%02x%02x%02x' );
 			}
 
+			/** Override the global colors and assign it to the default variables */
+			$flow_global_style = ! empty( $flow_id ) ? wcf()->options->get_flow_meta_value( $flow_id, 'wcf-enable-gcp-styling', 'no' ) : false;
+
+			if ( 'yes' === $flow_global_style ) {
+				$primary_color         = ! empty( $flow_id ) ? get_post_meta( $flow_id, 'wcf-gcp-primary-color', true ) : '';
+				$field_color           = ! empty( $flow_id ) ? get_post_meta( $flow_id, 'wcf-gcp-text-color', true ) : '';
+				$section_heading_color = ! empty( $flow_id ) ? get_post_meta( $flow_id, 'wcf-gcp-accent-color', true ) : '';
+			}
+
+			/** Override the global colors and assign it to the default variables */
+
 			$submit_btn_bg_color       = ( $submit_bg_color ) ? $submit_bg_color : $primary_color;
 			$submit_btn_bg_hover_color = ( $submit_bg_hover_color ) ? $submit_bg_hover_color : $primary_color;
 
-			$output     .= '.wcf-embed-checkout-form { ';
+			$output     .= '.cartflows_step-template .select2-container--default .select2-results__option--highlighted[aria-selected], .cartflows_step-template .select2-container--default .select2-results__option--highlighted[data-selected], .wcf-embed-checkout-form { ';
 				$output .= ! empty( $primary_color ) ? '--wcf-primary-color: ' . $primary_color . ';' : '';
 				$output .= ! empty( $section_heading_color ) ? '--wcf-heading-color: ' . $section_heading_color . ';' : '';
 				$output .= ! empty( $submit_btn_bg_color ) ? '--wcf-btn-bg-color: ' . $submit_btn_bg_color . ';' : '';
@@ -1247,6 +1288,40 @@ class Cartflows_Checkout_Markup {
 				$output .= ! empty( $field_color ) ? '--wcf-field-text-color: ' . $field_color . ';' : '';
 			$output     .= '}';
 
+			// Add instant layout styles.
+			if ( Cartflows_Helper::is_instant_layout_enabled() ) {
+
+				$instant_checkout_left_column_bg_color  = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-instant-checkout-left-side-bg-color' );
+				$instant_checkout_right_column_bg_color = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-instant-checkout-right-side-bg-color' );
+
+				$submit_btn_bg_color       = ( $submit_bg_color ) ? $submit_bg_color : $primary_color;
+				$submit_btn_bg_hover_color = ( $submit_bg_hover_color ) ? $submit_bg_hover_color : $primary_color;
+
+				$output .= 'body .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout { ';
+
+				$output .= ! empty( $primary_color ) ? '--wcf-primary-color: ' . $primary_color . ';' : '';
+				$output .= ! empty( $section_heading_color ) ? '--wcf-heading-color: ' . $section_heading_color . ';' : '';
+				$output .= ! empty( $heading_font_weight ) ? '--wcf-heading-font-weight: ' . $heading_font_weight . ';' : '';
+
+				$output .= ! empty( $field_label_color ) ? '--wcf-field-label-color: ' . $field_label_color . ';' : '';
+				$output .= ! empty( $field_input_size ) ? '--wcf-field-min-height: ' . $field_input_size . ';' : '';
+				$output .= ! empty( $field_bg_color ) ? '--wcf-field-bg-color: ' . $field_bg_color . ';' : '';
+				$output .= ! empty( $field_border_color ) ? '--wcf-field-border-color:' . $field_border_color . ';' : '';
+				$output .= ! empty( $field_color ) ? '--wcf-field-text-color: ' . $field_color . ';' : '';
+
+				$output .= ! empty( $submit_btn_bg_color ) ? '--wcf-btn-bg-color: ' . $submit_btn_bg_color . ';' : '';
+				$output .= ! empty( $submit_btn_bg_hover_color ) ? '--wcf-btn-bg-hover-color: ' . $submit_btn_bg_hover_color . ';' : '';
+				$output .= ! empty( $submit_color ) ? '--wcf-btn-text-color: ' . $submit_color . ';' : '';
+				$output .= ! empty( $submit_hover_color ) ? '--wcf-btn-hover-text-color: ' . $submit_hover_color . ';' : '';
+
+				$output .= ! empty( $hl_bg_color ) ? '--wcf-payment-section-desc-bg-color: ' . $hl_bg_color . ';' : '';
+
+				$output .= ! empty( $instant_checkout_left_column_bg_color ) ? '--wcf-ic-left-column-bg-color: ' . $instant_checkout_left_column_bg_color . ';' : '';
+				$output .= ! empty( $instant_checkout_right_column_bg_color ) ? '--wcf-ic-right-column-bg-color: ' . $instant_checkout_right_column_bg_color . ';' : '';
+
+				$output .= '}';
+			}
+
 			if (
 				Cartflows_Compatibility::get_instance()->is_divi_enabled() ||
 				Cartflows_Compatibility::get_instance()->is_divi_builder_enabled( $checkout_id )
@@ -1257,6 +1332,7 @@ class Cartflows_Checkout_Markup {
 				include CARTFLOWS_CHECKOUT_DIR . 'includes/checkout-dynamic-css.php';
 			}
 		}
+
 
 		if ( 'yes' === $enable_place_order_button_lock ) {
 			// If enabled then add the below css to show the lock icon on place order button.
@@ -1398,20 +1474,22 @@ class Cartflows_Checkout_Markup {
 		$coupon_field = apply_filters( 'cartflows_coupon_field_options', $coupon_field );
 
 		ob_start();
+		do_action( 'cartflows_before_custom_field_html', $coupon_field );
 		?>
-		<div class="wcf-custom-coupon-field <?php echo esc_attr( $coupon_field['class'] ); ?>" id="wcf_custom_coupon_field">
-			<div class="wcf-coupon-col-1">
-				<span>
-					<input type="text" name="coupon_code" class="input-text wcf-coupon-code-input" placeholder="<?php echo esc_attr( $coupon_field['field_text'] ); ?>" id="coupon_code" value="">
-				</span>
+			<div class="wcf-custom-coupon-field <?php echo esc_attr( $coupon_field['class'] ); ?>" id="wcf_custom_coupon_field">
+				<div class="wcf-coupon-col-1">
+					<span>
+						<input type="text" name="coupon_code" class="input-text wcf-coupon-code-input" placeholder="<?php echo esc_attr( $coupon_field['field_text'] ); ?>" id="coupon_code" value="">
+					</span>
+				</div>
+				<div class="wcf-coupon-col-2">
+					<span>
+						<button type="button" class="button wcf-submit-coupon wcf-btn-small" name="apply_coupon" value="Apply"><?php echo esc_html( $coupon_field['button_text'] ); ?></button>
+					</span>
+				</div>
 			</div>
-			<div class="wcf-coupon-col-2">
-				<span>
-					<button type="button" class="button wcf-submit-coupon wcf-btn-small" name="apply_coupon" value="Apply"><?php echo esc_html( $coupon_field['button_text'] ); ?></button>
-				</span>
-			</div>
-		</div>
 		<?php
+		do_action( 'cartflows_after_custom_field_html', $coupon_field );
 		// wp_kses_post will not work as it removing input tags hence ignoring below rule.
 		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
@@ -1527,7 +1605,7 @@ class Cartflows_Checkout_Markup {
 	/**
 	 * Preserve the custom item price added by Variations & Quantity feature
 	 *
-	 * @param array $cart_object cart object.
+	 * @param Wc_cart $cart_object cart object.
 	 * @since 1.0.0
 	 */
 	public function custom_price_to_cart_item( $cart_object ) {
@@ -1607,11 +1685,10 @@ class Cartflows_Checkout_Markup {
 			return $message;
 		}
 
-		$flow_id                         = wcf()->utils->get_flow_id_from_step_id( $checkout_id );
-		$enabled_custom_shipping_message = wcf()->options->get_flow_meta_value( $flow_id, 'enable-custom-no-shipping-method-message' );
+		$enabled_custom_shipping_message = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-custom-no-shipping-method-message-toggle' );
 
 		if ( 'yes' === $enabled_custom_shipping_message ) {
-			$custom_shipping_message = wcf()->options->get_flow_meta_value( $flow_id, 'custom-no-shipping-method-message' );
+			$custom_shipping_message = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-no-shipping-method-message' );
 
 			$message = ! empty( $custom_shipping_message ) ? $custom_shipping_message : $message;
 
@@ -1641,14 +1718,12 @@ class Cartflows_Checkout_Markup {
 			return $fragments;
 		}
 
-		$fragments['.wcf-order-review-total'] = "<div class='wcf-order-review-total'>" . WC()->cart->get_total() . '</div>';
-
 		ob_start();
-
 		$this->wcf_order_review();
 		$wcf_order_review = ob_get_clean();
 
-		$fragments['.wcf-cartflows-review-order-wrapper .woocommerce-checkout-review-order-table'] = $wcf_order_review;
+		// Removed the CartFlows prefix as we have changed the shipping method selection to left column for all layouts. So updating the order review template completely for all checkout styles.
+		$fragments['.wcf-collapsed-order-review-section .woocommerce-checkout-review-order-table'] = $wcf_order_review;
 
 		return $fragments;
 	}
@@ -1720,10 +1795,8 @@ class Cartflows_Checkout_Markup {
 			$checkout_id = isset( $_GET['wcf_checkout_id'] ) && ! empty( $_GET['wcf_checkout_id'] ) ? intval( wp_unslash( $_GET['wcf_checkout_id'] ) ) : 0; //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 
-		$checkout_layout = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-checkout-layout' );
-
+		$checkout_layout               = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-checkout-layout' );
 		$path_to_order_review_template = apply_filters( 'cartflows_get_order_review_template_path', CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/order-review-table.php', $checkout_layout );
-
 		include $path_to_order_review_template;
 	}
 
@@ -1743,7 +1816,59 @@ class Cartflows_Checkout_Markup {
 
 		return $enabled;
 	}
+
+	/**
+	 * Add custom shipping method section if not multistep checkout.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function add_custom_shipping_section() {
+
+		// Return if the current page is not the CartFlows Checkout page and return if any of the style of plugin decides not to load it.
+		if ( ! _is_wcf_checkout_type() || ! apply_filters( 'cartflows_should_render_custom_shipping', true ) ) {
+			return;
+		}
+
+		ob_start();
+
+		$this->wcf_cart_totals_shipping_html();
+
+		ob_end_flush();
+	}
+
+	/**
+	 * Show Selected Shipping Method in the order review table.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function show_selected_shipping_method() {
+
+		if ( _is_wcf_checkout_type() && WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) :
+			$shipping_method = WC()->session->get( 'chosen_shipping_methods' );
+			$shipping_method = isset( $shipping_method[0] ) ? $shipping_method[0] : '';
+			$currency        = get_woocommerce_currency_symbol();
+			$shipping_cost   = '';
+
+			foreach ( WC()->shipping->get_packages() as $key => $package ) {
+				$cost           = $shipping_method && $package['rates'][ $shipping_method ] ? $package['rates'][ $shipping_method ]->get_cost() : '';
+				$cost           = $cost ? $currency . $cost : '';
+				$shipping_label = $shipping_method && isset( $package['rates'][ $shipping_method ] ) ? $package['rates'][ $shipping_method ] : '';
+				$shipping_label = $shipping_label ? $shipping_label->get_label() : '';
+				$shipping_cost  = $shipping_label . ' ' . $cost;
+			}
+			?>
+			<tr class="cart-shipping">
+				<th><?php esc_html_e( 'Shipping', 'cartflows' ); ?></th>
+				<td><?php echo esc_html( $shipping_cost ); ?></td>
+			</tr>
+			<?php
+		endif;
+	}
+
 }
+
 
 /**
  *  Kicking this off by calling 'get_instance()' method

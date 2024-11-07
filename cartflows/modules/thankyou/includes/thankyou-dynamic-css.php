@@ -36,5 +36,11 @@ $output = "
 .woocommerce-order .woocommerce-order-downloads{
 	background-color: {$section_bg_color}
 }
+
+.wcf-empty-cart-notice-block .wcf-empty-cart-message-container .wcf-empty-cart-content .wcf-empty-cart-message{
+	color: {$text_color};
+	font-family: {$text_font_family};
+	font-size: {$text_font_size}px;
+}
 img.emoji, img.wp-smiley {}
 ";

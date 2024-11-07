@@ -158,6 +158,10 @@ class Wizard extends AjaxBase {
 			$page_builder = 'gutenberg';
 		}
 
+		if ( false !== strpos( $page_builder, 'bricks' ) ) {
+			$page_builder = 'bricks-builder';
+		}
+
 		$wcf_settings['default_page_builder'] = $page_builder;
 
 		update_option( '_cartflows_common', $wcf_settings );
@@ -425,10 +429,11 @@ class Wizard extends AjaxBase {
 				} else {
 					wcf()->logger->sync_log( 'HTTP Request Error!' );
 				}
-			} else {
-				$option_name = 'cartflows-store-checkout-' . $page_builder . '-flows-and-steps-' . $page;
-
+			} elseif ( is_array( $sites_and_pages ) && isset( $sites_and_pages['flows'] ) && ! empty( $sites_and_pages['flows'] ) ) {
+				$option_name = 'cartflows-store-checkout-' . sanitize_key( $page_builder ) . '-flows-and-steps-' . $page;
 				update_site_option( $option_name, $sites_and_pages['flows'] );
+			} else {
+				$sites_and_pages['flows'] = array();
 			}
 		} else {
 			wcf()->logger->sync_log( 'API Error: ' . $response->get_error_message() );

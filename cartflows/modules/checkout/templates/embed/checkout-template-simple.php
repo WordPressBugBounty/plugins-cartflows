@@ -45,7 +45,7 @@ if (
 		trim( $checkout_html ) == '<div class="woocommerce"></div>'
 	) {
 	do_action( 'cartflows_checkout_cart_empty', $checkout_id );
-	echo esc_html__( 'Your cart is currently empty.', 'cartflows' );
+	echo esc_html( apply_filters( 'cartflows_checkout_cart_empty_message', __( 'Your cart is currently empty.', 'cartflows' ) ) );
 } else {
 	// Ignoring the escaping rule as we are echoing shortcode.
 	echo $checkout_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

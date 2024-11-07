@@ -166,3 +166,7 @@
 #wpbody-content > .error:not( .wcf-notice ) {
 	display: none !important;
 }
+
+.wcf-item.wcf-item__start-from-blank.h-full.bg-white.rounded-lg.relative.start-scratch {
+	min-height: 443px;
+}

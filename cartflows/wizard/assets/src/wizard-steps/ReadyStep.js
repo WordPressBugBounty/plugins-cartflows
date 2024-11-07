@@ -5,7 +5,8 @@ import apiFetch from '@wordpress/api-fetch';
 import confetti from 'canvas-confetti';
 
 function ReadyStep() {
-	const [ { showConfetti }, dispatch ] = useStateValue();
+	const [ { showConfetti, selected_page_builder }, dispatch ] =
+		useStateValue();
 	const ConfettiFrame = confetti.create(
 		document.getElementById( 'wcf-confetti-wrapper' ),
 		{ resize: true }
@@ -55,8 +56,13 @@ function ReadyStep() {
 	const handleClick = ( e ) => {
 		e.preventDefault();
 
-		window.location.href =
-			cartflows_wizard.admin_url + '?page=cartflows&path=library';
+		if ( 'bricks-builder' === selected_page_builder ) {
+			window.location.href =
+				cartflows_wizard.admin_url + '?page=cartflows';
+		} else {
+			window.location.href =
+				cartflows_wizard.admin_url + '?page=cartflows&path=library';
+		}
 	};
 
 	return (

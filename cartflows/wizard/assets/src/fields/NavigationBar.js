@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { __ } from '@wordpress/i18n';
 import CfIcon from '@WizardImages/cartflows-icon.svg';
 import { getExitSetupWizard } from '@Utils/Helpers';
+import { useStateValue } from '../utils/StateProvider';
 import apiFetch from '@wordpress/api-fetch';
 import { useLocation, useHistory } from 'react-router-dom';
 
@@ -60,6 +61,11 @@ function Index() {
 			}
 		} );
 	};
+
+	const [ { selected_page_builder } ] = useStateValue();
+	if ( 'bricks-builder' === selected_page_builder ) {
+		menus.splice( 3, 1 );
+	}
 
 	const handleStepRedirection = function ( e ) {
 		e.preventDefault();

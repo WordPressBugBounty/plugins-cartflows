@@ -55,6 +55,90 @@ class Cartflows_Thankyou_Markup {
 		add_action( 'cartflows_thank_you_scripts', array( $this, 'add_divi_compatibility_css' ) );
 
 		add_action( 'wp', array( $this, 'secure_thank_you_page' ), 10 );
+
+		add_action( 'wp', array( $this, 'register_instant_thankyou_actions' ), 10, 1 );
+		add_action( 'cartflows_thank_you_scripts', array( $this, 'load_instant_thankyou_scripts' ), 10, 1 );
+	}
+
+	/**
+	 * Load instant thankyou actions.
+	 */
+	public function load_instant_thankyou_scripts() {
+
+		$flow_id = wcf()->utils->get_flow_id();
+
+		if ( ! empty( $flow_id ) && Cartflows_Helper::is_instant_layout_enabled( (int) $flow_id ) ) {
+
+			add_action( 'body_class', array( $this, 'add_body_class_for_instant_thankyou' ), 10, 1 );
+			// Load the required styles and scripts.
+			wp_enqueue_style( 'wcf-instant-thankyou', wcf()->utils->get_css_url( 'instant-thankyou-styles' ), '', CARTFLOWS_VER );
+		}
+	}
+
+	/**
+	 * Register actions for instant thankyou layout.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function register_instant_thankyou_actions() {
+
+		$flow_id = wcf()->utils->get_flow_id();
+
+		$thank_you_id = _get_wcf_thankyou_id();
+
+		// Returns false if no thank you page ID is found.
+		if ( ! $thank_you_id ) {
+			return;
+		}
+
+		if ( _is_wcf_thankyou_type() && ! empty( $flow_id ) && Cartflows_Helper::is_instant_layout_enabled( (int) $flow_id ) ) {
+
+			add_action( 'body_class', array( $this, 'add_body_class_for_instant_thankyou' ), 10, 1 );
+			add_filter( 'cartflows_thankyou_template_data', array( $this, 'add_template_data' ), 10, 1 );
+		}
+
+	}
+
+	/**
+	 * Add body classes for instant thankyou layout.
+	 *
+	 * @param array $body_classes The body classes.
+	 * @return array $body_classes Modified body added classes/
+	 */
+	public function add_body_class_for_instant_thankyou( $body_classes ) {
+		$body_classes[] = 'cartflows-instant-checkout';
+		return $body_classes;
+	}
+
+	/**
+	 * Add template data.
+	 *
+	 * @param array $template_data template data.
+	 * @return array $template_data Modified template data of instant layout.
+	 */
+	public function add_template_data( $template_data ) {
+
+		if ( Cartflows_Helper::is_instant_layout_enabled( (int) $template_data['flow_id'] ) ) {
+			$template_data['load_custom']   = true;
+			$template_data['template']      = 'templates/instant-thankyou.php';
+			$template_data['template_path'] = CARTFLOWS_THANKYOU_DIR;
+		}
+
+		return $template_data;
+	}
+
+	/**
+	 * Prepare Instant Thank You Header Template.
+	 *
+	 * @since 2.1.0
+	 * @return void
+	 */
+	public function instant_checkout_header_template() {
+		ob_start();
+		include CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/page-template/wcf-ic-header-template.php';
+		$header = ob_get_clean();
+		echo wp_kses_post( $header );
 	}
 
 	/**
@@ -137,7 +221,9 @@ class Cartflows_Thankyou_Markup {
 				return $notice_out;
 			}
 
-			$order = false;
+			$order               = false;
+			$thank_you_step_id   = _get_wcf_thankyou_id();
+			$is_instant_checkout = Cartflows_Helper::is_instant_layout_enabled();
 
 			$id_param  = 'wcf-order';
 			$key_param = 'wcf-key';
@@ -166,11 +252,19 @@ class Cartflows_Thankyou_Markup {
 						$order = false;
 					}
 				} else {
-					return '<p class="woocommerce-notice">' . __( 'No completed or processing order found to show the order details form demo.', 'cartflows' ) . '</p>';
+					if ( $is_instant_checkout ) {
+						return $this->render_empty_cart_message_block( $thank_you_step_id );
+					} else {
+						return '<p class="woocommerce-notice">' . __( 'No completed or processing order found to show the order details form demo.', 'cartflows' ) . '</p>';
+					}
 				}
 			} else {
 				if ( ! isset( $_GET[ $id_param ] ) ) {
-					return '<p class="woocommerce-notice">' . __( 'Order not found. You cannot access this page directly.', 'cartflows' ) . '</p>';
+					if ( $is_instant_checkout ) {
+						return $this->render_empty_cart_message_block( $thank_you_step_id );
+					} else {
+						return '<p class="woocommerce-notice">' . __( 'Order not found. You cannot access this page directly.', 'cartflows' ) . '</p>';
+					}
 				}
 
 				// Get the order.
@@ -208,9 +302,25 @@ class Cartflows_Thankyou_Markup {
 			do_action( 'cartflows_thankyou_details_before', $order );
 
 			ob_start();
-			echo "<div class='wcf-thankyou-wrap' id='wcf-thankyou-wrap'>";
-			wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
-			echo '</div>';
+
+			$default_data = array(
+				'order'         => array( 'order' => $order ),
+				'template'      => 'checkout/thankyou.php',
+				'template_path' => '',
+				'flow_id'       => wcf()->utils->get_flow_id(),
+				'load_custom'   => false,
+			);
+
+			$template_data = apply_filters( 'cartflows_thankyou_template_data', $default_data );
+
+			if ( ! $template_data['load_custom'] ) {
+				echo "<div class='wcf-thankyou-wrap' id='wcf-thankyou-wrap'>";
+				wc_get_template( $template_data['template'], $template_data['order'], $template_data['template_path'] );
+				echo '</div>';
+			} else {
+				include $template_data['template_path'] . $template_data['template'];
+			}
+
 			$output = ob_get_clean();
 		}
 
@@ -238,7 +348,6 @@ class Cartflows_Thankyou_Markup {
 				$style = get_post_meta( $thanku_page_id, 'wcf-dynamic-css', true );
 
 				$css_version = get_post_meta( $thanku_page_id, 'wcf-dynamic-css-version', true );
-
 				if ( empty( $style ) || CARTFLOWS_ASSETS_VERSION !== $css_version ) {
 					$style = $this->generate_thank_you_style();
 					update_post_meta( $thanku_page_id, 'wcf-dynamic-css', wp_slash( $style ) );
@@ -297,7 +406,17 @@ class Cartflows_Thankyou_Markup {
 			$thank_you_id = _get_wcf_thankyou_id( $post->post_content );
 		}
 
-		$output = '';
+		$output              = '';
+		$primary_color       = '';
+		$text_color          = '';
+		$text_font_family    = '';
+		$text_font_size      = '';
+		$heading_text_color  = '';
+		$heading_font_family = '';
+		$heading_font_weight = '';
+		$container_width     = '';
+		$section_bg_color    = '';
+		$design_css          = array();
 
 		$enable_design_settings = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-enable-design-settings' );
 
@@ -310,6 +429,7 @@ class Cartflows_Thankyou_Markup {
 
 		if ( 'yes' === $enable_design_settings ) {
 
+			$primary_color       = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-primary-color' );
 			$text_color          = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-text-color' );
 			$text_font_family    = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-font-family' );
 			$text_font_size      = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-font-size' );
@@ -318,6 +438,18 @@ class Cartflows_Thankyou_Markup {
 			$heading_font_weight = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-heading-font-wt' );
 			$container_width     = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-container-width' );
 			$section_bg_color    = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-section-bg-color' );
+
+			$design_css = array(
+				'primary_color'       => $primary_color,
+				'text_color'          => $text_color,
+				'text_font_family'    => $text_font_family,
+				'text_font_size'      => $text_font_size,
+				'heading_text_color'  => $heading_text_color,
+				'heading_font_family' => $heading_font_family,
+				'heading_font_weight' => $heading_font_weight,
+				'container_width'     => $container_width,
+				'section_bg_color'    => $section_bg_color,
+			);
 
 			if (
 				Cartflows_Compatibility::get_instance()->is_divi_enabled() ||
@@ -331,6 +463,67 @@ class Cartflows_Thankyou_Markup {
 		}
 
 		$output .= $this->get_section_hide_show_css( $output, $hide_show_settings );
+
+		$output .= $this->get_instant_thankyou_css( $output, $thank_you_id, $design_css );
+
+		return apply_filters( 'cartflows_thank_you_generated_styles', $output, $thank_you_id, $design_css );
+	}
+
+	/**
+	 * Generate Instant Thank You CSS
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $output Already generated CSS.
+	 * @param int    $thank_you_id Thank you page ID.
+	 * @param array  $design_css Design CSS.
+	 * @return string $output Modified CSS
+	 */
+	public function get_instant_thankyou_css( $output, $thank_you_id, $design_css ) {
+
+		// Don't generate the instant thank you page is not enabled.
+		if ( ! Cartflows_Helper::is_instant_layout_enabled() ) {
+			return $output;
+		}
+
+		// Getting the css values from free version options.
+		$primary_color       = isset( $design_css['primary_color'] ) ? $design_css['primary_color'] : '';
+		$text_color          = isset( $design_css['text_color'] ) ? $design_css['text_color'] : '';
+		$text_font_family    = isset( $design_css['text_font_family'] ) ? $design_css['text_font_family'] : '';
+		$text_font_size      = isset( $design_css['text_font_size'] ) ? $design_css['text_font_size'] : '';
+		$heading_text_color  = isset( $design_css['heading_text_color'] ) ? $design_css['heading_text_color'] : '';
+		$heading_font_family = isset( $design_css['heading_font_family'] ) ? $design_css['heading_font_family'] : '';
+		$heading_font_weight = isset( $design_css['heading_font_weight'] ) ? $design_css['heading_font_weight'] : '';
+		$container_width     = isset( $design_css['container_width'] ) ? $design_css['container_width'] : '';
+		$section_bg_color    = isset( $design_css['section_bg_color'] ) ? $design_css['section_bg_color'] : '';
+
+		// Prepare the CSS values for PRO options.
+		$button_bg_color                        = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-button-background-color' );
+		$button_text_color                      = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-button-text-color' );
+		$button_font_family                     = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-button-font-family' );
+		$instant_thankyou_left_column_bg_color  = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-instant-thankyou-left-side-bg-color' );
+		$instant_thankyou_right_column_bg_color = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-instant-thankyou-right-side-bg-color' );
+
+		$output     .= 'body .wcf-instant-thankyou { ';
+			$output .= ! empty( $primary_color ) ? '--wcf-primary-color: ' . $primary_color . ';' : '';
+			$output .= ! empty( $instant_thankyou_right_column_bg_color ) ? '--wcf-instant-thankyou-right-side-bg-color: ' . $instant_thankyou_right_column_bg_color . ';' : '';
+			$output .= ! empty( $instant_thankyou_left_column_bg_color ) ? '--wcf-instant-thankyou-left-side-bg-color: ' . $instant_thankyou_left_column_bg_color . ';' : '';
+			// setting the border color for the section same as background color.
+			$output .= ! empty( $instant_thankyou_left_column_bg_color ) ? '--wcf-section-border-color: ' . $instant_thankyou_left_column_bg_color . ';' : '';
+
+			$output .= ! empty( $button_bg_color ) ? '--wcf-btn-bg-color: ' . $button_bg_color . ';' : '';
+			$output .= ! empty( $button_text_color ) ? '--wcf-button-tx-color: ' . $button_text_color . ';' : '';
+			$output .= ! empty( $button_font_family ) ? '--wcf-button-font-family: ' . $button_font_family . ';' : '';
+
+			$output .= ! empty( $text_color ) ? '--wcf-text-color: ' . $text_color . ';' : '';
+			$output .= ! empty( $text_font_family ) ? '--wcf-text-font-family: ' . $text_font_family . ';' : '';
+			$output .= ! empty( $text_font_size ) ? '--wcf-text-font-size: ' . $text_font_size . 'px;' : '';
+			$output .= ! empty( $heading_text_color ) ? '--wcf-heading-text-color: ' . $heading_text_color . ';' : '';
+			$output .= ! empty( $heading_font_weight ) ? '--wcf-heading-font-weight: ' . $heading_font_weight . ';' : '';
+			$output .= ! empty( $heading_font_family ) ? '--wcf-heading-font-family: ' . $heading_font_family . ';' : '';
+			$output .= ! empty( $container_width ) ? '--wcf-container-width: ' . $container_width . ';' : '';
+			$output .= ! empty( $section_bg_color ) ? '--wcf-section-bg-color: ' . $section_bg_color . ';' : '';
+		$output     .= '}';
 
 		return $output;
 	}
@@ -435,6 +628,44 @@ class Cartflows_Thankyou_Markup {
 		}
 
 		return $woo_text;
+	}
+
+	/**
+	 * Add a designed block message for an empty cart.
+	 *
+	 * This method is used to add a custom message or block when the cart is empty.
+	 * The message or block design is typically intended to be displayed in place of
+	 * the cart contents, providing a more visually appealing notification or call-to-action
+	 * for the user to take further steps (e.g., continue shopping or view products).
+	 *
+	 * @since 2.1.0
+	 * @param int $thank_you_id The current step ID.
+	 * @return string $output The HTML of empty cart block.
+	 */
+	public function render_empty_cart_message_block( $thank_you_id ) {
+
+		$shop_url = wc_get_page_permalink( 'shop' );
+		$message  = __( 'No completed or processing order found to show the order details form demo.', 'cartflows' );
+
+		$output                      = '<div class="wcf-empty-cart-notice-block">';
+			$output                 .= '<div class="wcf-empty-cart-message-container">';
+				$output             .= '<div class="wcf-empty-cart-wrapper">';
+					$output         .= '<div class="wcf-empty-cart-icon">';
+						$output     .= '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="">';
+							$output .= '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />';
+						$output     .= '</svg>';
+					$output         .= '</div>';
+					$output         .= '<div class="wcf-empty-cart-content">';
+						$output     .= '<h2 class="wcf-empty-cart-heading">' . esc_html( apply_filters( 'cartflows_checkout_empty_cart_heading', __( 'Order Details Not Found.', 'cartflows' ) ) ) . '</h2>';
+						$output     .= '<p class="wcf-empty-cart-message">' . esc_html( apply_filters( 'cartflows_checkout_empty_cart_message', $message ) ) . '</p>';
+						$output     .= '<a href="' . esc_url( $shop_url ) . '" class="wcf-empty-cart-button">' . esc_html( apply_filters( 'cartflows_checkout_empty_cart_button_text', __( 'Return to Shopping', 'cartflows' ) ) ) . '</a>';
+					$output         .= '</div>';
+				$output             .= '</div>';
+			$output                 .= '</div>';
+		$output                     .= '</div>';
+
+		return $output;
+
 	}
 }
 

@@ -54,6 +54,13 @@ class AdminHelper {
 	public static $tiktok = null;
 
 	/**
+	 * Snapchat.
+	 *
+	 * @var object instance
+	 */
+	public static $snapchat = null;
+
+	/**
 	 * Google_analytics_settings.
 	 *
 	 * @var object instance
@@ -61,9 +68,16 @@ class AdminHelper {
 	public static $google_analytics_settings = null;
 
 	/**
+	 * Google_analytics_settings.
+	 *
+	 * @var object instance
+	 */
+	public static $pinterest = null;
+
+	/**
 	 * Google_ads_settings.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @var object instance
 	 */
 	public static $google_ads_settings_data = null;
@@ -362,9 +376,44 @@ class AdminHelper {
 	}
 
 	/**
+	 * Get Common settings of pinterest.
+	 *
+	 * @return array.
+	 */
+	public static function get_pinterest_settings() {
+
+		$options = array();
+
+		$pinterest_default = array(
+			'pinterest_tag_id'                  => '',
+			'enable_pinterest_consent'          => 'disable',
+			'enable_pinterest_begin_checkout'   => 'disable',
+			'enable_pinterest_add_to_cart'      => 'disable',
+			'enable_pinterest_add_payment_info' => 'disable',
+			'enable_pinterest_purchase_event'   => 'disable',
+			'enable_pinterest_optin_lead'       => 'disable',
+			'enable_pinterest_signup'           => 'disable',
+			'pinterest_tag_tracking'            => 'disable',
+			'pinterest_tag_tracking_for_site'   => 'disable',
+		);
+
+		$pinterest = self::get_admin_settings_option( '_cartflows_pinterest', false, false );
+
+		$pinterest = wp_parse_args( $pinterest, $pinterest_default );
+
+		$pinterest = apply_filters( 'cartflows_pinterest_settings_default', $pinterest );
+
+		foreach ( $pinterest as $key => $data ) {
+			$options[ '_cartflows_pinterest[' . $key . ']' ] = $data;
+		}
+
+		return $options;
+	}
+
+	/**
 	 * Get Common settings.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.0
 	 * @return array.
 	 */
 	public static function get_google_ads_settings() {
@@ -393,6 +442,42 @@ class AdminHelper {
 
 		foreach ( $google_ads_settings_data as $key => $data ) {
 			$options[ '_cartflows_google_ads[' . $key . ']' ] = $data;
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Get Snapchat settings.
+	 *
+	 * @since 2.1.0
+	 * @return array.
+	 */
+	public static function get_snapchat_settings() {
+
+		$options = array();
+
+		$snapchat_settings_default = apply_filters(
+			'cartflows_snapchat_settings_default',
+			array(
+				'snapchat_pixel_id'               => '',
+				'enable_snapchat_begin_checkout'  => 'disable',
+				'enable_snapchat_add_to_cart'     => 'disable',
+				'enable_snapchat_view_content'    => 'disable',
+				'enable_snapchat_purchase_event'  => 'disable',
+				'enable_snapchat_optin_lead'      => 'disable',
+				'enable_snapchat_subscribe_event' => 'disable',
+				'snapchat_pixel_tracking'         => 'disable',
+				'snapchat_pixel_for_site'         => 'disable',
+			)
+		);
+
+		$snapchat_settings_data = self::get_admin_settings_option( '_cartflows_snapchat', false, false );
+
+		$snapchat_settings_data = wp_parse_args( $snapchat_settings_data, $snapchat_settings_default );
+
+		foreach ( $snapchat_settings_data as $key => $data ) {
+			$options[ '_cartflows_snapchat[' . $key . ']' ] = $data;
 		}
 
 		return $options;
@@ -578,10 +663,12 @@ class AdminHelper {
 		$fb_settings        = self::get_facebook_settings();
 		$tik_settings       = self::get_tiktok_settings();
 		$ga_settings        = self::get_google_analytics_settings();
+		$pin_settings       = self::get_pinterest_settings();
 		$gads_settings      = self::get_google_ads_settings();
+		$snap_settings      = self::get_snapchat_settings();
 		$urm_settings       = self::get_user_role_management_settings();
 		$auto_fields        = self::get_google_auto_fields_settings();
-		$options            = array_merge( $general_settings, $permalink_settings, $fb_settings, $tik_settings, $ga_settings, $gads_settings, $urm_settings, $auto_fields );
+		$options            = array_merge( $general_settings, $permalink_settings, $fb_settings, $tik_settings, $ga_settings, $gads_settings, $pin_settings, $snap_settings, $urm_settings, $auto_fields );
 		$options            = apply_filters( 'cartflows_admin_global_data_options', $options );
 
 		return $options;
@@ -695,6 +782,27 @@ class AdminHelper {
 					'ajaxcall'   => 'cartflows_delete_step',
 				),
 			);
+
+			// Show Automation action only if suretriggers is connected.
+			$is_suretriggers_connected = _is_suretriggers_connected();
+			$automation_link           = $is_suretriggers_connected ? '#' : admin_url( 'admin.php?page=' . CARTFLOWS_SLUG . '&path=automations' );
+
+			$actions = array_merge(
+				array(
+					'automation' => array(
+						'slug'       => 'automation',
+						'class'      => 'wcf-step-automation',
+						'icon_class' => 'dashicons dashicons-editor-code',
+						'text'       => __( 'Automation', 'cartflows' ),
+						'pro'        => false,
+						'link'       => $automation_link,
+						'tag'        => ! $is_suretriggers_connected ? __( '(Connect)', 'cartflows' ) : '',
+						'ajaxcall'   => 'cartflows_automation_step',
+					),
+				),
+				$actions
+			);
+
 		} else {
 			$actions = array(
 				'view' => array(
