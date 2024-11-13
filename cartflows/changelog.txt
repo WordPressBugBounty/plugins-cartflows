@@ -1,3 +1,7 @@
+Version 2.1.2 - Wednesday, 13th November 2024
+- Fix: Improved the display of express checkout block of Checkout Plugins - Stripe for WooCommerce for Instant Checkout layout.
+- Fix: The next-step button UI of Two Step Checkout layout was not getting displayed properly after latest release of Elementor.
+
 Version 2.1.1 - Wednesday, 13th November 2024
 - New: Added new options in Funnel's setting to allow configurable logo width and height settings, conditionally applied for block (FSE) themes.
 - Fix: Resolved an issue with logo display on Instant Checkout pages when using the Bricks theme.

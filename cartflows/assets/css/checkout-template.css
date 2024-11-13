@@ -2759,6 +2759,11 @@ body .pac-placeholder {
 .wcf-embed-checkout-form-two-step #cpsw-payment-request-wrapper.checkout.cpsw-classic .cpsw-payment-request-button-wrapper {
 	margin-top: 10px;
 }
+
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout #cpsw-payment-request-wrapper.checkout.cpsw-classic .cpsw-payment-request-button-wrapper {
+	margin-top: 0;
+}
+
 /* Checkout Plugin - Stripe for WooCommerce Smart Button box CSS */
 
 /**
