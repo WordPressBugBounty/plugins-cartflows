@@ -1693,7 +1693,7 @@ class Cartflows_Checkout_Markup {
 			$message = ! empty( $custom_shipping_message ) ? $custom_shipping_message : $message;
 
 		} else {
-			$message = "<span class='wcf-shipping-tooltip'><span class='dashicons dashicons-editor-help'></span><span class='wcf-tooltip-msg'>" . $message . '</span></span>';
+			$message = "<span class='wcf-shipping-error-msg'>" . $message . '</span>';
 		}
 		return $message;
 	}
@@ -1717,6 +1717,9 @@ class Cartflows_Checkout_Markup {
 		if ( empty( $checkout_id ) ) {
 			return $fragments;
 		}
+		ob_start();
+		$this->wcf_cart_totals_shipping_html();
+		$wcf_shipping_method_html = ob_get_clean();
 
 		ob_start();
 		$this->wcf_order_review();
@@ -1724,6 +1727,9 @@ class Cartflows_Checkout_Markup {
 
 		// Removed the CartFlows prefix as we have changed the shipping method selection to left column for all layouts. So updating the order review template completely for all checkout styles.
 		$fragments['.wcf-collapsed-order-review-section .woocommerce-checkout-review-order-table'] = $wcf_order_review;
+		$fragments['.woocommerce-checkout-review-order-table']                                     = $wcf_order_review;
+		$fragments['.wcf-shipping-methods-wrapper'] = $wcf_shipping_method_html;
+
 
 		return $fragments;
 	}
@@ -1824,16 +1830,12 @@ class Cartflows_Checkout_Markup {
 	 * @return void
 	 */
 	public function add_custom_shipping_section() {
-
 		// Return if the current page is not the CartFlows Checkout page and return if any of the style of plugin decides not to load it.
 		if ( ! _is_wcf_checkout_type() || ! apply_filters( 'cartflows_should_render_custom_shipping', true ) ) {
 			return;
 		}
-
 		ob_start();
-
 		$this->wcf_cart_totals_shipping_html();
-
 		ob_end_flush();
 	}
 

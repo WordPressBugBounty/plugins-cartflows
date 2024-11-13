@@ -2,8 +2,8 @@
 Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, elementor, beaver builder
 Requires at least: 5.8
-Tested up to: 6.6
-Stable tag: 2.1.0
+Tested up to: 6.7
+Stable tag: 2.1.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -321,6 +321,12 @@ This includes, but is not limited to:
 5. Easily edit anything with your page builder.
 
 == Changelog ==
+
+ = Version 2.1.1 - Wednesday, 13th November 2024 =
+* New: Added new options in Funnel's setting to allow configurable logo width and height settings, conditionally applied for block (FSE) themes.
+* Fix: Resolved an issue with logo display on Instant Checkout pages when using the Bricks theme.
+* Fix: Resolved issue with shipping methods not refreshing correctly on the checkout page.
+* Fix: Improved CSS for shipping error messages for better readability and consistent styling in RTL and standard templates.
 
 = Version 2.1.0 - Thursday, 7th November 2024 =
 * New: Instant Checkout & Thank You Layouts for distraction free and conversion focused checkout experience.

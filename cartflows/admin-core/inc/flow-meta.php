@@ -40,6 +40,13 @@ class FlowMeta {
 	 */
 	public static function get_settings_fields( $flow_id ) {
 
+		// Check is the current theme is FSE theme or not.
+		$is_fse_theme = wcf_is_current_theme_is_fse_theme();
+
+		// Add the hidden class if the current theme is not FSE theme.
+		$section_hide_class = ! $is_fse_theme ? 'wcf-hide hidden' : '';
+
+
 		$settings = array(
 			'instant-layout'          => array(
 				'title'    => __( 'Instant Layout ', 'cartflows' ),
@@ -63,6 +70,57 @@ class FlowMeta {
 							'</a>'
 						),
 						'is_fullwidth' => true,
+					),
+
+					'wcf-instant-checkout-header-logo-heading' => array(
+						'type'         => 'heading',
+						'label'        => __( 'Logo', 'cartflows' ),
+						'sectionClass' => $section_hide_class,
+						'conditions'   => array(
+							'relation' => 'and',
+							'fields'   => array(
+								array(
+									'name'     => 'instant-layout-style',
+									'operator' => '===',
+									'value'    => 'yes',
+								),
+							),
+						),
+					),
+
+					'wcf-instant-checkout-header-logo-width' => array(
+						'type'          => 'number',
+						'label'         => __( 'Width (In px)', 'cartflows' ),
+						'name'          => 'wcf-instant-checkout-header-logo-width',
+						'value'         => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-width' ),
+						'display_align' => 'vertical',
+						'sectionClass'  => $section_hide_class,
+						'conditions'    => array(
+							'fields' => array(
+								array(
+									'name'     => 'instant-layout-style',
+									'operator' => '===',
+									'value'    => 'yes',
+								),
+							),
+						),
+					),
+					'wcf-instant-checkout-header-logo-height' => array(
+						'type'          => 'number',
+						'label'         => __( 'Height (In px)', 'cartflows' ),
+						'name'          => 'wcf-instant-checkout-header-logo-height',
+						'value'         => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-height' ),
+						'sectionClass'  => $section_hide_class,
+						'display_align' => 'vertical',
+						'conditions'    => array(
+							'fields' => array(
+								array(
+									'name'     => 'instant-layout-style',
+									'operator' => '===',
+									'value'    => 'yes',
+								),
+							),
+						),
 					),
 				),
 				'priority' => 10,

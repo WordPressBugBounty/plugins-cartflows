@@ -11,20 +11,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $wc_cart_url = Cartflows_Instant_Checkout::get_instance()->get_instant_checkout_cart_url();
+$flow_id     = wcf()->utils->get_flow_id();
 
-$site_logo  = get_custom_logo();
 $site_title = get_bloginfo( 'name' );
+$site_logo  = apply_filters( 'cartflows_instant_checkout_header_logo', get_custom_logo(), $site_title );
 
 // Don't add the header if the Site Title and Site Logo is empty.
 if ( empty( $site_logo ) && empty( $site_title ) ) {
 	return;
 }
 
+$logo_width  = '';
+$logo_height = '';
+
+if ( wcf_is_current_theme_is_fse_theme() ) {
+	$logo_width  = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-width' );
+	$logo_height = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-height' );
+}
+
 ?>
 <header class="main-header--wrapper">
 	<div class="main-header--content">
 		<?php if ( ! empty( $site_logo ) ) { ?>
-			<span class="main-header--site-logo">
+			<span class="main-header--site-logo" style="<?php echo ! empty( $logo_width ) ? 'width:' . intval( $logo_width ) . 'px' : ''; ?>; <?php echo ! empty( $logo_height ) ? 'height:' . intval( $logo_height ) . 'px' : ''; ?>;">
 				<?php echo wp_kses_post( $site_logo ); ?>
 			</span>
 		<?php } else { ?>

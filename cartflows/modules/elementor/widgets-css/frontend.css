@@ -71,6 +71,7 @@
 /* Checkout Form CSS */
 .wcf-embed-checkout-form-two-step .woocommerce .wcf-embed-checkout-form-nav-btns .wcf-next-button {
 	color: #fff;
+	display: block; /* Added for the quick fix. Reason: There is an CSS mod from Elementor which caused the button issue. */
 }
 .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce #order_review button,
 .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce form.woocommerce-form-login .form-row button,

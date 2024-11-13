@@ -1,3 +1,9 @@
+Version 2.1.1 - Wednesday, 13th November 2024
+- New: Added new options in Funnel's setting to allow configurable logo width and height settings, conditionally applied for block (FSE) themes.
+- Fix: Resolved an issue with logo display on Instant Checkout pages when using the Bricks theme.
+- Fix: Resolved issue with shipping methods not refreshing correctly on the checkout page.
+- Fix: Improved CSS for shipping error messages for better readability and consistent styling in RTL and standard templates.
+
 Version 2.1.0 - Thursday, 7th November 2024
 - New: Instant Checkout & Thank You Layouts for distraction free and conversion focused checkout experience.
 - New: Introduced Bricks Builder integration to easily design and build CartFlows steps.

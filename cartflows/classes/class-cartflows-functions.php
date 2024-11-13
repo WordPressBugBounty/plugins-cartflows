@@ -715,3 +715,18 @@ function _is_suretriggers_connected() {
 	// If installed then check is it connected or not.
 	return apply_filters( 'suretriggers_is_user_connected', '' );
 }
+
+/**
+ * Check if the current theme is a block theme OR a FSE Theme.
+ *
+ * @since 2.1.1
+ * @return bool
+ */
+function wcf_is_current_theme_is_fse_theme() {
+
+	if ( function_exists( 'wp_is_block_theme' ) ) {
+		return boolval( wp_is_block_theme() );
+	}
+
+	return false;
+}

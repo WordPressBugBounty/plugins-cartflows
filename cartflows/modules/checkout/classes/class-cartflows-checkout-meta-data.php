@@ -356,7 +356,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 					'slug'     => 'checkout_texts_buttons',
 					'priority' => 30,
 					'fields'   => array(
-						
+
 						'advanced-options'          => array(
 							'type'         => 'toggle',
 							'label'        => __( 'Enable Advance Options', 'cartflows' ),

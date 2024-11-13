@@ -9,6 +9,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+use Bricks\Database;
+
 if ( ! class_exists( 'Cartflows_Bricks_Compatibility' ) ) :
 
 	/**
@@ -51,7 +54,67 @@ if ( ! class_exists( 'Cartflows_Bricks_Compatibility' ) ) :
 			add_filter( 'option_bricks_global_settings', array( $this, 'add_step_post_type_to_supported_post_types' ) );
 			add_filter( 'wp_get_attachment_image_attributes', array( $this, 'disable_lazy_loading_for_cartflows_steps' ), 9, 3 );
 			add_action( 'admin_bar_menu', array( $this, 'remove_editor_links_from_admin_toolbar' ), 999 );
+			add_filter( 'cartflows_instant_checkout_header_logo', array( $this, 'fetch_header_logo_from_theme' ), 10, 2 );
 
+		}
+
+		/**
+		 * Fetch the header logo from the theme
+		 *
+		 * @since x.x.x
+		 * @param string $logo           The logo URL.
+		 * @param string $site_title     The Site Title.
+		 * @return string   $bricks_logo    The modified logo HTML.
+		 */
+		public function fetch_header_logo_from_theme( $logo, $site_title ) {
+
+			$template_header_id = Database::$active_templates['header'];
+			$template_data      = $template_header_id ? Database::get_data( $template_header_id, 'header' ) : array();
+
+			$logo_element = array();
+
+			if ( is_array( $template_data ) && ! empty( $template_data ) ) {
+
+				// Find logo element in header.
+				$logo_element = array_filter(
+					$template_data,
+					function( $element ) {
+						return isset( $element['name'] ) && 'logo' === $element['name'];
+					}
+				);
+
+				$logo_element = reset( $logo_element );
+			}
+
+			// Get logo settings if found.
+			if ( ! empty( $logo_element ) && ! empty( $logo_element['settings'] ) ) {
+				$logo_settings = $logo_element['settings'];
+
+				$logo_id   = ! empty( $logo_settings['logo']['id'] ) ? $logo_settings['logo']['id'] : '';
+				$logo_size = ! empty( $logo_settings['logo']['size'] ) ? $logo_settings['logo']['size'] : '';
+
+				$logo_width  = ! empty( $logo_settings['logoWidth'] ) ? intval( $logo_settings['logoWidth'] ) : '';
+				$logo_height = ! empty( $logo_settings['logoHeight'] ) ? intval( $logo_settings['logoHeight'] ) : '';
+				$logo_text   = ! empty( $logo_settings['logoText'] ) ? $logo_settings['logoText'] : '';
+
+				$logo_image_src = wp_get_attachment_image_src( $logo_id, $logo_size );
+
+				if ( ! empty( $logo_image_src[0] ) ) {
+					$style = '';
+
+					if ( ! empty( $logo_width ) ) {
+						$style .= 'width:' . intval( $logo_width ) . 'px;';
+					}
+
+					if ( ! empty( $logo_height ) ) {
+						$style .= 'height:' . intval( $logo_height ) . 'px;';
+					}
+
+					$logo = '<img src="' . esc_url( $logo_image_src[0] ) . '" alt="' . esc_attr( ! empty( $logo_text ) ? $logo_text : $site_title ) . '" style="' . $style . '">';
+				}
+			}
+
+			return $logo;
 		}
 
 		/**
