@@ -1,3 +1,9 @@
+Version 2.1.3 - Tuesday, 19th November 2024
+- New: Added NPS Survey to gather your valuable feedback!
+- Improvement: Improved the UI of CartFlows in-plugin notices for better user experience.
+- Fix: Resolved an issue where the order summary price failed to update on mobile after adding an Order Bump.
+- Fix: Addressed a bug in the date filter that caused inaccuracies in analytics data.
+
 Version 2.1.2 - Wednesday, 13th November 2024
 - Fix: Improved the display of express checkout block of Checkout Plugins - Stripe for WooCommerce for Instant Checkout layout.
 - Fix: The next-step button UI of Two Step Checkout layout was not getting displayed properly after latest release of Elementor.

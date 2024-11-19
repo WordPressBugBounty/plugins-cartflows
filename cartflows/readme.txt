@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, elementor, beaver builder
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -321,6 +321,10 @@ This includes, but is not limited to:
 5. Easily edit anything with your page builder.
 
 == Changelog ==
+= Version 2.1.3 - Tuesday, 19th November 2024 =
+* Improvement: Improved the UI of CartFlows in-plugin notices for better user experience.
+* Fix: Resolved an issue where the order summary price failed to update on mobile after adding an Order Bump.
+* Fix: Addressed a bug in the date filter that caused inaccuracies in analytics data.
 
 = Version 2.1.2 - Wednesday, 13th November 2024 =
 * Fix: Improved the display of express checkout block of Checkout Plugins - Stripe for WooCommerce for Instant Checkout layout.

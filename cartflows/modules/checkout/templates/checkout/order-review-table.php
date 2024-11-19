@@ -51,9 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php endforeach; ?>
 		<?php if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) : ?>
 			<?php do_action( 'woocommerce_review_order_before_shipping' ); ?>
-
-			<?php do_action( 'cartflows_order_review_shipping_methods' ); ?>
-
+			<?php Cartflows_Checkout_Markup::show_selected_shipping_method(); ?>
 			<?php do_action( 'woocommerce_review_order_after_shipping' ); ?>
 		<?php endif; ?>
 		<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>

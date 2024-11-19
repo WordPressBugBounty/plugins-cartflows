@@ -824,6 +824,13 @@ class Importer extends AjaxBase {
 		// Set the flag as false once the template import is complete.
 		\CartFlows_Batch_Process::set_is_wcf_template_import( false );
 
+		// Check if the user has imported their first flow.
+		$first_flow_imported = get_option( 'wcf_first_flow_imported', false );
+
+		if ( ! $first_flow_imported ) {
+			update_option( 'wcf_first_flow_imported', true );
+		}
+
 		wcf()->logger->import_log( 'COMPLETE! Importing Flow' );
 
 		wp_send_json_success( $response_data );

@@ -140,7 +140,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '2.1.2' );
+			define( 'CARTFLOWS_VER', '2.1.3' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -365,6 +365,11 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			// Plugin major update notice.
 			if ( ! class_exists( 'Cartflows_Plugin_Update_Notifications' ) ) {
 				require_once CARTFLOWS_DIR . 'libraries/cartflows-plugin-update-notifications/class-cartflows-plugin-update-notifications.php';
+			}
+
+			// Load the NPS Survey library.
+			if ( ! class_exists( 'Cartflows_Nps_Survey' ) ) {
+				require_once CARTFLOWS_DIR . 'libraries/class-cartflows-nps-survey.php';
 			}
 		}
 

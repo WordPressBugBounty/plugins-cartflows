@@ -2,19 +2,20 @@
 # This file is distributed under the same license as the CartFlows plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: CartFlows 2.1.1\n"
+"Project-Id-Version: CartFlows 2.1.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/cartflows\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-11-13T09:01:15+00:00\n"
+"POT-Creation-Date: 2024-11-19T07:16:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: cartflows\n"
 
 #. Plugin Name of the plugin
+#: classes/class-cartflows-admin-notices.php:173
 #: modules/bricks/class-cartflows-bricks-dynamic-data.php:63
 #: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:71
 msgid "CartFlows"
@@ -345,7 +346,7 @@ msgid "To import the premium flow %1$sactivate CartFlows Pro%2$s."
 msgstr ""
 
 #: admin-core/ajax/importer.php:741
-#: admin-core/ajax/importer.php:1043
+#: admin-core/ajax/importer.php:1050
 msgid "Funnel data not found."
 msgstr ""
 
@@ -354,86 +355,86 @@ msgid "Steps not found."
 msgstr ""
 
 #: admin-core/ajax/importer.php:818
-#: wizard/ajax/wizard.php:628
+#: wizard/ajax/wizard.php:632
 msgid "Successfully imported the Flow!"
 msgstr ""
 
-#: admin-core/ajax/importer.php:860
+#: admin-core/ajax/importer.php:867
 msgid "Step data ID not found for import."
 msgstr ""
 
-#: admin-core/ajax/importer.php:872
+#: admin-core/ajax/importer.php:879
 msgid "Funnel ID not found in the request."
 msgstr ""
 
 #. translators: %1$s: html tag, %2$s: link html start %3$s: link html end
 #. translators: %1$s: HTML, %2$s: HTML
-#: admin-core/ajax/importer.php:880
-#: admin-core/ajax/importer.php:1004
+#: admin-core/ajax/importer.php:887
+#: admin-core/ajax/importer.php:1011
 #: admin-core/inc/admin-helper.php:1126
 msgid "Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$1sTo resolve this issue, please check this %2$2sarticle%3$3s."
 msgstr ""
 
 #. translators: %1$s: link html start, %2$s: link html end
-#: admin-core/ajax/importer.php:902
+#: admin-core/ajax/importer.php:909
 msgid "%1$sUpgrade to CartFlows Pro.%2$s"
 msgstr ""
 
-#: admin-core/ajax/importer.php:903
+#: admin-core/ajax/importer.php:910
 msgid "To import the premium step, please upgrade to CartFlows Pro"
 msgstr ""
 
 #. translators: %1$s: link html start, %2$s: link html end
-#: admin-core/ajax/importer.php:906
-#: admin-core/ajax/importer.php:1028
+#: admin-core/ajax/importer.php:913
+#: admin-core/ajax/importer.php:1035
 msgid "%1$sActivate CartFlows Pro%2$s"
 msgstr ""
 
-#: admin-core/ajax/importer.php:907
+#: admin-core/ajax/importer.php:914
 msgid "To import the premium step activate Cartflows Pro and validate the license key."
 msgstr ""
 
 #. translators: %1$s: link html start, %2$s: link html end
-#: admin-core/ajax/importer.php:910
+#: admin-core/ajax/importer.php:917
 msgid "%1$sActivate CartFlows Pro License %2$s"
 msgstr ""
 
-#: admin-core/ajax/importer.php:911
+#: admin-core/ajax/importer.php:918
 msgid "To import the premium step activate the CartFlows Pro."
 msgstr ""
 
-#: admin-core/ajax/importer.php:946
-#: admin-core/ajax/importer.php:1067
+#: admin-core/ajax/importer.php:953
+#: admin-core/ajax/importer.php:1074
 msgid "Step data not found."
 msgstr ""
 
-#: admin-core/ajax/importer.php:954
-#: admin-core/ajax/importer.php:1075
+#: admin-core/ajax/importer.php:961
+#: admin-core/ajax/importer.php:1082
 msgid "Successfully imported the Step!"
 msgstr ""
 
 #. translators: %1$s: link html start, %2$s: link html end
-#: admin-core/ajax/importer.php:1025
+#: admin-core/ajax/importer.php:1032
 msgid "Upgrade to %1$sCartFlows Pro.%2$s"
 msgstr ""
 
 #. translators: %1$s: link html start, %2$s: link html end
-#: admin-core/ajax/importer.php:1031
+#: admin-core/ajax/importer.php:1038
 msgid "CartFlows Pro license is not active. Activate %1$sCartFlows Pro License %2$s"
 msgstr ""
 
 #. translators: %s: step ID
-#: admin-core/ajax/importer.php:1099
-#: admin-core/ajax/importer.php:1185
+#: admin-core/ajax/importer.php:1106
+#: admin-core/ajax/importer.php:1192
 msgid "Invalid step id %1$s or post id %2$s."
 msgstr ""
 
-#: admin-core/ajax/importer.php:1162
+#: admin-core/ajax/importer.php:1169
 #: admin-core/inc/store-checkout.php:110
 msgid "Nonce verification failed."
 msgstr ""
 
-#: admin-core/ajax/importer.php:1441
+#: admin-core/ajax/importer.php:1448
 #: wizard/ajax/wizard.php:384
 msgid "Successful!"
 msgstr ""
@@ -726,90 +727,94 @@ msgstr ""
 msgid "Ultra-Bold 900"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:882
+#: admin-core/inc/admin-menu.php:606
+msgid "The default page builder is set to %1$s. Please %2$sinstall & activate%3$s the %4$s to start editing the steps."
+msgstr ""
+
+#: admin-core/inc/admin-menu.php:945
 msgid "Stripe Payments For WooCommerce"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:883
+#: admin-core/inc/admin-menu.php:946
 msgid "Accept credit card payments in your store with Stripe for WooCommerce."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:894
+#: admin-core/inc/admin-menu.php:957
 msgid "PayPal Payments For WooCommerce"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:895
+#: admin-core/inc/admin-menu.php:958
 msgid "Accept payments in your store with PayPal for WooCommerce."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:906
+#: admin-core/inc/admin-menu.php:969
 msgid "WooCommerce"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:907
+#: admin-core/inc/admin-menu.php:970
 msgid "WooCommerce is a customizable, open-source ecommerce platform built on WordPress."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:918
+#: admin-core/inc/admin-menu.php:981
 msgid "SureTriggers"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:919
+#: admin-core/inc/admin-menu.php:982
 msgid "SureTriggers helps people automate their work by integrating multiple apps and plugins, allowing them to share data and perform tasks automatically."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:931
+#: admin-core/inc/admin-menu.php:994
 msgid "SureMembers"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:932
-#: admin-core/inc/admin-menu.php:945
+#: admin-core/inc/admin-menu.php:995
+#: admin-core/inc/admin-menu.php:1008
 msgid "Transform your WordPress form-building experience with stunning designs, ai integration, and no-code flexibility."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:944
+#: admin-core/inc/admin-menu.php:1007
 msgid "SureForms"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:956
+#: admin-core/inc/admin-menu.php:1019
 #: wizard/assets/build/wizard-app.js:1
 msgid "Spectra"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:957
+#: admin-core/inc/admin-menu.php:1020
 msgid "Power-up the Gutenberg editor with advanced and powerful blocks."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:968
+#: admin-core/inc/admin-menu.php:1031
 #: admin-core/assets/build/settings-app.js:29
 msgid "Cart Abandonment"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:969
+#: admin-core/inc/admin-menu.php:1032
 msgid "Recover abandonded carts with ease in less than 10 minutes."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:980
+#: admin-core/inc/admin-menu.php:1043
 msgid "Variation Swatches for WooCommerce"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:981
+#: admin-core/inc/admin-menu.php:1044
 msgid "Convert dropdown boxes into highly engaging variation swatches."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:997
+#: admin-core/inc/admin-menu.php:1060
 msgid "Astra"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:998
+#: admin-core/inc/admin-menu.php:1061
 msgid "Astra is fast, fully customizable & beautiful WordPress theme suitable for blog, personal portfolio, business website and WooCommerce storefront."
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:1008
+#: admin-core/inc/admin-menu.php:1071
 msgid "Spectra One"
 msgstr ""
 
-#: admin-core/inc/admin-menu.php:1009
+#: admin-core/inc/admin-menu.php:1072
 msgid "Spectra One is a beautiful and modern WordPress theme built with the Full Site Editing (FSE) feature. It's a versatile theme that can be used for blogs, portfolios, businesses, and more."
 msgstr ""
 
@@ -1459,32 +1464,28 @@ msgid "Learn More."
 msgstr ""
 
 #. translators: %1$s Software Title, %2$s Plugin, %3$s Anchor opening tag, %4$s Anchor closing tag, %5$s Software Title.
-#: classes/class-cartflows-admin-notices.php:86
+#: classes/class-cartflows-admin-notices.php:88
 msgid "%1$sCartFlows:%2$s We just introduced an awesome new feature, weekly store revenue reports via email. Now you can see how many revenue we are generating for your store each week, without having to log into your website. You can set the email address for these email from %3$shere.%4$s"
 msgstr ""
 
+#: classes/class-cartflows-admin-notices.php:174
+msgid "How likely are you to recommend #pluginname to your friends or colleagues?"
+msgstr ""
+
+#: classes/class-cartflows-admin-notices.php:177
+msgid "Could you please do us a favor and give us a 5-star rating on WordPress? It would help others choose CartFlows with confidence. Thank you!"
+msgstr ""
+
+#: classes/class-cartflows-admin-notices.php:181
+msgid "Thank you for your feedback"
+msgstr ""
+
 #: classes/class-cartflows-admin-notices.php:182
-msgid "Hi there! You recently used CartFlows to build a sales funnel &mdash; Thanks a ton!"
-msgstr ""
-
-#: classes/class-cartflows-admin-notices.php:183
-msgid "It would be awesome if you give us a 5-star review and share your experience on WordPress. Your reviews pump us up and also help other WordPress users make a better decision when choosing CartFlows!"
-msgstr ""
-
-#: classes/class-cartflows-admin-notices.php:185
-msgid "Ok, you deserve it"
-msgstr ""
-
-#: classes/class-cartflows-admin-notices.php:187
-msgid "Nope, maybe later"
-msgstr ""
-
-#: classes/class-cartflows-admin-notices.php:188
-msgid "I already did"
+msgid "We value your input. How can we improve your experience?"
 msgstr ""
 
 #. translators: %1$s: HTML, %2$s: HTML
-#: classes/class-cartflows-admin-notices.php:213
+#: classes/class-cartflows-admin-notices.php:205
 msgid "Heads up! The Gutenberg plugin is not recommended on production sites as it may contain non-final features that cause compatibility issues with CartFlows and other plugins. %1$s Please deactivate the Gutenberg plugin %2$s to ensure the proper functioning of your website."
 msgstr ""
 
@@ -1527,9 +1528,11 @@ msgid "Settings"
 msgstr ""
 
 #: classes/class-cartflows-default-meta.php:163
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1874
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1883
 #: modules/checkout/classes/class-cartflows-checkout-meta-data.php:1220
 #: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:474
-#: modules/checkout/templates/checkout/shipping-methods.php:70
+#: modules/checkout/templates/checkout/shipping-methods.php:69
 msgid "There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help."
 msgstr ""
 
@@ -1719,11 +1722,11 @@ msgid "You are using an older version of %1$s%3$s%2$s. Please update %1$s%3$s%2$
 msgstr ""
 
 #. translators: %s: html tags
-#: classes/class-cartflows-loader.php:589
+#: classes/class-cartflows-loader.php:594
 msgid "This %1$sCartFlows%2$s page requires %1$sWooCommerce%2$s plugin installed & activated."
 msgstr ""
 
-#: classes/class-cartflows-loader.php:599
+#: classes/class-cartflows-loader.php:604
 #: admin-core/assets/build/editor-app.js:41
 #: admin-core/assets/build/editor-app.js:43
 #: admin-core/assets/build/settings-app.js:17
@@ -1732,7 +1735,7 @@ msgstr ""
 msgid "Activate WooCommerce"
 msgstr ""
 
-#: classes/class-cartflows-loader.php:606
+#: classes/class-cartflows-loader.php:611
 #: admin-core/assets/build/editor-app.js:43
 #: admin-core/assets/build/settings-app.js:17
 #: admin-core/assets/build/settings-app.js:29
@@ -2964,44 +2967,50 @@ msgstr ""
 msgid "This product can't be purchased"
 msgstr ""
 
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1469
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1513
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1468
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1512
 #: modules/checkout/templates/checkout/collapsed-order-summary.php:46
 #: modules/checkout/templates/checkout/instant-checkout-review-order.php:82
 msgid "Coupon Code"
 msgstr ""
 
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1470
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1522
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1469
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1521
 #: modules/checkout/templates/checkout/collapsed-order-summary.php:51
 #: modules/checkout/templates/checkout/instant-checkout-review-order.php:87
 msgid "Apply"
 msgstr ""
 
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1546
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1545
 msgid "Entered email address is not a valid email."
 msgstr ""
 
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1547
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1546
 msgid "This email is already registered. Please enter the password to continue."
 msgstr ""
 
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1550
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1549
 msgid "Value must be between "
 msgstr ""
 
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1749
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1750
 msgid "Show Order Summary"
 msgstr ""
 
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1750
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1751
 msgid "Hide Order Summary"
 msgstr ""
 
-#: modules/checkout/classes/class-cartflows-checkout-markup.php:1865
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1870
+#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:471
+#: modules/checkout/templates/checkout/shipping-methods.php:66
+msgid "Enter your address to view shipping options."
+msgstr ""
+
+#: modules/checkout/classes/class-cartflows-checkout-markup.php:1879
 #: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:378
 #: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:380
-#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:739
+#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:738
 #: modules/checkout/templates/checkout/instant-checkout-review-order.php:110
 #: modules/thankyou/templates/instant-thankyou-order-details.php:105
 #: admin-core/assets/build/editor-app.js:33
@@ -3474,7 +3483,7 @@ msgstr ""
 
 #: modules/checkout/classes/class-cartflows-checkout-meta-data.php:1299
 #: modules/checkout/classes/class-cartflows-checkout-meta-data.php:1301
-#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:766
+#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:765
 #: modules/checkout/classes/layouts/class-cartflows-modern-checkout.php:276
 #: modules/thankyou/templates/instant-thankyou-order-details.php:124
 msgid "Payment"
@@ -3545,24 +3554,19 @@ msgid "Shipping"
 msgstr ""
 
 #: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:469
-#: modules/checkout/templates/checkout/shipping-methods.php:65
+#: modules/checkout/templates/checkout/shipping-methods.php:64
 msgid "Shipping costs are calculated during checkout."
-msgstr ""
-
-#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:471
-#: modules/checkout/templates/checkout/shipping-methods.php:67
-msgid "Enter your address to view shipping options."
 msgstr ""
 
 #. Translators: $s shipping destination.
 #: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:488
-#: modules/checkout/templates/checkout/shipping-methods.php:73
+#: modules/checkout/templates/checkout/shipping-methods.php:72
 msgid "No shipping options were found for %s."
 msgstr ""
 
 #. Translators: $s shipping destination.
 #: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:492
-#: modules/checkout/templates/checkout/shipping-methods.php:74
+#: modules/checkout/templates/checkout/shipping-methods.php:73
 msgid "Enter a different address"
 msgstr ""
 
@@ -3635,15 +3639,15 @@ msgstr ""
 msgid " Welcome Back %1$s ( %2$s )"
 msgstr ""
 
-#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:858
+#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:857
 msgid "Looks like you haven't added any items to cart yet — start shopping to fill it up!"
 msgstr ""
 
-#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:870
+#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:869
 msgid "Your Cart is Currently Empty."
 msgstr ""
 
-#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:872
+#: modules/checkout/classes/layouts/class-cartflows-instant-checkout.php:871
 msgid "Start Shopping"
 msgstr ""
 
@@ -3673,7 +3677,7 @@ msgid "Subtotal"
 msgstr ""
 
 #: modules/checkout/templates/checkout/instant-checkout-review-order.php:147
-#: modules/checkout/templates/checkout/order-review-table.php:81
+#: modules/checkout/templates/checkout/order-review-table.php:79
 #: modules/thankyou/templates/instant-thankyou-your-product.php:142
 msgid "Total"
 msgstr ""
@@ -3686,16 +3690,16 @@ msgid "Product"
 msgstr ""
 
 #. Translators: $s shipping destination.
-#: modules/checkout/templates/checkout/shipping-methods.php:54
+#: modules/checkout/templates/checkout/shipping-methods.php:53
 msgid "Shipping to %s."
 msgstr ""
 
 #. Translators: $s shipping destination.
-#: modules/checkout/templates/checkout/shipping-methods.php:55
+#: modules/checkout/templates/checkout/shipping-methods.php:54
 msgid "Change address"
 msgstr ""
 
-#: modules/checkout/templates/checkout/shipping-methods.php:57
+#: modules/checkout/templates/checkout/shipping-methods.php:56
 msgid "Shipping options will be updated during checkout."
 msgstr ""
 
@@ -6325,21 +6329,6 @@ msgstr ""
 #. translators: %s is replaced with the step title
 #: admin-core/assets/build/editor-app.js:69
 #: admin-core/assets/build/settings-app.js:79
-msgid "CartFlows Upsell/Downsell doesn't work with "
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:69
-#: admin-core/assets/build/settings-app.js:79
-msgid " See supported payment gateways "
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:69
-#: admin-core/assets/build/settings-app.js:79
-msgid "here."
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:69
-#: admin-core/assets/build/settings-app.js:79
 msgid "Please wait…"
 msgstr ""
 
@@ -7180,6 +7169,7 @@ msgstr ""
 msgid "Store Checkout Templates"
 msgstr ""
 
+#. translators: %s is replaced with the step title
 #: admin-core/assets/build/settings-app.js:79
 msgid "No CartFlows Logs Found."
 msgstr ""

@@ -619,6 +619,10 @@ class Wizard extends AjaxBase {
 				'cartflows_import_store_checkout'
 			);
 		}
+		/**
+		 * This option will be used to display the NPS survey notice.
+		 */
+		update_option( '_cartflows_wizard_store_checkout_set', 'yes' );
 
 		/**
 		 * Redirect to the new flow edit screen

@@ -38,7 +38,7 @@ if ( ! apply_filters( 'cartflows_show_mobile_order_summary_collapsed', true ) ) 
 		Cartflows_Checkout_Markup::get_instance()->wcf_order_review();
 		?>
 
-		<?php if ( $is_coupon_enabled ) : ?>
+		<?php if ( ! Cartflows_Helper::is_instant_layout_enabled() && $is_coupon_enabled ) : ?>
 			<!-- Order review coupon field -->
 			<div class="wcf-custom-coupon-field" id="wcf_custom_coupon_field_order_review">
 				<div class="wcf-coupon-col-1">

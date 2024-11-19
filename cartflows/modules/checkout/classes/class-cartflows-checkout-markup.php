@@ -835,7 +835,6 @@ class Cartflows_Checkout_Markup {
 	public function add_customized_shipping_section() {
 
 		add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'add_custom_shipping_section' ), 10 );
-		add_action( 'cartflows_order_review_shipping_methods', array( $this, 'show_selected_shipping_method' ), 20 );
 
 	}
 
@@ -1692,10 +1691,8 @@ class Cartflows_Checkout_Markup {
 
 			$message = ! empty( $custom_shipping_message ) ? $custom_shipping_message : $message;
 
-		} else {
-			$message = "<span class='wcf-shipping-error-msg'>" . $message . '</span>';
 		}
-		return $message;
+		return "<span class='wcf-shipping-error-msg'>" . $message . '</span>';
 	}
 
 	/**
@@ -1725,10 +1722,14 @@ class Cartflows_Checkout_Markup {
 		$this->wcf_order_review();
 		$wcf_order_review = ob_get_clean();
 
-		// Removed the CartFlows prefix as we have changed the shipping method selection to left column for all layouts. So updating the order review template completely for all checkout styles.
-		$fragments['.wcf-collapsed-order-review-section .woocommerce-checkout-review-order-table'] = $wcf_order_review;
-		$fragments['.woocommerce-checkout-review-order-table']                                     = $wcf_order_review;
-		$fragments['.wcf-shipping-methods-wrapper'] = $wcf_shipping_method_html;
+		ob_start();
+		$this->show_selected_shipping_method();
+		$selected_shipping_html = ob_get_clean();
+
+		$fragments['.woocommerce-checkout-review-order-table']               = $wcf_order_review;
+		$fragments['.wcf-embed-checkout-form .wcf-shipping-methods-wrapper'] = $wcf_shipping_method_html;
+		$fragments['.wcf-embed-checkout-form .woocommerce-checkout-review-order-table .cart-shipping'] = $selected_shipping_html;
+		$fragments['.wcf-embed-checkout-form .wcf-order-review-total']                                 = "<div class='wcf-order-review-total'>" . WC()->cart->get_total() . '</div>';
 
 
 		return $fragments;
@@ -1766,7 +1767,11 @@ class Cartflows_Checkout_Markup {
 		}
 
 		$packages = WC()->shipping()->get_packages();
-		$first    = true;
+		if ( empty( $packages ) ) {
+			WC()->cart->calculate_totals();
+			$packages = WC()->shipping()->get_packages();
+		}
+		$first = true;
 
 		foreach ( $packages as $i => $package ) {
 			$chosen_method = isset( WC()->session->chosen_shipping_methods[ $i ] ) ? WC()->session->chosen_shipping_methods[ $i ] : '';
@@ -1796,13 +1801,14 @@ class Cartflows_Checkout_Markup {
 		}
 
 		$checkout_id = _get_wcf_checkout_id();
-
+		
 		if ( ! $checkout_id ) {
 			$checkout_id = isset( $_GET['wcf_checkout_id'] ) && ! empty( $_GET['wcf_checkout_id'] ) ? intval( wp_unslash( $_GET['wcf_checkout_id'] ) ) : 0; //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
-
 		$checkout_layout               = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-checkout-layout' );
 		$path_to_order_review_template = apply_filters( 'cartflows_get_order_review_template_path', CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/order-review-table.php', $checkout_layout );
+		
+		
 		include $path_to_order_review_template;
 	}
 
@@ -1831,7 +1837,7 @@ class Cartflows_Checkout_Markup {
 	 */
 	public function add_custom_shipping_section() {
 		// Return if the current page is not the CartFlows Checkout page and return if any of the style of plugin decides not to load it.
-		if ( ! _is_wcf_checkout_type() || ! apply_filters( 'cartflows_should_render_custom_shipping', true ) ) {
+		if ( ! ( _is_wcf_checkout_type() || _is_wcf_doing_checkout_ajax() ) && ! apply_filters( 'cartflows_should_render_custom_shipping', true ) ) {
 			return;
 		}
 		ob_start();
@@ -1845,25 +1851,42 @@ class Cartflows_Checkout_Markup {
 	 * @since 2.1.0
 	 * @return void
 	 */
-	public function show_selected_shipping_method() {
-
-		if ( _is_wcf_checkout_type() && WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) :
+	public static function show_selected_shipping_method() {
+		if ( ( _is_wcf_checkout_type() || _is_wcf_doing_checkout_ajax() ) && WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) :
 			$shipping_method = WC()->session->get( 'chosen_shipping_methods' );
-			$shipping_method = isset( $shipping_method[0] ) ? $shipping_method[0] : '';
-			$currency        = get_woocommerce_currency_symbol();
+			$shipping_method = is_array( $shipping_method ) ? sanitize_text_field( $shipping_method[0] ) : '';
 			$shipping_cost   = '';
-
-			foreach ( WC()->shipping->get_packages() as $key => $package ) {
-				$cost           = $shipping_method && $package['rates'][ $shipping_method ] ? $package['rates'][ $shipping_method ]->get_cost() : '';
-				$cost           = $cost ? $currency . $cost : '';
-				$shipping_label = $shipping_method && isset( $package['rates'][ $shipping_method ] ) ? $package['rates'][ $shipping_method ] : '';
-				$shipping_label = $shipping_label ? $shipping_label->get_label() : '';
-				$shipping_cost  = $shipping_label . ' ' . $cost;
+			
+			// Use WC_Shipping to get the shipping packages.
+			$packages = WC()->shipping()->get_packages();
+			if ( ! empty( $packages ) ) {
+				foreach ( $packages as $package ) {
+					$formatted_destination   = WC()->countries->get_formatted_address( $package['destination'], ', ' );
+					$has_calculated_shipping = WC()->customer->has_calculated_shipping(); 
+					$available_methods       = $package['rates'];
+					if ( ! empty( $available_methods ) && is_array( $available_methods ) && $shipping_method && isset( $available_methods[ $shipping_method ] ) ) {
+						$rate          = $available_methods[ $shipping_method ];
+						$shipping_cost = wc_cart_totals_shipping_method_label( $rate );
+					} elseif ( ! $has_calculated_shipping || ! $formatted_destination ) {
+						$shipping_cost = apply_filters( 'woocommerce_shipping_may_be_available_html', __( 'Enter your address to view shipping options.', 'cartflows' ) );
+					}
+				}
+			} else {
+				apply_filters( 'woocommerce_no_shipping_available_html', __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'cartflows' ) );
 			}
+
 			?>
 			<tr class="cart-shipping">
 				<th><?php esc_html_e( 'Shipping', 'cartflows' ); ?></th>
-				<td><?php echo esc_html( $shipping_cost ); ?></td>
+				<td>
+					<?php
+					if ( empty( $shipping_cost ) ) {
+						echo wp_kses_post( apply_filters( 'woocommerce_no_shipping_available_html', __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'cartflows' ) ) );
+					} else {
+						echo wp_kses_post( $shipping_cost );
+					}
+					?>
+				</td>
 			</tr>
 			<?php
 		endif;

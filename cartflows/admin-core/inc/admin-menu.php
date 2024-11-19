@@ -542,6 +542,7 @@ class AdminMenu {
 				'integrations'                      => $this->get_recommendation_integrations(),
 				'plugin_installer_nonce'            => wp_create_nonce( 'updates' ),
 				'instant_checkout_notice_status'    => \Cartflows_Helper::get_admin_settings_option( 'wcf-instant-checkout-notice-skipped', false, false ),
+				'cartflows_admin_notices'           => $this->cartflows_admin_notices(),
 			)
 		);
 
@@ -554,6 +555,68 @@ class AdminMenu {
 		}
 	}
 
+	/**
+	 * Get recommendation integrations.
+	 *
+	 * @since 1.11.8
+	 *
+	 * @return array
+	 */
+	public function cartflows_admin_notices() {
+		$notices = array();
+
+		$notices = $this->page_builder_plugin_notices( $notices );
+		$notices = apply_filters( 'cartflows_admin_notices', $notices );
+		
+		return $notices;
+	}
+
+	/**
+	 * Get builder plugin notices.
+	 *
+	 * @since 1.11.8
+	 * @param array $notices Notices array.
+	 * @return array
+	 */
+	public function page_builder_plugin_notices( $notices ) {
+		$required_plugins_missing = $this->get_any_required_plugins_status();
+		$default_page_builder     = \Cartflows_Helper::get_common_setting( 'default_page_builder' );
+		$required_plugins         = array();
+		if ( isset( \Cartflows_Helper::get_plugins_groupby_page_builders()[ $default_page_builder ] ) ) {
+			$required_plugins = \Cartflows_Helper::get_plugins_groupby_page_builders()[ $default_page_builder ];
+		}
+		
+		$plugin_title         = '';
+		$page_builder_plugins = isset( $required_plugins['plugins'] ) ? $required_plugins['plugins'] : array();
+		$any_inactive         = false;
+		if ( ! empty( $page_builder_plugins ) ) {
+			foreach ( $page_builder_plugins as $plugin ) {
+				if ( 'activated' !== $plugin['status'] ) {
+					$any_inactive = true;
+					$plugin_title = $plugin['slug'];
+					break; // Stop checking if we found an active plugin.
+				}
+			}
+		}
+		
+		if ( 'yes' === $required_plugins_missing && $any_inactive ) {
+			// Translators: %1$s is the required page builder title, %2$s is the opening anchor tag to plugins.php, %3$s is the closing anchor tag, %4$s is the plugin title.
+			$notices[] = '<div class="wcf-payment-gateway-notice--text"><p class="text-sm text-yellow-700">' . wp_kses_post(
+				sprintf(
+					__( 'The default page builder is set to %1$s. Please %2$sinstall & activate%3$s the %4$s to start editing the steps.', 'cartflows' ),  //phpcs:ignore
+					'<span class="capitalize">' . esc_html( $required_plugins['title'] ) . '</span>',
+					'<span class="font-medium"><a href="' . esc_url( admin_url() . 'plugins.php' ) . '" class="underline text-yellow-700 hover:text-yellow-600" target="_blank">',
+					'</a></span>',
+					'<span class="capitalize">' . esc_html( $plugin_title ) . '</span>'
+				)
+			) . '</p></div>';
+			
+		}
+		return $notices;
+		
+	}
+	
+	
 	/**
 	 * Get required plugin status.
 	 */

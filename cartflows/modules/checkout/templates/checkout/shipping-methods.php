@@ -25,7 +25,6 @@ $show_shipping_calculator = ! empty( $show_shipping_calculator );
 $calculator_text          = '';
 ?>
 
-<!-- Mobile responsive shipping methods template -->
 	<div class="wcf-shipping-methods-wrapper">
 		<h3 class="wcf-shipping-methods-title"><?php echo wp_kses_post( $package_name ); ?></h3>
 		<div class="wcf-shipping-method-options">

@@ -43,6 +43,8 @@ class Cartflows_Admin_Notices {
 
 		add_action( 'admin_head', array( $this, 'show_admin_notices' ) );
 
+		add_action( 'admin_footer', array( $this, 'show_nps_notice' ), 999 );
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'notices_scripts' ) );
 
 		add_action( 'wp_ajax_cartflows_ignore_gutenberg_notice', array( $this, 'ignore_gb_notice' ) );
@@ -147,48 +149,38 @@ class Cartflows_Admin_Notices {
 
 		add_action( 'admin_notices', array( $this, 'show_weekly_report_email_settings_notice' ) );
 
-		$image_path = esc_url( CARTFLOWS_URL . 'assets/images/cartflows-logo-small.jpg' );
+	}
 
-		Astra_Notices::add_notice(
+	/**
+	 * Render CartFlows NPS Survey Notice.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function show_nps_notice() {
+
+		Nps_Survey::show_nps_notice(
+			'nps-survey-cartflows',
 			array(
-				'id'                   => 'cartflows-5-start-notice',
-				'type'                 => 'info',
-				'class'                => 'cartflows-5-star',
-				'show_if'              => true,
-				/* translators: %1$s white label plugin name and %2$s deactivation link */
-				'message'              => sprintf(
-					'<div class="notice-image" style="display: flex;">
-                        <img src="%1$s" class="custom-logo" alt="CartFlows Icon" itemprop="logo" style="max-width: 90px; border-radius: 50px;"></div>
-                        <div class="notice-content">
-                            <div class="notice-heading">
-                                %2$s
-                            </div>
-                            %3$s<br />
-                            <div class="astra-review-notice-container">
-                                <a href="%4$s" class="astra-notice-close astra-review-notice button-primary" target="_blank">
-                                %5$s
-                                </a>
-                            <span class="dashicons dashicons-calendar"></span>
-                                <a href="#" data-repeat-notice-after="%6$s" class="astra-notice-close astra-review-notice">
-                                %7$s
-                                </a>
-                            <span class="dashicons dashicons-smiley"></span>
-                                <a href="#" class="astra-notice-close astra-review-notice">
-                                %8$s
-                                </a>
-                            </div>
-                        </div>',
-					$image_path,
-					__( 'Hi there! You recently used CartFlows to build a sales funnel &mdash; Thanks a ton!', 'cartflows' ),
-					__( 'It would be awesome if you give us a 5-star review and share your experience on WordPress. Your reviews pump us up and also help other WordPress users make a better decision when choosing CartFlows!', 'cartflows' ),
-					'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post',
-					__( 'Ok, you deserve it', 'cartflows' ),
-					MONTH_IN_SECONDS,
-					__( 'Nope, maybe later', 'cartflows' ),
-					__( 'I already did', 'cartflows' )
+				'show_if'          => $this->should_display_nps_survey_notice(),
+				'dismiss_timespan' => 2 * WEEK_IN_SECONDS,
+				'display_after'    => 0,
+				'plugin_slug'      => 'cartflows',
+				'message'          => array(
+
+					// Step 1 i.e rating input.
+					'logo'                  => esc_url( CARTFLOWS_URL . 'admin-core/assets/images/cartflows-icon.svg' ),
+					'plugin_name'           => __( 'CartFlows', 'cartflows' ),
+					'nps_rating_message'    => __( 'How likely are you to recommend #pluginname to your friends or colleagues?', 'cartflows' ),
+
+					// Step 2A i.e. positive.
+					'feedback_content'      => __( 'Could you please do us a favor and give us a 5-star rating on WordPress? It would help others choose CartFlows with confidence. Thank you!', 'cartflows' ),
+					'plugin_rating_link'    => esc_url( 'https://wordpress.org/support/plugin/cartflows/reviews/#new-post' ),
+
+					// Step 2B i.e. negative.
+					'plugin_rating_title'   => __( 'Thank you for your feedback', 'cartflows' ),
+					'plugin_rating_content' => __( 'We value your input. How can we improve your experience?', 'cartflows' ),
 				),
-				'repeat-notice-after'  => MONTH_IN_SECONDS,
-				'display-notice-after' => ( 2 * WEEK_IN_SECONDS ), // Display notice after 2 weeks.
 			)
 		);
 	}
@@ -255,6 +247,28 @@ class Cartflows_Admin_Notices {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if the user has completed the onboarding, skipped the onboarding on ready step, and the store checkout is imported.
+	 *
+	 * @since x.x.x
+	 * @return bool
+	 */
+	public function should_display_nps_survey_notice() {
+
+		$is_store_checkout_imported = (bool) get_option( '_cartflows_wizard_store_checkout_set', false );   // Must be true.
+		$onboarding_completed       = (bool) get_option( 'wcf_setup_complete', false );                     // Must be true.
+		$is_first_funnel_imported   = (bool) get_option( 'wcf_first_flow_imported', false );                // Must be true.
+		$total_funnels              = intval( wp_count_posts( CARTFLOWS_FLOW_POST_TYPE )->publish );        // Must be greater than or equal to 1.
+
+		/**
+		 * Show the notice in two conditions.
+		 * 1. If completed the onboarding steps/process of plugin and sets their first store checkout funnel successfully.
+		 * 2. If sets up the first funnel manually and makes it live.
+		 */
+
+		return ( $is_store_checkout_imported && $onboarding_completed ) || ( $is_first_funnel_imported && 1 >= $total_funnels ) || ( 1 >= $total_funnels );
 	}
 }
 

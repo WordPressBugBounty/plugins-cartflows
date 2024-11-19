@@ -126,8 +126,8 @@ class Cartflows_Instant_Checkout {
 		remove_action( 'woocommerce_before_checkout_form', 'woocommerce_output_all_notices', 10 );
 
 		// Change the structure of the checkout form.
-		add_action( 'woocommerce_checkout_before_customer_details', array( $this, 'instant_checkout_wrapper_start' ), 30, 1 );
-		add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'order_review_wrapper_start' ), 10, 1 );
+		add_action( 'woocommerce_checkout_before_customer_details', array( $this, 'instant_checkout_wrapper_start' ), 10, 1 );
+		add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'order_review_wrapper_start' ), 15, 1 );
 
 		// Rarrange the payment section.
 		remove_action( 'woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20 );
@@ -144,6 +144,7 @@ class Cartflows_Instant_Checkout {
 
 		// Order Review template.
 		add_action( 'woocommerce_checkout_after_order_review', array( $this, 'show_collapsed_order_summary' ), 11, 1 );
+		add_filter( 'cartflows_get_order_review_template_path', array( $this, 'update_path_for_order_review_template' ), 10, 2 );
 
 
 
@@ -306,9 +307,22 @@ class Cartflows_Instant_Checkout {
 		$this->custom_order_review_template();
 		$wcf_instant_checkout_order_review = ob_get_clean();
 
-		$fragments['.woocommerce-checkout-review-order-table'] = $wcf_instant_checkout_order_review;
-		$fragments['.wcf-order-review-total']                  = "<div class='wcf-order-review-total'>" . WC()->cart->get_total() . '</div>';
+		$fragments['.wcf-instant-checkout-wrapper .woocommerce-checkout-review-order-table'] = $wcf_instant_checkout_order_review;
+		$fragments['.wcf-order-review-total'] = "<div class='wcf-order-review-total'>" . WC()->cart->get_total() . '</div>';
 		return $fragments;
+	}
+
+	/**
+	 * Add order review template path for multistep checkout.
+	 *
+	 * @param string $path template path.
+	 * @param string $checkout_layout layout type.
+	 * @return string
+	 */
+	public function update_path_for_order_review_template( $path, $checkout_layout ) {
+
+		return CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/instant-checkout-review-order.php';
+
 	}
 
 	/**
@@ -721,7 +735,6 @@ class Cartflows_Instant_Checkout {
 	 */
 	public function order_review_wrapper_start( $checkout_id ) {
 		do_action( 'cartflows_checkout_after_instant_shipping' );
-		do_action( 'woocommerce_review_order_before_submit' );
 
 		echo '</div></div> <div class="wcf-ic-layout-right-column">';
 	}

@@ -1940,6 +1940,9 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 	border-radius: 4px;
 	font-weight: 400;
 }
+.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce form .woocommerce-checkout-review-order-table .wcf-shipping-error-msg {
+	color: #a10000;
+}
 
 .wcf-embed-checkout-form .woocommerce form .wcf-shipping-methods-wrapper .wcf-shipping-error-msg {
 	display: block;
@@ -1951,6 +1954,9 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 	font-size: 14px;
 	font-weight: 500; /* Default Font Weight. */
 	width: 100%;
+}
+.wcf-embed-checkout-form .woocommerce form .woocommerce-checkout-review-order-table .wcf-shipping-error-msg {
+	color: #a00;
 }
 
 .wcf-embed-checkout-form table.shop_table tr.woocommerce-shipping-totals .wcf-tooltip-msg {
@@ -3326,6 +3332,9 @@ body.cartflows-instant-checkout #ast-scroll-top {
 	margin-top: 0;
 	border: 1px solid var( --wcf-field-error-border-color );
 	border-radius: 4px;
+	color: var( --wcf-field-error-border-color );
+}
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce form .woocommerce-checkout-review-order-table .wcf-shipping-error-msg {
 	color: var( --wcf-field-error-border-color );
 }
 
