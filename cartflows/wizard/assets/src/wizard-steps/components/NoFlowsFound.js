@@ -41,7 +41,7 @@ function NoFlowsFound() {
 						className="wcf-wizard--button"
 						onClick={ redirectNextStep }
 					>
-						{ __( 'Skip to next', 'cartflows' ) }
+						{ __( 'Skip to Next', 'cartflows' ) }
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							className="w-5 mt-0.5 ml-1.5 fill-[#243c5a]"

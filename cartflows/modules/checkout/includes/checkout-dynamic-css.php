@@ -76,12 +76,19 @@ $output .= "
 		font-family: {$input_font_family};
 	    font-weight: {$input_font_weight};
 	}
-	.wcf-embed-checkout-form .woocommerce #payment button,
+	.wcf-embed-checkout-form .woocommerce form #payment button,
 	.wcf-embed-checkout-form .woocommerce form.woocommerce-form-login .form-row button {
 		padding-top: {$submit_tb_padding}px;
 		padding-bottom: {$submit_tb_padding}px;
 		padding-left: {$submit_lr_padding}px;
 		padding-right: {$submit_lr_padding}px;
+		border-color: {$submit_border_color};
+		min-height: {$submit_button_height};
+		font-family: {$button_font_family};
+	    font-weight: {$button_font_weight};
+	}
+
+	.wcf-embed-checkout-form .woocommerce #order_review .wcf-custom-coupon-field .wcf-submit-coupon.button{
 		border-color: {$submit_border_color};
 		min-height: {$submit_button_height};
 		font-family: {$button_font_family};
@@ -97,7 +104,8 @@ $output .= "
 	.wcf-embed-checkout-form .woocommerce-checkout form.login .button:hover,
 	.wcf-embed-checkout-form .woocommerce-checkout form.checkout_coupon .button:hover,
 	.wcf-embed-checkout-form .woocommerce #payment #place_order:hover,
-	.wcf-embed-checkout-form .woocommerce #order_review button.wcf-btn-small:hover{
+	.wcf-embed-checkout-form .woocommerce #order_review button.wcf-btn-small:hover,
+	.wcf-embed-checkout-form .woocommerce #order_review .wcf-custom-coupon-field .wcf-submit-coupon.button:hover{
 		border-color: {$submit_border_hover_color};
 	}
 	.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .wcf-customer-info-main-wrapper h3,

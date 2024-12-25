@@ -62,6 +62,7 @@ function PluginsInstallStep() {
 			'wcf-plugins-install-success',
 			function () {
 				setProcessing( false );
+
 				if ( 'bricks-builder' === selected_page_builder ) {
 					history.push( {
 						pathname: 'index.php',

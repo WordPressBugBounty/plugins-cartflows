@@ -39,7 +39,6 @@ class Nps_Survey {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		add_action( 'admin_enqueue_scripts', array( $this, 'editor_load_scripts' ) );
 		add_action( 'rest_api_init', array( $this, 'register_route' ) );
 	}
 
@@ -64,40 +63,67 @@ class Nps_Survey {
 			return;
 		}
 
+		$show_on_screen = ! empty( $vars['show_on_screens'] ) && is_array( $vars['show_on_screens'] ) ? $vars['show_on_screens'] : [ 'dashboard' ];
+
+		// Loading script here to confirm if the screen is allowed or not.
+		self::editor_load_scripts( $show_on_screen );
+
 		?><div data-id="<?php echo esc_attr( $id ); ?>" class="nps-survey-root" data-vars="<?php echo esc_attr( strval( wp_json_encode( $vars ) ) ); ?>"></div>
 		<?php
 	}
 
 	/**
+	 * Generate and return the Google fonts url.
+	 *
+	 * @since 1.0.2
+	 * @return string
+	 */
+	public static function google_fonts_url() {
+
+		$fonts_url     = '';
+		$font_families = array(
+			'Figtree:400,500,600,700',
+		);
+
+		$query_args = array(
+			'family' => rawurlencode( implode( '|', $font_families ) ),
+			'subset' => rawurlencode( 'latin,latin-ext' ),
+		);
+
+		$fonts_url = add_query_arg( $query_args, '//fonts.googleapis.com/css' );
+
+		return $fonts_url;
+	}
+
+	/**
 	 * Load script.
 	 *
+	 * @param array<string> $show_on_screens An array of screen IDs where the scripts should be loaded.
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public static function editor_load_scripts() {
+	public static function editor_load_scripts( $show_on_screens ) {
 
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		$screen          = get_current_screen();
-		$screen_id       = $screen ? $screen->id : '';
-		$allowed_screens = [
-			'dashboard',
-			'themes',
-			'options-general',
-			'plugins',
-		];
+		$screen    = get_current_screen();
+		$screen_id = $screen ? $screen->id : '';
 
-		if ( ! in_array( $screen_id, $allowed_screens, true ) ) {
+		if ( ! in_array( $screen_id, $show_on_screens, true ) ) {
 			return;
 		}
 
 		$handle            = 'nps-survey-script';
 		$build_path        = NPS_SURVEY_DIR . 'dist/';
-		$build_url         = NPS_SURVEY_URL . 'dist/';
+		$default_build_url = NPS_SURVEY_URL . 'dist/';
+
+		// Use a filter to allow $build_url to be modified externally.
+		$build_url         = apply_filters( 'nps_survey_build_url', $default_build_url );
 		$script_asset_path = $build_path . 'main.asset.php';
-		$script_info       = file_exists( $script_asset_path )
+
+		$script_info = file_exists( $script_asset_path )
 			? include $script_asset_path
 			: array(
 				'dependencies' => array(),
@@ -131,6 +157,7 @@ class Nps_Survey {
 
 		wp_enqueue_style( 'nps-survey-style', $build_url . '/style-main.css', array(), NPS_SURVEY_VER );
 		wp_style_add_data( 'nps-survey-style', 'rtl', 'replace' );
+		wp_enqueue_style( 'nps-survey-google-fonts', self::google_fonts_url(), array(), 'all' );
 
 	}
 
@@ -336,7 +363,7 @@ class Nps_Survey {
 		$nps_form_status['dismiss_step']  = $request['current_step'];
 
 		// Dismiss Permanantly.
-		if ( $nps_form_status['dismiss_count'] >= 3 ) {
+		if ( $nps_form_status['dismiss_count'] >= 2 ) {
 			$nps_form_status['dismiss_permanently'] = true;
 		}
 

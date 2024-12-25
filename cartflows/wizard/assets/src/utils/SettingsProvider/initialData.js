@@ -10,6 +10,8 @@ export const settingsInitialState = {
 		button_class: '',
 	},
 	site_logo: cartflows_wizard.site_logo ? cartflows_wizard.site_logo : '',
+	showFooterImportButton: false,
+	isStoreCheckoutImported: false,
 };
 
 const settingsEvents = ( state, data ) => {
@@ -51,6 +53,11 @@ const settingsEvents = ( state, data ) => {
 				...state,
 				action_button: data.action_button,
 			};
+		case 'SET_SHOW_FOOTER_IMPORT_BUTTON':
+			return {
+				...state,
+				showFooterImportButton: data.showButton,
+			};
 		case 'SET_WIZARD_PAGE_BUILDER':
 			return {
 				...state,
@@ -60,6 +67,11 @@ const settingsEvents = ( state, data ) => {
 			return {
 				...state,
 				site_logo: data.site_logo,
+			};
+		case 'SET_STORE_CHECKOUT_IMPORTED':
+			return {
+				...state,
+				isStoreCheckoutImported: data.storeCheckoutImported,
 			};
 		default:
 			return state;

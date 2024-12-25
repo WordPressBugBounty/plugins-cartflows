@@ -1,16 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { useStateValue } from '../utils/StateProvider';
 import apiFetch from '@wordpress/api-fetch';
 import confetti from 'canvas-confetti';
+import { ArrowLongRightIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 function ReadyStep() {
-	const [ { showConfetti, selected_page_builder }, dispatch ] =
-		useStateValue();
+	const [
+		{ showConfetti, selected_page_builder, isStoreCheckoutImported },
+		dispatch,
+	] = useStateValue();
 	const ConfettiFrame = confetti.create(
 		document.getElementById( 'wcf-confetti-wrapper' ),
 		{ resize: true }
 	);
+
+	const [ isFinishingSetup, setIsFinishingSetup ] = useState( false );
 
 	if ( ! showConfetti ) {
 		setTimeout( function () {
@@ -56,13 +61,22 @@ function ReadyStep() {
 	const handleClick = ( e ) => {
 		e.preventDefault();
 
-		if ( 'bricks-builder' === selected_page_builder ) {
-			window.location.href =
-				cartflows_wizard.admin_url + '?page=cartflows';
+		setIsFinishingSetup( true );
+		let redirectUrl = '?page=cartflows';
+
+		if ( isStoreCheckoutImported ) {
+			// Redirect to Store Checkout.
+			redirectUrl = redirectUrl + '&path=store-checkout';
+		} else if ( 'bricks-builder' === selected_page_builder ) {
+			// Redirect to Dashboard to create the template from scratch.
+			redirectUrl = redirectUrl; // Redirect to the default page i:e dashboard itself.
 		} else {
-			window.location.href =
-				cartflows_wizard.admin_url + '?page=cartflows&path=library';
+			// Redirec to Import the ready-made templates of start from scratch.
+			redirectUrl = redirectUrl + '&path=library';
 		}
+
+		// Redirect to the created url.
+		window.location.href = cartflows_wizard.admin_url + redirectUrl;
 	};
 
 	return (
@@ -105,25 +119,20 @@ function ReadyStep() {
 
 					<div className="mt-[50px] flex justify-center">
 						<div
-							className="wcf-wizard--button hover:text-white"
+							className={ `wcf-wizard--button hover:text-white ${
+								isFinishingSetup ? 'cursor-wait opacity-80' : ''
+							}` }
 							onClick={ handleClick }
 						>
-							{ __( 'Finish Store Setup', 'cartflows' ) }
+							{ ! isFinishingSetup
+								? __( 'Finish Store Setup', 'cartflows' )
+								: __( 'Finishing the Setup', 'cartflows' ) }
 
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								className="w-5 ml-1.5 fill-[#243c5a]"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-								strokeWidth={ 2 }
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M17 8l4 4m0 0l-4 4m4-4H3"
-								/>
-							</svg>
+							{ ! isFinishingSetup ? (
+								<ArrowLongRightIcon className="w-5 ml-1.5 fill-[#243c5a] stroke-2" />
+							) : (
+								<ArrowPathIcon className="w-5 ml-1.5 stroke-2 animate-spin" />
+							) }
 						</div>
 					</div>
 				</div>

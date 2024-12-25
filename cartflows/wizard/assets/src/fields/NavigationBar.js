@@ -63,6 +63,7 @@ function Index() {
 	};
 
 	const [ { selected_page_builder } ] = useStateValue();
+
 	if ( 'bricks-builder' === selected_page_builder ) {
 		menus.splice( 3, 1 );
 	}
@@ -83,7 +84,7 @@ function Index() {
 		<>
 			<Disclosure
 				as="nav"
-				className="bg-white fixed top-0 w-full z-10 border-b border-slate-200"
+				className="bg-white fixed top-0 w-full z-30 border-b border-slate-200"
 			>
 				{ ( {} ) => (
 					<>

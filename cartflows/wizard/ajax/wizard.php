@@ -490,6 +490,7 @@ class Wizard extends AjaxBase {
 			$response_data = array( 'message' => $this->get_error_msg( 'nonce' ) );
 			wp_send_json_error( $response_data );
 		}
+
 		// $_POST['flow'] is the JSON, There is nothing to sanitize JSON as it is data format not data type.
 		$flow = isset( $_POST['flow'] ) ? json_decode( stripslashes( $_POST['flow'] ), true ) : array(); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
@@ -498,60 +499,182 @@ class Wizard extends AjaxBase {
 			wp_send_json_error( $response_data );
 		}
 
-		// Get single step Rest API response.
-		$response = \CartFlows_API::get_instance()->get_flow( $flow['ID'] );
+		// Import the Instant Checkout as a Store Checkour oR just a normal Store Checkout.
+		if ( ! empty( $flow['is_instant_checkout'] ) && (bool) $flow['is_instant_checkout'] ) {
+			$response_data = $this->create_instant_checkout_funnel( $flow );
+		} else {
+			// Get single step Rest API response.
+			$response = \CartFlows_API::get_instance()->get_flow( $flow['ID'] );
 
-		if ( is_wp_error( $response['data'] ) ) {
+			if ( is_wp_error( $response['data'] ) ) {
 
-			/* translators: %1$s: html tag, %2$s: link html start %3$s: link html end */
-			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$sTo resolve this issue, please check this %2$sarticle%3$s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs">', '</a>' );
+				/* translators: %1$s: html tag, %2$s: link html start %3$s: link html end */
+				$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$sTo resolve this issue, please check this %2$sarticle%3$s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs">', '</a>' );
 
-			wp_send_json_error(
-				array(
-					'message'        => $response['data']->get_error_message(),
-					'call_to_action' => $btn,
-					'data'           => $response,
-				)
-			);
-		}
-
-		// Do license validation if showing Pro flows.
-		$license_status = isset( $response['data']['licence_status'] ) ? $response['data']['licence_status'] : '';
-
-		// If license is invalid then.
-		if ( 'valid' !== $license_status ) {
-
-			$cf_pro_status = WizardCore::get_instance()->get_plugin_status( 'cartflows-pro/cartflows-pro.php' );
-
-			$title = '';
-			$msg   = '';
-			if ( 'not-installed' === $cf_pro_status ) {
-				/* translators: %1$s: link html start, %2$s: link html end*/
-				$msg   = sprintf( __( 'To import this template, CartFlows Pro Required! %1$sUpgrade to CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/">', '</a>' );
-				$title = __( 'CartFlows Pro Required', 'cartflows' );
-			} elseif ( 'inactive' === $cf_pro_status ) {
-				$title = __( 'CartFlows Pro Required', 'cartflows' );
-				/* translators: %1$s: link html start, %2$s: link html end*/
-				$msg = sprintf( __( 'Activate the CartFlows Pro to import the flow! %1$sActivate CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="' . admin_url( 'plugins.php?plugin_status=search&paged=1&s=CartFlows+Pro' ) . '">', '</a>' );
-			} elseif ( 'active' === $cf_pro_status ) {
-				$title = __( 'Invalid License Key', 'cartflows' );
-				/* translators: %1$s: link html start, %2$s: link html end*/
-				$msg = sprintf( __( 'No valid license key found! %1$sActivate license%2$s', 'cartflows' ), '<a target="_blank" href="' . admin_url( 'plugins.php?cartflows-license-popup' ) . '">', '</a>' );
+				wp_send_json_error(
+					array(
+						'message'        => $response['data']->get_error_message(),
+						'call_to_action' => $btn,
+						'data'           => $response,
+					)
+				);
 			}
 
-			wp_send_json_error(
-				array(
-					'message'        => $title,
-					'call_to_action' => $msg,
-					'data'           => $response,
-				)
+			// Do license validation if showing Pro flows.
+			$license_status = isset( $response['data']['licence_status'] ) ? $response['data']['licence_status'] : '';
+
+			// If license is invalid then.
+			if ( 'valid' !== $license_status ) {
+
+				$cf_pro_status = WizardCore::get_instance()->get_plugin_status( 'cartflows-pro/cartflows-pro.php' );
+
+				$title = '';
+				$msg   = '';
+				if ( 'not-installed' === $cf_pro_status ) {
+					/* translators: %1$s: link html start, %2$s: link html end*/
+					$msg   = sprintf( __( 'To import this template, CartFlows Pro Required! %1$sUpgrade to CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/">', '</a>' );
+					$title = __( 'CartFlows Pro Required', 'cartflows' );
+				} elseif ( 'inactive' === $cf_pro_status ) {
+					$title = __( 'CartFlows Pro Required', 'cartflows' );
+					/* translators: %1$s: link html start, %2$s: link html end*/
+					$msg = sprintf( __( 'Activate the CartFlows Pro to import the flow! %1$sActivate CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="' . admin_url( 'plugins.php?plugin_status=search&paged=1&s=CartFlows+Pro' ) . '">', '</a>' );
+				} elseif ( 'active' === $cf_pro_status ) {
+					$title = __( 'Invalid License Key', 'cartflows' );
+					/* translators: %1$s: link html start, %2$s: link html end*/
+					$msg = sprintf( __( 'No valid license key found! %1$sActivate license%2$s', 'cartflows' ), '<a target="_blank" href="' . admin_url( 'plugins.php?cartflows-license-popup' ) . '">', '</a>' );
+				}
+
+				wp_send_json_error(
+					array(
+						'message'        => $title,
+						'call_to_action' => $msg,
+						'data'           => $response,
+					)
+				);
+			}
+			// Do license validation if showing pro flows.
+
+			/**
+			 * Create Flow
+			 */
+			$new_flow_post = array(
+				'post_title'   => isset( $flow['title'] ) ? sanitize_text_field( wp_unslash( $flow['title'] ) ) : '',
+				'post_content' => '',
+				'post_status'  => 'publish',
+				'post_type'    => CARTFLOWS_FLOW_POST_TYPE,
 			);
+
+			// Insert the post into the database.
+			$new_flow_id = wp_insert_post( $new_flow_post );
+
+			if ( is_wp_error( $new_flow_id ) ) {
+				wp_send_json_error( $new_flow_id->get_error_message() );
+			}
+
+			wcf()->logger->import_log( '✓ Flow Created! Flow ID: ' . $new_flow_id . ' - Remote Flow ID - ' . $flow['ID'] );
+
+			/**
+			 * Update Store Checkout flow meta
+			 */
+
+			// Set newly created flow as store checkout.
+			update_option( '_cartflows_store_checkout', $new_flow_id );
+
+			// Remove old checkout key if available.
+			delete_option( '_cartflows_old_global_checkout' );
+
+			// reset global checkout on store checkout creation.
+			$common_settings                             = \Cartflows_Helper::get_common_settings();
+			$common_settings['global_checkout']          = '';
+			$common_settings['override_global_checkout'] = 'disable';
+			update_option( '_cartflows_common', $common_settings );
+
+			/**
+			 * Import All Steps
+			 */
+			$steps = isset( $flow['steps'] ) ? $flow['steps'] : array();
+
+			$is_checkout_available = false;
+			$flow_steps            = array();
+
+			// Get importer function instance to call the import steps function.
+			$importer = new Importer();
+
+			foreach ( $steps as $key => $step ) {
+				// Separate out the Checkout step to set it as Global Checkout.
+				if ( 'checkout' === $step['type'] ) {
+					$is_checkout_available = true;
+				}
+
+				if ( in_array( $step['type'], array( 'upsell', 'downsell' ), true ) && ( ! _is_cartflows_pro() || is_wcf_starter_plan() ) ) {
+					continue;
+				}
+
+				$importer->import_single_step(
+					array(
+						'step' => array(
+							'id'    => $step['ID'],
+							'title' => $step['title'],
+							'type'  => $step['type'],
+						),
+						'flow' => array(
+							'id' => $new_flow_id,
+						),
+					),
+					'cartflows_import_store_checkout'
+				);
+			}
+
+			/**
+			 * This option will be used to display the NPS survey notice.
+			 */
+			update_option( '_cartflows_wizard_store_checkout_set', 'yes' );
+
+			/**
+			 * Redirect to the new flow edit screen
+			 */
+			$response_data = array(
+				'success'      => true,
+				'message'      => __( 'Successfully imported the Flow!', 'cartflows' ),
+				'items'        => $flow,
+				'redirect_url' => admin_url( 'post.php?action=edit&post=' . $new_flow_id ),
+				'new_flow_id'  => $new_flow_id,
+			);
+
+			wcf()->logger->import_log( 'COMPLETE! Importing Flow' );
 		}
-		// Do license validation if showing pro flows.
+
+		wp_send_json_success( $response_data );
+	}
+
+	/**
+	 * This function creates the Instant Checkout Funnel.
+	 *
+	 * @since x.x.x
+	 * @param array $flow The flow which is going to be imported.
+	 * @return array Response of the function.
+	 */
+	public function create_instant_checkout_funnel( $flow ) {
+
+		wcf()->logger->import_log( 'Importing the Instant Checkout Funnel from onboarding wizard' );
+
+		$response_data = array( 'message' => $this->get_error_msg( 'permission' ) );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wcf()->logger->import_log( 'User don\'t have the permission to do this operation.' );
+			wp_send_json_error( $response_data );
+		}
 
 		/**
-		 * Create Flow
+		 * Nonce verification
 		 */
+		if ( ! check_ajax_referer( 'cartflows_import_store_checkout', 'security', false ) ) {
+			$response_data = array( 'message' => $this->get_error_msg( 'nonce' ) );
+			wcf()->logger->import_log( 'Nonce verificaton is failed.' );
+			wp_send_json_error( $response_data );
+		}
+
+		// Create post object.
 		$new_flow_post = array(
 			'post_title'   => isset( $flow['title'] ) ? sanitize_text_field( wp_unslash( $flow['title'] ) ) : '',
 			'post_content' => '',
@@ -560,65 +683,111 @@ class Wizard extends AjaxBase {
 		);
 
 		// Insert the post into the database.
-		$new_flow_id = wp_insert_post( $new_flow_post );
+		$flow_id = wp_insert_post( $new_flow_post );
 
-		if ( is_wp_error( $new_flow_id ) ) {
-			wp_send_json_error( $new_flow_id->get_error_message() );
+		if ( is_wp_error( $flow_id ) ) {
+			wp_send_json_error( $flow_id->get_error_message() );
 		}
 
-		wcf()->logger->import_log( '✓ Flow Created! Flow ID: ' . $new_flow_id . ' - Remote Flow ID - ' . $flow['ID'] );
+		wcf()->logger->import_log( 'Blank funnel is created with title as: ' . $new_flow_post['post_title'] . ' and ID: ' . $flow_id );
 
-		/**
-		 * Update Store Checkout flow meta
-		 */
-
-		// Set newly created flow as store checkout.
-		update_option( '_cartflows_store_checkout', $new_flow_id );
-
-		// Remove old checkout key if available.
-		delete_option( '_cartflows_old_global_checkout' );
+		// If is store checkout update store_checkout options.
+		update_option( '_cartflows_store_checkout', $flow_id );
 
 		// reset global checkout on store checkout creation.
 		$common_settings                             = \Cartflows_Helper::get_common_settings();
 		$common_settings['global_checkout']          = '';
 		$common_settings['override_global_checkout'] = 'disable';
+
 		update_option( '_cartflows_common', $common_settings );
 
-		/**
-		 * Import All Steps
-		 */
-		$steps = isset( $flow['steps'] ) ? $flow['steps'] : array();
+		wcf()->logger->import_log( 'Funnel is set as Store Checkout' );
 
-		$is_checkout_available = false;
-		$flow_steps            = array();
+		$flow_steps = array();
 
-		// Get importer function instance to call the import steps function.
-		$importer = new Importer();
+		wcf()->logger->import_log( 'Is WooCommerce Installed and Activated: ' . wcf()->is_woo_active );
 
-		foreach ( $steps as $key => $step ) {
-			// Separate out the Checkout step to set it as Global Checkout.
-			if ( 'checkout' === $step['type'] ) {
-				$is_checkout_available = true;
-			}
-
-			if ( in_array( $step['type'], array( 'upsell', 'downsell' ), true ) && ( ! _is_cartflows_pro() || is_wcf_starter_plan() ) ) {
-				continue;
-			}
-
-			$importer->import_single_step(
-				array(
-					'step' => array(
-						'id'    => $step['ID'],
-						'title' => $step['title'],
-						'type'  => $step['type'],
-					),
-					'flow' => array(
-						'id' => $new_flow_id,
-					),
+		if ( wcf()->is_woo_active ) {
+			$steps_data = array(
+				'order-form'         => array(
+					'title' => __( 'Checkout', 'cartflows' ),
+					'type'  => 'checkout',
 				),
-				'cartflows_import_store_checkout'
+				'order-confirmation' => array(
+					'title' => __( 'Thank You', 'cartflows' ),
+					'type'  => 'thankyou',
+				),
+			);
+		} else {
+			$steps_data = array(
+				'landing'  => array(
+					'title' => __( 'Landing', 'cartflows' ),
+					'type'  => 'landing',
+				),
+				'thankyou' => array(
+					'title' => __( 'Thank You', 'cartflows' ),
+					'type'  => 'landing',
+				),
 			);
 		}
+
+		wcf()->logger->import_log( '====== Creating Steps for the selected funnel: ' . $flow_id . ' ======' );
+
+		foreach ( $steps_data as $slug => $data ) {
+
+			$post_content = '';
+			$step_type    = trim( $data['type'] );
+
+			// Create new step.
+			$step_id = wp_insert_post(
+				array(
+					'post_type'    => CARTFLOWS_STEP_POST_TYPE,
+					'post_title'   => $data['title'],
+					'post_content' => $post_content,
+					'post_status'  => 'publish',
+				)
+			);
+
+			// Return the error.
+			if ( is_wp_error( $step_id ) ) {
+				wp_send_json_error( $step_id->get_error_message() );
+			}
+
+			wcf()->logger->import_log( 'New step created: ' . $step_id . ' Step Type: ' . $step_type );
+
+			if ( $step_id ) {
+
+				$flow_steps[] = array(
+					'id'    => $step_id,
+					'title' => $data['title'],
+					'type'  => $step_type,
+				);
+
+				// Insert post meta.
+				update_post_meta( $step_id, 'wcf-flow-id', $flow_id );
+				update_post_meta( $step_id, 'wcf-step-type', $step_type );
+
+				// Set taxonomies.
+				wp_set_object_terms( $step_id, $step_type, CARTFLOWS_TAXONOMY_STEP_TYPE );
+				wp_set_object_terms( $step_id, 'flow-' . $flow_id, CARTFLOWS_TAXONOMY_STEP_FLOW );
+
+				update_post_meta( $step_id, '_wp_page_template', 'cartflows-default' );
+
+				wcf()->logger->import_log( 'Required step data set for newly created step: ' . $step_id );
+			}
+		}
+
+		wcf()->logger->import_log( '====== Steps created for the selected funnel: ' . $flow_id . ' ======' );
+
+		update_post_meta( $flow_id, 'wcf-steps', $flow_steps );
+
+		wcf()->logger->import_log( 'Steps in the funnel: ' . $flow_id . ' are set.' );
+
+		// Set the current funnel as instant checkout.
+		update_post_meta( $flow_id, 'instant-layout-style', 'yes' );
+
+		wcf()->logger->import_log( 'The funnel: ' . $flow_id . ' is enabled for instant checkout.' );
+
 		/**
 		 * This option will be used to display the NPS survey notice.
 		 */
@@ -627,17 +796,12 @@ class Wizard extends AjaxBase {
 		/**
 		 * Redirect to the new flow edit screen
 		 */
-		$response_data = array(
+		return array(
 			'success'      => true,
-			'message'      => __( 'Successfully imported the Flow!', 'cartflows' ),
-			'items'        => $flow,
-			'redirect_url' => admin_url( 'post.php?action=edit&post=' . $new_flow_id ),
-			'new_flow_id'  => $new_flow_id,
+			'message'      => __( 'Successfully created the Funnel!', 'cartflows' ),
+			'redirect_url' => admin_url( 'post.php?action=edit&post=' . $flow_id ),
+			'new_flow_id'  => $flow_id,
 		);
-
-		wcf()->logger->import_log( 'COMPLETE! Importing Flow' );
-
-		wp_send_json_success( $response_data );
 	}
 
 }

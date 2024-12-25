@@ -1,8 +1,10 @@
+import { __ } from '@wordpress/i18n';
+
 // SCSS.
 import './GlobalFlowItem.scss';
 
 function GlobalFlowItem( { item, isChecked, isActive } ) {
-	const { thumbnail_image_url, title, type } = item;
+	const { thumbnail_image_url, title, type, is_recommanded } = item;
 
 	return (
 		<>
@@ -21,6 +23,13 @@ function GlobalFlowItem( { item, isChecked, isActive } ) {
 						: 'border-slate-200'
 				}` }
 			>
+				{ is_recommanded && (
+					<span
+						className={ `wcf-item__recommanded-badge bg-primary-500 border-primary-500 text-white absolute top-0 right-0 px-2.5 py-0.5 font-normal text-xs rounded-tr-lg rounded-bl-lg border cursor-default z-10` }
+					>
+						{ __( 'Recommended', 'cartflows' ) }
+					</span>
+				) }
 				<div className="wcf-item__thumbnail-wrap transition-none">
 					<div
 						className="wcf-item__thumbnail group-hover:transform-none bg-white relative position bg-top bg-cover bg-no-repeat overflow-hidden before:block before:pt-[100%]"

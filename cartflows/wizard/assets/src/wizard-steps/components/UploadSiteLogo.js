@@ -135,11 +135,11 @@ function UploadSiteLogo( props ) {
 													/>
 												</span>
 												<img
-													src={ site_logo.url }
+													src={ site_logo?.url }
 													alt={
 														'wcf-selected-logo-preview'
 													}
-													className="wcf-selected-image w-4/5 h-4/5"
+													className="wcf-selected-image w-auto h-auto max-w-44 max-h-11"
 													data-logo-data={ JSON.stringify(
 														site_logo
 													) }

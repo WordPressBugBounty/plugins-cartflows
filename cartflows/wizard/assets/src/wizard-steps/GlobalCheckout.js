@@ -15,6 +15,9 @@ import NoFlowsFound from './components/NoFlowsFound';
 import GlobalFlowHeader from './components/GlobalFlowHeader';
 import GlobalFlowLibrarySkeleton from './skeletons/GlobalFlowLibrarySkeleton';
 import TemplateLoadingSkeleton from './skeletons/TemplateLoadingSkeleton';
+import InstantCheckoutImage from '@WizardImages/instant-checkout.png';
+
+import InstantCheckoutData from './data/InstantCheckoutData.json';
 
 function GlobalCheckout() {
 	const [ processing, setProcessing ] = useState( true );
@@ -77,10 +80,39 @@ function GlobalCheckout() {
 		return false;
 	};
 
+	const updateStoreCheckoutFunnelList = (
+		InstantCheckoutJsonData,
+		pageBuilderName,
+		pageBuilderSlug
+	) => {
+		// Make a deep copy of the flow data to avoid mutation
+		const updatedInstantCheckoutData = JSON.parse(
+			JSON.stringify( InstantCheckoutJsonData )
+		);
+
+		// Update the placeholders with dynamic values
+		updatedInstantCheckoutData.page_builder = pageBuilderSlug;
+		updatedInstantCheckoutData.cartflows_flow_page_builder[ 0 ].name =
+			pageBuilderName;
+		updatedInstantCheckoutData.cartflows_flow_page_builder[ 0 ].slug =
+			pageBuilderSlug;
+		updatedInstantCheckoutData.featured_image_url = InstantCheckoutImage;
+		updatedInstantCheckoutData.thumbnail_image_url = InstantCheckoutImage;
+
+		return updatedInstantCheckoutData;
+	};
+
+	const showHideFooterImportButton = ( showHide ) => {
+		dispatch( {
+			status: 'SET_SHOW_FOOTER_IMPORT_BUTTON',
+			showButton: showHide,
+		} );
+	};
+
 	useEffect( () => {
 		// Set Foooter button text.
 		changeButtonText( {
-			button_text: __( 'Import & continue', 'cartflows' ),
+			button_text: __( 'Import & Continue', 'cartflows' ),
 			button_class: 'wcf-import-global-flow',
 		} );
 
@@ -104,22 +136,55 @@ function GlobalCheckout() {
 				if ( response?.data?.flows.length > 0 ) {
 					const all_flows = Object.values( response.data.flows );
 					const parsedFlows = [];
-
 					all_flows.map(
 						( flows ) => ( parsedFlows[ flows.ID ] = flows )
 					);
 					setFilteredFlows( parsedFlows );
-					setSelectedFlow( Object.keys( parsedFlows )[ 0 ] );
-					setSelectedFlowTitle(
-						parsedFlows[ Object.keys( parsedFlows )[ 0 ] ].title
-					);
+
+					setInstantCheckoutFunnel( parsedFlows );
+
 					setProcessing( false );
 				} else {
 					setProcessing( false );
-					setShowFlowNotFound( true );
+					setShowFlowNotFound( false );
+
+					// If there are no funnels found then still show the instant checkout funnels.
+					const parsedFlows = setInstantCheckoutFunnel( [], true );
+
+					setFilteredFlows( parsedFlows );
 				}
 			} );
 		}
+
+		const setInstantCheckoutFunnel = (
+			parsedFlows = [],
+			shouldReturn = false
+		) => {
+			/**
+			 * Add Instant Checkout Store Checkout Funnel Option to the existing.
+			 * To-Do: Remove this when a ready-made template is been introduced.
+			 *
+			 * @since 2.1.0
+			 */
+			parsedFlows[ 0 ] = updateStoreCheckoutFunnelList(
+				InstantCheckoutData,
+				page_builder.charAt( 0 ).toUpperCase() +
+					page_builder.slice( 1 ),
+				page_builder
+			);
+
+			setSelectedFlow( Object.keys( parsedFlows )[ 0 ] );
+			setSelectedFlowTitle(
+				parsedFlows[ Object.keys( parsedFlows )[ 0 ] ].title
+			);
+
+			// Setting the instant Checkout as default option to be selected so show the import store checkout button on the footer.
+			showHideFooterImportButton( true );
+
+			if ( shouldReturn ) {
+				return parsedFlows;
+			}
+		};
 
 		const importStoreCheckoutSuccessEvent = document.addEventListener(
 			'wcf-store-checkout-import-success',
@@ -128,6 +193,11 @@ function GlobalCheckout() {
 					button_text: __( 'Processing..', 'cartflows' ),
 				} );
 
+				dispatch( {
+					status: 'SET_STORE_CHECKOUT_IMPORTED',
+					storeCheckoutImported: true,
+				} );
+				console.log( 'Store Checkout Imported' );
 				// Redirect to next step once the import is success.
 				setTimeout( function () {
 					redirectNextStep();
@@ -182,6 +252,31 @@ function GlobalCheckout() {
 
 	const showOptionsSideBar = function ( e ) {
 		e.preventDefault();
+		let selected_flow_id = '';
+		let wrapper_element = '';
+		if ( ! ShowSideBar ) {
+			wrapper_element = e.target.closest( '.wcf-item' );
+
+			if ( wrapper_element ) {
+				selected_flow_id = wrapper_element.hasAttribute( 'data-key' )
+					? wrapper_element.getAttribute( 'data-key' )
+					: '';
+
+				setSelectedFlow( selected_flow_id );
+				showHideFooterImportButton( true );
+			}
+		} else {
+			setSelectedFlow( selectedStoreFlow );
+			showHideFooterImportButton( false );
+		}
+		/**
+		 * Don't open the preview panel if the selected funnel is Instant Checkout.
+		 * To-Do: Remove this compatibility when a ready-made Instant Checkout funnel is introduced.
+		 * Zero index/funnel ID is set for the Instant Checkout only.
+		 */
+		if ( '0' === selected_flow_id ) {
+			return;
+		}
 
 		/* Set show popup true/false */
 		if ( ShowSideBar ) {
@@ -191,16 +286,12 @@ function GlobalCheckout() {
 				search: `?page=cartflow-setup&step=store-checkout`,
 			} );
 		} else {
-			const wrapper_element = e.target.closest( '.wcf-item' );
-
 			if ( null === wrapper_element || 'undefined' === wrapper_element ) {
 				return;
 			}
 
-			const selected_flow_id = wrapper_element.hasAttribute( 'data-key' )
-					? wrapper_element.getAttribute( 'data-key' )
-					: '',
-				flow_title = filteredFlows[ selected_flow_id ].title;
+			const flow_title = filteredFlows[ selected_flow_id ].title;
+
 			setPreviewProcessing( true );
 			setShowSideBar( true );
 			setSelectedFlowTitle( flow_title );
@@ -294,10 +385,10 @@ function GlobalCheckout() {
 
 									<RadioGroup
 										value={ selectedStoreFlow }
-										onChange={ setSelectedFlow }
+										// onChange={ showOptionsSideBar }
 										onClick={ showOptionsSideBar }
 										className={
-											'wcf-store-flow-importer__list wcf-items-list wcf-flow-row grid grid-cols-4 gap-6 relative p-5'
+											'wcf-store-flow-importer__list wcf-items-list wcf-flow-row relative flex gap-6 flex-wrap justify-center'
 										}
 									>
 										{ filteredFlows.map( ( item ) => (
@@ -310,13 +401,13 @@ function GlobalCheckout() {
 													active,
 												} ) =>
 													classNames(
-														`wcf-item hover:translate-y-[-1px] rounded transition-all`,
+														`wcf-item hover:translate-y-[-1px] rounded transition-all flex-grow-0 flex-shrink-0 basis-[calc(33.33%-7rem)] relative`,
 														checked
 															? 'border-0'
 															: 'border-gray-300',
 														active
-															? 'ring-2 ring-orange-500'
-															: ''
+															? 'border-0'
+															: 'border-gray-300'
 													)
 												}
 											>

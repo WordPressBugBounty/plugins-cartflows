@@ -2,15 +2,23 @@ import React from 'react';
 import { __ } from '@wordpress/i18n';
 import { useStateValue } from '../utils/StateProvider';
 import { useHistory, useLocation } from 'react-router-dom';
-import { getExitSetupWizard } from '@Utils/Helpers';
 import apiFetch from '@wordpress/api-fetch';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 function FooterNavigationBar( props ) {
 	const { previousStep, nextStep, currentStep, maxSteps } = props;
 	const paginationClass =
 		'relative z-10 inline-flex items-center rounded-full p-1 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500';
 
-	const [ { settingsProcess } ] = useStateValue();
+	const [
+		{
+			settingsProcess,
+			showFooterImportButton,
+			action_button,
+			isStoreCheckoutImported,
+			selected_page_builder,
+		},
+	] = useStateValue();
 
 	const query = new URLSearchParams( useLocation().search );
 	const currentActiveStep = query.get( 'step' );
@@ -62,7 +70,22 @@ function FooterNavigationBar( props ) {
 				body: ajaxData,
 			} ).then( ( response ) => {
 				if ( response.success ) {
-					window.location.href = getExitSetupWizard();
+					let redirectUrl = '?page=cartflows';
+
+					if ( isStoreCheckoutImported ) {
+						// Redirect to Store Checkout.
+						redirectUrl = redirectUrl + '&path=store-checkout';
+					} else if ( 'bricks-builder' === selected_page_builder ) {
+						// Redirect to Dashboard to create the template from scratch.
+						redirectUrl = redirectUrl; // Redirect to the default page i:e dashboard itself.
+					} else {
+						// Redirec to Import the ready-made templates of start from scratch.
+						redirectUrl = redirectUrl + '&path=library';
+					}
+
+					// Redirect to the created url.
+					window.location.href =
+						cartflows_wizard.admin_url + redirectUrl;
 				}
 			} );
 		}
@@ -131,6 +154,21 @@ function FooterNavigationBar( props ) {
 						</button>
 					</div>
 				</div>
+
+				{ 'store-checkout' === currentActiveStep &&
+					showFooterImportButton && (
+						<div className="wcf-import-instant-checkout absolute top-4 right-7">
+							<button
+								className={ `wcf-wizard--button wcf-import-global-flow px-5 py-2 text-sm ${ action_button?.button_class }` }
+							>
+								{ action_button.button_text }
+								<ArrowRightIcon
+									className="w-5 mt-0.5 ml-1.5 stroke-2"
+									aria-hidden="true"
+								/>
+							</button>
+						</div>
+					) }
 			</footer>
 		</>
 	);

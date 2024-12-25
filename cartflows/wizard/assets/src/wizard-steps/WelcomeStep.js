@@ -20,7 +20,7 @@ function WelcomeStep() {
 		dispatch( {
 			status: 'SET_NEXT_STEP',
 			action_button: {
-				button_text: __( "Let's start", 'cartflows' ),
+				button_text: __( "Let's Start", 'cartflows' ),
 				button_class: 'wcf-start-setup',
 			},
 		} );

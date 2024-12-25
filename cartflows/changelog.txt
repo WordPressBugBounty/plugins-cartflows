@@ -1,3 +1,11 @@
+Version 2.1.5 - Wednesday, 25th December 2024
+- Fix: Resolved an issue where Instant Checkout design styles were not applying to the coupon button.
+- Fix: Added onboarding steps to simplify selecting and importing the Instant Checkout layout.
+- Fix: Updated the color picker component to enhance usability and address UX issues.
+- Fix: Fixed the step settings slide-out panel unexpectedly closing when changing the step title or adding a custom field.
+- Fix: Unable to able to select 'Less than or equal to' dropdown option in the dynamic offers.
+- Fix: The product options does not get saved when it is collapsed or close the settings panel.
+
 Version 2.1.4 - Tuesday, 10th December 2024
 - New: What’s New Feed: Added a feature to view the latest updates for the CartFlows plugin directly in the dashboard.
 - Improvement: Updated the "Activate License" section to clearly display the license status.

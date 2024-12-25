@@ -63,7 +63,7 @@ class Cartflows_Admin_Notices {
 	 */
 	public function update_review_link( $review_link ) {
 
-		return 'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post';
+		return 'https://www.trustpilot.com/evaluate/cartflows.com';
 	}
 
 
@@ -166,6 +166,7 @@ class Cartflows_Admin_Notices {
 				'dismiss_timespan' => 2 * WEEK_IN_SECONDS,
 				'display_after'    => 0,
 				'plugin_slug'      => 'cartflows',
+				'show_on_screens'  => array( 'edit-cartflows_flow', 'toplevel_page_cartflows' ),
 				'message'          => array(
 
 					// Step 1 i.e rating input.
@@ -175,7 +176,7 @@ class Cartflows_Admin_Notices {
 
 					// Step 2A i.e. positive.
 					'feedback_content'      => __( 'Could you please do us a favor and give us a 5-star rating on WordPress? It would help others choose CartFlows with confidence. Thank you!', 'cartflows' ),
-					'plugin_rating_link'    => esc_url( 'https://wordpress.org/support/plugin/cartflows/reviews/#new-post' ),
+					'plugin_rating_link'    => esc_url( 'https://www.trustpilot.com/evaluate/cartflows.com' ),
 
 					// Step 2B i.e. negative.
 					'plugin_rating_title'   => __( 'Thank you for your feedback', 'cartflows' ),
