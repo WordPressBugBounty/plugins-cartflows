@@ -55,8 +55,8 @@ body.cartflows-instant-checkout .main-header--content .main-header--action .main
 }
 /* Header CSS */
 .wcf-instant-thankyou {
-	--wcf-primary-color: #1773b0;
-	--wcf-heading-text-color: #333;
+	--wcf-primary-color: #111;
+	--wcf-heading-text-color: #111;
 	--wcf-button-tx-color: #fff;
 
 	--wcf-section-border-color: #e5e5e5;

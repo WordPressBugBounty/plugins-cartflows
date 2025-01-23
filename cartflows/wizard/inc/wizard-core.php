@@ -58,6 +58,7 @@ class WizardCore {
 			add_action( 'admin_print_styles', array( $this, 'load_admin_media_styles' ) );
 
 			add_action( 'admin_init', array( $this, 'redirect_to_onboarding' ) );
+			add_filter( 'before_cp_load_popup', array( $this, 'hide_convert_pro_popups' ), 10, 1 ); // Disable the render of Convert Pro popups in onboarding wizard.
 		}
 	}
 
@@ -448,6 +449,23 @@ class WizardCore {
 		} else {
 			return 'inactive';
 		}
+	}
+
+	/**
+	 * Function to hide Convert Pro popups during the onboarding wizard process.
+	 *
+	 * This function checks if the current page is the CartFlows setup page and if so, it sets the load parameter to false, effectively hiding the Convert Pro popups.
+	 *
+	 * @param bool $load The initial load state of the Convert Pro popups.
+	 * @return bool The modified load state of the Convert Pro popups.
+	 */
+	public function hide_convert_pro_popups( $load ) {
+
+		if ( ! empty( $_GET['page'] ) && 'cartflow-setup' === $_GET['page'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$load = false;
+		}
+
+		return $load;
 	}
 }
 

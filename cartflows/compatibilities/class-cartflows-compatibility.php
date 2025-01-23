@@ -478,6 +478,15 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 		}
 
 		/**
+		 * Check if Oxygen builder is enabled.
+		 *
+		 * @return boolean True if Oxygen builder is enabled, otherwise false.
+		 */
+		public static function is_oxygen_builder_enabled() {
+			return defined( 'CT_PLUGIN_MAIN_FILE' );
+		}
+
+		/**
 		 *  Overwrite meta for page
 		 */
 		public function override_meta() {

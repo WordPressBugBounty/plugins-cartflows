@@ -140,7 +140,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '2.1.5' );
+			define( 'CARTFLOWS_VER', '2.1.6' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -337,6 +337,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			include_once CARTFLOWS_DIR . 'classes/class-cartflows-default-meta.php';
 
 			require_once CARTFLOWS_DIR . 'classes/class-cartflows-tracking.php';
+			require_once CARTFLOWS_DIR . 'classes/class-cartflows-rollback.php';
 
 			if ( is_admin() ) {
 				require_once CARTFLOWS_DIR . 'libraries/astra-notices/class-astra-notices.php';
@@ -370,6 +371,11 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			// Load the NPS Survey library.
 			if ( ! class_exists( 'Cartflows_Nps_Survey' ) ) {
 				require_once CARTFLOWS_DIR . 'libraries/class-cartflows-nps-survey.php';
+			}
+
+			// Load the UTM Analytics Library.
+			if ( ! class_exists( 'Cartflows_Utm_Analytics' ) ) {
+				require_once CARTFLOWS_DIR . 'libraries/class-cartflows-utm-analytics.php';
 			}
 		}
 

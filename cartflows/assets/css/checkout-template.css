@@ -411,6 +411,15 @@
 	margin-left: 10px;
 }
 
+.wcf-embed-checkout-form .woocommerce-checkout #payment .payment_method_woocommerce_payments .testmode-info {
+	margin-bottom: 10px;
+}
+.wcf-embed-checkout-form .woocommerce-checkout #payment .payment_method_woocommerce_payments .testmode-info .js-woopayments-copy-test-number {
+	margin-top: -2px;
+	font-size: 14px !important;
+	font-weight: 400 !important;
+}
+
 .wcf-embed-checkout-form .woocommerce-checkout #payment div.payment_box .form-row {
 	margin: 0 0 0.5em;
 }
@@ -627,8 +636,8 @@
 }
 
 .wcf-embed-checkout-form .wcf-custom-coupon-field button.wcf-submit-coupon,
-.wcf-embed-checkout-form .woocommerce #order_review button,
-.wcf-embed-checkout-form .woocommerce #payment button,
+.wcf-embed-checkout-form .woocommerce #order_review button:not( .js-woopayments-copy-test-number ),
+.wcf-embed-checkout-form .woocommerce #payment button:not( .js-woopayments-copy-test-number ),
 .wcf-embed-checkout-form .woocommerce .wcf-customer-login-section__login-button {
 	border: 1px solid;
 	border-color: var( --wcf-btn-bg-color );
@@ -651,7 +660,7 @@
 }
 
 .wcf-embed-checkout-form .woocommerce #order_review button.wcf-btn-small:hover,
-.wcf-embed-checkout-form .woocommerce #payment button:hover,
+.wcf-embed-checkout-form .woocommerce #payment button:not( .js-woopayments-copy-test-number ):hover,
 .wcf-embed-checkout-form .woocommerce .wcf-customer-login-section__login-button:hover {
 	border-color: var( --wcf-btn-bg-hover-color );
 	background-color: var( --wcf-btn-bg-hover-color );
@@ -888,7 +897,6 @@
 	font-family: inherit;
 	font-weight: inherit;
 	font-size: 11px;
-	color: #777;
 	margin-top: 0;
 	text-align: justify;
 }
@@ -2019,7 +2027,6 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 }
 
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .wcf-custom-coupon-field a#wcf_optimized_wcf_custom_coupon_field {
-	color: #555;
 	width: 100%;
 	text-align: left;
 }
@@ -2191,10 +2198,12 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce-checkout #payment div.payment_box .cpsw_stripe_element_payment_form {
 	margin-top: -1rem;
 }
-
+.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce-checkout #payment .payment_method_woocommerce_payments .testmode-info {
+	padding: 0 7px;
+}
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce-checkout #payment div.payment_box fieldset {
 	border: none;
-	padding: 0;
+	padding: 0 !important;
 	margin: 0;
 }
 
@@ -2255,7 +2264,7 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 /* Checkbox and Radio button End. */
 
 /* Order review buttons */
-.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce #payment button {
+.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce #payment button:not( .js-woopayments-copy-test-number ) {
 	line-height: 1.5;
 	width: 100%;
 	font-size: 18px;
@@ -3275,7 +3284,7 @@ body.cartflows-instant-checkout .select2-container--default .select2-results__op
 	font-size: 12px;
 }
 
-.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce form #payment button,
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce form #payment button:not( .js-woopayments-copy-test-number ),
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce form table.shop_table tfoot tr.coupon-field .wcf-custom-coupon-field button {
 	line-height: 1.5;
 	width: 100%;
@@ -3837,7 +3846,8 @@ ul#wcf-ic-breadcrumbs {
 
 /* Responsive */
 
-@media only screen and ( max-width: 768px ) {
+/* Modible devices and some smaller tablets */
+@media only screen and ( max-width: 820px ) {
 	.wcf-empty-cart-notice-block {
 		padding: 0.704rem 1.5rem;
 	}

@@ -63,7 +63,7 @@ class Cartflows_Admin_Notices {
 	 */
 	public function update_review_link( $review_link ) {
 
-		return 'https://www.trustpilot.com/evaluate/cartflows.com';
+		return 'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post';
 	}
 
 
@@ -154,7 +154,7 @@ class Cartflows_Admin_Notices {
 	/**
 	 * Render CartFlows NPS Survey Notice.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.6
 	 * @return void
 	 */
 	public function show_nps_notice() {
@@ -176,7 +176,7 @@ class Cartflows_Admin_Notices {
 
 					// Step 2A i.e. positive.
 					'feedback_content'      => __( 'Could you please do us a favor and give us a 5-star rating on WordPress? It would help others choose CartFlows with confidence. Thank you!', 'cartflows' ),
-					'plugin_rating_link'    => esc_url( 'https://www.trustpilot.com/evaluate/cartflows.com' ),
+					'plugin_rating_link'    => esc_url( 'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post' ),
 
 					// Step 2B i.e. negative.
 					'plugin_rating_title'   => __( 'Thank you for your feedback', 'cartflows' ),
@@ -253,7 +253,7 @@ class Cartflows_Admin_Notices {
 	/**
 	 * Check if the user has completed the onboarding, skipped the onboarding on ready step, and the store checkout is imported.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.6
 	 * @return bool
 	 */
 	public function should_display_nps_survey_notice() {

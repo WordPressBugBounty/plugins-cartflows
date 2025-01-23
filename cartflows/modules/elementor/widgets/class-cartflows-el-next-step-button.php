@@ -81,7 +81,7 @@ class CartFlows_Next_Step_Button extends Widget_Base {
 	 * @return string Widget icon.
 	 */
 	public function get_icon() {
-		return 'wcf-el-icon-next-step';
+		return 'wcf-brand-icon wcf-el-icon-next-step';
 	}
 
 

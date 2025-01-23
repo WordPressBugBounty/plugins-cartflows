@@ -391,6 +391,9 @@ if ( ! class_exists( 'WCFB_Optin_Form' ) ) {
 				array(
 					'attributes'      => $attributes,
 					'render_callback' => array( $this, 'render_html' ),
+					'editor_style'  => array( 
+						'wcf-optin-template',
+					),
 				)
 			);
 

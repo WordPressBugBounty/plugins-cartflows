@@ -169,8 +169,8 @@ function OptinStep() {
 									'Let CartFlows take the guesswork out of your checkout results. Each week your store will send %1$s you an email report with key metrics and insights. You also will receive emails from us to %2$s help your store sell more.',
 									'cartflows'
 								),
-								'<br />',
-								'<br />'
+								'<br class="hidden lg:block" />',
+								'<br class="hidden lg:block" />'
 							)
 						) }
 					</p>

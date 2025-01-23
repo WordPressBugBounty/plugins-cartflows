@@ -14,11 +14,11 @@ function NoFlowsFound() {
 
 	return (
 		<div className="wcf-row mt-12">
-			<div className="bg-white rounded mx-auto max-w-2xl px-11 text-center py-14 drop-shadow-sm">
-				<h1 className="text-3xl font-semibold flex justify-center items-center">
+			<div className="bg-white rounded mx-auto max-w-2xl px-11 text-center py-14">
+				<h1 className="text-4xl font-semibold flex justify-center items-center text-[#1e293b]">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						className="h-8 w-8 align-middle text-2xl mr-1.5 fill-[#ffc83d]"
+						className="h-10 w-10 align-middle text-4xl mr-1.5 fill-[#ffc83d]"
 						viewBox="0 0 20 20"
 						fill="currentColor"
 					>
@@ -30,7 +30,7 @@ function NoFlowsFound() {
 					</svg>
 					{ __( 'Oops!!! No templates found', 'cartflows' ) }
 				</h1>
-				<p className="mt-6 text-[#1F2937] text-base">
+				<p className="mt-6 text-[#4B5563] text-lg">
 					{ __(
 						"Seems like no templates are available for chosen page editor. Don't worry, you can always import the store checkout template from the CartFlows setting menu.",
 						'cartflows'

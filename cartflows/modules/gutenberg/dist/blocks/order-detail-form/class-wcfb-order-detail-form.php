@@ -863,6 +863,7 @@ if ( ! class_exists( 'WCFB_Order_Detail_Form' ) ) {
 
 					),
 					'render_callback' => array( $this, 'render_html' ),
+					'editor_style'  => 'CF_block-cartflows-frontend-style',
 				)
 			);
 

@@ -76,7 +76,8 @@ class Cartflows_Checkout_Form extends Widget_Base {
 	 * @return string Widget icon.
 	 */
 	public function get_icon() {
-		return 'wcf-el-icon-checkout-form';
+		return 'wcf-brand-icon wcf-el-icon-checkout-form';
+		
 	}
 
 	/**

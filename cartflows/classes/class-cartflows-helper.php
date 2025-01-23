@@ -1695,6 +1695,11 @@ class Cartflows_Helper {
 			return add_query_arg( array( 'cf' => $partner_id ), $url );
 		}
 
+		// Modify the utm_source parameter using the UTM ready link function to include tracking information.
+		if ( class_exists( '\BSF_UTM_Analytics\Inc\Utils' ) && is_callable( '\BSF_UTM_Analytics\Inc\Utils::get_utm_ready_link' ) ) {
+			$url = \BSF_UTM_Analytics\Inc\Utils::get_utm_ready_link( $url, 'cartflows' );
+		}
+
 		return esc_url( $url );
 	}
 
@@ -1741,6 +1746,113 @@ class Cartflows_Helper {
 
 		// Return true or false based on the instant layout style.
 		return 'yes' === wcf()->options->get_flow_meta_value( $flow_id, 'instant-layout-style', 'no' );
+	}
+
+	/**
+	 * Get Rollback versions.
+	 *
+	 * @since 2.1.6
+	 * @return array
+	 * @access public
+	 */
+	public static function get_rollback_versions() {
+
+		$rollback_versions = get_transient( 'cartflows_rollback_versions_' . CARTFLOWS_VER );
+
+		if ( empty( $rollback_versions ) ) {
+
+			$max_versions = 10;
+
+			require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+
+			$plugin_information = plugins_api(
+				'plugin_information',
+				array(
+					'slug' => 'cartflows',
+				)
+			);
+
+			if ( empty( $plugin_information->versions ) || ! is_array( $plugin_information->versions ) ) {
+				return array();
+			}
+
+			krsort( $plugin_information->versions );
+
+			$rollback_versions = array();
+
+			foreach ( $plugin_information->versions as $version => $download_link ) {
+
+				$lowercase_version = strtolower( $version );
+
+				$is_valid_rollback_version = ! preg_match( '/(trunk|beta|rc|dev)/i', $lowercase_version );
+
+				if ( ! $is_valid_rollback_version ) {
+					continue;
+				}
+
+				if ( version_compare( $version, CARTFLOWS_VER, '>=' ) ) {
+					continue;
+				}
+
+				$rollback_versions[] = $version;
+			}
+
+			usort( $rollback_versions, array( __CLASS__, 'sort_rollback_versions' ) );
+
+			$rollback_versions = array_slice( $rollback_versions, 0, $max_versions, true );
+
+			set_transient( 'cartflows_' . CARTFLOWS_VER, $rollback_versions, WEEK_IN_SECONDS );
+		}
+
+		return (array) $rollback_versions;
+	}
+	/**
+	 * Sort Rollback versions.
+	 *
+	 * @since 2.1.6
+	 * @param string $prev Previous Version.
+	 * @param string $next Next Version.
+	 *
+	 * @return int
+	 */
+	public static function sort_rollback_versions( $prev, $next ) {
+
+		if ( version_compare( $prev, $next, '==' ) ) {
+			return 0;
+		}
+
+		if ( version_compare( $prev, $next, '>' ) ) {
+			return -1;
+		}
+
+		return 1;
+	}
+
+	/**
+	 * Get Rollback versions.
+	 *
+	 * @since 2.1.6
+	 * @return array
+	 * @access public
+	 */
+	public static function get_rollback_versions_options() {
+
+		$rollback_versions = self::get_rollback_versions();
+
+		$rollback_versions_options = array();
+
+		foreach ( $rollback_versions as $version ) {
+
+			$version = array(
+				'label' => $version,
+				'value' => $version,
+
+			);
+
+			$rollback_versions_options[] = $version;
+		}
+
+		return $rollback_versions_options;
 	}
 
 }

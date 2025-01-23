@@ -76,7 +76,7 @@ class CartFlows_Optin_Form extends Widget_Base {
 	 * @return string Widget icon.
 	 */
 	public function get_icon() {
-		return 'wcf-el-icon-optin-form';
+		return 'wcf-brand-icon wcf-el-icon-optin-form';
 	}
 
 	/**

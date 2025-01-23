@@ -188,7 +188,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 				'id'       => 'settings',
 				'class'    => '',
 				'icon'     => 'dashicons-format-aside',
-				'priority' => 40,
+				'priority' => 70,
 			),
 		);
 
@@ -229,7 +229,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'                  => __( 'Select Free Product', 'cartflows' ),
 							'help'                   => __( 'Select Free and Virtual product only.', 'cartflows' ),
 							'allowed_product_types'  => array( 'simple' ),
-							'placeholder'            => __( 'Type to search for a product...', 'cartflows' ),
+							'placeholder'            => __( 'Search for a Product', 'cartflows' ),
 							'excluded_product_types' => array(),
 							'include_product_types'  => array(),
 						),

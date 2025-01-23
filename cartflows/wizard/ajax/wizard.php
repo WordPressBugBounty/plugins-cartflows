@@ -650,7 +650,7 @@ class Wizard extends AjaxBase {
 	/**
 	 * This function creates the Instant Checkout Funnel.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.5
 	 * @param array $flow The flow which is going to be imported.
 	 * @return array Response of the function.
 	 */

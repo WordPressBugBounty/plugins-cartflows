@@ -1364,7 +1364,7 @@ class Cartflows_Tracking {
 		}
 
 		// Return if Pinterest is not enabled.
-		if ( 'enable' !== self::$pin_tag_settings['enable_pinterest_consent'] ) {
+		if ( 'enable' !== self::$pin_tag_settings['pinterest_tag_tracking'] || 'enable' !== self::$pin_tag_settings['enable_pinterest_consent'] ) {
 			return;
 		}
 

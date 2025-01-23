@@ -783,26 +783,27 @@ class AdminHelper {
 				),
 			);
 
-			// Show Automation action only if suretriggers is connected.
-			$is_suretriggers_connected = _is_suretriggers_connected();
-			$automation_link           = $is_suretriggers_connected ? '#' : admin_url( 'admin.php?page=' . CARTFLOWS_SLUG . '&path=automations' );
+			if ( current_user_can( 'cartflows_manage_settings' ) ) {
+				// Show Automation action only if suretriggers is connected.
+				$is_suretriggers_connected = _is_suretriggers_connected();
+				$automation_link           = $is_suretriggers_connected ? '#' : admin_url( 'admin.php?page=' . CARTFLOWS_SLUG . '&path=automations' );
 
-			$actions = array_merge(
-				array(
-					'automation' => array(
-						'slug'       => 'automation',
-						'class'      => 'wcf-step-automation',
-						'icon_class' => 'dashicons dashicons-editor-code',
-						'text'       => __( 'Automation', 'cartflows' ),
-						'pro'        => false,
-						'link'       => $automation_link,
-						'tag'        => ! $is_suretriggers_connected ? __( '(Connect)', 'cartflows' ) : '',
-						'ajaxcall'   => 'cartflows_automation_step',
+				$actions = array_merge(
+					array(
+						'automation' => array(
+							'slug'       => 'automation',
+							'class'      => 'wcf-step-automation',
+							'icon_class' => 'dashicons dashicons-editor-code',
+							'text'       => __( 'Automation', 'cartflows' ),
+							'pro'        => false,
+							'link'       => $automation_link,
+							'tag'        => ! $is_suretriggers_connected ? __( '(Connect)', 'cartflows' ) : '',
+							'ajaxcall'   => 'cartflows_automation_step',
+						),
 					),
-				),
-				$actions
-			);
-
+					$actions
+				);
+			}       
 		} else {
 			$actions = array(
 				'view' => array(

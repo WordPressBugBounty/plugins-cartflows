@@ -104,12 +104,12 @@ function Index() {
 										/>
 									</div>
 								</div>
-								<div className="wcf-wizard-menu--navbar hidden sm:flex sm:space-x-8">
+								<div className="wcf-wizard-menu--navbar hidden md:flex lg:space-x-8 space-x-4">
 									{ menus.map( ( menu ) => {
 										return (
 											<a
 												href="#"
-												className={ `inline-flex items-center border-b-2 px-1 pt-1 text-base font-medium focus:outline-none focus:shadow-none ${
+												className={ `inline-flex items-center border-b-2 px-1 pt-1 lg:text-base font-medium focus:outline-none focus:shadow-none text-sm ${
 													step === menu.id
 														? 'border-primary-500 text-gray-800'
 														: 'border-transparent text-gray-300 hover:border-gray-300 hover:text-gray-700'

@@ -69,6 +69,7 @@ class Cartflows_Admin {
 
 		add_action( 'init', array( $this, 'run_scheduled_docs_job' ) );
 		add_action( 'cartflows_update_knowledge_base_data', array( $this, 'cartflows_update_knowledge_base_data' ) );
+		add_action( 'admin_post_cartflows_rollback', array( $this, 'post_cartflows_rollback' ) );
 
 		$this->do_not_cache_admin_pages_actions();
 	}
@@ -340,6 +341,62 @@ class Cartflows_Admin {
 			wcf()->utils->get_cache_headers();
 		}
 	}
+
+	/**
+	 * CartFlows version rollback.
+	 *
+	 * Rollback to previous CartFlows version.
+	 *
+	 * Fired by `admin_post_cartflows_rollback` action.
+	 *
+	 * @since 2.1.6
+	 * @access public
+	 * @return void
+	 */
+	public function post_cartflows_rollback() {
+
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			wp_die(
+				esc_html__( 'You do not have permission to access this page.', 'cartflows' ),
+				esc_html__( 'Rollback to Previous Version', 'cartflows' ),
+				array(
+					'response' => 200,
+				)
+			);
+		}
+
+		check_admin_referer( 'cartflows_rollback' );
+
+		$rollback_versions = \Cartflows_Helper::get_rollback_versions();
+		$update_version    = isset( $_GET['version'] ) ? sanitize_text_field( $_GET['version'] ) : '';
+
+		if ( empty( $update_version ) || ! in_array( $update_version, $rollback_versions, true ) ) {
+			wp_die( esc_html__( 'Error occurred, The version selected is invalid. Try selecting different version.', 'cartflows' ) );
+		}
+
+		$plugin_slug = basename( CARTFLOWS_FILE, '.php' );
+
+		$rollback = new Cartflows_Rollback(
+			array(
+				'version'     => $update_version,
+				'plugin_name' => CARTFLOWS_BASE,
+				'plugin_slug' => $plugin_slug,
+				'package_url' => sprintf( 'https://downloads.wordpress.org/plugin/%s.%s.zip', $plugin_slug, $update_version ),
+			)
+		);
+
+		$rollback->run();
+
+		wp_die(
+			'',
+			esc_html__( 'Rollback to Previous Version', 'cartflows' ),
+			array(
+				'response' => 200,
+			)
+		);
+	}
+
+	
 }
 
 Cartflows_Admin::get_instance();

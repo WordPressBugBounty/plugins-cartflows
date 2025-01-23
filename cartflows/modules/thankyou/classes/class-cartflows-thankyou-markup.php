@@ -96,8 +96,22 @@ class Cartflows_Thankyou_Markup {
 
 			add_action( 'body_class', array( $this, 'add_body_class_for_instant_thankyou' ), 10, 1 );
 			add_filter( 'cartflows_thankyou_template_data', array( $this, 'add_template_data' ), 10, 1 );
+			add_action( 'wp_head', array( $this, 'disable_oxygen_on_instant_checkout_style' ) );
 		}
 
+	}
+
+	/**
+	 * Function to disable the Oxygen Builder's CSS on the thank you page if it is set as Instant Checkout.
+	 *
+	 * @since 2.1.6
+	 * @return void
+	 */
+	public function disable_oxygen_on_instant_checkout_style() {
+
+		if ( ! is_admin() && ! defined( 'SHOW_CT_BUILDER' ) ) {
+			define( 'SHOW_CT_BUILDER', true );
+		}
 	}
 
 	/**

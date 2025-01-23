@@ -59,7 +59,7 @@ class Cartflows_Thankyou_Meta_Data extends Cartflows_Step_Meta_Base {
 				'id'       => 'settings',
 				'class'    => '',
 				'icon'     => 'dashicons-format-aside',
-				'priority' => 40,
+				'priority' => 70,
 			),
 
 		);

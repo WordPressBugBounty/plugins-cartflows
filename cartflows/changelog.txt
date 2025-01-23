@@ -1,3 +1,24 @@
+Version 2.1.6 - Thursday, 23rd January 2025
+- New: Introduced the Rollback feature for CartFlows.
+- Improvement: Enhanced block previews in Gutenberg for better clarity.
+- Improvement: Removed the General Panel from Landing step settings for a cleaner interface.
+- Improvement: Displayed product details in the Product Dropdown for easier selection.
+- Improvement: Modified the "No Access" message on the global settings popup for better communication.
+- Improvement: Updated the NPS Library for improved functionality.
+- Improvement: Added CartFlows branding to page builder widgets/blocks.
+- Fix: Resolved inconsistent style issues in the Store Checkout and Subscribe Tabs on onboarding pages.
+- Fix: Fixed color customization inconsistencies for checkout form fields.
+- Fix: Addressed a conflict with the Convert Pro plugin on the onboarding screen.
+- Fix: Changed the date picker theme to Light Mode for consistency.
+- Fix: Fixed display issues on the onboarding screen for the Automations page.
+- Fix: Turned off the "Required" toggle when the "Enable" toggle is disabled in the Field Editor.
+- Fix: Resolved CSS issues affecting the empty cart message block on the checkout page..
+- Fix: Allowed decimal values in the discount field for Checkout, Upsell, and Downsell steps.
+- Fix: Resolved an issue where SVG files failed to upload in Elementor templates, leading to blank image displays.
+- Fix: Fixed responsive issues for Instant Checkout on slightly larger tablets.
+- Fix: Addressed a CSS issue for Payment Options on Checkout Page with WooPayments.
+- Fix: Resolved a conflict with the Speedy - WooCommerce Shipping Method plugin.
+
 Version 2.1.5 - Wednesday, 25th December 2024
 - Fix: Resolved an issue where Instant Checkout design styles were not applying to the coupon button.
 - Fix: Added onboarding steps to simplify selecting and importing the Instant Checkout layout.

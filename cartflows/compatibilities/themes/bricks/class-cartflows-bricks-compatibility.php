@@ -61,7 +61,7 @@ if ( ! class_exists( 'Cartflows_Bricks_Compatibility' ) ) :
 		/**
 		 * Fetch the header logo from the theme
 		 *
-		 * @since x.x.x
+		 * @since 2.1.0
 		 * @param string $logo           The logo URL.
 		 * @param string $site_title     The Site Title.
 		 * @return string   $bricks_logo    The modified logo HTML.

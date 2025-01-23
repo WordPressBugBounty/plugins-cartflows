@@ -703,7 +703,7 @@ class Cartflows_Instant_Checkout {
 			return $checkout_fields;
 		}
 		$flow_id = (int) wcf()->utils->get_flow_id_from_step_id( $checkout_id );
-		
+
 		// Validate custom fields are enabled and flow ID.
 		if ( _is_wcf_meta_custom_checkout( $checkout_id ) || empty( $flow_id ) || ! Cartflows_Helper::is_instant_layout_enabled( $flow_id ) ) {
 			return $checkout_fields;
@@ -717,7 +717,7 @@ class Cartflows_Instant_Checkout {
 		}
 		return $checkout_fields;
 	}
-		
+
 
 	/**
 	 * Add Customer Information Section.

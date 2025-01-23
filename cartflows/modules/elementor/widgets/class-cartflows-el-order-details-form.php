@@ -75,7 +75,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 	 * @return string Widget icon.
 	 */
 	public function get_icon() {
-		return 'wcf-el-icon-order-detail';
+		return 'wcf-brand-icon wcf-el-icon-order-detail';
 	}
 
 	/**

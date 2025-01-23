@@ -83,7 +83,7 @@ class Cartflows_Checkout_Markup {
 		add_filter( 'woocommerce_no_shipping_available_html', array( $this, 'change_shipping_message_html' ) );
 
 		// Update the cart total price to display on button and on the mobile order view section.
-		add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'add_updated_cart_price' ), 11, 1 );
+		add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'add_updated_cart_price' ), 10, 1 );
 
 		$this->gutenberg_editor_compatibility();
 

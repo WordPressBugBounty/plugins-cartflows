@@ -35,3 +35,20 @@
 .wcf-el-icon-order-detail::before {
 	content: "\e903";
 }
+.elementor-element .wcf-brand-icon::after {
+	content: "";
+	background-image: url( "../../images/cartflows-brand-builders-icon.svg" );
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1;
+	width: 20px;
+	height: 20px;
+	padding: 0.45em 0.5em;
+	border-width: 0 0 1px 1px;
+	border-color: #d5d8dc;
+	border-style: solid;
+	background-repeat: no-repeat;
+	background-position: center center;
+	border-bottom-left-radius: 3px;
+}

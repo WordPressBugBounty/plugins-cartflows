@@ -91,11 +91,9 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 						'meta'         => $all_meta,
 						'post_content' => '',
 					);
-
+			
 					if ( $export_all ) {
-
-						$step_post_obj = get_post( $step['id'] );
-
+						$step_post_obj                 = get_post( $step['id'] );
 						$step_data_arr['post_content'] = $step_post_obj->post_content;
 					}
 
@@ -232,6 +230,9 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 
 						}
 					}
+					$post_content = isset( $step['post_content'] ) ? ( 'gutenberg' === $default_page_builder ? $step['post_content'] : wp_slash( wp_json_encode( $step['post_content'] ) ) ) : '';
+					
+
 					$new_step_args = apply_filters(
 						'cartflows_step_importer_args',
 						array(
@@ -239,12 +240,11 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 							'post_title'   => $step['title'],
 							'post_status'  => 'publish',
 							'meta_input'   => $new_all_meta,
-							'post_content' => isset( $step['post_content'] ) ? wp_slash( wp_json_encode( $step['post_content'] ) ) : '',
+							'post_content' => $post_content,
 						)
 					);
-
-					$new_step_id = wp_insert_post( $new_step_args );
-
+					$new_step_id   = wp_insert_post( $new_step_args );
+				
 					/**
 					 * Fire after step import
 					 *
@@ -290,12 +290,16 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 
 							$is_divi = ( 'other' === $default_page_builder ) && ( class_exists( 'ET_Builder_Plugin' ) || Cartflows_Compatibility::get_instance()->is_divi_enabled() );
 
+							// Encode content if the page builder is not DIVI and Gutenberg.
+							$encode_content = ! $is_divi && 'gutenberg' !== $default_page_builder;
+							$post_content   = $encode_content ? wp_slash( wp_json_encode( $content ) ) : $content;
+
 							// Update post content.
 							wp_update_post(
 								array(
 									'ID'           => intval( $new_step_id ),
 									// If the page builder is DIVI then pass the content as it is but for rest of the page builders, Encrypt it.
-									'post_content' => $is_divi ? $content : wp_slash( wp_json_encode( $content ) ),
+									'post_content' => $post_content,
 								)
 							);
 						}

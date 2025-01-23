@@ -131,11 +131,11 @@ class MetaData extends AjaxBase {
 			$formatted_name = $product_object->get_name();
 			$managing_stock = $product_object->managing_stock();
 			$is_in_stock    = $product_object->is_in_stock();
+			$product_type   = $product_object->get_type();
 
-			// Skip the products which are not in stock and continue the loop.
-			if ( ! $is_in_stock ) {
-				continue;
-			}
+			$availibility_text   = $this->get_stock_availability_text( $product_object );
+			$product_price_range = $this->get_formatted_product_price_range( $product_object );
+
 
 			if ( $managing_stock && ! empty( $_GET['display_stock'] ) ) {
 				$stock_amount = $product_object->get_stock_quantity();
@@ -152,6 +152,10 @@ class MetaData extends AjaxBase {
 					'product_name'   => $product_object->get_name(),
 					'product_desc'   => $product_object->get_short_description(),
 					'product_image'  => get_the_post_thumbnail_url( $product_object->get_id() ),
+					'product_type'   => $product_type,
+					'stock_status'   => $availibility_text,
+					'in_stock'       => $is_in_stock,
+					'price_range'    => $product_price_range,
 				)
 			);
 		}
@@ -223,8 +227,6 @@ class MetaData extends AjaxBase {
 		wp_send_json( $coupons_found );
 	}
 
-
-
 	/**
 	 * Function to sanitize the product type data attribute.
 	 *
@@ -243,5 +245,85 @@ class MetaData extends AjaxBase {
 			return $product_types;
 	}
 
+	/**
+	 * Function to get the stock availability text for a given product.
+	 *
+	 * This function checks the stock status of a product and returns a string indicating its availability.
+	 * The availability text is translated to ensure it is user-friendly and consistent with the plugin's language.
+	 *
+	 * @param \WC_Product $product The product object to check the stock availability for.
+	 * @return string The stock availability text for the product.
+	 */
+	public function get_stock_availability_text( $product ) {
+
+		$availability_text = '';
+
+		if ( ! is_a( $product, 'WC_Product' ) ) {
+			return ''; // Return empty if product is not valid.
+		}
+
+		$availability = $product->get_availability();
+
+		if ( ! empty( $availability['class'] ) ) {
+
+			switch ( $availability['class'] ) {
+				case 'available-on-backorder':
+					$availability_text = __( 'On backorder', 'cartflows' );
+					break;
+				case 'in-stock':
+					$availability_text = __( 'In stock', 'cartflows' );
+					break;
+				case 'out-of-stock':
+					$availability_text = __( 'Out of stock', 'cartflows' );
+					break;
+				default:
+					break;
+			}
+		}
+
+		return $availability_text;
+	}
+
+	/**
+	 * Function to generate a formatted price range for a product.
+	 *
+	 * This function determines the price range for a product based on its type. For variable products, it calculates the price range from the minimum and maximum prices of its variations. For other product types, it uses the product's price or regular price if available.
+	 * The function returns a formatted string representing the price range.
+	 *
+	 * @param \WC_Product $product The product object to generate the price range for.
+	 * @return string The formatted price range for the product.
+	 */
+	public function get_formatted_product_price_range( $product ) {
+		$original_price = 0;
+
+		$product_type = $product->get_type();
+
+		if ( 'variable' === $product_type ) {
+			// Code for variation product.
+			$variation_price_range = $product->get_variation_prices( true );
+
+			$price         = array();
+			$min_price     = isset( $variation_price_range['price'] ) ? current( $variation_price_range['price'] ) : null;
+			$max_price     = isset( $variation_price_range['price'] ) ? end( $variation_price_range['price'] ) : null;
+			$min_reg_price = isset( $variation_price_range['regular_price'] ) ? current( $variation_price_range['regular_price'] ) : null;
+			$max_reg_price = isset( $variation_price_range['regular_price'] ) ? end( $variation_price_range['regular_price'] ) : null;
+
+			if ( $min_price !== $max_price && ! is_null( $min_price ) && ! is_null( $max_price ) ) {
+				$original_price = html_entity_decode( wp_strip_all_tags( wc_format_price_range( $min_price, $max_price ) ) );
+			}
+
+			if ( $min_reg_price !== $max_reg_price && ! is_null( $min_reg_price ) && ! is_null( $max_reg_price ) ) {
+				if ( ! empty( $original_price ) ) {
+					$original_price = html_entity_decode( wp_strip_all_tags( wc_format_price_range( $min_reg_price, $max_reg_price ) ) );
+				}
+			}
+		} else {
+			$price          = $product->get_price();
+			$original_price = ! empty( $price ) ? $price : $product->get_regular_price();
+			$original_price = html_entity_decode( wp_strip_all_tags( wc_price( $original_price ) ) );
+		}
+
+		return $original_price;
+	}
 
 }

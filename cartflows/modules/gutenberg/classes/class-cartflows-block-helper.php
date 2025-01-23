@@ -69,6 +69,7 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 					'border-color'     => $attr['btnBorderHColor'],
 				),
 				' .wpcf__next-step-button-link .wpcf__next-step-button-content-wrap .wpcf__next-step-button-title-wrap' => array(
+					'font-family'    => $attr['titletextFontFamily'],
 					'text-transform' => $attr['titletextTransform'],
 					'letter-spacing' => Cartflows_Gb_Helper::get_css_value( $attr['titleletterSpacing'], 'px' ),
 				),

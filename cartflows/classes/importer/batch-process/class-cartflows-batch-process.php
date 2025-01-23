@@ -166,7 +166,7 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 			// Start image importing after site import complete.
 			add_action( 'cartflows_after_template_import', array( $this, 'start_batch_process' ) );
 			add_action( 'cartflows_import_complete', array( $this, 'complete_batch_import' ) );
-			add_filter( 'upload_mimes', array( $this, 'custom_upload_mimes' ) ); //phpcs:ignore WordPressVIPMinimum.Hooks.RestrictedHooks.upload_mimes
+			add_filter( 'upload_mimes', array( $this, 'wcf_custom_upload_mimes' ) ); //phpcs:ignore WordPressVIPMinimum.Hooks.RestrictedHooks.upload_mimes
 			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'add_svg_image_support' ), 10, 3 );
 			add_action( 'cartflows_before_elementor_import_single_template', array( $this, 'enable_unfiltered_upload_elementor' ) );
 			add_action( 'admin_head', array( $this, 'start_importer' ) );
@@ -253,18 +253,15 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 		 *
 		 * @param array $mimes Already supported mime types.
 		 */
-		public function custom_upload_mimes( $mimes ) {
-
+		public function wcf_custom_upload_mimes( $mimes ) {
 			// Return if the current user don't have the access to upload the files.
-			if ( ! current_user_can( 'unfiltered_upload' ) ) {
+			if ( ! current_user_can( 'cartflows_manage_flows_steps' ) && ! current_user_can( 'unfiltered_upload' ) ) {
 				return $mimes;
 			}
-
 			// Only add the SVG support if and only if the CartFlows import is complete OR in progress.
-			if ( ! self::$is_wcf_template_import ) {
+			if ( false === get_transient( 'cartflows_is_wcf_template_import' ) ) {
 				return $mimes;
 			}
-
 			// Allow SVG files.
 			$mimes['svg']  = 'image/svg+xml';
 			$mimes['svgz'] = 'image/svg+xml';
@@ -685,8 +682,13 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 		 * @return void
 		 */
 		public static function set_is_wcf_template_import( $bool = false ) {
-			self::$is_wcf_template_import = $bool;
+			if ( $bool ) {
+				set_transient( 'cartflows_is_wcf_template_import', $bool, HOUR_IN_SECONDS );
+			} else {
+				delete_transient( 'cartflows_is_wcf_template_import' ); // Delete the option if $bool is false.
+			}
 		}
+	
 	}
 
 	/**

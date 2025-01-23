@@ -107,7 +107,7 @@ class Importer extends AjaxBase {
 
 			$response_data = array(
 				'message' => __( 'Funnel exported successfully', 'cartflows' ),
-				'flows'   => $flows,
+				'flows'   => wp_json_encode( $flows ),
 				'export'  => true,
 			);
 
@@ -459,6 +459,12 @@ class Importer extends AjaxBase {
 					'message' => $activate->get_error_message(),
 				)
 			);
+		}
+
+
+		if ( class_exists( '\BSF_UTM_Analytics\Inc\Utils' ) && is_callable( '\BSF_UTM_Analytics\Inc\Utils::update_referer' ) ) {
+			$plugin_slug = pathinfo( $plugin_init, PATHINFO_FILENAME ); // Retrives the plugin slug from the init.
+			\BSF_UTM_Analytics\Inc\Utils::update_referer( 'cartflows', $plugin_slug );
 		}
 
 		wp_send_json_success(

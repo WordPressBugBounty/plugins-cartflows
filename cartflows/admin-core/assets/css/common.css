@@ -75,8 +75,7 @@
 */
 
 /* CartFlows 404 page */
-.wcf-no-page-found-wrapper,
-.wcf-no-access-error-wrapper {
+.wcf-no-page-found-wrapper {
 	display: flex;
 	flex-grow: 1;
 	margin: 0 auto;
@@ -84,11 +83,6 @@
 	flex-direction: column;
 	text-align: center;
 	margin-top: 5%;
-}
-
-.wcf-no-access-error-wrapper .wcf-no-access--icon img {
-	width: 35px;
-	height: 35px;
 }
 
 .wcf-no-page-found-wrapper .not-found-pre-sub-title {
@@ -101,20 +95,12 @@
 	margin: 0.5em 0 0.3em 0;
 }
 
-.wcf-no-access-error-wrapper .wcf-no-access--title {
-	font-size: 1.5rem;
-	line-height: 1;
-	margin: 0.5em 0 0.3em 0;
-}
-
-.wcf-no-page-found-wrapper .not-found-message p,
-.wcf-no-access-error-wrapper .wcf-no-access--message {
+.wcf-no-page-found-wrapper .not-found-message p {
 	font-size: 1rem;
 	line-height: 1.5rem;
 }
 
-.wcf-no-page-found-wrapper .not-found-action-link,
-.wcf-no-access-error-wrapper .wcf-no-access-link {
+.wcf-no-page-found-wrapper .not-found-action-link {
 	color: #f06335;
 	text-decoration: none;
 	vertical-align: middle;
@@ -126,8 +112,7 @@
 	margin-top: 20px;
 }
 
-.wcf-no-page-found-wrapper .not-found-action-link .dashicons,
-.wcf-no-access-error-wrapper .wcf-no-access-link .dashicons {
+.wcf-no-page-found-wrapper .not-found-action-link .dashicons {
 	margin-left: 5px;
 	font-size: 1em;
 	line-height: 1.4rem;

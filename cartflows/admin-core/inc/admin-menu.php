@@ -270,24 +270,23 @@ class AdminMenu {
 				'admin.php?page=' . $this->menu_slug . '&' . $global_checkout_param
 			);
 
-			add_submenu_page(
-				$parent_slug,
-				__( 'Automations', 'cartflows' ),
-				// Here the inline CSS is added to make sure that the menu's tag css should display correctly on all pages.
-				__( 'Automations', 'cartflows' ) . '<span class="submenu-tag" style="margin-left: 4px; color: #f06434; vertical-align: super; font-size: 9px;">' . __( 'New', 'cartflows' ) . '</span>',
-				$capability,
-				'admin.php?page=' . $this->menu_slug . '&path=automations'
-			);
-
-			add_submenu_page(
-				$parent_slug,
-				__( 'Add-ons', 'cartflows' ),
-				__( 'Add-ons', 'cartflows' ),
-				$capability,
-				'admin.php?page=' . $this->menu_slug . '&path=addons'
-			);
-
 			if ( current_user_can( 'cartflows_manage_settings' ) ) {
+				add_submenu_page(
+					$parent_slug,
+					__( 'Automations', 'cartflows' ),
+					// Here the inline CSS is added to make sure that the menu's tag css should display correctly on all pages.
+					__( 'Automations', 'cartflows' ) . '<span class="submenu-tag" style="margin-left: 4px; color: #f06434; vertical-align: super; font-size: 9px;">' . __( 'New', 'cartflows' ) . '</span>',
+					$capability,
+					'admin.php?page=' . $this->menu_slug . '&path=automations'
+				);
+
+				add_submenu_page(
+					$parent_slug,
+					__( 'Add-ons', 'cartflows' ),
+					__( 'Add-ons', 'cartflows' ),
+					$capability,
+					'admin.php?page=' . $this->menu_slug . '&path=addons'
+				);
 
 				if ( ! get_option( 'wcf_setup_page_skipped', false ) && '1' === get_option( 'wcf_setup_skipped', false ) && $this->maybe_skip_setup_menu() ) {
 
@@ -544,6 +543,9 @@ class AdminMenu {
 				'instant_checkout_notice_status'    => \Cartflows_Helper::get_admin_settings_option( 'wcf-instant-checkout-notice-skipped', false, false ),
 				'cartflows_admin_notices'           => $this->cartflows_admin_notices(),
 				'whats_new_rss_feed'                => $this->get_whats_new_rss_feeds_data(),
+				'cartflows_current_version'         => CARTFLOWS_VER,
+				'cartflows_previous_versions'       => \Cartflows_Helper::get_rollback_versions_options(),
+				'rollback_url'                      => esc_url( add_query_arg( 'version', 'VERSION', wp_nonce_url( admin_url( 'admin-post.php?action=cartflows_rollback' ), 'cartflows_rollback' ) ) ),
 			)
 		);
 
@@ -621,7 +623,7 @@ class AdminMenu {
 	/**
 	 * Get required plugin titles from their slugs.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.6
 	 * @param array $plugins plugins array.
 	 * @return array
 	 */
@@ -1111,7 +1113,7 @@ class AdminMenu {
 	/**
 	 * Prepare the array of RSS Feeds of CartFlows for Whats New slide-our pannel.
 	 *
-	 * @since x.x.x
+	 * @since 2.1.6
 	 * @return array The prepared array of RSS feeds.
 	 */
 	public function get_whats_new_rss_feeds_data() {

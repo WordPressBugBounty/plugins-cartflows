@@ -801,6 +801,10 @@ if ( ! class_exists( 'WCFB_Checkout_Form' ) ) {
 				array(
 					'attributes'      => $attributes,
 					'render_callback' => array( $this, 'render_html' ),
+					// Enqueue blocks.commoneditorstyle.build.css in the editor only.
+					'editor_style'  => array( 
+						'wcf-checkout-template',   // First stylesheet for the editor.
+					),
 				)
 			);
 		}
