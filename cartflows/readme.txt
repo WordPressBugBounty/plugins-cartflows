@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, custom checkout, WooCommerce checkout
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.1.6
+Stable tag: 2.1.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -387,6 +387,9 @@ Welcome to CartFlows\! Click here to access our comprehensive documentation and 
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 2.1.7 - Friday, 24th January 2025 =
+* Fix: Resolved a critical issue caused by a missing compatibility class for the fix implemented for Oxygen Builder on the Thank You page.
 
 = Version 2.1.6 - Thursday, 23rd January 2025 =
 * New: Introduced the Rollback feature for CartFlows.

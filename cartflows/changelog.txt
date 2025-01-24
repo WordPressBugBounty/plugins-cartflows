@@ -1,3 +1,6 @@
+Version 2.1.7 - Friday, 24th January 2025
+- Fix: Resolved a critical issue caused by a missing compatibility class for the fix implemented for Oxygen Builder on the Thank You page.
+
 Version 2.1.6 - Thursday, 23rd January 2025
 - New: Introduced the Rollback feature for CartFlows.
 - Improvement: Enhanced block previews in Gutenberg for better clarity.
