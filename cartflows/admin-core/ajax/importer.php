@@ -462,9 +462,9 @@ class Importer extends AjaxBase {
 		}
 
 
-		if ( class_exists( '\BSF_UTM_Analytics\Inc\Utils' ) && is_callable( '\BSF_UTM_Analytics\Inc\Utils::update_referer' ) ) {
+		if ( class_exists( '\BSF_UTM_Analytics' ) && is_callable( '\BSF_UTM_Analytics::update_referer' ) ) {
 			$plugin_slug = pathinfo( $plugin_init, PATHINFO_FILENAME ); // Retrives the plugin slug from the init.
-			\BSF_UTM_Analytics\Inc\Utils::update_referer( 'cartflows', $plugin_slug );
+			\BSF_UTM_Analytics::update_referer( 'cartflows', $plugin_slug );
 		}
 
 		wp_send_json_success(
@@ -778,6 +778,9 @@ class Importer extends AjaxBase {
 
 			update_option( '_cartflows_common', $common_settings );
 		}
+
+		// Import the Global Colors Data if exists.
+		$this->import_funnel_gcp_vars_data( $response, $new_flow_id );
 
 		wcf()->logger->import_log( '✓ Flow Created! Flow ID: ' . $new_flow_id . ' - Remote Flow ID - ' . $flow['ID'] );
 
@@ -1542,5 +1545,46 @@ class Importer extends AjaxBase {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Imports the Global Colors and Patterns (GCP) variables data for a given flow.
+	 *
+	 * This function updates the post meta for a flow with the GCP variables data received in the response.
+	 * It logs the import process and updates the post meta with the GCP data.
+	 *
+	 * @param array $response The response data containing the GCP variables.
+	 * @param int   $flow_id The ID of the flow for which the GCP data is being imported.
+	 *
+	 * @return void
+	 */
+	public function import_funnel_gcp_vars_data( $response, $flow_id ) {
+
+		wcf()->logger->import_log( 'Start: ' . __CLASS__ . ' :: ' . __FUNCTION__ );
+
+		wcf()->logger->import_log( 'Newly Imported Flow ID: ' . $flow_id . PHP_EOL . ' Response ' . print_r( $response, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+
+		if ( isset( $response['data']['flow_gcp_meta'] ) && ! empty( $response['data']['flow_gcp_meta'] ) && is_object( $response['data']['flow_gcp_meta'] ) ) {
+
+			wcf()->logger->import_log( 'Before Importing:' . print_r( $response['data']['flow_gcp_meta'], true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+
+			$gcp_data = (object) array_map( 'sanitize_text_field', (array) $response['data']['flow_gcp_meta'] );
+
+			wcf()->logger->import_log( 'After Importing: ' . print_r( $gcp_data, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+
+			$gcp_meta_keys = array(
+				'wcf-enable-gcp-styling'  => 'yes',
+				'wcf-gcp-primary-color'   => ! empty( $gcp_data->gcp_primary_color ) ? $gcp_data->gcp_primary_color : '',
+				'wcf-gcp-secondary-color' => ! empty( $gcp_data->gcp_secondary_color ) ? $gcp_data->gcp_secondary_color : '',
+				'wcf-gcp-text-color'      => ! empty( $gcp_data->gcp_text_color ) ? $gcp_data->gcp_text_color : '',
+				'wcf-gcp-accent-color'    => ! empty( $gcp_data->gcp_accent_color ) ? $gcp_data->gcp_accent_color : '',
+			);
+
+			foreach ( $gcp_meta_keys as $key => $value ) {
+				update_post_meta( $flow_id, $key, $value );
+			}
+		}
+
+		wcf()->logger->import_log( 'End: ' . __CLASS__ . ' :: ' . __FUNCTION__ );
 	}
 }

@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, custom checkout, WooCommerce checkout
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.1.7
+Stable tag: 2.1.8
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -26,7 +26,7 @@ As the **\#1 WooCommerce checkout plugin** and funnel builder, CartFlows is desi
 
 It doesn’t just optimize your store \- it helps you sell more and boost **average order value (AOV)** with ease.
 
-[Try it out on a free dummy site.](https://zipwp.org/plugins/cartflows/)
+[Try the live demo of CartFlows](https://zipwp.org/plugins/cartflows/)
 
 ## Why WooCommerce Needs CartFlows
 
@@ -387,6 +387,21 @@ Welcome to CartFlows\! Click here to access our comprehensive documentation and 
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 2.1.8 - Wednesday, 5th March 2025 =
+* New: Introduced language files for multiple languages for quick translation of the plugin.
+* Fix: Resolved issue preventing step pages from being edited with Oxygen Builder.
+* Fix: Resolved the conflict between CartFlows and custom templates of Bricks Builder on Shop page.
+* Fix: The funnel's GCP colors were not getting imported while importing the ready-made templates.
+* Fix: Removed the extra spacing at the bottom of the page while using the instant checkout layout on mobile devices.
+* Fix: The product image is not displaying properly for iOS mobile devices for instant checkout layout.
+* Fix: Corrected the issue where the next step button was active in the page builder's editor view, causing redirect problems during page editing.
+* Fix: Resolved UI/UX problems on the create new from scratch screen.
+* Improvement: Introduced a setup status checklist feature on the CartFlows dashboard.
+* Improvement: Displaying the selected product's information on the opt-in page consistently with the checkout page.
+* Improvement: Enhanced the custom field creation process with inline error messages.
+* Improvement: Enhanced the mobile experience of CartFlows Dashboard and Flow Listing page.
+* Improvement: Improved the onboarding steps to let the user complete the required steps to help setup the CartFlows easily.
 
 = Version 2.1.7 - Friday, 24th January 2025 =
 * Fix: Resolved a critical issue caused by a missing compatibility class for the fix implemented for Oxygen Builder on the Thank You page.

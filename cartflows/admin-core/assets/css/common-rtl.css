@@ -159,3 +159,23 @@
 .toplevel_page_cartflows .whats-new-rss-flyout.closed {
 	visibility: hidden;
 }
+
+.wcf-pro-badge {
+	border: 1px solid transparent;
+	background: linear-gradient( #fff, #fff ) padding-box, linear-gradient( -180deg, rgba( 240, 100, 52, 0.2 ) 50%, rgba( 240, 100, 52, 0.6 ) 100% ) border-box;
+}
+
+.wcf-step-wrap.pro-inactive a,
+.wcf-step-wrap.pro-inactive span,
+.wcf-step-wrap.pro-inactive .wcf-steps--sortable-toggle,
+.wcf-step-wrap.pro-inactive .wcf-step--actions-col * {
+	color: #d1d5db;
+}
+
+.wcf-step-wrap.pro-inactive img {
+	opacity: 50%;
+}
+
+.wcf-step-wrap.pro-inactive a.wcf-step--stats-content__upgrade-to-pro--badge {
+	display: none;
+}

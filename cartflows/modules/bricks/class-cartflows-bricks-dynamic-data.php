@@ -39,10 +39,9 @@ class Cartflows_Bricks_Dynamic_Data {
 	 */
 	private function __construct() {
 		add_filter( 'bricks/dynamic_tags_list', array( $this, 'dynamic_tags' ), 10 );
-		add_filter( 'bricks/dynamic_data/render_tag', array( $this, 'get_the_tag_value' ), 10, 2 );
+		add_filter( 'bricks/dynamic_data/render_tag', array( $this, 'get_the_tag_value' ), 10, 3 );
 		add_filter( 'bricks/frontend/render_data', array( $this, 'render' ), 10, 3 );
 		add_filter( 'bricks/dynamic_data/render_content', array( $this, 'render' ), 10, 3 );
-
 	}
 
 	/**
@@ -93,6 +92,11 @@ class Cartflows_Bricks_Dynamic_Data {
 	 * @return string
 	 */
 	public function render( $content, $post, $context = 'text' ) {
+
+		if ( ! wcf()->utils->is_step_post_type() ) {
+			return $content;
+		}
+
 		/**
 		 * \w: Matches any word character (alphanumeric & underscore).
 		 * Equivalent to [A-Za-z0-9_]
@@ -204,7 +208,7 @@ class Cartflows_Bricks_Dynamic_Data {
 					continue;
 				}
 
-				$value   = $this->get_the_tag_value( $match, $post );
+				$value   = $this->get_the_tag_value( $match, $post, $content );
 				$content = str_replace( $tag, $value, $content );
 			}
 				++$dd_tag_count;
@@ -218,15 +222,22 @@ class Cartflows_Bricks_Dynamic_Data {
 	 *
 	 * @param string $tag    Tag name.
 	 * @param object $post   Post object.
+	 * @param string $context The Tag context.
 	 *
 	 * @return string
 	 */
-	public function get_the_tag_value( $tag, $post ) {
+	public function get_the_tag_value( $tag, $post, $context ) {
+
+		if ( ! wcf()->utils->is_step_post_type() ) {
+			return $tag;
+		}
+
 		// Get all the registered tags and check if the tag exists.
 		$registered_tags = $this->dynamic_tags();
-		$tag_slug        = strtok( $tag, ':' );
 
-		if ( false === array_search( $tag_slug, array_column( $registered_tags, 'slug' ), true ) ) {
+		$tag_slug = strtok( $tag, ':' );
+
+		if ( ! in_array( $tag_slug, array_column( $registered_tags, 'slug' ), true ) ) {
 			return $tag;
 		}
 

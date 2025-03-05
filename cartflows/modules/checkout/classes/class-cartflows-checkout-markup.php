@@ -485,7 +485,7 @@ class Cartflows_Checkout_Markup {
 		);
 
 		$checkout_id = intval( $atts['id'] );
-
+		
 		$show_checkout_demo = false;
 
 		if ( is_admin() ) {
@@ -496,7 +496,6 @@ class Cartflows_Checkout_Markup {
 				$checkout_id = intval( $_POST['id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 			}
 		}
-
 		if ( empty( $checkout_id ) ) {
 
 			if ( ! _is_wcf_checkout_type() && false === $show_checkout_demo ) {

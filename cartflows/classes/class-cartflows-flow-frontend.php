@@ -44,7 +44,10 @@ class Cartflows_Flow_Frontend {
 		add_action( 'admin_bar_menu', array( $this, 'add_edit_flow_menu' ), 999 );
 		add_action( 'admin_bar_menu', array( $this, 'update_edit_step_menu_link' ), 999 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_gcp_color_vars' ), 23 );
+		
 	}
+
+	
 
 	/**
 	 * Add a new admin bar menu to navigate to edit the flow.

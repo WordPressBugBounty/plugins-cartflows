@@ -100,6 +100,7 @@ class ProductData extends ApiBase {
 
 			$data['img_url']       = get_the_post_thumbnail_url( $product_id );
 			$data['regular_price'] = \Cartflows_Helper::get_product_original_price( $product );
+			$data['is_virtual']    = $product->is_virtual();
 		}
 
 		$response = new \WP_REST_Response( $data );

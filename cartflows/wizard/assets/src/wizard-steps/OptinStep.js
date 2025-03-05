@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { sprintf, __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import { useStateValue } from '../utils/StateProvider';
 import {
 	ExclamationCircleIcon,
@@ -150,7 +150,7 @@ function OptinStep() {
 						{ __( 'Step 5 of 6', 'cartflows' ) }
 					</span>
 					<h1 className="wcf-step-heading mb-4">
-						{ ReactHtmlParser(
+						{ parse(
 							sprintf(
 								/* translators: %s: html tag*/
 								__(
@@ -162,7 +162,7 @@ function OptinStep() {
 						) }
 					</h1>
 					<p className="mt-4 text-[#4B5563] text-base">
-						{ ReactHtmlParser(
+						{ parse(
 							sprintf(
 								/* translators: %1$s: html tag, %2$s: html tag*/
 								__(

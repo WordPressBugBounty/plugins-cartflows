@@ -80,7 +80,6 @@ class Cartflows_Frontend {
 			if ( $checkout_id ) {
 
 				$thankyou_step_id = wcf()->flow->get_thankyou_page_id( $order );
-
 				$thankyou_step_id = apply_filters( 'cartflows_checkout_next_step_id', $thankyou_step_id, $order, $checkout_id );
 
 				if ( $thankyou_step_id ) {

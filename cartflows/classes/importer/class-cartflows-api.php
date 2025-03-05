@@ -123,7 +123,7 @@ if ( ! class_exists( 'CartFlows_API' ) ) :
 		public static function get_flow( $site_id ) {
 			$request_params = array(
 				'licence_args' => self::get_licence_args(),
-				'_fields'      => 'id,slug,status,type,link,title,featured_media,template,cartflows_flow_page_builder,cartflows_flow_type,cartflows_flow_flow,featured_image_url,licence_status,flow_type,flow_type,page_builder,divi_content,post_meta,content',
+				'_fields'      => 'id,slug,status,type,link,title,featured_media,template,cartflows_flow_page_builder,cartflows_flow_type,cartflows_flow_flow,featured_image_url,licence_status,flow_type,flow_type,page_builder,divi_content,post_meta,content,flow_gcp_meta',
 			);
 
 			$url = add_query_arg( $request_params, self::get_flow_endpoint_url() . $site_id );
@@ -140,6 +140,7 @@ if ( ! class_exists( 'CartFlows_API' ) ) :
 				return array(
 					'title'            => ( isset( $template['title']->rendered ) ) ? $template['title']->rendered : '',
 					'post_meta'        => ( isset( $template['post_meta'] ) ) ? $template['post_meta'] : '',
+					'flow_gcp_meta'    => ( isset( $template['flow_gcp_meta'] ) ) ? $template['flow_gcp_meta'] : '',
 					'data'             => $template,
 					'original_content' => isset( $response['data']['divi_content'] ) ? $response['data']['divi_content'] : '',
 					'divi_content'     => isset( $response['data']['divi_content'] ) ? $response['data']['divi_content'] : '',

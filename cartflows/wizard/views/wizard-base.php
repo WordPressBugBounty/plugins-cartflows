@@ -31,7 +31,7 @@ set_current_screen();
 		do_action( 'admin_head' );
 		?>
 	</head>
-	<body class="cartflows-setup wp-core-ui" style="background-color: #f0f0f1;">
+	<body class="cartflows-setup wp-core-ui" style="background-color: #f0f0f1; ">
 		<div id="wcf-setup-wizard-page" class="wcf-setup-wizard-page-wrapper" ></div>
 	</body>
 	<?php wp_footer(); ?>

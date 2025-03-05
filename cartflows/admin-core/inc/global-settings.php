@@ -313,6 +313,7 @@ class GlobalSettings {
 							),
 						),
 						'backComp'   => true,
+						'is_pro'     => true,
 					),
 
 					'pixel-event-purchase-complete' => array(
@@ -346,6 +347,7 @@ class GlobalSettings {
 						),
 						'backComp'   => true,
 						'tooltip'    => __( 'Optin Lead event will be trigger for optin page.', 'cartflows' ),
+						'is_pro'     => true,
 					),
 
 					'pixel-not-work-doc'            => array(
@@ -502,6 +504,7 @@ class GlobalSettings {
 							),
 						),
 						'backComp'   => true,
+						'is_pro'     => true,
 					),
 					'ga-event-purchase-complete'      => array(
 						'type'       => 'checkbox',
@@ -534,6 +537,7 @@ class GlobalSettings {
 						),
 						'backComp'   => true,
 						'tooltip'    => __( 'Optin Lead event will be trigger for optin page.', 'cartflows' ),
+						'is_pro'     => true,
 					),
 
 					'ga-not-work-doc'                 => array(
@@ -721,6 +725,7 @@ class GlobalSettings {
 							),
 						),
 						'backComp'   => true,
+						'is_pro'     => true,
 					),
 					'tiktok-event-purchase-complete'  => array(
 						'type'       => 'checkbox',
@@ -753,6 +758,7 @@ class GlobalSettings {
 						),
 						'backComp'   => true,
 						'tooltip'    => __( 'Optin Lead event will be triggered for optin page.', 'cartflows' ),
+						'is_pro'     => true,
 					),
 				),
 			),
@@ -938,6 +944,7 @@ class GlobalSettings {
 						),
 						'backComp'   => true,
 						'tooltip'    => __( 'Optin Lead event will be triggered for optin page.', 'cartflows' ),
+						'is_pro'     => true,
 					),
 				),
 			),
@@ -1110,6 +1117,7 @@ class GlobalSettings {
 							),
 						),
 						'backComp'   => true,
+						'is_pro'     => true,
 					),
 					'google-ads-event-purchase-complete' => array(
 						'type'       => 'checkbox',
@@ -1142,6 +1150,7 @@ class GlobalSettings {
 						),
 						'backComp'   => true,
 						'tooltip'    => __( 'Optin Lead event will be triggered for optin page.', 'cartflows' ),
+						'is_pro'     => true,
 					),
 				),
 			),
@@ -1309,6 +1318,7 @@ class GlobalSettings {
 							),
 						),
 						'backComp'   => true,
+						'is_pro'     => true,
 					),
 					'pinterest-event-purchase-complete' => array(
 						'type'       => 'checkbox',
@@ -1340,6 +1350,7 @@ class GlobalSettings {
 						),
 						'backComp'   => true,
 						'tooltip'    => __( 'Signup event will be triggered for optin page.', 'cartflows' ),
+						'is_pro'     => true,
 					),
 					'pinterest-event-lead-info'         => array(
 						'type'       => 'checkbox',
@@ -1356,6 +1367,7 @@ class GlobalSettings {
 						),
 						'backComp'   => true,
 						'tooltip'    => __( 'Optin Lead event will be triggered for optin page.', 'cartflows' ),
+						'is_pro'     => true,
 					),
 				),
 			),

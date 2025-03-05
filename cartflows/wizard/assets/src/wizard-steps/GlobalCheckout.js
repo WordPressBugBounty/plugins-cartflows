@@ -6,7 +6,7 @@ import { useStateValue } from '../utils/StateProvider';
 import { RadioGroup } from '@headlessui/react';
 import { ColorPickerField } from '@WizardFields';
 import { sendPostMessage } from '@Utils/Helpers';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import GlobalFlowItem from './components/GlobalFlowItem';
@@ -35,10 +35,11 @@ function GlobalCheckout() {
 	const [ { action_button, selected_page_builder, site_logo }, dispatch ] =
 		useStateValue();
 
+	// Removing cartflows_wizard.default_page_builder to ensure the onboarding step displays templates only for the selected builder, not the default or previously chosen one.
+
 	const page_builder = selected_page_builder
 		? selected_page_builder
-		: cartflows_wizard.default_page_builder;
-
+		: 'gutenberg';
 	const [ previewUrl, setPreviewUrl ] = useState();
 
 	const [ importErrors, setImportErrors ] = useState( {
@@ -539,14 +540,10 @@ function GlobalCheckout() {
 									{ hasError && (
 										<p className="wcf-import-error-wrapper flex bg-red-100 p-3 rounded items-center gap-5">
 											<h3 className="wcf-import-error--heading font-normal text-red-700 text-sm">
-												{ ReactHtmlParser(
-													errorMessage
-												) }
+												{ parse( errorMessage ) }
 											</h3>
 											<span className="wcf-import-error--message text-sm text-slate-800">
-												{ ReactHtmlParser(
-													callToAction
-												) }
+												{ parse( callToAction ) }
 											</span>
 										</p>
 									) }

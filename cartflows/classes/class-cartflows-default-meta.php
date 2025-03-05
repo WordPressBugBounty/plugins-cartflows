@@ -474,7 +474,6 @@ class Cartflows_Default_Meta {
 	 * @return string
 	 */
 	public function get_flow_meta_value( $post_id, $key, $default = false ) {
-
 		$value = $this->get_save_meta( $post_id, $key );
 
 		if ( ! $value ) {

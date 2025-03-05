@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import './Tooltip.scss';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import classnames from 'classnames';
@@ -30,9 +30,7 @@ function Tooltip( props ) {
 
 			{ '' !== text && (
 				<span className={ `wcf-tooltip-text ${ descClass }` }>
-					{ typeof text === 'string'
-						? ReactHtmlParser( text )
-						: text }
+					{ typeof text === 'string' ? parse( text ) : text }
 				</span>
 			) }
 		</div>

@@ -298,6 +298,16 @@ class AdminMenu {
 						'admin.php?page=' . $this->menu_slug . '&path=setup'
 					);
 				}
+
+				if ( ! _is_cartflows_pro() ) {
+					add_submenu_page(
+						$parent_slug,
+						__( 'Get CartFlows Pro', 'cartflows' ),
+						__( 'Get CartFlows Pro', 'cartflows' ),
+						$capability,
+						'admin.php?page=' . $this->menu_slug . '&path=free-vs-pro'
+					);
+				}
 			}
 
 			// Rename to Home menu.
@@ -470,7 +480,7 @@ class AdminMenu {
 			'cartflows_admin_localized_vars',
 			array(
 				'current_user'                      => ! empty( wp_get_current_user()->user_firstname ) ? wp_get_current_user()->user_firstname : wp_get_current_user()->display_name,
-				'cf_pro_status'                     => $this->get_cartflows_pro_plugin_status(),
+				'cf_pro_status'                     => $cf_pro_status,
 				'cf_pro_type'                       => 'free',
 				'cf_pro_type_inactive'              => $cf_pro_type_inactive,
 				'woocommerce_status'                => $this->get_plugin_status( 'woocommerce/woocommerce.php' ),
@@ -635,9 +645,15 @@ class AdminMenu {
 		}
 
 		foreach ( $plugins as $plugin ) {
-			$slug_parts = explode( '-', $plugin['slug'] );
-			$title      = implode( ' ', array_map( 'ucfirst', $slug_parts ) ); // Convert each part to title case.
-			$titles[]   = $title;
+
+			if ( 'ultimate-addons-for-gutenberg' === $plugin['slug'] ) {
+				$title = 'Spectra'; // Don't add this for translation as it is a plugin name.
+			} else {
+				$slug_parts = explode( '-', $plugin['slug'] );
+				$title      = implode( ' ', array_map( 'ucfirst', $slug_parts ) ); // Convert each part to title case.
+			}
+
+			$titles[] = $title;
 		}
 
 		return $titles;
@@ -1019,7 +1035,7 @@ class AdminMenu {
 					),
 					array(
 						'title'       => __( 'SureMembers', 'cartflows' ),
-						'subtitle'    => __( 'Transform your WordPress form-building experience with stunning designs, ai integration, and no-code flexibility.', 'cartflows' ),
+						'subtitle'    => __( 'A simple yet powerful way to add content restriction to your website.', 'cartflows' ),
 						'isPro'       => true,
 						'status'      => $this->get_plugin_status( 'suremembers/suremembers.php' ),
 						'slug'        => 'suremembers',

@@ -310,6 +310,7 @@
 .wcf-optin-form .woocommerce #order_review .input-text {
 	display: block;
 	width: 100%;
+	min-width: 100%;
 	min-height: 34px;
 	padding: 11px 12px;
 	font-family: inherit;
@@ -459,7 +460,7 @@
 .wcf-optin-form .woocommerce form.woocommerce-form-login .form-row label,
 .wcf-optin-form .woocommerce-checkout .form-row label {
 	font-size: 13px;
-	line-height: 1em;
+	line-height: 1.1em;
 	letter-spacing: 0.3px;
 	font-family: inherit;
 	font-weight: inherit;
@@ -474,15 +475,14 @@
 .wcf-optin-form .woocommerce .wcf-input-radio-field-wrapper .woocommerce-input-wrapper {
 	display: block;
 }
-
 .wcf-optin-form .woocommerce .wcf-input-radio-field-wrapper input[type="radio"].input-radio {
 	float: right;
-	margin: 8px 0 0 10px;
+	margin: 0 0 0 10px;
 	cursor: pointer;
 }
 
 .wcf-optin-form .woocommerce .wcf-input-radio-field-wrapper label.radio.input-radio {
-	margin: 0 0 15px 0;
+	margin: 0;
 	cursor: pointer;
 }
 
@@ -776,11 +776,11 @@ a.et_pb_more_button::after {
 	white-space: nowrap;
 }
 
-.wcf-optin-form.wcf-field-floating-labels .woocommerce .woocommerce-billing-fields .form-row.wcf-anim-label label,
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .woocommerce-billing-fields .form-row.wcf-anim-label label:not( .input-radio ),
 .wcf-optin-form.wcf-field-floating-labels .woocommerce .woocommerce-shipping-fields .form-row.wcf-anim-label label,
 .wcf-optin-form.wcf-field-floating-labels .woocommerce .woocommerce-additional-fields .form-row.wcf-anim-label label,
 .wcf-optin-form.wcf-field-floating-labels .woocommerce .woocommerce-account-fields .form-row.wcf-anim-label label {
-	margin-top: 8px;
+	margin-top: 8px !important;
 	font-size: 12px;
 }
 
@@ -817,6 +817,8 @@ a.et_pb_more_button::after {
 .wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row input[type="email"],
 .wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row input[type="password"],
 .wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row input[type="tel"],
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row input[type="number"],
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row input[type="datetime-local"],
 .wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row textarea,
 .wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row select,
 .wcf-optin-form.wcf-field-floating-labels .select2-container--default .select2-selection--single {
@@ -835,6 +837,39 @@ a.et_pb_more_button::after {
 	margin: 0;
 }
 
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .wcf-input-radio-field-wrapper .woocommerce-input-wrapper {
+	-js-display: flex;
+	display: flex;
+}
+
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .woocommerce-billing-fields .form-row label.input-radio {
+	position: relative !important;
+	margin: 0 0 0 20px !important;
+}
+
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .wcf-input-radio-field-wrapper input[type="radio"].input-radio {
+	margin-top: 0;
+}
+
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .woocommerce-billing-fields .form-row > label.input-radio {
+	margin-bottom: 8px !important;
+}
+
+.wcf-optin-form .woocommerce .wcf-input-radio-field-wrapper .woocommerce-input-wrapper {
+	display: grid;
+	grid-template-columns: auto auto;
+	justify-content: flex-start;
+	align-items: center;
+	grid-row-gap: 15px;
+}
+
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row input[type="datetime-local"] {
+	color: transparent;
+}
+
+.wcf-optin-form.wcf-field-floating-labels .woocommerce .form-row.wcf-anim-label input[type="datetime-local"] {
+	color: inherit;
+}
 /**
 * ****************************************
 * Mobile css for two step navigation Start

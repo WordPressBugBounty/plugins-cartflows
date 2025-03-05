@@ -146,8 +146,9 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 
 			if ( $product_obj ) {
 				$options['wcf-optin-product'] = array(
-					'value' => $product_id,
-					'label' => $product_obj->get_name() . ' (#' . $product_obj->get_id() . ')',
+					'value'   => $product_id,
+					'label'   => $product_obj->get_name() . ' (#' . $product_obj->get_id() . ')',
+					'img_url' => get_the_post_thumbnail_url( $product_id ),
 				);
 			}
 		}
@@ -220,20 +221,9 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 		$settings = array(
 			'settings' => array(
 				'product' => array(
-					'title'    => __( 'Product', 'cartflows' ),
 					'priority' => 30,
 					'fields'   => array(
-						'optin-product' => array(
-							'type'                   => 'product',
-							'name'                   => 'wcf-optin-product',
-							'label'                  => __( 'Select Free Product', 'cartflows' ),
-							'help'                   => __( 'Select Free and Virtual product only.', 'cartflows' ),
-							'allowed_product_types'  => array( 'simple' ),
-							'placeholder'            => __( 'Search for a Product', 'cartflows' ),
-							'excluded_product_types' => array(),
-							'include_product_types'  => array(),
-						),
-						'optin-doc'     => array(
+						'optin-doc' => array(
 							'type'    => 'doc',
 							/* translators: %1$1s: link html start, %2$12: link html end*/
 							'content' => sprintf( __( 'For more information about the CartFlows Optin step please %1$sClick here.%2$s', 'cartflows' ), '<a href="https://cartflows.com/docs/introducing-cartflows-optin-feature/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),

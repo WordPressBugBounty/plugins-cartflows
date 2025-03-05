@@ -140,7 +140,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '2.1.7' );
+			define( 'CARTFLOWS_VER', '2.1.8' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -344,7 +344,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			}
 
 			if ( ! class_exists( 'BSF_Analytics_Loader' ) ) {
-				require_once CARTFLOWS_DIR . '/admin/bsf-analytics/class-bsf-analytics-loader.php';
+				require_once CARTFLOWS_DIR . 'libraries/bsf-analytics/class-bsf-analytics-loader.php';
 			}
 
 			$bsf_analytics = BSF_Analytics_Loader::get_instance();
@@ -352,10 +352,25 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			$bsf_analytics->set_entity(
 				array(
 					'cf' => array(
-						'product_name'   => 'CartFlows',
-						'usage_doc_link' => 'https://my.cartflows.com/usage-tracking/',
-						'path'           => CARTFLOWS_DIR . 'admin/bsf-analytics',
-						'author'         => 'CartFlows Inc',
+						'product_name'        => 'CartFlows',
+						'usage_doc_link'      => 'https://my.cartflows.com/usage-tracking/',
+						'path'                => CARTFLOWS_DIR . 'libraries/bsf-analytics',
+						'author'              => 'CartFlows Inc',
+						'deactivation_survey' => apply_filters(
+							'cartflows_bsf_analytics_deactivation_survey_data',
+							array(
+								array(
+									'id'                => 'deactivation-survey-cartflows',
+									'popup_logo'        => CARTFLOWS_URL . 'admin-core/assets/images/cartflows-icon.svg',
+									'plugin_slug'       => 'cartflows',
+									'plugin_version'    => CARTFLOWS_VER,
+									'popup_title'       => __( 'Quick Feedback', 'cartflows' ),
+									'support_url'       => 'https://cartflows.com/contact/',
+									'popup_description' => __( 'If you have a moment, please share why you are deactivating CartFlows:', 'cartflows' ),
+									'show_on_screens'   => array( 'plugins' ),
+								),
+							)
+						),
 					),
 				)
 			);
@@ -373,10 +388,6 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 				require_once CARTFLOWS_DIR . 'libraries/class-cartflows-nps-survey.php';
 			}
 
-			// Load the UTM Analytics Library.
-			if ( ! class_exists( 'Cartflows_Utm_Analytics' ) ) {
-				require_once CARTFLOWS_DIR . 'libraries/class-cartflows-utm-analytics.php';
-			}
 		}
 
 		/**

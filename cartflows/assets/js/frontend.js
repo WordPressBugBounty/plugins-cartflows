@@ -87,7 +87,7 @@
 
 		if (
 			'undefined' !== typeof cartflows.is_pb_preview &&
-			'1' === cartflows.is_pb_preview
+			true === cartflows.is_pb_preview
 		) {
 			e.stopPropagation();
 			return;

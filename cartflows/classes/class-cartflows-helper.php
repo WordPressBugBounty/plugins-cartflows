@@ -1611,23 +1611,32 @@ class Cartflows_Helper {
 	/**
 	 * Generate the array of CSS vars to add in the Gutenberg color pallet.
 	 *
-	 * @param int $flow_id The current Flow ID.
+	 * @param int    $flow_id The current Flow ID.
+	 * @param string $builder The current page builder.
 	 * @return array $new_color_palette Prepared array of CSS vars.
 	 *
 	 * @since 2.0.0
 	 */
-	public static function generate_css_var_array( $flow_id = 0 ) {
+	public static function generate_css_var_array( $flow_id = 0, $builder = 'gutenberg' ) {
 
 		if ( empty( $flow_id ) ) {
 			$flow_id = wcf()->utils->get_flow_id();
 		}
-
+		$new_color_palette = array();
 		// Default Color Pallet used as a separator.
-		$new_color_palette[] = array(
-			'name'  => 'CartFlows Separator',
-			'slug'  => 'wcf-gcp-separator',
-			'color' => '#ff0000',
-		);
+		if ( 'gutenberg' === $builder ) {
+			$new_color_palette[] = array(
+				'name'  => 'CartFlows Separator',
+				'slug'  => 'wcf-gcp-separator',
+				'color' => '#ff0000',
+			);
+		} elseif ( 'elementor' === $builder ) {
+			$new_color_palette['wcfgcpseparator'] = array(
+				'id'    => 'wcfgcpseparator',
+				'title' => 'CartFlows Separator',
+				'value' => '#ff0000',
+			);
+		}
 
 		$cf_gcp_data = self::get_gcp_vars();
 
@@ -1641,11 +1650,20 @@ class Cartflows_Helper {
 			}
 
 			// Add CartFlows Global Color Pallets CSS vars options.
-			$new_color_palette[] = array(
-				'name'  => $label,
-				'slug'  => $slug,
-				'color' => 'var( --' . $slug . ')',
-			);
+			if ( 'gutenberg' === $builder ) {
+				$new_color_palette[] = array(
+					'name'  => $label,
+					'slug'  => $slug,
+					'color' => $color_value,
+				);
+			} elseif ( 'elementor' === $builder ) {
+				$slug                       = str_replace( '-', '', $slug );
+				$new_color_palette[ $slug ] = array(
+					'id'    => $slug,
+					'title' => $label,
+					'value' => $color_value,
+				);
+			}
 		}
 
 		return $new_color_palette;
@@ -1696,8 +1714,8 @@ class Cartflows_Helper {
 		}
 
 		// Modify the utm_source parameter using the UTM ready link function to include tracking information.
-		if ( class_exists( '\BSF_UTM_Analytics\Inc\Utils' ) && is_callable( '\BSF_UTM_Analytics\Inc\Utils::get_utm_ready_link' ) ) {
-			$url = \BSF_UTM_Analytics\Inc\Utils::get_utm_ready_link( $url, 'cartflows' );
+		if ( class_exists( '\BSF_UTM_Analytics' ) && is_callable( '\BSF_UTM_Analytics::get_utm_ready_link' ) ) {
+			$url = \BSF_UTM_Analytics::get_utm_ready_link( $url, 'cartflows' );
 		}
 
 		return esc_url( $url );
@@ -1855,5 +1873,57 @@ class Cartflows_Helper {
 		return $rollback_versions_options;
 	}
 
-}
+	/**
+	 * Get the data of which features the user is using.
+	 *
+	 * @param array $post_meta $_POST data.
+	 * @param int   $step_id current step ID.
+	 *
+	 * @return void
+	 */
+	public function set_feature_usage( $post_meta, $step_id = '' ) {
 
+		$features = apply_filters(
+			'cartflows_set_feature_usage',
+			array(
+				'is-field-editor-enabled' => array(
+					'key'       => 'wcf-custom-checkout-fields',
+					'condition' => 'isset',
+					'compare'   => 'yes',
+				),
+			)
+		);
+
+		$feature_in_use = array();
+
+		$feature_in_use = get_option( 'cartflows_features_in_use', array() );
+
+		foreach ( $features as $name => $meta_data ) {
+
+			$key = $meta_data['key'];
+
+			if ( isset( $post_meta[ $key ] ) ) {
+
+				$condition = $meta_data['condition'];
+
+				switch ( $condition ) {
+					case 'isset':
+						$result = isset( $post_meta[ $key ] ) && $meta_data['compare'] === $post_meta[ $key ] ? true : false;
+						break;
+
+					default:
+						$result = false;
+						break;
+				}
+
+				if ( ! $feature_in_use[ $meta_data[ $key ] ] || '' === $feature_in_use[ $meta_data[ $key ] ] || 'enable' !== $feature_in_use[ $meta_data[ $key ] ] ) {
+					$feature_in_use[ $key ] = $result;
+				}
+			}
+		}
+
+		update_option( 'cartflows_features_in_use', $feature_in_use );
+
+	}
+
+}

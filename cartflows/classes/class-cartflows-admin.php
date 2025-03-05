@@ -71,6 +71,8 @@ class Cartflows_Admin {
 		add_action( 'cartflows_update_knowledge_base_data', array( $this, 'cartflows_update_knowledge_base_data' ) );
 		add_action( 'admin_post_cartflows_rollback', array( $this, 'post_cartflows_rollback' ) );
 
+		add_filter( 'bsf_core_stats', array( $this, 'get_specific_stats' ) );
+
 		$this->do_not_cache_admin_pages_actions();
 	}
 
@@ -245,7 +247,7 @@ class Cartflows_Admin {
 		}
 
 		if ( ! _is_cartflows_pro() ) {
-			array_push( $mylinks, '<a style="color: #39b54a; font-weight: 700;" target="_blank" href="' . esc_url( 'https://cartflows.com/pricing/?utm_source=plugin-page&utm_medium=free-cartflows&utm_campaign=go-pro' ) . '"> Go Pro </a>' );
+			array_push( $mylinks, '<a style="color: #39b54a; font-weight: 700;" target="_blank" href="' . esc_url( 'https://cartflows.com/pricing/?utm_source=plugin-page&utm_medium=free-cartflows&utm_campaign=go-pro' ) . '"> ' . __( 'Get CartFlows Pro', 'cartflows' ) . ' </a>' );
 		}
 
 		return array_merge( $links, $mylinks );
@@ -396,7 +398,167 @@ class Cartflows_Admin {
 		);
 	}
 
-	
+	/**
+	 * Pass addon specific stats to analytics.
+	 *
+	 * @since 2.1.8
+	 * @param array $stats_data Default stats array.
+	 * @return array $stats_data Default stats with addon specific stats array.
+	 */
+	public function get_specific_stats( $stats_data ) {
+
+		$step_specific_features = array();
+
+		if ( apply_filters( 'cartflows_enable_non_sensitive_data_tracking', get_option( 'cf_analytics_optin', false ) ) ) {
+
+			// Default CartFlows features which includes FREE & PRO.
+			$step_specific_features = get_option( 'cartflows_features_in_use', array() );
+
+			// Combine all features to make a full list.
+			$social_features = $this->get_all_social_features_tracking_data();
+			$global_features = $this->get_all_global_features_tracking_data();
+
+			// Prepare data to be tracked.
+			$stats_data['plugin_data']['cartflows'] = array(
+				'website-domain'         => str_ireplace( array( 'http://', 'https://' ), '', home_url() ),
+				'cartflows-lite-version' => CARTFLOWS_VER,
+				'cartflows-pro-version'  => _is_cartflows_pro() ? CARTFLOWS_PRO_VER : '',
+				'woocommerce-version'    => ( wcf()->is_woo_active && defined( 'WC_VERSION' ) ) ? WC_VERSION : '',
+				'default-page-builder'   => Cartflows_Helper::get_common_setting( 'default_page_builder' ),
+				'active-theme'           => $this->get_active_theme(),
+				'active-gateways'        => wcf()->is_woo_active ? $this->get_active_gateways() : '',
+				'social-tracking'        => $social_features,
+			);
+
+			// Merget the step specific features in the main array.
+			$stats_data['plugin_data']['cartflows'] = array_merge( $stats_data['plugin_data']['cartflows'], $step_specific_features );
+
+			$stats_data['plugin_data']['cartflows']['numeric_values'] = array(
+				'total_flows' => wp_count_posts( CARTFLOWS_FLOW_POST_TYPE )->publish,
+			);
+
+			$stats_data['plugin_data']['cartflows']['boolean_values'] = $global_features;
+
+			// Filter to add more options if any.
+			$stats_data = apply_filters( 'cartflows_get_specific_stats', $stats_data );
+		}
+
+		return $stats_data;
+
+	}
+
+	/**
+	 * Retrive the active theme name
+	 *
+	 * @since 2.1.8
+	 * @return array Array of active parent or child theme.
+	 */
+	public function get_active_theme() {
+
+		$theme             = wp_get_theme();
+		$parent_theme_name = '';
+		$child_theme_name  = '';
+
+		if ( isset( $theme->parent_theme ) && ! empty( $theme->parent_theme ) ) {
+			$parent_theme_name = $theme->parent_theme;
+			$child_theme_name  = $theme->name ? $theme->name : '';
+		} else {
+			$parent_theme_name = $theme->name;
+		}
+
+		return array(
+			'parent_theme_name' => $parent_theme_name,
+			'child_theme_name'  => $child_theme_name,
+		);
+	}
+
+	/**
+	 * Retrive the list of active gateways
+	 *
+	 * @since 2.1.8
+	 * @return array Array of active payment gateways.
+	 */
+	public function get_active_gateways() {
+
+		if ( ! wcf()->is_woo_active ) {
+			return '';
+		}
+
+		$gateways         = WC()->payment_gateways->get_available_payment_gateways();
+		$enabled_gateways = array();
+
+		if ( is_array( $gateways ) ) {
+			foreach ( $gateways as $gateway ) {
+
+				if ( 'yes' === $gateway->enabled ) {
+					$gateway_key                      = strtolower( str_replace( array( ' ', '(', ')' ), '_', $gateway->get_title() ) );
+					$enabled_gateways[ $gateway_key ] = $gateway->get_title();
+				}
+			}
+		}
+
+		return $enabled_gateways;
+
+	}
+
+	/**
+	 * Retrieve all social tracking data.
+	 *
+	 * This function retrieves and returns all social tracking data including Facebook, Google Analytics, TikTok, Pinterest, Google Ads, and Snapchat settings.
+	 *
+	 * @since 2.1.8
+	 * @return array Array of all social tracking data.
+	 */
+	public function get_all_social_features_tracking_data() {
+
+		$fb_setting         = Cartflows_Helper::get_facebook_settings();
+		$ga_setting         = Cartflows_Helper::get_google_analytics_settings();
+		$tik_pixel_settings = Cartflows_Helper::get_tiktok_settings();
+		$pinterest_settings = Cartflows_Helper::get_pinterest_settings();
+		$gads_settings      = Cartflows_Helper::get_google_ads_settings();
+		$snapchat_settings  = Cartflows_Helper::get_snapchat_settings();
+
+		// remove the IDs from the array.
+		unset( $fb_setting['facebook_pixel_id'] );
+		unset( $ga_setting['google_analytics_id'] );
+		unset( $tik_pixel_settings['tiktok_pixel_id'] );
+		unset( $pinterest_settings['pinterest_tag_id'] );
+		unset( $gads_settings['google_ads_id'] );
+		unset( $snapchat_settings['snapchat_pixel_id'] );
+
+		return array(
+			'fb-tracking'        => $fb_setting,
+			'ga-tracking'        => $ga_setting,
+			'tik-pixel-settings' => $tik_pixel_settings,
+			'pinterest-settings' => $pinterest_settings,
+			'gads-settings'      => $gads_settings,
+			'snapchat-settings'  => $snapchat_settings,
+		);
+
+	}
+	/**
+	 * Retrieve all global features tracking data.
+	 *
+	 * This function retrieves and returns all global features tracking data including cartflows stats report emails, plugin data deletion, store checkout settings, override global checkout, disallow indexing, PayPal reference transactions, and pre-checkout offer settings.
+	 *
+	 * @since 2.1.8
+	 * @return array Array of all global features tracking data.
+	 */
+	public function get_all_global_features_tracking_data() {
+
+		$common_settings = Cartflows_Helper::get_common_settings();
+
+		return array(
+			'override-global-checkout'      => ! empty( $common_settings['override_global_checkout'] ) && 'enable' === $common_settings['override_global_checkout'] ? true : false,
+			'disallow-indexing'             => ! empty( $common_settings['disallow_indexing'] ) && 'enable' === $common_settings['disallow_indexing'] ? true : false,
+			'paypal-reference-transactions' => ! empty( $common_settings['paypal_reference_transactions'] ) && 'enable' === $common_settings['paypal_reference_transactions'],
+			'cartflows-stats-report-emails' => 'enable' === get_option( 'cartflows_stats_report_emails', 'enable' ),
+			'cartflows-delete-plugin-data'  => 'enable' === get_option( 'cartflows_delete_plugin_data' ),
+			'pre-checkout-offer'            => 'enable' === get_option( 'cartflows_stats_report_emails', 'enable' ),
+			'store-checkout-set'            => ! empty( intval( Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' ) ) ),
+		);
+
+	}
 }
 
 Cartflows_Admin::get_instance();

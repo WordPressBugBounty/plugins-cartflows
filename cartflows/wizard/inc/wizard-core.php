@@ -396,6 +396,7 @@ class WizardCore {
 			),
 			'is_pro'                 => _is_cartflows_pro(),
 			'cf_pro_type'            => defined( 'CARTFLOWS_PRO_PLUGIN_TYPE' ) ? CARTFLOWS_PRO_PLUGIN_TYPE : 'free',
+			'woocommerce_status'     => $this->get_plugin_status( 'woocommerce/woocommerce.php' ),
 		);
 
 		$vars = apply_filters( 'cartflows_admin_wizard_localized_vars', $vars );

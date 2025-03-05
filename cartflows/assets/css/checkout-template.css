@@ -316,14 +316,17 @@
 .wcf-embed-checkout-form .woocommerce .woocommerce-shipping-fields [type="checkbox"]:focus,
 .wcf-embed-checkout-form .woocommerce #payment input[type="radio"]:focus,
 .wcf-embed-checkout-form .woocommerce .woocommerce-account-fields input[type="checkbox"]:focus,
-.wcf-embed-checkout-form .woocommerce .wcf-col2-set input[type="radio"]:focus {
+.wcf-embed-checkout-form .woocommerce .wcf-col2-set input[type="radio"]:focus,
+.wcf-embed-checkout-form .woocommerce .wcf-product-option-wrap .wcf-qty-row div [type="radio"]:focus,
+.wcf-embed-checkout-form .woocommerce .wcf-product-option-wrap .wcf-qty-row div [type="radio"]:not( :checked ):focus {
 	border-color: var( --wcf-primary-color );
 	box-shadow: 0 0 2px rgba( 241, 99, 52, 0.8 );
 }
 
 .wcf-embed-checkout-form .woocommerce #payment input[type="radio"]:checked::before,
 .wcf-embed-checkout-form .woocommerce #order_review input[type="radio"]:checked::before,
-.wcf-embed-checkout-form .woocommerce .wcf-col2-set input[type="radio"]:checked::before {
+.wcf-embed-checkout-form .woocommerce .wcf-col2-set input[type="radio"]:checked::before,
+.wcf-embed-checkout-form .woocommerce .wcf-product-option-wrap .wcf-qty-row input[type="radio"]:checked::before {
 	background-color: var( --wcf-primary-color );
 	border-radius: 50px;
 	content: "\2022";
@@ -881,6 +884,10 @@
 	font-weight: inherit;
 	/* text-transform: capitalize; */
 	margin-bottom: 8px;
+}
+
+.wcf-embed-checkout-form .woocommerce form .wcf-shipping-method-options ul#shipping_method li label {
+	color: var( --wcf-field-text-color ) !important;
 }
 
 .wcf-embed-checkout-form .woocommerce .woocommerce-billing-fields label,
@@ -3906,6 +3913,7 @@ ul#wcf-ic-breadcrumbs {
 		width: 100% !important;
 		float: none;
 		padding: 0 !important;
+		min-height: max-content !important;
 	}
 	.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce form .wcf-ic-layout-right-column .wcf-order-wrap {
 		padding: 0;
@@ -4046,6 +4054,10 @@ h3#wcf_shipping_options_heading {
 
 #wcf-ic-shipping span.wcf-ic-shipping-package-name {
 	display: none;
+}
+
+.wcf-embed-checkout-form-instant-checkout.wcf-embed-checkout-form .woocommerce .wcf-product-image img {
+	height: auto;
 }
 
 /**

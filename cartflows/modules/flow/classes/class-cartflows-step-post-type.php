@@ -52,7 +52,7 @@ class Cartflows_Step_Post_Type {
 
 		add_filter( 'wp_unique_post_slug', array( $this, 'prevent_slug_duplicates' ), 10, 6 );
 
-		add_filter( 'template_include', array( $this, 'load_page_template' ), 99 );
+		add_filter( 'template_include', array( $this, 'load_page_template' ), 90 );
 		add_action( 'template_redirect', array( $this, 'query_fix' ), 3 );
 
 		add_action( 'admin_init', array( $this, 'disallowed_admin_all_steps_view' ) );
