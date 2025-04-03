@@ -114,25 +114,51 @@ class Cartflows_Thankyou_Meta_Data extends Cartflows_Step_Meta_Base {
 						),
 					),
 				),
-
 				'thankyou-design'  => array(
-					'title'      => __( 'Design', 'cartflows' ),
-					'slug'       => 'heading',
-					'priority'   => 20,
-					'fields'     => array(
+					'title'    => __( 'Design', 'cartflows' ),
+					'slug'     => 'design',
+					'priority' => 20,
+					'fields'   => array(
 						'tq-primary-color' => array(
-							'type'  => 'color-picker',
-							'name'  => 'wcf-tq-primary-color',
-							'label' => __( 'Primary Color', 'cartflows' ),
-							'value' => $options['wcf-tq-primary-color'],
+							'type'       => 'color-picker',
+							'name'       => 'wcf-tq-primary-color',
+							'label'      => __( 'Primary Color', 'cartflows' ),
+							'value'      => $options['wcf-tq-primary-color'],
+							'conditions' => array(
+								'fields' => array(
+									array(
+										'name'     => 'instant-layout-style',
+										'operator' => '===',
+										'value'    => 'yes',
+									),
+								),
+							),
 						),
-					),
-					'conditions' => array(
-						'fields' => array(
-							array(
-								'name'     => 'instant-layout-style',
-								'operator' => '===',
-								'value'    => 'yes',
+						'thankyou-skin'    => array(
+							'type'          => 'select',
+							'label'         => __( 'Thank You Skin', 'cartflows' ),
+							'name'          => 'wcf-tq-layout',
+							'value'         => $options['wcf-tq-layout'],
+							'options'       => array(
+								array(
+									'value' => 'legacy-tq-layout',
+									'label' => esc_html__( 'Legacy', 'cartflows' ),
+								),
+								array(
+									'value' => 'modern-tq-layout',
+									'label' => esc_html__( 'Modern', 'cartflows' ),
+								),
+							),
+							'display_align' => 'vertical',
+							'conditions'    => array(
+								'relation' => 'and',
+								'fields'   => array(
+									array(
+										'name'     => 'instant-layout-style',
+										'operator' => '!==',
+										'value'    => 'yes',
+									),
+								),
 							),
 						),
 					),

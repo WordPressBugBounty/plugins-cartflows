@@ -9,6 +9,10 @@
 	display: block;
 }
 
+.cartflows-bricks__display-order-overview-yes .wcf-thankyou-wrap .woocommerce-order p:not( .woocommerce-notice ) {
+	text-align: left;
+}
+
 .cartflows-bricks__display-order-details-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details {
 	display: none;
 }
@@ -18,14 +22,15 @@
 }
 
 .cartflows-bricks__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details .woocommerce-column--shipping-address {
-	display: none;
+	display: none !important;
 }
 
 .cartflows-bricks__display-billing-address-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details .woocommerce-column--billing-address {
-	display: none;
+	display: none !important;
 }
 
-.cartflows-bricks__display-billing-address-no.cartflows-bricks__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details {
+.cartflows-bricks__display-billing-address-no.cartflows-bricks__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order:not( .wcf-modern-tq-layout ) .woocommerce-customer-details,
+.cartflows-bricks__display-billing-address-no.cartflows-bricks__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .cartflows-customer-details-table-address {
 	display: none;
 }
 
@@ -45,6 +50,7 @@
 }
 .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order-details table tfoot {
 	background: none;
+	border: unset;
 }
 
 .wcf-bricks-checkout-form .woocommerce .woocommerce-checkout .wcf-customer-info-main-wrapper #customer_details {
@@ -57,4 +63,18 @@
 
 .brxe-bricks-checkout-form .woocommerce-checkout #payment .payment_methods .payment_box::before {
 	background-color: transparent;
+}
+
+.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li {
+	border-bottom: unset;
+	border-right-style: dashed;
+}
+
+.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-order-details .woocommerce-table .woocommerce-table__line-item.order_item {
+	border: unset;
+}
+
+.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout h2.woocommerce-order-details__title,
+.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details__title {
+	font-size: 14px;
 }

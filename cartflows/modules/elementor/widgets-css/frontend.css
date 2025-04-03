@@ -44,15 +44,16 @@
 	display: block;
 }
 
-.cartflows-elementor__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details .woocommerce-column--shipping-address {
-	display: none;
+.cartflows-elementor__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details .woocommerce-table .woocommerce-column--shipping-address {
+	display: none !important;
 }
 
-.cartflows-elementor__display-billing-address-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details .woocommerce-column--billing-address {
-	display: none;
+.cartflows-elementor__display-billing-address-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details .woocommerce-table .woocommerce-column--billing-address {
+	display: none !important;
 }
 
-.cartflows-elementor__display-billing-address-no.cartflows-elementor__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details {
+.cartflows-elementor__display-billing-address-no.cartflows-elementor__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order:not( .wcf-modern-tq-layout ) .woocommerce-customer-details,
+.cartflows-elementor__display-billing-address-no.cartflows-elementor__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .cartflows-customer-details-table-address {
 	display: none;
 }
 

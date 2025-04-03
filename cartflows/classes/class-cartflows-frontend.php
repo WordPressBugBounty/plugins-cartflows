@@ -313,7 +313,7 @@ class Cartflows_Frontend {
 			if ( isset( $_COOKIE[ CARTFLOWS_ACTIVE_CHECKOUT ] ) ) {
 				delete_transient( 'wcf_user_' . $user_key . '_checkout_' . sanitize_text_field( wp_unslash( $_COOKIE[ CARTFLOWS_ACTIVE_CHECKOUT ] ) ) ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 				unset( $_COOKIE[ CARTFLOWS_ACTIVE_CHECKOUT ] ); //phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
-				setcookie( CARTFLOWS_ACTIVE_CHECKOUT, '', time() - 3600 ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+				setcookie( CARTFLOWS_ACTIVE_CHECKOUT, '', time() - 3600, '/', COOKIE_DOMAIN, CARTFLOWS_HTTPS, true ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie 
 			}
 		}
 	}

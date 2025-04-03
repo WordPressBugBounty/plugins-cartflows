@@ -439,9 +439,6 @@ class Steps extends AjaxBase {
 
 		$meta_options = AdminHelper::get_step_meta_options( $step_id );
 
-		// Save the feature usage for non-sensitive data.
-		\Cartflows_Helper::get_instance()->set_feature_usage( $post_meta, $step_id );
-
 		// Delete the Google font URL and generate it while loading the page first time.
 		delete_post_meta( $step_id, 'wcf-field-google-font-url' );
 

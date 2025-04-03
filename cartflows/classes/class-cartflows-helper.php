@@ -920,7 +920,7 @@ class Cartflows_Helper {
 		// @Since 1.6.15 It will only trigger offer purchase event.
 		$fb_settings = self::get_facebook_settings();
 		if ( 'enable' === $fb_settings['facebook_pixel_tracking'] ) {
-			setcookie( 'wcf_order_details', wp_json_encode( self::prepare_purchase_data_fb_response( $order_id, $offer_data ) ), strtotime( '+1 year' ), '/' ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+			setcookie( 'wcf_order_details', wp_json_encode( self::prepare_purchase_data_fb_response( $order_id, $offer_data ) ), strtotime( '+1 year' ), '/', COOKIE_DOMAIN, CARTFLOWS_HTTPS, true ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 		}
 
 	}
@@ -1872,58 +1872,4 @@ class Cartflows_Helper {
 
 		return $rollback_versions_options;
 	}
-
-	/**
-	 * Get the data of which features the user is using.
-	 *
-	 * @param array $post_meta $_POST data.
-	 * @param int   $step_id current step ID.
-	 *
-	 * @return void
-	 */
-	public function set_feature_usage( $post_meta, $step_id = '' ) {
-
-		$features = apply_filters(
-			'cartflows_set_feature_usage',
-			array(
-				'is-field-editor-enabled' => array(
-					'key'       => 'wcf-custom-checkout-fields',
-					'condition' => 'isset',
-					'compare'   => 'yes',
-				),
-			)
-		);
-
-		$feature_in_use = array();
-
-		$feature_in_use = get_option( 'cartflows_features_in_use', array() );
-
-		foreach ( $features as $name => $meta_data ) {
-
-			$key = $meta_data['key'];
-
-			if ( isset( $post_meta[ $key ] ) ) {
-
-				$condition = $meta_data['condition'];
-
-				switch ( $condition ) {
-					case 'isset':
-						$result = isset( $post_meta[ $key ] ) && $meta_data['compare'] === $post_meta[ $key ] ? true : false;
-						break;
-
-					default:
-						$result = false;
-						break;
-				}
-
-				if ( ! $feature_in_use[ $meta_data[ $key ] ] || '' === $feature_in_use[ $meta_data[ $key ] ] || 'enable' !== $feature_in_use[ $meta_data[ $key ] ] ) {
-					$feature_in_use[ $key ] = $result;
-				}
-			}
-		}
-
-		update_option( 'cartflows_features_in_use', $feature_in_use );
-
-	}
-
 }

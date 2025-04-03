@@ -1760,18 +1760,6 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 	margin: 0;
 }
 
-/* .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce form .form-row.woocommerce-validated:not( .place-order )::before {
-    content: "";
-    background-image: url( "../images/cartflows-check-circle-icon.svg" );
-	width: 20px;
-    height: 20px;
-    position: absolute;
-	top: 15px;
-    right: 35px;
-    background-repeat: no-repeat;
-	z-index: 1;
-} */
-
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce form .form-row.notes {
 	margin-bottom: 0;
 }
@@ -3841,15 +3829,6 @@ ul#wcf-ic-breadcrumbs {
 	text-decoration: underline;
 }
 /* Breadcrumbs */
-
-/* Removed it as it is not required and found not working */
-/* .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce #order_review button.wcf-btn-small:hover,
-.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce #payment button:hover,
-.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-customer-login-section__login-button:hover {
-	border-color: var( --wcf-ic-button-hover-color );
-	background-color: var( --wcf-ic-button-hover-color );
-	opacity: 0.5;
-} */
 
 /* Responsive */
 

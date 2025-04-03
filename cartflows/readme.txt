@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, custom checkout, WooCommerce checkout
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.1.8
+Stable tag: 2.1.9
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -15,8 +15,9 @@ WooCommerce checkout & funnel builder to boost conversion and revenue with beaut
 **#1 WooCommerce Checkout & Funnel Builder by CartFlows – The Secret to High-Converting WooCommerce Stores** <br>
 ★★★★★<br>
 
-👉 [Official Website](https://cartflows.com)
-👉 [Watch Tutorials](https://www.youtube.com/@CartFlows)
+[youtube https://www.youtube.com/watch?v=tCm60PWOd0M]
+
+[What's New](https://cartflows.com/whats-new/) | [Docs](https://cartflows.com/docs/) | [Video Tutorials](https://www.youtube.com/@CartFlows/) | [Get Help](https://cartflows.com/support/open-a-ticket/) | [Community](https://www.facebook.com/groups/cartflows)
 
 ### The Best WooCommerce Checkout & Funnel Builder Ever⚡
 
@@ -387,6 +388,14 @@ Welcome to CartFlows\! Click here to access our comprehensive documentation and 
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 2.1.9 - Thursday, 3rd April 2025 =
+* New: Introduced a new style for thank you page.
+* Fix: Corrected the price display on the Instant Layout of the Thank You page when tax is enabled.
+* Fix: Improved UX and mobile responsiveness on the step’s template library page.
+* Fix: Fixed an error when adding an order bump product in step settings.
+* Fix: Ensured billing and shipping details are displayed for all users on the Thank You page, not just logged-in users.
+* Fix: Resolved an issue where the incorrect order number was shown on the Instant Layout of the Thank You page when using the Sequential Order Numbers plugin.
 
 = Version 2.1.8 - Wednesday, 5th March 2025 =
 * New: Introduced language files for multiple languages for quick translation of the plugin.

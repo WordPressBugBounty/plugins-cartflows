@@ -169,10 +169,23 @@ class Cartflows_Init_Blocks {
 			);
 		}
 
+		add_filter(
+			'cartflows_thankyou_meta_wcf-tq-layout',
+			function( $layout ) {
+				check_ajax_referer( 'wpcf_ajax_nonce', 'nonce' );
+
+				$layout = isset( $_POST['layout'] ) ? sanitize_title( wp_unslash( $_POST['layout'] ) ) : '';
+				return $layout;
+			},
+			10,
+			1
+		);
+
 		$thankyou_id          = isset( $_POST['id'] ) ? intval( wp_unslash( $_POST['id'] ) ) : 0;
 		$data['html']         = do_shortcode( '[cartflows_order_details]' );
 		$data['thankyouText'] = wcf()->options->get_thankyou_meta_value( $thankyou_id, 'wcf-tq-text' );
-
+		$data['layout']       = wcf()->options->get_thankyou_meta_value( $thankyou_id, 'wcf-tq-layout' );
+		
 		wp_send_json_success( $data );
 	}
 

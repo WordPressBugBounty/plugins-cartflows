@@ -206,8 +206,8 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 
 			$order_overview            = ( $attr['orderOverview'] ) ? 'block' : 'none';
 			$order_details             = ( $attr['orderDetails'] ) ? 'block' : 'none';
-			$billing_address           = ( $attr['billingAddress'] ) ? 'block' : 'none';
-			$shipping_address          = ( $attr['shippingAddress'] ) ? 'block' : 'none';
+			$billing_address           = ( $attr['billingAddress'] ) ? 'block' : 'none !important';
+			$shipping_address          = ( $attr['shippingAddress'] ) ? 'block' : 'none !important';
 			$shipping_address_position = ( $attr['billingAddress'] ) ? 'right' : 'left';
 			$customer_details          = ( $attr['billingAddress'] || $attr['shippingAddress'] ) ? 'block' : 'none';
 
@@ -226,12 +226,16 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 					'display' => $shipping_address,
 					'float'   => $shipping_address_position,
 				),
+				' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .woocommerce-column--shipping-address'       => array(
+					'vertical-align' => 'top',
+					'float'          => 'unset',
+				),
 				// Spacing.
 				' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order p.woocommerce-thankyou-order-received'       => array(
 					'margin-bottom' => Cartflows_Gb_Helper::get_css_value( $attr['headingBottomSpacing'], 'px' ),
 				),
 				' .wpcf__order-detail-form .woocommerce-order ul.order_details, .wpcf__order-detail-form .woocommerce-order .woocommerce-customer-details, .wpcf__order-detail-form .woocommerce-order .woocommerce-order-details, .wpcf__order-detail-form .woocommerce-order .woocommerce-order-downloads, .wpcf__order-detail-form .woocommerce-order .woocommerce-bacs-bank-details, .wpcf__order-detail-form .woocommerce-order-details.mollie-instructions'       => array(
-					'margin-bottom' => Cartflows_Gb_Helper::get_css_value( $attr['sectionSpacing'], 'px' ),
+					'margin-bottom' => Cartflows_Gb_Helper::get_css_value( $attr['sectionSpacing'], 'px' ) . ' !important',
 				),
 				// Heading.
 				' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-thankyou-order-received'       => array(
@@ -245,14 +249,13 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 				' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order, .wpcf__order-detail-form .woocommerce-order-downloads table.shop_table'       => array(
 					'color' => $attr['sectionContentColor'],
 				),
-				' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details, .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details, .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details, .wpcf__order-detail-form .woocommerce-order-downloads'       => array(
+				' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details, .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details, .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details, .wpcf__order-detail-form .woocommerce-order-downloads'       => array(
 					'background-color' => $attr['sectionBackgroundColor'],
 				),
 
 				// Order Overview.
 				' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details'       => array(
-					'color'            => $attr['orderOverviewTextColor'],
-					'background-color' => $attr['orderOverviewBackgroundColor'],
+					'color' => $attr['orderOverviewTextColor'],
 				),
 				' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order ul.woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li'       => array(
 					'color' => $attr['orderOverviewTextColor'],
@@ -291,7 +294,7 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 
 			);
 
-				$selectors[' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details, .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details, .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details, .wpcf__order-detail-form .woocommerce-order-downloads'] = array(
+				$selectors[' .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details, .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details, .wpcf__order-detail-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details, .wpcf__order-detail-form .woocommerce-order-downloads'] = array(
 					'opacity'          => ( isset( $attr['backgroundOpacity'] ) && '' !== $attr['backgroundOpacity'] ) ? $attr['backgroundOpacity'] / 100 : '',
 					'background-color' => $attr['backgroundColor'],
 				);

@@ -100,7 +100,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 	 * Settings
 	 *
 	 * @since 1.6.15
-	 * @var object $settings
+	 * @var array $settings
 	 */
 	public static $settings;
 
@@ -154,12 +154,28 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 		);
 
 			$this->add_control(
+				'layout',
+				array(
+					'label'   => __( 'Layout', 'cartflows' ),
+					'type'    => Controls_Manager::SELECT,
+					'options' => array(
+						'legacy-tq-layout' => __( 'Legacy', 'cartflows' ),
+						'modern-tq-layout' => __( 'Modern', 'cartflows' ),
+					),
+					'default' => 'legacy-tq-layout',
+				)
+			);
+
+			$this->add_control(
 				'thankyou_text',
 				array(
 					'label'       => __( 'Thank You Text', 'cartflows' ),
 					'type'        => Controls_Manager::TEXT,
 					'placeholder' => __( 'Thank you. Your order has been received.', 'cartflows' ),
 					'label_block' => true,
+					'condition'   => array(
+						'layout' => 'legacy-tq-layout',
+					),
 				)
 			);
 
@@ -259,7 +275,6 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 					),
 					'selectors' => array(
 						'{{WRAPPER}} .woocommerce-order ul.order_details,
-						{{WRAPPER}} .woocommerce-order .woocommerce-customer-details,
 						{{WRAPPER}} .woocommerce-order .woocommerce-order-details,
 						{{WRAPPER}} .woocommerce-order .woocommerce-order-downloads,
 						{{WRAPPER}} .woocommerce-order .woocommerce-bacs-bank-details,
@@ -411,7 +426,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 				'name'     => 'section_text_typography',
 				'label'    => 'Typography',
 				'selector' => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details .woocommerce-table, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address,
-				{{WRAPPER}} .woocommerce-order-downloads table.shop_table',
+				{{WRAPPER}} .woocommerce-order-downloads table.shop_table,  {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .woocommerce-table',
 			)
 		);
 
@@ -421,8 +436,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 				'name'      => 'section_all_background_color',
 				'label'     => __( 'Background Color', 'cartflows' ),
 				'types'     => array( 'classic', 'gradient' ),
-				'selector'  => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details,
-				{{WRAPPER}} .woocommerce-order-downloads',
+				'selector'  => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details, {{WRAPPER}} .woocommerce-order-downloads',
 				'separator' => 'before',
 			)
 		);
@@ -465,7 +479,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => array(
-					'{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details *' => 'color: {{VALUE}};',
 				),
 			)
 		);
@@ -473,12 +487,16 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Background::get_type(),
 			array(
-				'name'     => 'section_order_review_background_color',
-				'label'    => __( 'Background Color', 'cartflows' ),
-				'types'    => array( 'classic', 'gradient' ),
-				'selector' => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details',
+				'name'      => 'section_order_review_background_color',
+				'label'     => __( 'Background Color', 'cartflows' ),
+				'types'     => array( 'classic', 'gradient' ),
+				'selector'  => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details',
+				'condition' => array(
+					'layout' => 'legacy-tq-layout',
+				),
 			)
 		);
+
 
 		$this->end_controls_section();
 	}
@@ -694,7 +712,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 			array(
 				'name'     => 'section_customer_details_heading_typography',
 				'label'    => 'Typography',
-				'selector' => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details .woocommerce-column__title',
+				'selector' => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-customer-details .woocommerce-column__title, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .woocommerce-customer-details__title',
 			)
 		);
 
@@ -705,7 +723,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => array(
-					'{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details .woocommerce-column__title' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-customer-details .woocommerce-column__title, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .woocommerce-customer-details__title' => 'color: {{VALUE}};',
 				),
 			)
 		);
@@ -724,7 +742,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 			array(
 				'name'     => 'section_customer_details_text_typography',
 				'label'    => 'Typography',
-				'selector' => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address',
+				'selector' => '{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details table.customer-details-table *',
 			)
 		);
 
@@ -735,7 +753,7 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => array(
-					'{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address, {{WRAPPER}} .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details table.customer-details-table *' => 'color: {{VALUE}};',
 				),
 			)
 		);
@@ -797,6 +815,21 @@ class Cartflows_Order_Details_Form extends Widget_Base {
 				function( $text ) {
 
 					$text = self::$settings['thankyou_text'];
+
+					return $text;
+				},
+				10,
+				1
+			);
+		}
+
+		if ( ! empty( self::$settings['layout'] ) ) {
+
+			add_filter(
+				'cartflows_thankyou_meta_wcf-tq-layout',
+				function( $text ) {
+
+					$text = self::$settings['layout'];
 
 					return $text;
 				},

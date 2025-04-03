@@ -681,6 +681,27 @@ class Cartflows_Thankyou_Markup {
 		return $output;
 
 	}
+
+	/**
+	 * Gets subtotal - subtotal is shown before discounts, but with localised taxes.
+	 *
+	 * @param int $order order.
+	 * @return float
+	 */
+	public function get_subtotal_to_display( $order ) {
+		$tax_display = get_option( 'woocommerce_tax_display_cart' );
+		$subtotal    = (float) $order->get_subtotal();
+	
+		if ( 'incl' === $tax_display ) {
+			$subtotal_taxes = 0;
+			foreach ( $order->get_items() as $item ) {
+				$subtotal_taxes += wc_round_tax_total( (float) $item->get_subtotal_tax() );
+			}
+			$subtotal += $subtotal_taxes;
+		}
+	
+		return $subtotal;
+	}
 }
 
 /**

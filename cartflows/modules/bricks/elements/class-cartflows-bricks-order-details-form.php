@@ -124,12 +124,26 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 	 */
 	public function register_thankyou_controls() {
 
+		$this->controls['layout'] = array(
+			'label'         => esc_html__( 'Layout', 'cartflows' ),
+			'type'          => 'select',
+			'options'       => array(
+				'legacy-tq-layout' => esc_html__( 'Legacy', 'cartflows' ),
+				'modern-tq-layout' => esc_html__( 'Modern', 'cartflows' ),
+			),
+			'default'       => 'legacy-tq-layout',
+			'reload'        => true,
+			'reloadScripts' => true,
+			'group'         => 'section_thankyou_fields',
+		);
+
 		$this->controls['thankyou_text'] = array(
 			'label'       => esc_html__( 'Thank You Text', 'cartflows' ),
 			'type'        => 'text',
 			'placeholder' => esc_html__( 'Thank you. Your order has been received.', 'cartflows' ),
 			'label_block' => true,
 			'group'       => 'section_thankyou_fields',
+			'description' => esc_html__( 'The Thank You Text is only applicable for the old layout.', 'cartflows' ),
 		);
 
 		$this->controls['show_order_overview'] = array(
@@ -276,7 +290,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'css'   => array(
 				array(
 					'property' => 'font',
-					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li',
+					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li p',
 				),
 				array(
 					'property' => 'font',
@@ -336,7 +350,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'css'   => array(
 				array(
 					'property' => 'font',
-					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li',
+					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li p',
 				),
 			),
 
@@ -481,7 +495,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'css'   => array(
 				array(
 					'property' => 'font',
-					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address',
+					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details tr *',
 				),
 			),
 
@@ -494,7 +508,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'css'   => array(
 				array(
 					'property' => 'background-color',
-					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details',
+					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-customer-details, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .customer-details-box',
 				),
 			),
 		);
@@ -558,6 +572,21 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 				function( $text ) {
 
 					$text = $this->settings['thankyou_text'];
+
+					return $text;
+				},
+				10,
+				1
+			);
+		}
+
+		if ( ! empty( $this->settings['layout'] ) ) {
+
+			add_filter(
+				'cartflows_thankyou_meta_wcf-tq-layout',
+				function( $text ) {
+
+					$text = $this->settings['layout'];
 
 					return $text;
 				},

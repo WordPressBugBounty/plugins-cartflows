@@ -169,7 +169,7 @@ class Cartflows_Checkout_Markup {
 
 					$expiration_time = 30;
 					// Need to update the active checkout id.
-					setcookie( CARTFLOWS_ACTIVE_CHECKOUT, $checkout_id, time() + $expiration_time * MINUTE_IN_SECONDS, '/', COOKIE_DOMAIN, CARTFLOWS_HTTPS ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+					setcookie( CARTFLOWS_ACTIVE_CHECKOUT, $checkout_id, time() + $expiration_time * MINUTE_IN_SECONDS, '/', COOKIE_DOMAIN, CARTFLOWS_HTTPS, true ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 
 					// Prepare the cart data with cart item key. Need to update in product options.
 					add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'prepare_required_cart_data' ), 10, 1 );
@@ -765,7 +765,7 @@ class Cartflows_Checkout_Markup {
 
 		$cart_data       = WC()->cart->get_cart();
 		$expiration_time = 30;
-		setcookie( CARTFLOWS_ACTIVE_CHECKOUT, $checkout_id, time() + $expiration_time * MINUTE_IN_SECONDS, '/', COOKIE_DOMAIN, CARTFLOWS_HTTPS ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+		setcookie( CARTFLOWS_ACTIVE_CHECKOUT, $checkout_id, time() + $expiration_time * MINUTE_IN_SECONDS, '/', COOKIE_DOMAIN, CARTFLOWS_HTTPS, true ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 
 		$user_key = WC()->session->get_customer_id();
 
@@ -1607,7 +1607,7 @@ class Cartflows_Checkout_Markup {
 	 * @since 1.0.0
 	 */
 	public function custom_price_to_cart_item( $cart_object ) {
-		if ( wp_doing_ajax() && ! WC()->session->__isset( 'reload_checkout' ) ) {
+		if ( apply_filters( 'cartflows_update_product_custom_price', wp_doing_ajax() ) && ! WC()->session->__isset( 'reload_checkout' ) ) {
 
 			foreach ( $cart_object->cart_contents as $key => $value ) {
 

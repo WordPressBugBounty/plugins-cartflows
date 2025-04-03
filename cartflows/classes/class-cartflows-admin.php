@@ -411,33 +411,13 @@ class Cartflows_Admin {
 
 		if ( apply_filters( 'cartflows_enable_non_sensitive_data_tracking', get_option( 'cf_analytics_optin', false ) ) ) {
 
-			// Default CartFlows features which includes FREE & PRO.
-			$step_specific_features = get_option( 'cartflows_features_in_use', array() );
-
 			// Combine all features to make a full list.
-			$social_features = $this->get_all_social_features_tracking_data();
-			$global_features = $this->get_all_global_features_tracking_data();
+			$theme_data = $this->get_active_theme();
 
-			// Prepare data to be tracked.
-			$stats_data['plugin_data']['cartflows'] = array(
-				'website-domain'         => str_ireplace( array( 'http://', 'https://' ), '', home_url() ),
-				'cartflows-lite-version' => CARTFLOWS_VER,
-				'cartflows-pro-version'  => _is_cartflows_pro() ? CARTFLOWS_PRO_VER : '',
-				'woocommerce-version'    => ( wcf()->is_woo_active && defined( 'WC_VERSION' ) ) ? WC_VERSION : '',
-				'default-page-builder'   => Cartflows_Helper::get_common_setting( 'default_page_builder' ),
-				'active-theme'           => $this->get_active_theme(),
-				'active-gateways'        => wcf()->is_woo_active ? $this->get_active_gateways() : '',
-				'social-tracking'        => $social_features,
-			);
-
-			// Merget the step specific features in the main array.
-			$stats_data['plugin_data']['cartflows'] = array_merge( $stats_data['plugin_data']['cartflows'], $step_specific_features );
-
-			$stats_data['plugin_data']['cartflows']['numeric_values'] = array(
-				'total_flows' => wp_count_posts( CARTFLOWS_FLOW_POST_TYPE )->publish,
-			);
-
-			$stats_data['plugin_data']['cartflows']['boolean_values'] = $global_features;
+			// Prepare default data to be tracked.
+			$stats_data['plugin_data']['cartflows']                   = $this->get_default_stats( $theme_data );
+			$stats_data['plugin_data']['cartflows']['numeric_values'] = $this->get_numeric_data_stats();
+			$stats_data['plugin_data']['cartflows']['boolean_values'] = $this->get_boolean_data_stats( $theme_data );
 
 			// Filter to add more options if any.
 			$stats_data = apply_filters( 'cartflows_get_specific_stats', $stats_data );
@@ -445,6 +425,66 @@ class Cartflows_Admin {
 
 		return $stats_data;
 
+	}
+
+	/**
+	 * Retrieves default statistics for CartFlows.
+	 *
+	 * This function collects and returns default statistics for CartFlows, including the website domain, site language, CartFlows version, WooCommerce version, default page builder, active theme, active gateways, and social tracking features.
+	 *
+	 * @since 2.1.8
+	 * @param array $theme_data Array containing active theme information.
+	 * @return array $default_data An array of default statistics for CartFlows.
+	 */
+	public function get_default_stats( $theme_data ) {
+
+		$default_data = array(
+			'website-domain'         => str_ireplace( array( 'http://', 'https://' ), '', home_url() ),
+			'site_language'          => get_locale(),
+			'cartflows-lite-version' => CARTFLOWS_VER,
+			'cartflows-pro-version'  => _is_cartflows_pro() ? CARTFLOWS_PRO_VER : '',
+			'woocommerce-version'    => ( wcf()->is_woo_active && defined( 'WC_VERSION' ) ) ? WC_VERSION : '',
+			'default-page-builder'   => Cartflows_Helper::get_common_setting( 'default_page_builder' ),
+			'active-theme'           => $theme_data['parent_theme'],
+			'active-gateways'        => wcf()->is_woo_active ? $this->get_active_gateways() : '',
+			'social-tracking'        => $this->get_all_social_features_tracking_data(),
+		);
+
+		return $default_data;
+	}
+
+	/**
+	 * Retrieves numeric data statistics for CartFlows.
+	 *
+	 * This function collects and returns numeric data statistics for CartFlows, including the total number of flows, and the count of each step type (optin, landing, checkout, upsell, downsell, thankyou).
+	 *
+	 * @since 2.1.8
+	 * @return array An array of numeric data statistics for CartFlows.
+	 */
+	public function get_numeric_data_stats() {
+
+		// Get the total numbers of each steps.
+		$steps_counts = $this->get_all_steps_count();
+
+		// Get the total flows where the Instant Checkout feature is enabled.
+		$flows_with_instant_checkout = $this->get_funnels_with_instant_layout();
+
+		// Get the total of optin and checkout steps where the custom field editor is enabled.
+		$custom_fields_data = $this->get_custom_fields_enabled_data();
+
+		// Return the prepared data.
+		return array(
+			'total_flows'            => wp_count_posts( CARTFLOWS_FLOW_POST_TYPE )->publish,
+			'total_ic_funnels'       => strval( $flows_with_instant_checkout ),
+			'optin_step_count'       => strval( $steps_counts['optin'] ),          // Total count of 'optin' steps created.
+			'landing_step_count'     => strval( $steps_counts['landing'] ),        // Total count of 'landing' steps created.
+			'checkout_step_count'    => strval( $steps_counts['checkout'] ),       // Total count of 'checkout' steps created.
+			'upsell_step_count'      => strval( $steps_counts['upsell'] ),         // Total count of 'upsell' steps created.
+			'downsell_step_count'    => strval( $steps_counts['downsell'] ),       // Total count of 'downsell' steps created.
+			'thankyou_step_count'    => strval( $steps_counts['thankyou'] ),       // Total count of 'thank' you steps created.
+			'optin_custom_fields'    => strval( $custom_fields_data['optin'] ),    // Total optin steps with custom field editor is enabled.
+			'checkout_custom_fields' => strval( $custom_fields_data['checkout'] ), // Total checkout steps with custom field editor is enabled.
+		);
 	}
 
 	/**
@@ -467,9 +507,156 @@ class Cartflows_Admin {
 		}
 
 		return array(
-			'parent_theme_name' => $parent_theme_name,
-			'child_theme_name'  => $child_theme_name,
+			'parent_theme' => ! empty( $child_theme_name ) ? $child_theme_name : $parent_theme_name,
+			'child_theme'  => ! empty( $child_theme_name ) ? true : false,
 		);
+	}
+
+	/**
+	 * Retrieve the count of all steps in the system.
+	 *
+	 * This function queries the database to count the number of steps of each type (optin, landing, checkout, upsell, downsell, thankyou).
+	 * It returns an array with the count of each step type.
+	 *
+	 * @since x.x.x
+	 * @return array An array containing the count of each step type.
+	 */
+	public function get_all_steps_count() {
+		
+		// Default data.
+		$default_step_counts = array(
+			'optin'    => 0,
+			'landing'  => 0,
+			'checkout' => 0,
+			'upsell'   => 0,
+			'downsell' => 0,
+			'thankyou' => 0,
+		);
+
+		global $wpdb;
+
+		// Prepare the database query to make get the step counts.
+		//phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// Reason: This is a direct database query which fetch only the number of steps.
+		$step_counts = $wpdb->get_results(
+			$wpdb->prepare( 
+				"SELECT JSON_OBJECTAGG(meta_value, count) as counts
+				FROM (
+					SELECT pm.meta_value, COUNT(*) as count
+					FROM $wpdb->posts p
+					INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id
+					WHERE p.post_type = %s 
+					AND p.post_status = %s 
+					AND pm.meta_key = %s
+					AND pm.meta_value IN ('optin', 'landing', 'checkout', 'upsell', 'downsell', 'thankyou')
+					GROUP BY pm.meta_value
+				) as subquery",
+				CARTFLOWS_STEP_POST_TYPE,
+				'publish',
+				'wcf-step-type'
+			),
+			ARRAY_A
+		);
+		//phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		// Merge the updated counts with the defaults.
+		$all_step_count = wp_parse_args( json_decode( $step_counts[0]['counts'] ), $default_step_counts );
+		return $all_step_count;
+
+	}
+
+	/**
+	 * Retrieve the count of funnels with instant layout enabled.
+	 *
+	 * This function queries the database to count the number of funnels that have the instant layout style enabled.
+	 * It returns the count of such funnels.
+	 *
+	 * @since x.x.x
+	 * @return int $posts_count The count of funnels with instant layout enabled.
+	 */
+	public function get_funnels_with_instant_layout() {
+		$posts_count = 0;
+
+		$args = array(
+			'post_type'      => CARTFLOWS_FLOW_POST_TYPE,
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'meta_query'     => array(  //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Meta query required as we need to fetch count of instant layout funnels.
+				array(
+					'key'     => 'instant-layout-style',
+					'value'   => 'yes',
+					'compare' => 'LIKE',
+				),
+			), 
+		);
+
+		$query       = new WP_Query( $args );
+		$posts_count = isset( $query->found_posts ) ? $query->found_posts : 0;
+
+		wp_reset_postdata();
+
+		return $posts_count;
+	}
+
+	/**
+	 * Retrieve the count of steps with custom fields enabled.
+	 *
+	 * This function queries the database to count the number of steps (optin and checkout) that have custom fields enabled.
+	 * It returns the count of such steps.
+	 *
+	 * @since x.x.x
+	 * @return array $all_step_count The count of steps with custom fields enabled, categorized by step type.
+	 */
+	public function get_custom_fields_enabled_data() {
+
+		// Default data.
+		$default_step_counts = array(
+			'optin'    => 0,
+			'checkout' => 0,
+		);
+
+		global $wpdb;
+
+		// Prepare the database query to make get the step counts.
+		//phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// Reason: This is a direct database query which fetch only the number of steps where the custom field editor is enabled.
+		$step_counts = $wpdb->get_results(
+			$wpdb->prepare( 
+				"SELECT JSON_OBJECTAGG(subquery.step_type, subquery.count) AS counts
+				FROM ( SELECT step.meta_value AS step_type, 
+						COUNT(DISTINCT p.ID) AS count
+					FROM $wpdb->posts p
+					INNER JOIN $wpdb->postmeta step 
+						ON p.ID = step.post_id 
+						AND step.meta_key = %s 
+						AND step.meta_value IN ('optin', 'checkout')
+					INNER JOIN $wpdb->postmeta custom 
+						ON p.ID = custom.post_id 
+						AND (
+							(step.meta_value = 'optin' AND custom.meta_key = %s) 
+							OR 
+							(step.meta_value = 'checkout' AND custom.meta_key = %s)
+						) 
+						AND custom.meta_value = %s
+					WHERE p.post_type = %s 
+					AND p.post_status = %s
+					GROUP BY step.meta_value
+				) AS subquery",
+				'wcf-step-type',
+				'wcf-optin-enable-custom-fields',
+				'wcf-custom-checkout-fields',
+				'yes',
+				CARTFLOWS_STEP_POST_TYPE,
+				'publish'
+			),
+			ARRAY_A
+		);
+		//phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		// Merge the updated counts with the defaults.
+		$all_step_count = wp_parse_args( json_decode( $step_counts[0]['counts'] ), $default_step_counts );
+		return $all_step_count;
+
 	}
 
 	/**
@@ -542,9 +729,10 @@ class Cartflows_Admin {
 	 * This function retrieves and returns all global features tracking data including cartflows stats report emails, plugin data deletion, store checkout settings, override global checkout, disallow indexing, PayPal reference transactions, and pre-checkout offer settings.
 	 *
 	 * @since 2.1.8
+	 * @param array $theme_data Array containing active theme information.
 	 * @return array Array of all global features tracking data.
 	 */
-	public function get_all_global_features_tracking_data() {
+	public function get_boolean_data_stats( $theme_data ) {
 
 		$common_settings = Cartflows_Helper::get_common_settings();
 
@@ -556,6 +744,8 @@ class Cartflows_Admin {
 			'cartflows-delete-plugin-data'  => 'enable' === get_option( 'cartflows_delete_plugin_data' ),
 			'pre-checkout-offer'            => 'enable' === get_option( 'cartflows_stats_report_emails', 'enable' ),
 			'store-checkout-set'            => ! empty( intval( Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' ) ) ),
+			'is-child-theme'                => $theme_data['child_theme'],
+			'suretriggers_active'           => is_plugin_active( 'suretriggers/suretriggers.php' ),
 		);
 
 	}

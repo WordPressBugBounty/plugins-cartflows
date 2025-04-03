@@ -10,6 +10,6 @@ export function sendPostMessage( data ) {
 			action: 'ScDispatchTemplatePreviewActions/' + data.action,
 			value: data,
 		},
-		'*'
+		document.location.origin
 	);
 }

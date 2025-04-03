@@ -613,6 +613,10 @@ class Cartflows_Default_Meta {
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_URL',
 				),
+				'wcf-tq-layout'                            => array(
+					'default'  => 'legacy-tq-layout',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
 				'wcf-tq-text'                              => array(
 					'default'  => __( 'Thank you. Your order has been received.', 'cartflows' ),
 					'sanitize' => 'FILTER_WP_KSES_POST',

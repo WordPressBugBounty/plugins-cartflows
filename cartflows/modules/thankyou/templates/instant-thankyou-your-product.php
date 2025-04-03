@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! $order ) {
 	return;
 }
+$get_subtotal_to_display = Cartflows_Thankyou_Markup::get_instance()->get_subtotal_to_display( $order );
+
 ?>
 <div class="wcf-ic-layout-right-column">
 	<div class="wcf-ic-ty-product-details">
@@ -26,6 +28,10 @@ if ( ! $order ) {
 					$order_items = $order->get_items( 'line_item' );
 
 					$child_orders_ids = $order->get_meta( '_cartflows_offer_child_orders' );
+
+				$total_price = $order->get_total();
+				$sub_total   = wc_tax_enabled() ? $get_subtotal_to_display : $order->get_subtotal();
+
 				if ( ! empty( $child_orders_ids ) ) {
 					foreach ( $child_orders_ids as $child_order_id => $child_data ) {
 						$child_order = wc_get_order( $child_order_id );
@@ -34,15 +40,15 @@ if ( ! $order ) {
 						}
 						$child_order_items = $child_order->get_items( 'line_item' );
 						$order_items       = array_merge( $order_items, $child_order_items );
+						$total_price      += $child_order->get_total();
+						$sub_total        += wc_tax_enabled() ? Cartflows_Thankyou_Markup::get_instance()->get_subtotal_to_display( $child_order ) : $child_order->get_subtotal();
 					}
 				}
 
-					$total_price = 0;
 				foreach ( $order_items as $item_id => $item ) {
 					$product      = $item->get_product();
 					$qty          = $item->get_quantity();
 					$refunded_qty = $order->get_qty_refunded_for_item( $item_id );
-					$total_price  = $total_price + $item->get_total();
 
 					if ( empty( $product ) ) {
 						continue;
@@ -112,7 +118,7 @@ if ( ! $order ) {
 				<div class="wcf-ic-cart-totals__label"><span><?php esc_html_e( 'Subtotal', 'cartflows' ); ?></span></div>
 				<div class="wcf-ic-cart-totals__value">
 					<?php
-						echo wp_kses_post( wc_price( $total_price, array( 'currency' => $order->get_currency() ) ) );
+						echo wp_kses_post( wc_price( $sub_total, array( 'currency' => $order->get_currency() ) ) );
 					?>
 				</div>
 			</div>
@@ -143,8 +149,7 @@ if ( ! $order ) {
 				</div>
 				<div class="wcf-ic-cart-totals__value">
 					<?php
-						$shipping_total = $order->get_shipping_total();
-						$total_price    = $total_price + $shipping_total;
+						
 						echo sprintf( '<div class="wcf-ic-cart-totals__currency-badge">%s</div>', esc_html( $order->get_currency() ) );
 					?>
 					<span><?php echo wp_kses_post( wc_price( $total_price, array( 'currency' => $order->get_currency() ) ) ); ?></span>

@@ -1,3 +1,11 @@
+Version 2.1.9 - Thursday, 3rd April 2025
+- New: Introduced a new style for thank you page.
+- Fix: Corrected the price display on the Instant Layout of the Thank You page when tax is enabled.
+- Fix: Improved UX and mobile responsiveness on the step’s template library page.
+- Fix: Fixed an error when adding an order bump product in step settings.
+- Fix: Ensured billing and shipping details are displayed for all users on the Thank You page, not just logged-in users.
+- Fix: Resolved an issue where the incorrect order number was shown on the Instant Layout of the Thank You page when using the Sequential Order Numbers plugin.
+
 Version 2.1.8 - Wednesday, 5th March 2025
 - New: Introduced language files for multiple languages for quick translation of the plugin.
 - Fix: Resolved issue preventing step pages from being edited with Oxygen Builder.

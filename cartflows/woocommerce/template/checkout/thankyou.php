@@ -16,9 +16,12 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+$thankyou_id = wcf()->flow->get_thankyou_page_id( $order );
+$thankyou_layout = wcf()->options->get_thankyou_meta_value( $thankyou_id, 'wcf-tq-layout' );
 ?>
 
-<div class="woocommerce-order">
+<div class="woocommerce-order wcf-<?php echo esc_attr( $thankyou_layout ); ?>">
 
 	<?php
 	if ( $order ) :
@@ -37,10 +40,13 @@ defined( 'ABSPATH' ) || exit;
 				<?php endif; ?>
 			</p>
 
-		<?php else : ?>
-
-			<p class="woocommerce-notice woocommerce-notice--success woocommerce-thankyou-order-received"><?php echo apply_filters( 'woocommerce_thankyou_order_received_text', esc_html__( 'Thank you. Your order has been received.', 'woocommerce' ), $order ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
-			<?php if ( $order->has_status( 'cancelled' ) ) :
+		<?php else : 
+			if ( 'legacy-tq-layout' === $thankyou_layout) {
+			?>
+				<p class="woocommerce-notice woocommerce-notice--success woocommerce-thankyou-order-received"><?php echo apply_filters( 'woocommerce_thankyou_order_received_text', esc_html__( 'Thank you. Your order has been received.', 'woocommerce' ), $order ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+			<?php 
+			}
+			if ( $order->has_status( 'cancelled' ) ) :
 				do_action( 'cartflows_woocommerce_order_overview_cancelled', $order );
 			endif; ?>
 			<ul class="woocommerce-order-overview woocommerce-thankyou-order-details order_details">
@@ -49,12 +55,19 @@ defined( 'ABSPATH' ) || exit;
 					<?php esc_html_e( 'Order number:', 'woocommerce' ); ?>
 					<strong><?php echo $order->get_order_number(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
 				</li>
-
 				<li class="woocommerce-order-overview__date date">
-					<?php esc_html_e( 'Date:', 'woocommerce' ); ?>
-					<strong><?php echo wc_format_datetime( $order->get_date_created() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
+					<?php 
+					if('modern-tq-layout' === $thankyou_layout) {
+						esc_html_e( 'Order Date:', 'woocommerce' ); ?>
+						<p><?php echo wc_format_datetime( $order->get_date_created() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+					<?php
+					} else { 
+						esc_html_e( 'Date:', 'woocommerce' ); ?>
+						<strong><?php echo wc_format_datetime( $order->get_date_created() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
+					<?php 
+					}
+					?>
 				</li>
-
 				<?php if ( is_user_logged_in() && $order->get_user_id() === get_current_user_id() && $order->get_billing_email() ) : ?>
 					<li class="woocommerce-order-overview__email email">
 						<?php esc_html_e( 'Email:', 'woocommerce' ); ?>
@@ -70,15 +83,22 @@ defined( 'ABSPATH' ) || exit;
 				<?php if ( $order->get_payment_method_title() ) : ?>
 					<li class="woocommerce-order-overview__payment-method method">
 						<?php esc_html_e( 'Payment method:', 'woocommerce' ); ?>
-						<strong><?php echo wp_kses_post( $order->get_payment_method_title() ); ?></strong>
+						<?php if('modern-tq-layout' === $thankyou_layout) { ?>
+							<p><?php echo wp_kses_post( $order->get_payment_method_title() ); ?></p>
+						<?php } else { ?>
+							<strong><?php echo wp_kses_post( $order->get_payment_method_title() ); ?></strong>
+						<?php } ?>
 					</li>
 				<?php endif; ?>
 
 			</ul>
 
 		<?php endif; ?>
-
-		<?php do_action( 'woocommerce_thankyou_' . $order->get_payment_method(), $order->get_id() ); ?>
+		<?php 
+		if('legacy-tq-layout' === $thankyou_layout) { 
+			do_action( 'woocommerce_thankyou_' . $order->get_payment_method(), $order->get_id() ); 
+		}
+		?>
 		<?php do_action( 'woocommerce_thankyou', $order->get_id() ); ?>
 
 	<?php else : ?>

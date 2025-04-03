@@ -80,6 +80,21 @@ class Cartflows_BB_Order_Details_Form extends FLBuilderModule {
 			);
 		}
 
+		if ( ! empty( $this->settings->layout ) ) {
+
+			add_filter(
+				'cartflows_thankyou_meta_wcf-tq-layout',
+				function( $text ) {
+
+					$text = $this->settings->layout;
+
+					return $text;
+				},
+				10,
+				1
+			);
+		}
+
 	}
 
 }
@@ -96,6 +111,15 @@ FLBuilder::register_module(
 				'general' => array(
 					'title'  => '',
 					'fields' => array(
+						'layout'                => array(
+							'type'    => 'select',
+							'label'   => __( 'Layout', 'cartflows' ),
+							'default' => 'legacy-tq-layout',
+							'options' => array(
+								'legacy-tq-layout' => __( 'Legacy', 'cartflows' ),
+								'modern-tq-layout' => __( 'Modern', 'cartflows' ),
+							),
+						),
 						'thankyou_text'         => array(
 							'type'        => 'text',
 							'label'       => __( 'Thank You Text', 'cartflows' ),
@@ -105,6 +129,7 @@ FLBuilder::register_module(
 								'selector' => '.wcf-thankyou-wrap .woocommerce-order .woocommerce-thankyou-order-received',
 							),
 							'connections' => array( 'string' ),
+							'help'        => __( 'The Thank You Text is only applicable for the old layout.', 'cartflows' ),
 						),
 						'show_order_overview'   => array(
 							'type'    => 'select',

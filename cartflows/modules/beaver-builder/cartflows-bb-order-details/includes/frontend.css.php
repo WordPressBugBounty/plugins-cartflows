@@ -15,12 +15,11 @@ global $post;
 }
 
 .fl-node-<?php echo $id; ?> .woocommerce-order ul.order_details,
-.fl-node-<?php echo $id; ?> .woocommerce-order .woocommerce-customer-details,
 .fl-node-<?php echo $id; ?> .woocommerce-order .woocommerce-order-details,
 .fl-node-<?php echo $id; ?> .woocommerce-order .woocommerce-order-downloads,
 .fl-node-<?php echo $id; ?> .woocommerce-order .woocommerce-bacs-bank-details,
 .fl-node-<?php echo $id; ?> .woocommerce-order-details.mollie-instructions {
-	margin-bottom: <?php echo $settings->sections_spacing; ?>px;
+	margin-bottom: <?php echo $settings->sections_spacing; ?>px !important;
 }
 
 .fl-node-<?php echo $id; ?> .cartflows-bb__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-thankyou-order-received {
@@ -62,7 +61,7 @@ if ( class_exists( 'FLBuilderCSS' ) ) {
 	color: <?php echo FLBuilderColor::hex_or_rgb( $settings->sections_content_color ); ?>;
 }
 
-.fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details,
+.fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details,
 .fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-details,
 .fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details,
 .fl-node-<?php echo $id; ?> .woocommerce-order-downloads,
@@ -135,7 +134,7 @@ if ( class_exists( 'FLBuilderCSS' ) ) {
 	color: <?php echo FLBuilderColor::hex_or_rgb( $settings->order_overview_text_color ); ?>;
 }
 
-.fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details {
+.fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details {
 	background-color: <?php echo FLBuilderColor::hex_or_rgb( $settings->order_overview_background_color ); ?>;
 }
 
@@ -211,7 +210,8 @@ if ( class_exists( 'FLBuilderCSS' ) ) {
 ?>
 
 .fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address,
-.fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address p {
+.fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address p,
+.fl-node-<?php echo $id; ?> .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details tr * {
 	color: <?php echo FLBuilderColor::hex_or_rgb( $settings->customer_details_text_color ); ?>;
 }
 

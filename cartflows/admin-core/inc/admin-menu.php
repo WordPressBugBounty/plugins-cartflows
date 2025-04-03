@@ -1137,12 +1137,7 @@ class AdminMenu {
 			array(
 				'key'   => 'cartflows',
 				'label' => 'CartFlows',
-				'url'   => 'https://cartflows.com/product/cartflows/feed/',
-			),
-			array(
-				'key'   => 'cartflows-pro',
-				'label' => 'CartFlows Pro',
-				'url'   => 'https://cartflows.com/product/cartflows-pro/feed',
+				'url'   => 'https://cartflows.com/whats-new/feed/',
 			),
 		);
 	}

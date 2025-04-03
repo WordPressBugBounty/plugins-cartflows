@@ -136,6 +136,9 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-astra-addon-compatibility.php';
 			}
 
+			// Load the gateway support files for the checkout page compatibility.
+			$this->load_gateway_compatibility();
+
 			// Compatibility to allow of Modern Cart to redirect the user to flow from single product page.
 			if ( class_exists( 'ModernCart\Plugin_Loader' ) ) {
 				add_filter(
@@ -155,9 +158,20 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 				}
 			}
 
-
 			if ( defined( 'SURE_TRIGGERS_VER' ) ) {
 				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-suretriggers-compatibility.php';
+			}
+		}
+
+		/**
+		 * Loads compatibility files for gateways.
+		 *
+		 * This function checks for the presence of various gateways and loads their compatibility files if they are active.
+		 */
+		public function load_gateway_compatibility() {
+
+			if ( defined( 'WC_STRIPE_VERSION' ) ) {
+				require_once CARTFLOWS_DIR . 'compatibilities/plugins/gateways/class-cartflows-wc-stripe-compatibility.php';
 			}
 		}
 

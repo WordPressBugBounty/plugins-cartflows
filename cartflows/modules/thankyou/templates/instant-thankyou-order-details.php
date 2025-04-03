@@ -29,7 +29,7 @@ $billing_email = $order->get_billing_email();
 					<p>
 						<?php
 						// Translators: Order ID.
-						echo sprintf( esc_html__( 'Order #%d', 'cartflows' ), esc_html( $order->get_id() ) );
+						echo sprintf( esc_html__( 'Order #%s', 'cartflows' ), esc_html( $order->get_order_number() ) );
 						?>
 					</p>
 					<h2>

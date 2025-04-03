@@ -43,7 +43,7 @@ class Cartflows_Woo_Hooks {
 	 */
 	public function __construct() {
 
-		add_action( 'init', array( $this, 'register_wc_hooks' ), 999 );
+		add_action( 'wp', array( $this, 'register_wc_hooks' ), 10 );
 	}
 
 	/**

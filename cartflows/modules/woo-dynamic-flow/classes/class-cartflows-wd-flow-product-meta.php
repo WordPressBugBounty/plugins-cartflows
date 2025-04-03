@@ -136,7 +136,7 @@ class Cartflows_Wd_Flow_Product_Meta {
 				'value'       => get_post_meta( get_the_ID(), 'cartflows_redirect_flow_id', true ),
 				'label'       => __( 'Select the Flow', 'cartflows' ),
 				'class'       => '',
-				'placeholder' => __( 'Type to search a flow...', 'cartflows' ),
+				'placeholder' => __( 'Type to search a funnel...', 'cartflows' ),
 			)
 		);
 
