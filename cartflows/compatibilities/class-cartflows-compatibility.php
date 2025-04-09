@@ -75,7 +75,7 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 		}
 
 		/**
-		 * Add localized data for SureTriggers
+		 * Add localized data for OttoKit
 		 *
 		 * @param array $localize localized variables.
 		 * @return array $localize localized variables.
@@ -105,7 +105,7 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 		 * @return void
 		 */
 		public function load_compatibility_constants() {
-			define( 'CARTFLOWS_SURETRIGGERS_INTEGRATION_BASE_URL', 'https://app.suretriggers.com/' );
+			define( 'CARTFLOWS_SURETRIGGERS_INTEGRATION_BASE_URL', 'https://app.ottokit.com/' );
 		}
 
 		/**

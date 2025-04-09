@@ -701,7 +701,7 @@ function wcf_get_checkout_layout() {
 	return $checkout_layout;
 }
 
-/** Check weather the SureTriggers is installed and Connected.
+/** Check weather the OttoKit is installed and Connected.
  *
  * @return bool
  */

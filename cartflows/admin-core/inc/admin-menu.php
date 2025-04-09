@@ -1021,13 +1021,13 @@ class AdminMenu {
 						),
 					),
 					array(
-						'title'       => __( 'SureTriggers', 'cartflows' ),
-						'subtitle'    => __( 'SureTriggers helps people automate their work by integrating multiple apps and plugins, allowing them to share data and perform tasks automatically.', 'cartflows' ),
+						'title'       => __( 'OttoKit', 'cartflows' ),
+						'subtitle'    => __( 'OttoKit helps people automate their work by integrating multiple apps and plugins, allowing them to share data and perform tasks automatically.', 'cartflows' ),
 						'isPro'       => true,
 						'status'      => $this->get_plugin_status( 'suretriggers/suretriggers.php' ),
 						'slug'        => 'suretriggers',
 						'path'        => 'suretriggers/suretriggers.php',
-						'link'        => 'https://suretriggers.com/pricing/',
+						'link'        => 'https://ottokit.com/pricing/',
 						'redirection' => admin_url( 'admin.php?page=suretriggers' ),
 						'logoPath'    => array(
 							'icon_path' => CARTFLOWS_ADMIN_CORE_URL . 'assets/images/plugins/suretriggers-emblem.svg',

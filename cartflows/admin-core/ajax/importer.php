@@ -651,11 +651,8 @@ class Importer extends AjaxBase {
 
 		update_post_meta( $flow_id, 'wcf-steps', $flow_steps );
 
-		// Checking the default page builder setting and updates the instant checkout status accordingly.
-		$page_builder = \Cartflows_Helper::get_common_setting( 'default_page_builder' );
-		if ( 'bricks-builder' === $page_builder ) {
-			update_post_meta( $flow_id, 'instant-layout-style', 'yes' );
-		}
+		// Enable the Instant Layout for the flow for all page builders if the funnel is created from scratch.
+		update_post_meta( $flow_id, 'instant-layout-style', 'yes' );
 
 		/**
 		 * Redirect to the new flow edit screen

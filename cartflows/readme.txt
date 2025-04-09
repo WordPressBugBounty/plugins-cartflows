@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, custom checkout, WooCommerce checkout
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.1.9
+Stable tag: 2.1.10
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -388,6 +388,10 @@ Welcome to CartFlows\! Click here to access our comprehensive documentation and 
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+= Version 2.1.10 - Wednesday, 9th April 2025 =
+* Improvement: SureTriggers is now OttoKit. We've updated the compatibility to keep everything working smoothly.
+* Improvement: Instant Layout will be auto-enabled when users create a funnel from scratch. This will help users get a ready-made structure right away.
+* Improvement: Improved design of Store Checkout pop-up
 
 = Version 2.1.9 - Thursday, 3rd April 2025 =
 * New: Introduced a new style for thank you page.

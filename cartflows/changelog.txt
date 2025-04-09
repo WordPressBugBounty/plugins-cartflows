@@ -1,3 +1,8 @@
+Version 2.1.10 - Wednesday, 9 April 2025
+- Improvement: SureTriggers is now OttoKit. We've updated the compatibility to keep everything working smoothly.
+- Improvement: Instant Layout will be auto-enabled when users create a funnel from scratch. This will help users get a ready-made structure right away.
+- Improvement: Improved design of Store Checkout pop-up
+
 Version 2.1.9 - Thursday, 3rd April 2025
 - New: Introduced a new style for thank you page.
 - Fix: Corrected the price display on the Instant Layout of the Thank You page when tax is enabled.
