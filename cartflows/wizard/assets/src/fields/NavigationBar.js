@@ -167,14 +167,16 @@ const MenuNavigation = ( {
 
 				if ( isActive ) {
 					borderClass = 'border-primary-500';
-					textClass = 'text-gray-800';
+					textClass =
+						'text-gray-800 text-primary-500 hover:text-primary-500';
 				} else if ( isClickable ) {
 					borderClass = 'border-transparent';
 					textClass =
-						'text-gray-300 hover:border-gray-300 hover:text-gray-700';
+						'text-gray-300 hover:border-primary-300 hover:text-primary-500';
 				} else {
 					borderClass = 'border-transparent';
-					textClass = 'text-gray-300 cursor-not-allowed';
+					textClass =
+						'text-gray-300 cursor-not-allowed hover:text-gray-300';
 				}
 
 				const linkClasses = `inline-flex items-center border-b-2 px-1 pt-1 font-medium focus:outline-none focus:shadow-none text-sm lg:text-base ${ borderClass } ${ textClass }`;

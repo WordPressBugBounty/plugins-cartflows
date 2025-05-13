@@ -560,7 +560,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 				'general'  => array(
 					'title'    => __( 'General', 'cartflows' ),
 					'slug'     => 'general',
-					'priority' => 10,
+					'priority' => 20,
 					'fields'   => array(
 						'slug'                    => array(
 							'type'          => 'text',
@@ -574,7 +574,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'         => __( 'Custom Script', 'cartflows' ),
 							'name'          => 'wcf-custom-script',
 							'value'         => $options['wcf-custom-script'],
-							'tooltip'       => __( 'Enter custom JS/CSS. Wrap your custom CSS in style tag.', 'cartflows' ),
+							'tooltip'       => __( 'Add your own custom code here. If you\'re adding CSS, make sure to wrap it inside &lt;style&gt; tags.', 'cartflows' ),
 							'display_align' => 'vertical',
 						),
 					),
@@ -583,7 +583,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 				'settings' => array(
 					'title'    => __( 'Optin Settings', 'cartflows' ),
 					'slug'     => 'fields_settings',
-					'priority' => 20,
+					'priority' => 10,
 					'fields'   => array(
 						'button-text'                => array(
 							'type'          => 'text',

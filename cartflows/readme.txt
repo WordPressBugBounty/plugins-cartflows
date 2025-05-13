@@ -2,8 +2,8 @@
 Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, custom checkout, WooCommerce checkout
 Requires at least: 5.8
-Tested up to: 6.7
-Stable tag: 2.1.10
+Tested up to: 6.8
+Stable tag: 2.1.11
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -388,6 +388,21 @@ Welcome to CartFlows\! Click here to access our comprehensive documentation and 
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 2.1.11 - Tuesday, 13th May 2025 =
+* New: Added option to upload a custom logo in the header of the Instant Layout style.
+* Improvement: Enhanced tooltips across the interface for better clarity.
+* Fix: Resolved a critical error caused by the latest update of the WooCommerce Stripe Gateway.
+* Fix: Fixed an issue where the “What’s New” notification was not being displayed.
+* Fix: Purchase event was not being tracked correctly for Facebook — now fixed.
+* Fix: Resolved dropdown overlap issue with country and state field labels.
+* Fix: Slide-out panel now closes properly when clicking outside the panel area.
+* Fix: Fixed styling issues for navigation tabs in the Order Bump and Checkout Offer settings panels.
+* Fix: Resolved a conflict with shipping methods when using the DPD Blastic shipping plugin on CartFlows Checkout.
+* Fix: Fixed checkout field order conflict with the PostNL plugin in CartFlows.
+* Fix: Shipping options now display correctly without needing to refresh the checkout page.
+* Fix: Custom content was not appearing on the Instant Layout of the Thank You page — now resolved.
+
 = Version 2.1.10 - Wednesday, 9th April 2025 =
 * Improvement: SureTriggers is now OttoKit. We've updated the compatibility to keep everything working smoothly.
 * Improvement: Instant Layout will be auto-enabled when users create a funnel from scratch. This will help users get a ready-made structure right away.

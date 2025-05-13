@@ -120,7 +120,7 @@ class Cartflows_Landing_Meta_Data extends Cartflows_Step_Meta_Base {
 							'name'          => 'wcf-custom-script',
 							'value'         => $options['wcf-custom-script'],
 							'display_align' => 'vertical',
-							'tooltip'       => __( 'Enter custom JS/CSS. Wrap your custom CSS in style tag.', 'cartflows' ),
+							'tooltip'       => __( 'Add your own custom code here. If you\'re adding CSS, make sure to wrap it inside &lt;style&gt; tags.', 'cartflows' ),
 						),
 					),
 				),

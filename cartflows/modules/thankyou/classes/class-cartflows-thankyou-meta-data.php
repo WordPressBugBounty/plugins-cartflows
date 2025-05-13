@@ -210,6 +210,7 @@ class Cartflows_Thankyou_Meta_Data extends Cartflows_Step_Meta_Base {
 							'type'          => 'number',
 							'name'          => 'wcf-tq-font-size',
 							'label'         => __( 'Font Size (In px)', 'cartflows' ),
+							'min'           => 0,
 							'value'         => $options['wcf-tq-font-size'],
 							'display_align' => 'vertical',
 						),
@@ -387,7 +388,7 @@ class Cartflows_Thankyou_Meta_Data extends Cartflows_Step_Meta_Base {
 				'general'         => array(
 					'title'    => __( 'General', 'cartflows' ),
 					'slug'     => 'general',
-					'priority' => 20,
+					'priority' => 30,
 					'fields'   => array(
 						'slug'                     => array(
 							'type'          => 'text',
@@ -401,7 +402,7 @@ class Cartflows_Thankyou_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'         => __( 'Custom Script', 'cartflows' ),
 							'name'          => 'wcf-custom-script',
 							'value'         => $options['wcf-custom-script'],
-							'tooltip'       => __( 'Enter custom JS/CSS. Wrap your custom CSS in style tag.', 'cartflows' ),
+							'tooltip'       => __( 'Add your own custom code here. If you\'re adding CSS, make sure to wrap it inside &lt;style&gt; tags.', 'cartflows' ),
 							'display_align' => 'vertical',
 						),
 					),
@@ -445,7 +446,7 @@ class Cartflows_Thankyou_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'         => __( 'Order Summary Position', 'cartflows' ),
 							'display_align' => 'vertical',
 							'value'         => $options['wcf-instant-thankyou-order-review-summary-position'],
-							'tooltip'       => __( 'Select the option to change the position of order summary in mobile devices.', 'cartflows' ),
+							'tooltip'       => __( 'Choose this option to adjust where the order summary appears on mobile devices.', 'cartflows' ),
 							'options'       => array(
 								array(
 									'value' => 'top',
@@ -473,7 +474,7 @@ class Cartflows_Thankyou_Meta_Data extends Cartflows_Step_Meta_Base {
 				'settings'        => array(
 					'title'    => __( 'Advanced', 'cartflows' ),
 					'slug'     => 'advanced_setting',
-					'priority' => 30,
+					'priority' => 20,
 					'fields'   => array(
 						'wcf-tq-text'                  => array(
 							'type'          => 'text',
@@ -497,7 +498,7 @@ class Cartflows_Thankyou_Meta_Data extends Cartflows_Step_Meta_Base {
 							'name'          => 'wcf-tq-redirect-link',
 							'value'         => $options['wcf-tq-redirect-link'],
 							'placeholder'   => __( 'https://', 'cartflows' ),
-							'tooltip'       => __( 'Users will be redirected to this URL instead of thank you page.', 'cartflows' ),
+							'tooltip'       => __( 'After submitting, users will be sent to this URL instead of the usual thank you page.', 'cartflows' ),
 							'conditions'    => array(
 								'fields' => array(
 									array(

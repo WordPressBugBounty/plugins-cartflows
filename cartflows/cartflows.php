@@ -3,14 +3,15 @@
  * Plugin Name: CartFlows
  * Plugin URI: https://cartflows.com/
  * Description: Create beautiful checkout pages & sales flows for WooCommerce.
- * Version: 2.1.10
- * Author: CartFlows Inc
- * Author URI: https://cartflows.com/
+ * Version: 2.1.11
+ * Author: Brainstorm Force
+ * Author URI: https://www.brainstormforce.com
  * Text Domain: cartflows
  * WC requires at least: 3.0
- * WC tested up to: 9.4.3
- * Elementor tested up to: 3.25.10
- *
+ * WC tested up to: 9.8.5
+ * Elementor tested up to: 3.28.4
+ * Requires Plugins: woocommerce
+ * 
  * @package CartFlows
  */
 

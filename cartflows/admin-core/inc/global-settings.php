@@ -47,12 +47,12 @@ class GlobalSettings {
 								array(
 									'value'   => 'access_to_cartflows',
 									'label'   => __( 'Full Access', 'cartflows' ),
-									'tooltip' => __( 'A full access to all settings.', 'cartflows' ),
+									'tooltip' => __( 'Allow full access to all settings to customize everything.', 'cartflows' ),
 								),
 								array(
 									'value'   => 'access_to_flows_and_step',
 									'label'   => __( 'Limited Access', 'cartflows' ),
-									'tooltip' => __( 'Can create/edit/delete/import flows and steps only.', 'cartflows' ),
+									'tooltip' => __( 'Allow limited access to create, edit, delete, or import flows and steps.', 'cartflows' ),
 								),
 							),
 						),
@@ -346,7 +346,7 @@ class GlobalSettings {
 							),
 						),
 						'backComp'   => true,
-						'tooltip'    => __( 'Optin Lead event will be trigger for optin page.', 'cartflows' ),
+						'tooltip'    => __( 'This event will trigger when someone subscribes or signs up on the opt-in page.', 'cartflows' ),
 						'is_pro'     => true,
 					),
 
@@ -536,7 +536,7 @@ class GlobalSettings {
 							),
 						),
 						'backComp'   => true,
-						'tooltip'    => __( 'Optin Lead event will be trigger for optin page.', 'cartflows' ),
+						'tooltip'    => __( 'This event will trigger when someone subscribes or signs up on the opt-in page.', 'cartflows' ),
 						'is_pro'     => true,
 					),
 
@@ -927,7 +927,7 @@ class GlobalSettings {
 							),
 						),
 						'backComp'   => true,
-						'tooltip'    => __( 'This option is only applicable for subscription products.', 'cartflows' ),
+						'tooltip'    => __( 'This option is only available for products that are part of a subscription.', 'cartflows' ),
 					),
 					'snapchat-event-lead-info'          => array(
 						'type'       => 'checkbox',

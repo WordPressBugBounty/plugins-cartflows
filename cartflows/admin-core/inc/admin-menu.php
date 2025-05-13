@@ -92,6 +92,8 @@ class AdminMenu {
 		add_action( 'admin_footer', array( $this, 'back_to_new_step_ui_for_gutenberg' ), 999 );
 
 		add_action( 'admin_notices', array( $this, 'back_to_new_step_ui_for_classic_editor' ) );
+
+		add_action( 'wp_ajax_cartflows_fetch_whats_new_data', array( $this, 'fetch_whats_new_data' ) );
 	}
 
 	/**
@@ -1137,9 +1139,34 @@ class AdminMenu {
 			array(
 				'key'   => 'cartflows',
 				'label' => 'CartFlows',
-				'url'   => 'https://cartflows.com/whats-new/feed/',
+				'url'   => add_query_arg(
+					array(
+						'action' => 'cartflows_fetch_whats_new_data',
+						'nonce'  => wp_create_nonce( 'cartflows_fetch_whats_new_data' ),
+					),
+					admin_url( 'admin-ajax.php' )
+				), // 'https://cartflows.com/whats-new/feed/'
 			),
 		);
+	}
+
+	/**
+	 * Fetch the Whats New RSS feed from the URL.
+	 *
+	 * @since 1.0.3
+	 * @return void
+	 */
+	public function fetch_whats_new_data() {
+		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_GET['nonce'] ), 'cartflows_fetch_whats_new_data' ) ) {
+			// Verify the nonce, if it fails, return an error.
+			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'modern-cart-woo' ) ) );
+		}
+
+		// Fetch the RSS feed from the URL. This saves us from the CORS issue.
+		$feed = wp_remote_retrieve_body( wp_remote_get( 'https://cartflows.com/product/cartflows/feed/' ) ); // phpcs:ignore -- This is a valid use case cannot use VIP rules here.
+
+		echo $feed; // phpcs:ignore -- Cannot sanitize the XML data as it is not in our control here.
+		exit;
 	}
 }
 

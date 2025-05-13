@@ -455,9 +455,17 @@ class Cartflows_Default_Meta {
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 				),
+				'wcf-instant-checkout-header-logo'        => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_URL',
+				),
 				'wcf-instant-checkout-header-logo-height' => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
+				),
+				'wcf-instant-checkout-header-color'       => array(
+					'default'  => '',
+					'sanitize' => 'FILTER_SANITIZE_COLOR',
 				),
 			);
 		}

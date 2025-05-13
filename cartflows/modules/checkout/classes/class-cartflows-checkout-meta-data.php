@@ -319,7 +319,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'      => __( 'Left Column Background Color', 'cartflows' ),
 							'name'       => 'wcf-instant-checkout-left-side-bg-color',
 							'value'      => $options['wcf-instant-checkout-left-side-bg-color'],
-							'tooltip'    => __( 'Background color for Checkout page\'s left side column.', 'cartflows' ),
+							'tooltip'    => __( 'Pick a background color for the left side of your Checkout page.', 'cartflows' ),
 							'conditions' => array(
 								'relation' => 'and',
 								'fields'   => array(
@@ -336,7 +336,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'      => __( 'Right Column Background Color', 'cartflows' ),
 							'name'       => 'wcf-instant-checkout-right-side-bg-color',
 							'value'      => $options['wcf-instant-checkout-right-side-bg-color'],
-							'tooltip'    => __( 'Background color for Instant Checkout page right side column.', 'cartflows' ),
+							'tooltip'    => __( 'Pick a background color for the right side of your Checkout page.', 'cartflows' ),
 							'conditions' => array(
 								'relation' => 'and',
 								'fields'   => array(
@@ -838,7 +838,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 									),
 								),
 							),
-							'tooltip'    => __( 'Apply the background color to the payment description box', 'cartflows' ),
+							'tooltip'    => __( 'Change the background color of the payment description box to match your style.', 'cartflows' ),
 						),
 					),
 				),
@@ -1011,7 +1011,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 				'general'  => array(
 					'title'    => __( 'General', 'cartflows' ),
 					'slug'     => 'general',
-					'priority' => 10,
+					'priority' => 20,
 					'fields'   => array(
 						'slug'                       => array(
 							'type'          => 'text',
@@ -1019,7 +1019,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'         => __( 'Step Slug', 'cartflows' ),
 							'value'         => get_post_field( 'post_name' ),
 							'display_align' => 'vertical',
-							'tooltip'       => __( 'Current step\'s slug. Be careful while changing the slug. It will change the URL of the current step.', 'cartflows' ),
+							'tooltip'       => __( 'This is the name (slug) of the current step. Changing it will update the URL for this step, so be cautious!', 'cartflows' ),
 						),
 						'wcf-checkout-custom-script' => array(
 							'type'          => 'textarea',
@@ -1027,21 +1027,21 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'name'          => 'wcf-custom-script',
 							'value'         => $options['wcf-custom-script'],
 							'display_align' => 'vertical',
-							'tooltip'       => __( 'Enter custom JS/CSS. Wrap your custom CSS in style tag.', 'cartflows' ),
+							'tooltip'       => __( 'Add your own custom code here. If you\'re adding CSS, make sure to wrap it inside &lt;style&gt; tags.', 'cartflows' ),
 						),
 					),
 				),
 				'advanced' => array(
 					'title'    => esc_html__( 'Advanced', 'cartflows' ),
 					'slug'     => 'advanced',
-					'priority' => 20,
+					'priority' => 10,
 					'fields'   => array(
 						'wcf-show-prod-img-order-review' => array(
 							'type'         => 'toggle',
 							'label'        => __( 'Display product images', 'cartflows' ),
 							'name'         => 'wcf-order-review-show-product-images',
 							'value'        => $options['wcf-order-review-show-product-images'],
-							'tooltip'      => __( 'Enabling this option will display the product\'s images in the order review section.', 'cartflows' ),
+							'tooltip'      => __( 'Turn this ON to show your product images in the order review section.', 'cartflows' ),
 							'is_fullwidth' => true,
 						),
 						'wcf-edit-cart'                  => array(
@@ -1049,7 +1049,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'        => __( 'Enable cart editing on checkout', 'cartflows' ),
 							'name'         => 'wcf-remove-product-field',
 							'value'        => $options['wcf-remove-product-field'],
-							'tooltip'      => __( 'Users will able to remove products from the checkout page.', 'cartflows' ),
+							'tooltip'      => __( 'Users can easily remove products from the checkout page if they decide not to purchase them.', 'cartflows' ),
 							'is_fullwidth' => true,
 						),
 					),
@@ -1213,7 +1213,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						'name'         => 'wcf-custom-no-shipping-method-message-toggle',
 						'value'        => $options['wcf-custom-no-shipping-method-message-toggle'],
 						'is_fullwidth' => true,
-						'tooltip'      => __( 'Enable this option to show custom message when there are no shipping method is available.', 'cartflows' ),
+						'tooltip'      => __( 'Turn this on to show a custom message when no shipping options are available at checkout.', 'cartflows' ),
 					),
 					'wcf-no-shipping-method-message' => array(
 						'type'          => 'textarea',
@@ -1241,7 +1241,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						'label'         => __( 'Order Summary Position', 'cartflows' ),
 						'display_align' => 'vertical',
 						'value'         => $options['wcf-order-review-summary-position'],
-						'tooltip'       => __( 'Select the option to change the position of order summary in mobile devices.', 'cartflows' ),
+						'tooltip'       => __( 'Choose this option to adjust where the order summary appears on mobile devices.', 'cartflows' ),
 						'options'       => array(
 							array(
 								'value' => 'top',
@@ -1294,7 +1294,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						'label'         => __( 'Customer Information', 'cartflows' ),
 						'name'          => 'wcf-checkout-customer-info-text',
 						'placeholder'   => __( 'Customer information', 'cartflows' ),
-						'tooltip'       => __( 'This heading will be displayed only on modern checkout style.', 'cartflows' ),
+						'tooltip'       => __( 'This heading will only appear when you use the Modern Checkout style.', 'cartflows' ),
 						'display_align' => 'vertical',
 					),
 					'wcf-payment-text'           => array(
@@ -1302,7 +1302,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						'label'         => __( 'Payment', 'cartflows' ),
 						'name'          => 'wcf-checkout-payment-text',
 						'placeholder'   => __( 'Payment', 'cartflows' ),
-						'tooltip'       => __( 'This heading will be displayed only on modern checkout style.', 'cartflows' ),
+						'tooltip'       => __( 'This heading will only appear when you use the Modern Checkout style.', 'cartflows' ),
 						'display_align' => 'vertical',
 					),
 					'wcf-enable-validation-text' => array(
@@ -1310,7 +1310,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						'label'        => __( 'Enable Field validation error message', 'cartflows' ),
 						'name'         => 'wcf-enable-checkout-field-validation-text',
 						'value'        => $options['wcf-enable-checkout-field-validation-text'],
-						'tooltip'      => __( 'This is the error message appended to the field name to form a error message.', 'cartflows' ),
+						'tooltip'      => __( 'This message will appear next to the field name to show an error if something goes wrong.', 'cartflows' ),
 						'is_fullwidth' => true,
 					),
 					'wcf-field-validation-text'  => array(
@@ -1343,7 +1343,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						'name'          => 'wcf-checkout-place-order-button-text',
 						'value'         => $options['wcf-checkout-place-order-button-text'],
 						'placeholder'   => __( 'Place Order', 'cartflows' ),
-						'tooltip'       => __( 'It will change the default Place Order Button text on checkout page.', 'cartflows' ),
+						'tooltip'       => __( 'Customizes the text on the \'Place Order\' button during checkout, allowing you to make it more relevant to your customers.', 'cartflows' ),
 						'display_align' => 'vertical',
 					),
 					'wcf-place-order-button-icon'   => array(
@@ -1351,7 +1351,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						'label'        => __( 'Enable Lock Icon', 'cartflows' ),
 						'name'         => 'wcf-checkout-place-order-button-lock',
 						'value'        => $options['wcf-checkout-place-order-button-lock'],
-						'tooltip'      => __( 'This will show the lock icon on the place order button on checkout page.', 'cartflows' ),
+						'tooltip'      => __( 'Enabling this will add a lock icon to the \'Place Order\' button on the checkout page, indicating secure payment processing.', 'cartflows' ),
 						'is_fullwidth' => true,
 					),
 
@@ -1360,7 +1360,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						'label'        => __( 'Enable Price Display', 'cartflows' ),
 						'name'         => 'wcf-checkout-place-order-button-price-display',
 						'value'        => $options['wcf-checkout-place-order-button-price-display'],
-						'tooltip'      => __( 'This will show the cart total from the place order button.', 'cartflows' ),
+						'tooltip'      => __( 'This will display the total amount in the cart when you click the \'Place Order\' button.', 'cartflows' ),
 						'is_fullwidth' => true,
 					),
 				),

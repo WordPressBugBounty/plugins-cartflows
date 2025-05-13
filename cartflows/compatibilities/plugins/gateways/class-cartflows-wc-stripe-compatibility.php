@@ -57,9 +57,12 @@ if ( ! class_exists( 'Cartflows_Wc_Stripe_Compatibility' ) ) :
 		public function update_custom_price_for_express_checkout( $should_update ) {
 
 			// Check if the Stripe's Express Checkout Helper Class is exists.
-			if ( class_exists( 'WC_Stripe_Express_Checkout_Helper' ) ) {
+			if ( class_exists( 'WC_Stripe' ) && class_exists( 'WC_Stripe_Express_Checkout_Helper' ) ) {
+
+				$stripe_gateway = WC_Stripe::get_instance()->get_main_stripe_gateway();
+
 				// Get the object of the Express Checkout Helper class.
-				$express_checkout_helper = new WC_Stripe_Express_Checkout_Helper();
+				$express_checkout_helper = new WC_Stripe_Express_Checkout_Helper( $stripe_gateway );
 
 				// Check weather the express checkout feature is enabled or not.
 				$express_checkout_enabled = ! empty( $express_checkout_helper ) ? $express_checkout_helper->is_express_checkout_enabled() : false;

@@ -1714,7 +1714,9 @@ class Cartflows_Checkout_Markup {
 			return $fragments;
 		}
 		ob_start();
+		echo "<div class='wcf-customer-shipping'>";
 		$this->wcf_cart_totals_shipping_html();
+		echo '</div>';
 		$wcf_shipping_method_html = ob_get_clean();
 
 		ob_start();
@@ -1728,6 +1730,7 @@ class Cartflows_Checkout_Markup {
 		$fragments['.woocommerce-checkout-review-order-table']               = $wcf_order_review;
 		$fragments['.wcf-embed-checkout-form .wcf-shipping-methods-wrapper'] = $wcf_shipping_method_html;
 		$fragments['.wcf-embed-checkout-form .woocommerce-checkout-review-order-table .cart-shipping'] = $selected_shipping_html;
+		$fragments['.wcf-embed-checkout-form .wcf-customer-shipping']                                  = $wcf_shipping_method_html;
 		$fragments['.wcf-embed-checkout-form .wcf-order-review-total']                                 = "<div class='wcf-order-review-total'>" . WC()->cart->get_total() . '</div>';
 
 
@@ -1784,6 +1787,7 @@ class Cartflows_Checkout_Markup {
 			}
 
 			include CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/shipping-methods.php';
+			do_action( 'woocommerce_review_order_after_shipping' );
 
 			$first = false;
 		}
@@ -1840,7 +1844,9 @@ class Cartflows_Checkout_Markup {
 			return;
 		}
 		ob_start();
+		echo "<div class='wcf-customer-shipping'>";
 		$this->wcf_cart_totals_shipping_html();
+		echo '</div>';
 		ob_end_flush();
 	}
 

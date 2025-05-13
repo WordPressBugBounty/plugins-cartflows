@@ -307,8 +307,21 @@ class Cartflows_Instant_Checkout {
 		$this->custom_order_review_template();
 		$wcf_instant_checkout_order_review = ob_get_clean();
 
+		ob_start();
+		$this->add_empty_cart_designed_block( $checkout_id );
+		$wcf_instant_checkout_empty_block = ob_get_clean();
+
 		$fragments['.wcf-instant-checkout-wrapper .woocommerce-checkout-review-order-table'] = $wcf_instant_checkout_order_review;
 		$fragments['.wcf-order-review-total'] = "<div class='wcf-order-review-total'>" . WC()->cart->get_total() . '</div>';
+
+		/**
+		 * Update the page content with instant layout's empty block after update_order_review. Add the empty block only for instant layout.
+		 * This will be executed when all of the products are removed from the Store Checkout or normal checkout.
+		 */
+		if ( wcf()->utils->is_woo_cart_empty() ) {
+			$fragments['form.woocommerce-checkout'] = $wcf_instant_checkout_empty_block;
+		}
+
 		return $fragments;
 	}
 
@@ -392,7 +405,7 @@ class Cartflows_Instant_Checkout {
 			'label'         => __( 'Shipping', 'cartflows' ),
 			'name'          => 'wcf-instant-checkout-shipping-options-text',
 			'placeholder'   => __( 'Shipping', 'cartflows' ),
-			'tooltip'       => __( 'This heading will be displayed only on Instant checkout.', 'cartflows' ),
+			'tooltip'       => __( 'This heading will appear only when the Instant Layout option is used.', 'cartflows' ),
 			'display_align' => 'vertical',
 		);
 

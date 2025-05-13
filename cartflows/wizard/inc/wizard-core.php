@@ -352,7 +352,7 @@ class WizardCore {
 				'slug'    => 'divi',
 				'init'    => 'divi',
 				'active'  => 'yes',
-				'install' => 'NA',
+				'install' => 'NA', // Removed the Support of DIVI theme that is why it is set as NA.
 			),
 			'gutenberg'      => array(
 				'slug'    => 'ultimate-addons-for-gutenberg',
@@ -364,7 +364,7 @@ class WizardCore {
 				'slug'    => 'bricks',
 				'init'    => 'bricks',
 				'active'  => 'yes',
-				'install' => 'NA',
+				'install' => 'NA', // Bricks is an paid theme that is why, the install option is set to NA. As this will be enabled on the user's website before the CartFlows Install.
 			),
 			// Intentionally installing the GB plugin when the other option is selected.
 			'other'          => array(
@@ -382,6 +382,7 @@ class WizardCore {
 			'current_user_email'     => ! empty( $current_user->user_email ) ? $current_user->user_email : '',
 			'plugins'                => $plugins,
 			'page_builders'          => $page_builders,
+			'active_page_builder'    => WizardHelper::get_active_supported_builder( $page_builders ),
 			'ajax_url'               => admin_url( 'admin-ajax.php' ),
 			'admin_url'              => admin_url( 'admin.php' ),
 			'admin_base_url'         => admin_url(),

@@ -12,25 +12,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $wc_cart_url = Cartflows_Instant_Checkout::get_instance()->get_instant_checkout_cart_url();
 $flow_id     = wcf()->utils->get_flow_id();
+$site_title  = get_bloginfo( 'name' );
 
-$site_title = get_bloginfo( 'name' );
-$site_logo  = apply_filters( 'cartflows_instant_checkout_header_logo', get_custom_logo(), $site_title );
+$logo_width      = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-width', '130' );
+$logo_height     = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-height', '40' );
+$header_bg_color = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-color' );
+$custom_logo_src = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo' );
+
+$custom_logo_styles = 'width: auto; height: ' . $logo_height . ';';
+$custom_logo        = ! empty( $custom_logo_src ) ? "<img src='" . esc_url( $custom_logo_src ) . "' class='custom-logo' alt='" . esc_attr( $site_title ) . "' style='" . $custom_logo_styles . "' />" : '';
+
+$site_logo = apply_filters( 'cartflows_instant_checkout_header_logo', ! empty( $custom_logo ) ? $custom_logo : get_custom_logo(), $site_title );
 
 // Don't add the header if the Site Title and Site Logo is empty.
 if ( empty( $site_logo ) && empty( $site_title ) ) {
 	return;
 }
 
-$logo_width  = '';
-$logo_height = '';
+$header_css = '';
 
-if ( wcf_is_current_theme_is_fse_theme() ) {
-	$logo_width  = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-width' );
-	$logo_height = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-height' );
+if ( ! empty( $header_bg_color ) ) {
+	$header_css = 'style="background-color: ' . $header_bg_color . '"';
 }
-
 ?>
-<header class="main-header--wrapper">
+<header class="main-header--wrapper" <?php echo wp_kses_post( $header_css ); ?> >
 	<div class="main-header--content">
 		<?php if ( ! empty( $site_logo ) ) { ?>
 			<span class="main-header--site-logo" style="<?php echo ! empty( $logo_width ) ? 'width:' . intval( $logo_width ) . 'px' : ''; ?>; <?php echo ! empty( $logo_height ) ? 'height:' . intval( $logo_height ) . 'px' : ''; ?>;">

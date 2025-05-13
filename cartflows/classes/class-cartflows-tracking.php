@@ -283,9 +283,15 @@ class Cartflows_Tracking {
 			return $purchase_data;
 		}
 
+		$order_currency = wcf()->options->get_checkout_meta_value( $order_id, '_order_currency' );
+
+		if ( empty( $order_currency ) ) {
+			$order_currency = $order->get_currency();
+		}
+
 		$purchase_data['transaction_id'] = $order_id;
 		$purchase_data['content_type']   = 'product';
-		$purchase_data['currency']       = wcf()->options->get_checkout_meta_value( $order_id, '_order_currency' );
+		$purchase_data['currency']       = $order_currency;
 		$purchase_data['userAgent']      = wcf()->options->get_checkout_meta_value( $order_id, '_customer_user_agent' );
 		$purchase_data['plugin']         = 'CartFlows';
 
@@ -296,7 +302,14 @@ class Cartflows_Tracking {
 			$purchase_data['content_names'][]    = $product->get_name();
 			$purchase_data['content_category'][] = wp_strip_all_tags( wc_get_product_category_list( $product->get_id() ) );
 		}
-		$purchase_data['value'] = wcf()->options->get_checkout_meta_value( $order_id, '_order_total' );
+
+		$order_value = wcf()->options->get_checkout_meta_value( $order_id, '_order_total' );
+		
+		if ( empty( $order_value ) ) {
+			$order_value = $order->get_total();
+		}
+
+		$purchase_data['value'] = $order_value;
 		$order->update_meta_data( '_wcf_fbp_checkout_tracked', true );
 		$order->save();
 

@@ -9,6 +9,8 @@ import {
 	ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 
+import { CheckboxField } from '@WizardFields';
+
 function OptinStep() {
 	const history = useHistory();
 
@@ -30,7 +32,11 @@ function OptinStep() {
 		} );
 	}, [] );
 
-	const default_button_text = __( 'Save & Continue', 'cartflows' );
+	const default_button_text = __( 'Save & Continue', 'cartflows' ),
+		toggle_link_title = __(
+			'Learn more about usage tracking',
+			'cartflows'
+		);
 
 	useEffect( () => {
 		// Set Foooter button text.
@@ -102,6 +108,9 @@ function OptinStep() {
 
 		const name = document.getElementById( 'wcf-user-name' ).value;
 		const email = document.getElementById( 'wcf-user-email' ).value;
+		const usage_tracking_enabled = document.querySelector(
+			'input[type=checkbox][name="cf_analytics_optin"]'
+		).checked;
 
 		if ( validateForm( { name, email } ) ) {
 			changeOptinButtonText( {
@@ -117,6 +126,10 @@ function OptinStep() {
 
 		ajaxData.append( 'user_fname', name );
 		ajaxData.append( 'user_email', email );
+		ajaxData.append(
+			'usage_tracking',
+			usage_tracking_enabled ? 'yes' : 'no'
+		);
 
 		apiFetch( {
 			url: ajaxurl,
@@ -144,7 +157,7 @@ function OptinStep() {
 
 	return (
 		<div className="wcf-container">
-			<div className="wcf-row mt-12 max-w-5xl">
+			<div className="wcf-row mt-12 !max-w-5xl">
 				<div className="bg-white rounded text-center mx-auto px-11">
 					<span className="text-sm font-medium text-primary-600 mb-10 text-center block tracking-[.24em] uppercase">
 						{ __( 'Step 5 of 6', 'cartflows' ) }
@@ -174,7 +187,7 @@ function OptinStep() {
 							)
 						) }
 					</p>
-					<form action="#" className="max-w-sm mx-auto mt-10">
+					<form action="#" className="max-w-lg mx-auto mt-10">
 						<div className="wcf-form-fields sm:flex flex-col gap-5 text-left">
 							<div className="w-full">
 								<label
@@ -187,7 +200,7 @@ function OptinStep() {
 									<input
 										id="wcf-user-name"
 										type="text"
-										className={ `wcf-input !my-2 !p-3 !shadow-sm block w-full !text-sm !border-gray-300 !rounded !text-gray-500 !placeholder-slate-400 focus:ring focus:!shadow-none ${
+										className={ `wcf-input !my-2 !px-3.5 !py-2.5 !shadow-sm block w-full !text-sm !border-gray-300 !rounded !text-gray-500 !placeholder-slate-400 focus:ring focus:!shadow-none ${
 											error_class
 												? error_class
 												: 'focus:!ring-indigo-100 focus:!border-indigo-500'
@@ -228,7 +241,7 @@ function OptinStep() {
 									<input
 										id="wcf-user-email"
 										type="email"
-										className={ `wcf-input !my-2 !p-3 !shadow-sm block w-full !text-sm !border-gray-300 !rounded !text-gray-500 !placeholder-slate-400 focus:ring focus:!shadow-none ${
+										className={ `wcf-input !my-2 !px-3.5 !py-2.5 !shadow-sm block w-full !text-sm !border-gray-300 !rounded !text-gray-500 !placeholder-slate-400 focus:ring focus:!shadow-none ${
 											error_class
 												? error_class
 												: 'focus:!ring-indigo-100 focus:!border-indigo-500'
@@ -250,6 +263,7 @@ function OptinStep() {
 										</div>
 									) }
 								</div>
+
 								{ email_error_message && (
 									<>
 										<span className="text-red-500 text-sm block">
@@ -258,9 +272,34 @@ function OptinStep() {
 									</>
 								) }
 							</div>
+
+							<div className="w-ful">
+								<div className="relative block">
+									<CheckboxField
+										class="wcf-analytics_optin"
+										name="cf_analytics_optin"
+										value="yes"
+										label={ __(
+											'I agree to share anonymous usage data to help improve CartFlows.',
+											'cartflows'
+										) }
+										desc={ sprintf(
+											/* translators: %1$s: anchor tag start, %2$s: anchor tag close*/
+											__(
+												'We never collect personal info, Only anonymized data like PHP version, admin language, and feature usage. To learn what we collect and why, see this %1$sdocument%2$s.',
+												'cartflows'
+											),
+											'<a href="https://my.cartflows.com/usage-tracking/" target="_blank" class="text-primary-500 hover:text-primary-600" title="' +
+												toggle_link_title +
+												'">',
+											'</a>'
+										) }
+									/>
+								</div>
+							</div>
 						</div>
 
-						<div className="wcf-action-buttons mt-[40px] grid justify-center">
+						<div className="wcf-action-buttons mt-[40px] block w-full">
 							{ requestError && (
 								<span className="text-red-700 mb-2 text-sm block">
 									{ requestError }
@@ -268,7 +307,7 @@ function OptinStep() {
 							) }
 							<button
 								onClick={ submitOptinForm }
-								className={ `wcf-wizard--button ${
+								className={ `wcf-wizard--button w-full ${
 									action_button.button_class
 										? action_button.button_class
 										: ''
@@ -281,13 +320,22 @@ function OptinStep() {
 								/>
 							</button>
 						</div>
+						<p className="wcf-tc-statement mt-6 text-sm text-[#4B5563]">
+							{ parse(
+								sprintf(
+									/* translators: %1$s: Anchor tag one start, %2$s: Anchor tag one close, %3$s: Anchor tag two start, %4$s: Anchor tag two close. */
+									__(
+										'By continuing you agree to our %1$sTerms%2$s and %3$sPrivacy Policy%4$s.',
+										'cartflows'
+									),
+									'<a href="https://cartflows.com/terms-and-conditions/" target="_blank" class="text-primary-500 hover:text-primary-600">',
+									'</a>',
+									'<a href="https://cartflows.com/privacy-policy/" target="_blank" class="text-primary-500 hover:text-primary-600">',
+									'</a>'
+								)
+							) }
+						</p>
 					</form>
-					{ /* <p className="wcf-tc-statement mt-6 text-sm text-[#4B5563]">
-						{ __(
-							'By clicking "Notify me", you agree to receive our newsletters as part of this course.',
-							'cartflows'
-						) }
-					</p> */ }
 					{ /* { 'processing' !== settingsProcess && (
 						<p className="mt-6 flex justify-center">
 							<button

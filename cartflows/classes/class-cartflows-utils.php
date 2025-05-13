@@ -678,6 +678,24 @@ class Cartflows_Utils {
 		// Return the query strings.
 		return $original_query_strings;
 	}
+	
+	/**
+	 * Checks if the WooCommerce cart is empty.
+	 *
+	 * This function checks if the WooCommerce cart is empty and if the session has not expired.
+	 * It returns true if the cart is empty and the session is valid, otherwise it returns false.
+	 *
+	 * @return bool True if the cart is empty and the session is valid, otherwise false.
+	 */
+	public function is_woo_cart_empty() {
+		$is_empty = false;
+
+		if ( function_exists( 'WC' ) && WC()->cart->is_empty() && ! is_customize_preview() && apply_filters( 'woocommerce_checkout_update_order_review_expired', true ) ) {
+			$is_empty = true;
+		}
+		
+		return $is_empty;
+	}
 }
 
 /**

@@ -85,18 +85,32 @@ class Cartflows_Flow_Frontend {
 
 		if ( wcf()->utils->is_step_post_type() ) {
 			$flow_id = wcf()->utils->get_flow_id();
+
+			$default_strings = array(
+				'message'   => __( 'Test mode is currently enabled to help you preview your funnel. You can turn it off anytime from the funnel\'s settings in the admin dashboard.', 'cartflows' ),
+				'link_text' => __( 'Click here to disable it.', 'cartflows' ),
+			);
+
+			$test_mode_strings = array_merge( 
+				$default_strings, 
+				// Make sure that if empty strings are sent, then assign the default strings.
+				array_filter( 
+					apply_filters( 'cartflows_test_mode_strings', $default_strings ) 
+				) 
+			);
+
 			?>
 			<?php if ( $this->is_flow_testmode( $flow_id ) ) { ?>
-			<div class="wcf-preview-mode">
-				<span><?php esc_html_e( 'Test mode is active. It can be deactivated from the flow settings in the admin dashboard.', 'cartflows' ); ?></span>
-				<?php if ( current_user_can( 'cartflows_manage_flows_steps' ) ) { ?>
-					<?php
-						$path           = Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' ) === $flow_id ? 'store-checkout' : 'flows';
-						$flow_edit_link = admin_url( 'admin.php?page=cartflows&path=' . $path . '&action=wcf-edit-flow&flow_id=' . $flow_id . '&tab=settings#sandbox' );
-					?>
-					<a href="<?php echo esc_url( $flow_edit_link ); ?>"><?php esc_html_e( 'Click here to disable it', 'cartflows' ); ?></a>
-				<?php } ?>
-			</div>
+				<div class="wcf-preview-mode">
+					<span><?php echo esc_html( $test_mode_strings['message'] ); ?></span>
+					<?php if ( current_user_can( 'cartflows_manage_flows_steps' ) ) { ?>
+						<?php
+							$path           = Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' ) === $flow_id ? 'store-checkout' : 'flows';
+							$flow_edit_link = admin_url( 'admin.php?page=cartflows&path=' . $path . '&action=wcf-edit-flow&flow_id=' . $flow_id );
+						?>
+						<a href="<?php echo esc_url( $flow_edit_link ); ?>"><?php echo esc_html( $test_mode_strings['link_text'] ); ?></a>
+					<?php } ?>
+				</div>
 			<?php } ?>
 			<?php
 		}

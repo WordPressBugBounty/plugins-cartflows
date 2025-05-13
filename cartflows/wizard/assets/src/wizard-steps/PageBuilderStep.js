@@ -49,7 +49,7 @@ function classNames( ...classes ) {
 
 function PageBuilderStep() {
 	const [ selectedMailingLists, setSelectedMailingLists ] = useState(
-		mailingLists[ 0 ].slug
+		cartflows_wizard?.active_page_builder || mailingLists[ 0 ].slug
 	);
 	const [ { action_button }, dispatch ] = useStateValue();
 	const history = useHistory();

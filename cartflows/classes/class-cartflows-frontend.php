@@ -332,7 +332,9 @@ class Cartflows_Frontend {
 		$flow_id       = wcf()->utils->get_flow_id_from_step_id( $post->ID );
 		$flow_indexing = get_post_meta( $flow_id, 'wcf-flow-indexing', true );
 
-		if ( ( '' === $flow_indexing && 'enable' === $common['disallow_indexing'] ) || 'disallow' === $flow_indexing ) {
+		$allow_indexing = ( ( '' === $flow_indexing && 'enable' === $common['disallow_indexing'] ) || 'disallow' === $flow_indexing );
+
+		if ( apply_filters( 'cartflows_step_add_noindex_meta', $allow_indexing, $flow_id ) ) {
 			echo '<meta name="robots" content="noindex,nofollow">';
 		}
 	}

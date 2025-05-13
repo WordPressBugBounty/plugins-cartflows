@@ -196,8 +196,9 @@ class Wizard extends AjaxBase {
 		$target_url    = CARTFLOWS_TEMPLATES_URL . 'wp-json/cartflows-server/v1/add-subscriber';
 		$response_body = array();
 
-		$email     = isset( $_POST['user_email'] ) ? sanitize_email( wp_unslash( $_POST['user_email'] ) ) : '';
-		$user_name = isset( $_POST['user_fname'] ) ? sanitize_text_field( wp_unslash( $_POST['user_fname'] ) ) : '';
+		$email          = isset( $_POST['user_email'] ) ? sanitize_email( wp_unslash( $_POST['user_email'] ) ) : '';
+		$user_name      = isset( $_POST['user_fname'] ) ? sanitize_text_field( wp_unslash( $_POST['user_fname'] ) ) : '';
+		$usage_tracking = isset( $_POST['usage_tracking'] ) ? sanitize_text_field( wp_unslash( $_POST['usage_tracking'] ) ) : '';
 
 		if ( empty( $email ) ) {
 			wp_send_json_error(
@@ -207,6 +208,9 @@ class Wizard extends AjaxBase {
 				)
 			);
 		}
+
+		// Enable the usage tracking for BSF Analytics.
+		update_option( 'cf_analytics_optin', $usage_tracking );
 
 		$api_args = array(
 			'timeout' => 90, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
