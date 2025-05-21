@@ -50,22 +50,7 @@ class Cartflows_Admin_Notices {
 		add_action( 'wp_ajax_cartflows_ignore_gutenberg_notice', array( $this, 'ignore_gb_notice' ) );
 
 		add_action( 'wp_ajax_cartflows_disable_weekly_report_email_notice', array( $this, 'disable_weekly_report_email_notice' ) );
-
-		add_filter( 'woo_ca_plugin_review_url', array( $this, 'update_review_link' ), 10, 1 );
 	}
-
-	/**
-	 * Update review link for cart abandonment.
-	 *
-	 * @param string $review_link review link.
-	 *
-	 * @return string URL.
-	 */
-	public function update_review_link( $review_link ) {
-
-		return 'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post';
-	}
-
 
 	/**
 	 * Show the weekly email Notice
@@ -149,6 +134,49 @@ class Cartflows_Admin_Notices {
 
 		add_action( 'admin_notices', array( $this, 'show_weekly_report_email_settings_notice' ) );
 
+		$image_path = esc_url( CARTFLOWS_URL . 'assets/images/cartflows-logo-small.jpg' );
+		Astra_Notices::add_notice(
+			array(
+				'id'                   => 'cartflows-5-start-notice',
+				'type'                 => 'info',
+				'class'                => 'cartflows-5-star',
+				'show_if'              => true,
+				/* translators: %1$s white label plugin name and %2$s deactivation link */
+				'message'              => sprintf(
+					'<div class="notice-image" style="display: flex;">
+                        <img src="%1$s" class="custom-logo" alt="CartFlows Icon" itemprop="logo" style="max-width: 90px; border-radius: 50px;"></div>
+                        <div class="notice-content">
+                            <div class="notice-heading">
+                                %2$s
+                            </div>
+                            %3$s<br />
+                            <div class="astra-review-notice-container">
+                                <a href="%4$s" class="astra-notice-close astra-review-notice button-primary" target="_blank">
+                                %5$s
+                                </a>
+                            <span class="dashicons dashicons-calendar"></span>
+                                <a href="#" data-repeat-notice-after="%6$s" class="astra-notice-close astra-review-notice">
+                                %7$s
+                                </a>
+                            <span class="dashicons dashicons-smiley"></span>
+                                <a href="#" class="astra-notice-close astra-review-notice">
+                                %8$s
+                                </a>
+                            </div>
+                        </div>',
+					$image_path,
+					__( 'Hi there! You recently used CartFlows to build a sales funnel &mdash; Thanks a ton!', 'cartflows' ),
+					__( 'It would be awesome if you give us a 5-star review and share your experience on WordPress. Your reviews pump us up and also help other WordPress users make a better decision when choosing CartFlows!', 'cartflows' ),
+					'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post',
+					__( 'Ok, you deserve it', 'cartflows' ),
+					MONTH_IN_SECONDS,
+					__( 'Nope, maybe later', 'cartflows' ),
+					__( 'I already did', 'cartflows' )
+				),
+				'repeat-notice-after'  => MONTH_IN_SECONDS,
+				'display-notice-after' => ( 2 * WEEK_IN_SECONDS ), // Display notice after 2 weeks.
+			)
+		);
 	}
 
 	/**

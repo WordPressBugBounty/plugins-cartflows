@@ -84,7 +84,7 @@ class FlowMeta {
 					),
 					'wcf-instant-checkout-header-logo'   => array(
 						'type'          => 'image-selector',
-						'label'         => __( 'Custom Logo', 'cartflows-pro' ),
+						'label'         => __( 'Custom Logo', 'cartflows' ),
 						'name'          => 'wcf-instant-checkout-header-logo',
 						'value'         => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo' ),
 						'isNameArray'   => true,
@@ -247,7 +247,7 @@ class FlowMeta {
 						'value'        => get_post_meta( $flow_id, 'wcf-testing', true ),
 						'tooltip'      => ! $is_store_checkout_flow 
 							? __( 'The Test Mode automatically adds sample products to your funnel if you haven\'t selected any. This helps you preview and test the checkout experience easily.', 'cartflows' ) 
-							: __( 'The Test Mode automatically adds sample products to your store checkout funnel if you haven\'t selected any. This helps you preview and test the experience easily on all steps except the Checkout page.' ),
+							: __( 'The Test Mode automatically adds sample products to your store checkout funnel if you haven\'t selected any. This helps you preview and test the experience easily on all steps except the Checkout page.', 'cartflows' ),
 						'is_fullwidth' => true,
 					),
 					'flow_indexing' => array(

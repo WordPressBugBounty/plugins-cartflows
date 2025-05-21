@@ -41,9 +41,11 @@ if ( ! class_exists( 'BSF_UTM_Analytics' ) ) {
 			'checkout-plugins-stripe-woo',
 			'convertpro',
 			'header-footer-elementor',
+			'latepoint',
 			'presto-player',
 			'surecart',
 			'sureforms',
+			'suremails',
 			'suretriggers',
 			'ultimate-addons-for-beaver-builder-lite',
 			'ultimate-addons-for-gutenberg',
@@ -107,7 +109,7 @@ if ( ! class_exists( 'BSF_UTM_Analytics' ) ) {
 			}
 	
 			$bsf_product_referers[ $slugs['product'] ] = $slugs['referer'];
-			
+	
 			update_option( BSF_UTM_ANALYTICS_REFERER, $bsf_product_referers );
 		}
 	
@@ -122,7 +124,7 @@ if ( ! class_exists( 'BSF_UTM_Analytics' ) ) {
 		 * @return string
 		 */
 		public static function get_utm_ready_link( $link, $product, $utm_args = [] ) {
-			
+	
 			if ( false === wp_http_validate_url( $link ) ) {
 				error_log( 'Invalid url passed to get_utm_ready_link function' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- adding logs in case of failure will help in debugging.
 				return $link;
@@ -153,7 +155,7 @@ if ( ! class_exists( 'BSF_UTM_Analytics' ) ) {
 				$utm_args,
 				$link
 			);
-			
+	
 			return $link;
 		}
 	}

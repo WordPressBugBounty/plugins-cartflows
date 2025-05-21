@@ -140,7 +140,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '2.1.11' );
+			define( 'CARTFLOWS_VER', '2.1.12' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -352,6 +352,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			$bsf_analytics->set_entity(
 				array(
 					'cf' => array(
+						'hide_optin_checkbox' => true,
 						'product_name'        => 'CartFlows',
 						'usage_doc_link'      => 'https://my.cartflows.com/usage-tracking/',
 						'path'                => CARTFLOWS_DIR . 'libraries/bsf-analytics',

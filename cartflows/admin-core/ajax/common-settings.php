@@ -218,17 +218,16 @@ class CommonSettings extends AjaxBase {
 			wp_send_json_error( $response_data );
 		}
 
-		$new_settings = '';
+		$delete_plugin_data = '';
 
 		if ( isset( $_POST['cartflows_delete_plugin_data'] ) ) {
-			$new_settings = sanitize_text_field( $_POST['cartflows_delete_plugin_data'] );
-
+			$delete_plugin_data = sanitize_text_field( $_POST['cartflows_delete_plugin_data'] );
 		}
 
-		AdminHelper::update_admin_settings_option( 'cartflows_delete_plugin_data', $new_settings, false );
+		AdminHelper::update_admin_settings_option( 'cartflows_delete_plugin_data', $delete_plugin_data, false );
 
 		if ( _is_cartflows_pro() ) {
-			AdminHelper::update_admin_settings_option( 'cartflows_pro_delete_plugin_data', $new_settings, false );
+			AdminHelper::update_admin_settings_option( 'cartflows_pro_delete_plugin_data', $delete_plugin_data, false );
 		}
 
 		if ( isset( $_POST['cartflows_stats_report_emails'] ) ) {
@@ -254,6 +253,12 @@ class CommonSettings extends AjaxBase {
 			} else {
 				AdminHelper::update_admin_settings_option( 'cartflows_stats_report_email_ids', '', false );
 			}
+		}
+
+		// Update the option to enable/disable the non sensitive data tracking.
+		if ( isset( $_POST['cf_analytics_optin'] ) ) {
+			$enable_non_sensative_data_tracking = sanitize_text_field( $_POST['cf_analytics_optin'] );
+			AdminHelper::update_admin_settings_option( 'cf_analytics_optin', $enable_non_sensative_data_tracking, false );
 		}
 
 	}

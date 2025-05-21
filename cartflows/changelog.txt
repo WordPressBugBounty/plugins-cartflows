@@ -1,3 +1,7 @@
+Version 2.1.12 - Wednesday, 21th May 2025
+- Improvement: Improved the toggle button with improved handling of disabled states, making the toggle button more intuitive and user-friendly.
+- Improvement: Added compatibility for future release of CartFlows Pro.
+
 Version 2.1.11 - Tuesday, 13th May 2025
 - New: Added option to upload a custom logo in the header of the Instant Layout style.
 - Improvement: Enhanced tooltips across the interface for better clarity.

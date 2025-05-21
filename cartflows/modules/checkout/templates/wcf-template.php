@@ -48,7 +48,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 
 		<footer class="footer">
-			<p><?php esc_html_e( 'Copyright &copy;', 'cartflows' ); ?> <?php
+			<p><?php esc_html_e( 'Copyright &copy;', 'cartflows' ); ?>
+			<?php
 			echo esc_html( gmdate( 'Y' ) );
 			echo ' ' . esc_html( get_bloginfo( 'name' ) );
 			?>

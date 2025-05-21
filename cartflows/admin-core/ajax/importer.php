@@ -890,7 +890,7 @@ class Importer extends AjaxBase {
 
 		if ( is_wp_error( $response['data'] ) ) {
 			/* translators: %1$s: html tag, %2$s: link html start %3$s: link html end */
-			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$1sTo resolve this issue, please check this %2$2sarticle%3$3s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs">', '</a>' );
+			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$sTo resolve this issue, please check this %2$sarticle%3$s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs">', '</a>' );
 
 			wp_send_json_error(
 				array(
@@ -1014,7 +1014,7 @@ class Importer extends AjaxBase {
 		$response = \CartFlows_API::get_instance()->get_flow( $remote_flow_id );
 		if ( is_wp_error( $response['data'] ) ) {
 			/* translators: %1$s: html tag, %2$s: link html start %3$s: link html end */
-			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$1sTo resolve this issue, please check this %2$2sarticle%3$3s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs">', '</a>' );
+			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$sTo resolve this issue, please check this %2$s article%3$s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs">', '</a>' );
 
 			wp_send_json_error(
 				array(

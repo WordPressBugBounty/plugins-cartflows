@@ -282,6 +282,17 @@ class AdminMenu {
 					'admin.php?page=' . $this->menu_slug . '&path=automations'
 				);
 
+				if ( 'active' !== $this->get_plugin_status( 'modern-cart-woo/modern-cart-woo.php' ) ) {
+					add_submenu_page(
+						$parent_slug,
+						__( 'Modern Cart', 'cartflows' ),
+						// Here the inline CSS is added to make sure that the menu's tag css should display correctly on all pages.
+						__( 'Modern Cart', 'cartflows' ) . '<span class="submenu-tag" style="margin-left: 4px; color: #f06434; vertical-align: super; font-size: 9px;">' . __( 'New', 'cartflows' ) . '</span>',
+						$capability,
+						'admin.php?page=' . $this->menu_slug . '&path=modern-cart'
+					);
+				}
+
 				add_submenu_page(
 					$parent_slug,
 					__( 'Add-ons', 'cartflows' ),
@@ -545,6 +556,7 @@ class AdminMenu {
 				'cppw_status'                       => $this->get_plugin_status( 'checkout-paypal-woo/checkout-paypal-woo.php' ),
 				'ca_status'                         => $this->get_plugin_status( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php' ),
 				'suretriggers_status'               => $this->get_plugin_status( 'suretriggers/suretriggers.php' ),
+				'moderncart_status'                 => $this->get_plugin_status( 'modern-cart-woo/modern-cart-woo.php' ),
 				'cpsw_connection_status'            => 'success' === get_option( 'cpsw_test_con_status', false ) || 'success' === get_option( 'cpsw_con_status', false ),
 				'current_user_can_manage_cartflows' => current_user_can( 'cartflows_manage_settings' ),
 				'is_set_report_email_ids'           => get_option( 'cartflows_stats_report_email_ids', false ),
@@ -616,9 +628,9 @@ class AdminMenu {
 		$titles = $this->generate_plugin_titles( $page_builder_plugins );
 
 		if ( 'yes' === $required_plugins_missing && $any_inactive ) {
-			// Translators: %1$s is the required page builder title, %2$s is the opening anchor tag to plugins.php, %3$s is the closing anchor tag, %4$s is the plugin title.
 			$notices[] = '<div class="wcf-payment-gateway-notice--text"><p class="text-sm text-yellow-700">' . wp_kses_post(
 				sprintf(
+					// Translators: %1$s is the required page builder title, %2$s is the opening anchor tag to plugins.php, %3$s is the closing anchor tag, %4$s is the plugin title.
 					__( 'The default page builder is set to %1$s. Please %2$sinstall & activate%3$s the %4$s to start editing the steps.', 'cartflows' ),  //phpcs:ignore
 					'<span class="capitalize">' . esc_html( $required_plugins['title'] ) . '</span>',
 					'<span class="font-medium"><a href="' . esc_url( admin_url() . 'plugins.php' ) . '" class="underline text-yellow-700 hover:text-yellow-600" target="_blank">',
@@ -1073,6 +1085,26 @@ class AdminMenu {
 						),
 					),
 					array(
+						'title'       => __( 'Modern Cart for WooCommerce', 'cartflows' ),
+						'subtitle'    => __( 'Modern Cart for WooCommerce that helps every shop owner improve their user experience, increase conversions & maximize profits.', 'cartflows' ),
+						'isPro'       => true,
+						'status'      => $this->get_plugin_status( 'modern-cart-woo/modern-cart-woo.php' ),
+						'slug'        => 'modern-cart-woo',
+						'path'        => 'modern-cart-woo/modern-cart-woo.php',
+						'link'        => add_query_arg(
+							array(
+								'utm_source'   => 'cartflows-dashboard',
+								'utm_medium'   => 'addons',
+								'utm_campaign' => 'moderncart-promo',
+							),
+							'https://cartflows.com/modern-cart-for-woocommerce/#pricing-section'
+						),
+						'redirection' => admin_url( 'admin.php?page=moderncart_settings' ),
+						'logoPath'    => array(
+							'icon_path' => CARTFLOWS_ADMIN_CORE_URL . 'assets/images/plugins/modern-cart-for-woocommerce.svg',
+						),
+					),
+					array(
 						'title'       => __( 'Cart Abandonment', 'cartflows' ),
 						'subtitle'    => __( 'Recover abandonded carts with ease in less than 10 minutes.', 'cartflows' ),
 						'isPro'       => false,
@@ -1159,7 +1191,7 @@ class AdminMenu {
 	public function fetch_whats_new_data() {
 		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_GET['nonce'] ), 'cartflows_fetch_whats_new_data' ) ) {
 			// Verify the nonce, if it fails, return an error.
-			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'modern-cart-woo' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'cartflows' ) ) );
 		}
 
 		// Fetch the RSS feed from the URL. This saves us from the CORS issue.

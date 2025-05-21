@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, custom checkout, WooCommerce checkout
 Requires at least: 5.8
 Tested up to: 6.8
-Stable tag: 2.1.11
+Stable tag: 2.1.12
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -388,6 +388,10 @@ Welcome to CartFlows\! Click here to access our comprehensive documentation and 
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 2.1.12 - Wednesday, 21th May 2025 =
+* Improvement: Improved the toggle button with improved handling of disabled states, making the toggle button more intuitive and user-friendly.
+* Improvement: Added compatibility for future release of CartFlows Pro.
 
 = Version 2.1.11 - Tuesday, 13th May 2025 =
 * New: Added option to upload a custom logo in the header of the Instant Layout style.
