@@ -437,6 +437,20 @@
 								.find( '#ship-to-different-address-checkbox' )
 								.attr( 'checked', false );
 						}
+
+						// Handle order bump checkbox state when product is removed.
+						if (
+							typeof res_data.is_order_bump !== 'undefined' &&
+							res_data.is_order_bump &&
+							res_data.order_bump_id
+						) {
+							$(
+								'input[name="wcf-bump-order-cb-' +
+									res_data.order_bump_id +
+									'"]'
+							).prop( 'checked', false );
+						}
+
 						$( '#wcf-embed-checkout-form' )
 							.find( '.woocommerce-notices-wrapper' )
 							.first()

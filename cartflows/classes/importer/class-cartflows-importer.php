@@ -10,6 +10,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+use CartflowsAdmin\AdminCore\Inc\AdminHelper;
+
 if ( ! class_exists( 'CartFlows_Importer' ) ) :
 
 	/**
@@ -101,11 +103,31 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 				}
 			}
 
-			// Add single flow.
-			return array(
-				'title' => get_the_title( $flow_id ),
-				'steps' => $new_steps,
+			$store_checkout_id = (string) Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' );
+			$flow_type         = ( $store_checkout_id === (string) $flow_id ) ? 'store-checkout' : 'flows';
+
+			// Get all flow settings using AdminHelper.
+			$flow_settings = AdminHelper::get_flow_meta_options( $flow_id );
+
+			// Remove steps data as we're already handling it separately.
+			if ( isset( $flow_settings['wcf-steps'] ) ) {
+				unset( $flow_settings['wcf-steps'] );
+			}
+
+			if ( 'store-checkout' === $flow_type ) {
+				$common                                    = Cartflows_Helper::get_common_settings();
+				$override_global_checkout                  = $common['override_global_checkout'];
+				$flow_settings['override_global_checkout'] = $override_global_checkout;
+			}
+
+			$flow_data = array(
+				'title'     => get_the_title( $flow_id ),
+				'flow_type' => $flow_type,
+				'flow_meta' => $flow_settings,
+				'steps'     => $new_steps,
 			);
+
+			return $flow_data;
 		}
 
 		/**
@@ -161,6 +183,16 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 		public function import_single_flow_from_json( $flow = array(), $return = false ) {
 
 			$default_page_builder = Cartflows_Helper::get_common_setting( 'default_page_builder' );
+			
+			// Check if this is a store checkout flow.
+			if ( isset( $flow['flow_type'] ) && 'store-checkout' === $flow['flow_type'] ) {
+				// Get the current store checkout ID.
+				$store_checkout_id = Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' );
+				
+				if ( ! empty( $store_checkout_id ) ) {
+					wp_delete_post( absint( $store_checkout_id ), true );
+				}
+			}
 
 			$flow_title = $flow['title'];
 			if ( post_exists( $flow['title'] ) ) {
@@ -179,6 +211,31 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 
 			// Insert the post into the database.
 			$flow_id = wp_insert_post( $new_flow_args );
+			
+			// Import flow_meta settings from the imported flow.
+			if ( isset( $flow['flow_meta'] ) && is_array( $flow['flow_meta'] ) ) {
+				foreach ( $flow['flow_meta'] as $meta_key => $meta_value ) {
+					update_post_meta( $flow_id, $meta_key, $meta_value );
+					wcf()->logger->import_log( '(✓) Imported flow meta: ' . $meta_key );
+				}
+			}
+			
+			// If this is a store checkout flow, update the global setting.
+			if ( isset( $flow['flow_type'] ) && 'store-checkout' === $flow['flow_type'] ) {
+				update_option( '_cartflows_store_checkout', $flow_id );
+				$old_global_checkout = get_option( '_cartflows_old_global_checkout', false );
+				$checkout_id         = $old_global_checkout ? absint( $old_global_checkout ) : $flow_id;
+				
+				// Reset global checkout on store checkout creation.
+				$common_settings                    = \Cartflows_Helper::get_common_settings();
+				$common_settings['global_checkout'] = $checkout_id;
+				
+				if ( isset( $flow['flow_meta']['override_global_checkout'] ) ) {
+					$common_settings['override_global_checkout'] = $flow['flow_meta']['override_global_checkout'];
+				}
+
+				update_option( '_cartflows_common', $common_settings );
+			}
 
 			/**
 			 * Fire after flow import

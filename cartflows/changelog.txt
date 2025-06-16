@@ -1,3 +1,8 @@
+Version 2.1.13 - Monday, 16th June 2025
+- Improvement: Enhanced the Create New Product popup for a better user experience.
+- Fix: Resolved an issue where the Order Bump stayed selected after the product was removed when cart editing on checkout was enabled.
+- Fix: Exported funnel JSON files now include previously missing funnel settings data.
+
 Version 2.1.12 - Wednesday, 21th May 2025
 - Improvement: Improved the toggle button with improved handling of disabled states, making the toggle button more intuitive and user-friendly.
 - Improvement: Added compatibility for future release of CartFlows Pro.

@@ -146,13 +146,31 @@ class Importer extends AjaxBase {
 		}
 
 		// $_POST['flow_data'] is the JSON, There is nothing to sanitize JSON as it is data format not data type.
-		$flow_data = ( isset( $_POST['flow_data'] ) ) ? json_decode( stripslashes( $_POST['flow_data'] ), true ) : array(); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$flow_data            = ( isset( $_POST['flow_data'] ) ) ? json_decode( stripslashes( $_POST['flow_data'] ), true ) : array(); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$check_store_checkout = isset( $_POST['check_store_checkout'] ) ? sanitize_text_field( wp_unslash( $_POST['check_store_checkout'] ) ) : 'no'; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$force_import         = isset( $_POST['force_import'] ) ? sanitize_text_field( wp_unslash( $_POST['force_import'] ) ) : 'no'; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		$response_data = array(
 			'message'      => 'Error occured. Funnel not imported.',
 			'flow_data'    => $flow_data,
 			'redirect_url' => admin_url( 'admin.php?page=' . CARTFLOWS_SLUG ),
 		);
+
+		// Check if this is a Store Checkout flow and if one already exists.
+		if ( 'yes' === $check_store_checkout && 'yes' !== $force_import ) {
+			$existing_store_checkout = \Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' );
+			
+			if ( $existing_store_checkout ) {
+				// Send confirmation prompt to the user.
+				wp_send_json_success(
+					array(
+						'requires_confirmation' => true,
+						'message'               => __( 'A Store Checkout funnel already exists. Importing this funnel will replace the current Store Checkout funnel.', 'cartflows' ),
+						'flow_data'             => $flow_data,
+					)
+				);
+			}
+		}
 
 		if ( is_array( $flow_data ) ) {
 			// Set the flag as true to check for the import process is started for the CartFlows. So as to import/upload the required files.

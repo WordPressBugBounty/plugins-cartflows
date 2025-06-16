@@ -161,12 +161,21 @@ class Cartflows_Checkout_Ajax {
 		$product_title = get_the_title( $product_id );
 
 		$needs_shipping = false;
+		$is_order_bump  = false;
+		$order_bump_id  = '';
 
-		if ( empty( $product_key ) ) {
-			$msg = "<div class='woocommerce-message'>" . __( 'Sorry there was a problem removing ', 'cartflows' ) . $product_title;
-		} else {
+		// Check if the product is an order bump before removing it.
+		if ( ! empty( $product_key ) ) {
+			$cart_item = WC()->cart->get_cart_item( $product_key );
+			if ( isset( $cart_item['cartflows_bump'] ) && $cart_item['cartflows_bump'] ) {
+				$is_order_bump = true;
+				$order_bump_id = isset( $cart_item['ob_id'] ) ? $cart_item['ob_id'] : '';
+			}
+			
 			WC()->cart->remove_cart_item( $product_key );
 			$msg = "<div class='woocommerce-message'>" . $product_title . __( ' has been removed.', 'cartflows' ) . '</div>';
+		} else {
+			$msg = "<div class='woocommerce-message'>" . __( 'Sorry there was a problem removing ', 'cartflows' ) . $product_title;
 		}
 
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
@@ -179,6 +188,8 @@ class Cartflows_Checkout_Ajax {
 		$response = array(
 			'need_shipping' => $needs_shipping,
 			'msg'           => $msg,
+			'is_order_bump' => $is_order_bump,
+			'order_bump_id' => $order_bump_id,
 		);
 
 		echo wp_json_encode( $response );

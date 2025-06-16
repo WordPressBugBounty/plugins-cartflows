@@ -1412,9 +1412,9 @@ class GlobalSettings {
 					'non-sensitive-data-analytics' => array(
 						'type'  => 'toggle',
 						'name'  => 'cf_analytics_optin',
-						'label' => __( 'Usage Tracking', 'cartflows' ),
+						'label' => __( 'Enable Anonymous Analytics', 'cartflows' ),
 						/* translators: %1$1s: link html start, %2$12: link html end*/
-						'desc'  => sprintf( __( 'Allow CartFlows Inc products to track non-sensitive usage tracking data. %1$1s Learn More%2$2s.', 'cartflows' ), '<a href="https://my.cartflows.com/usage-tracking/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),
+						'desc'  => sprintf( __( 'Collect non-sensitive information from your website, such as the PHP version and features used, to help us fix bugs faster, make smarter decisions, and build features that actually matter to you. %1$1s Learn More%2$2s.', 'cartflows' ), '<a href="https://my.cartflows.com/usage-tracking/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),
 					),
 					'delete-data-separator'        => array(
 						'type' => 'separator',
