@@ -189,7 +189,7 @@ FLBuilder::register_module(
 							'type'        => 'select',
 							'label'       => __( 'Select Layout', 'cartflows' ),
 							/* translators: %s: link */
-							'description' => ! _is_cartflows_pro() ? sprintf( __( 'The PRO layout options are available in the CartFlows Pro. %1$s  Upgrade Now! %2$s', 'cartflows' ), '<a href="https://cartflows.com/" target="blank" class="cartflows-bb-link">', '</a>' ) : '',
+							'description' => ! _is_cartflows_pro() ? sprintf( __( 'The PRO layout options are available in the CartFlows Pro. %1$s  Upgrade Now! %2$s', 'cartflows' ), '<a href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro" target="blank" class="cartflows-bb-link">', '</a>' ) : '',
 							'default'     => 'modern-checkout',
 							'options'     => Cartflows_BB_Checkout_Form::get_layout_types(),
 							'preview'     => array(

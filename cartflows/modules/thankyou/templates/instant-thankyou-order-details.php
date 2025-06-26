@@ -127,7 +127,7 @@ $billing_email = $order->get_billing_email();
 				<div class="wcf-ic-review-customer__label"><label><?php esc_html_e( 'Payment', 'cartflows' ); ?></label></div>
 				<div class="wcf-ic-review-customer__content">
 					<p>
-						<?php echo esc_html( $order->get_payment_method_title() ); ?>
+						<?php echo wp_kses_post( $order->get_payment_method_title() ); ?>
 					</p>
 				</div>
 			</div>

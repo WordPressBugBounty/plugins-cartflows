@@ -328,9 +328,9 @@ function OptinStep() {
 										'By continuing you agree to our %1$sTerms%2$s and %3$sPrivacy Policy%4$s.',
 										'cartflows'
 									),
-									'<a href="https://cartflows.com/terms-and-conditions/" target="_blank" class="text-primary-500 hover:text-primary-600">',
+									'<a href="https://cartflows.com/terms-and-conditions/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=terms_conditions" target="_blank" class="text-primary-500 hover:text-primary-600">',
 									'</a>',
-									'<a href="https://cartflows.com/privacy-policy/" target="_blank" class="text-primary-500 hover:text-primary-600">',
+									'<a href="https://cartflows.com/privacy-policy/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=privacy_policy" target="_blank" class="text-primary-500 hover:text-primary-600">',
 									'</a>'
 								)
 							) }

@@ -1138,7 +1138,7 @@ class AdminHelper {
 
 			if ( false !== strpos( $error_body, 'MalCare' ) ) {
 				/* translators: %1$s: HTML, %2$s: HTML, %3$s: HTML */
-				$error_message     = $error_message . '<br>' . sprintf( __( 'Sorry for the inconvenience, but your website seems to be having trouble connecting to our server. %1$s Please open a technical %2$ssupport ticket%3$s and share the server\'s outgoing IP address.', 'cartflows' ), '<br><br>', '<a href="https://cartflows.com/support" target="_blank">', '</a>' );
+				$error_message     = $error_message . '<br>' . sprintf( __( 'Sorry for the inconvenience, but your website seems to be having trouble connecting to our server. %1$s Please open a technical %2$ssupport ticket%3$s and share the server\'s outgoing IP address.', 'cartflows' ), '<br><br>', '<a href="https://cartflows.com/support?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=support" target="_blank">', '</a>' );
 				$ip_address        = self::get_valid_ip_address();
 				$result['message'] = ! empty( $ip_address ) ? __( 'Server\'s outgoing IP address: ', 'cartflows' ) . $ip_address : '';
 			}
@@ -1209,6 +1209,28 @@ class AdminHelper {
 		$ip_address = filter_var( $ip_address, FILTER_VALIDATE_IP, array() );
 
 		return $ip_address ? $ip_address : '';
+	}
+
+	/**
+	 * Track funnel creation method for analytics.
+	 *
+	 * @param string $creation_method The method used to create the funnel (e.g., 'scratch', 'ready_made_template').
+	 * @return void
+	 */
+	public static function track_funnel_creation_method( $creation_method ) {
+		$funnel_creation_stats = get_option(
+			'cartflows_funnel_creation_method',
+			array(
+				'scratch'             => 0,
+				'ready_made_template' => 0,
+			)
+		);
+
+		if ( isset( $funnel_creation_stats[ $creation_method ] ) ) {
+			$funnel_creation_stats[ $creation_method ]++;
+		}
+
+		update_option( 'cartflows_funnel_creation_method', $funnel_creation_stats );
 	}
 }
 

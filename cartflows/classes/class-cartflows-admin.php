@@ -437,17 +437,30 @@ class Cartflows_Admin {
 	 * @return array $default_data An array of default statistics for CartFlows.
 	 */
 	public function get_default_stats( $theme_data ) {
+		$bsf_internal_referer = get_option( 'bsf_product_referers', array() );
+		$store_location       = '';
+		$woo_version          = '';
+
+		if ( wcf()->is_woo_active ) {
+			$store_location = wc_get_base_location();
+			$woo_version    = defined( 'WC_VERSION' ) ? WC_VERSION : '';
+		}
 
 		$default_data = array(
-			'website-domain'         => str_ireplace( array( 'http://', 'https://' ), '', home_url() ),
-			'site_language'          => get_locale(),
-			'cartflows-lite-version' => CARTFLOWS_VER,
-			'cartflows-pro-version'  => _is_cartflows_pro() ? CARTFLOWS_PRO_VER : '',
-			'woocommerce-version'    => ( wcf()->is_woo_active && defined( 'WC_VERSION' ) ) ? WC_VERSION : '',
-			'default-page-builder'   => Cartflows_Helper::get_common_setting( 'default_page_builder' ),
-			'active-theme'           => $theme_data['parent_theme'],
-			'active-gateways'        => wcf()->is_woo_active ? $this->get_active_gateways() : '',
-			'social-tracking'        => $this->get_all_social_features_tracking_data(),
+			'website-domain'             => str_ireplace( array( 'http://', 'https://' ), '', home_url() ),
+			'site_language'              => get_locale(),
+			'cartflows-lite-version'     => CARTFLOWS_VER,
+			'cartflows-pro-version'      => _is_cartflows_pro() ? CARTFLOWS_PRO_VER : '',
+			'woocommerce-version'        => $woo_version,
+			'default-page-builder'       => Cartflows_Helper::get_common_setting( 'default_page_builder' ),
+			'active-theme'               => $theme_data['parent_theme'],
+			'active-gateways'            => wcf()->is_woo_active ? $this->get_active_gateways() : '',
+			'social-tracking'            => $this->get_all_social_features_tracking_data(),
+			'store-country'              => ! empty( $store_location['country'] ) ? $store_location['country'] : '',
+			'documentation-search-terms' => get_option( 'cartflows_kb_searches', array() ),
+			'internal_referer'           => ! empty( $bsf_internal_referer['cartflows'] ) ? $bsf_internal_referer['cartflows'] : '',
+			// NPS Survey status for analytics tracking (first display, dismiss, submit, etc.).
+			'nps-survey-status'          => get_option( 'nps-survey-cartflows', array() ),
 		);
 
 		return $default_data;
@@ -472,6 +485,15 @@ class Cartflows_Admin {
 		// Get the total of optin and checkout steps where the custom field editor is enabled.
 		$custom_fields_data = $this->get_custom_fields_enabled_data();
 
+		// Retrieve the funnel creation method statistics from the database.
+		$funnel_building_behavior = get_option(
+			'cartflows_funnel_creation_method',
+			array(
+				'scratch'             => 0,
+				'ready_made_template' => 0,
+			)
+		);
+
 		// Return the prepared data.
 		return array(
 			'total_flows'            => wp_count_posts( CARTFLOWS_FLOW_POST_TYPE )->publish,
@@ -484,6 +506,8 @@ class Cartflows_Admin {
 			'thankyou_step_count'    => strval( $steps_counts['thankyou'] ),       // Total count of 'thank' you steps created.
 			'optin_custom_fields'    => strval( $custom_fields_data['optin'] ),    // Total optin steps with custom field editor is enabled.
 			'checkout_custom_fields' => strval( $custom_fields_data['checkout'] ), // Total checkout steps with custom field editor is enabled.
+			'funnels_from_scratch'   => strval( $funnel_building_behavior['scratch'] ), // Number of funnels created from scratch.
+			'funnels_from_template'  => strval( $funnel_building_behavior['ready_made_template'] ),        // Number of funnels created from ready-made templates.
 		);
 	}
 

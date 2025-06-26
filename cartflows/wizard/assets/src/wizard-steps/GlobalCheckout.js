@@ -560,7 +560,7 @@ function GlobalCheckout() {
 											</div>
 											<a
 												className={ `wcf-wizard--button px-5 py-2 text-sm hover:text-white` }
-												href="https://cartflows.com/"
+												href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro"
 												target="_blank"
 												rel="noreferrer"
 											>

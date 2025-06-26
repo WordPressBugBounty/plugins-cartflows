@@ -196,7 +196,7 @@ class Cartflows_Flow_Post_Type {
 				</div>
 				<div class="contents">
 					<div class="wcf-notice">
-						<p>Upgrade to CartFlows Pro for adding more flows and other features. <a href ="https://cartflows.com/" target="_blank"> Click here</a> to upgrade.</p>
+						<p>Upgrade to CartFlows Pro for adding more flows and other features. <a href ="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro" target="_blank"> Click here</a> to upgrade.</p>
 					</div>
 				</div>
 			</div>

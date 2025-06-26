@@ -54,6 +54,7 @@ class CommonSettings extends AjaxBase {
 			$ajax_events = array(
 				'save_global_settings',
 				'regenerate_css_for_steps',
+				'track_kb_search',
 			);
 			$this->init_ajax_events( $ajax_events );
 		}
@@ -471,5 +472,41 @@ class CommonSettings extends AjaxBase {
 			}
 		}
 		return $new_settings;
+	}
+	
+	/**
+	 * Track KB search terms.
+	 *
+	 * @return void
+	 */
+	public function track_kb_search() {
+		/**
+		 * Nonce verification
+		 */
+		if ( ! check_ajax_referer( 'cartflows_track_kb_search', 'security', false ) ) {
+			$response_data = array( 'messsage' => __( 'Nonce validation failed', 'cartflows' ) );
+			wp_send_json_error( $response_data );
+		}
+
+		// Get search term.
+		$search_term = isset( $_POST['search_term'] ) ? sanitize_text_field( wp_unslash( $_POST['search_term'] ) ) : '';
+		
+		if ( empty( $search_term ) ) {
+			wp_send_json_error( array( 'message' => 'Search term is empty' ) );
+		}
+
+		// Store the search term for BSF Analytics.
+		$kb_searches = get_option( 'cartflows_kb_searches', array() );
+		
+		// Add the current search term to the list.
+		$kb_searches[] = $search_term;
+		
+		// Keep only the last 20 searches to avoid data overload.
+		$kb_searches = array_slice( $kb_searches, -20 );
+		
+		// Update the option.
+		update_option( 'cartflows_kb_searches', $kb_searches );
+
+		wp_send_json_success( array( 'message' => 'Search term tracked successfully' ) );
 	}
 }

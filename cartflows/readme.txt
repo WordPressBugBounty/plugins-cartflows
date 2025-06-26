@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, custom checkout, WooCommerce checkout
 Requires at least: 5.8
 Tested up to: 6.8
-Stable tag: 2.1.13
+Stable tag: 2.1.14
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -388,6 +388,10 @@ Welcome to CartFlows\! Click here to access our comprehensive documentation and 
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 2.1.14 - Thursday, 26th June 2025 =
+* Improvement: Funnel import from a JSON file is now possible even when no funnels exist, as the Import button is displayed.
+* Fix: Fixed the issue of image render on Instant Checkout Thank you page.
 
 = Version 2.1.13 - Monday, 16th June 2025 =
 * Improvement: Enhanced the Create New Product popup for a better user experience.

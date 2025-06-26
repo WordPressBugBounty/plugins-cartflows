@@ -62,10 +62,10 @@
 			},
 			success( response ) {
 				if ( response.data && response.data.success ) {
-					if ( 'checkout-plugins-stripe-woo' === plugin_slug ) {
+					if ( 'woocommerce-payments' === plugin_slug ) {
 						window.location.replace(
 							cartflows_admin.admin_base_url +
-								`index.php?page=cpsw-onboarding`
+								`admin.php?page=wc-admin&path=/payments/connect`
 						);
 					} else {
 						window.location.reload();

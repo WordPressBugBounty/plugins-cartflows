@@ -140,7 +140,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '2.1.13' );
+			define( 'CARTFLOWS_VER', '2.1.14' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -196,6 +196,8 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			if ( ! defined( 'CARTFLOWS_HTTPS' ) ) {
 				define( 'CARTFLOWS_HTTPS', is_ssl() ? true : false );
 			}
+
+			define( 'CARTFLOWS_NPS_WEBHOOK_URL', 'https://app.ottokit.com/workflows/af2151cc-6fe3-40a4-a9d3-12859be4d602' );
 
 			$GLOBALS['wcf_step'] = null;
 		}

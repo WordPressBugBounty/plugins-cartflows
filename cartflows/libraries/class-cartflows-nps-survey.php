@@ -48,6 +48,7 @@ if ( ! class_exists( 'Cartflows_Nps_Survey' ) ) :
 		private function __construct() {
 			$this->version_check();
 			add_action( 'init', array( $this, 'load' ), 999 );
+			add_filter( 'nps_survey_api_endpoint', array( $this, 'update_webhook_url' ), 10, 2 );
 		}
 
 		/**
@@ -96,6 +97,24 @@ if ( ! class_exists( 'Cartflows_Nps_Survey' ) ) :
 				include_once realpath( $nps_survey_init );
 			}
 		}
+
+		/**
+		 * Update the NPS survey webhook URL.
+		 *
+		 * @param string       $url Webhook URL.
+		 * @param array<mixed> $post_data NPS survey post data.
+		 *
+		 * @return string
+		 */
+		public function update_webhook_url( $url, $post_data ) {
+			if ( isset( $post_data['plugin_slug'] ) && 'cartflows' === $post_data['plugin_slug'] ) {
+				// Return the NPS webhook URL if the plugin slug is CartFlows.
+				return CARTFLOWS_NPS_WEBHOOK_URL;
+			}
+
+			return $url;
+		}
+
 	}
 
 	/**

@@ -322,9 +322,9 @@ class WizardCore {
 				'status' => $this->get_plugin_status( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php' ),
 			),
 			array(
-				'name'   => 'Stripe Payments',
-				'slug'   => 'checkout-plugins-stripe-woo',
-				'status' => $this->get_plugin_status( 'checkout-plugins-stripe-woo/checkout-plugins-stripe-woo.php' ),
+				'name'   => 'WooCommerce Payments',
+				'slug'   => 'woocommerce-payments',
+				'status' => $this->get_plugin_status( 'woocommerce-payments/woocommerce-payments.php' ),
 			),
 			array(
 				'name'   => 'Spectra',

@@ -536,7 +536,7 @@ class Wizard extends AjaxBase {
 				$msg   = '';
 				if ( 'not-installed' === $cf_pro_status ) {
 					/* translators: %1$s: link html start, %2$s: link html end*/
-					$msg   = sprintf( __( 'To import this template, CartFlows Pro Required! %1$sUpgrade to CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/">', '</a>' );
+					$msg   = sprintf( __( 'To import this template, CartFlows Pro Required! %1$sUpgrade to CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
 					$title = __( 'CartFlows Pro Required', 'cartflows' );
 				} elseif ( 'inactive' === $cf_pro_status ) {
 					$title = __( 'CartFlows Pro Required', 'cartflows' );

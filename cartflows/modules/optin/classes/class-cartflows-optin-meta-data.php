@@ -609,7 +609,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 							'help'          => __( 'Enter comma seprated field name. E.g. first_name, last_name', 'cartflows' ),
 							'placeholder'   => __( 'Fields to pass, separated by commas', 'cartflows' ),
 							/* translators: %s: link */
-							'desc'          => sprintf( __( 'You can pass field value as a URL parameter to the next step. %1$sLearn More >>%2$s', 'cartflows' ), '<a href="https://cartflows.com/docs/pass-variable-as-query-parameters-to-url/" target="_blank">', '</a>' ),
+							'desc'          => sprintf( __( 'You can pass field value as a URL parameter to the next step. %1$sLearn More >>%2$s', 'cartflows' ), '<a href="https://cartflows.com/docs/pass-variable-as-query-parameters-to-url/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),
 							'display_align' => 'vertical',
 							'conditions'    => array(
 								'fields' => array(

@@ -671,6 +671,10 @@ class Importer extends AjaxBase {
 
 		// Enable the Instant Layout for the flow for all page builders if the funnel is created from scratch.
 		update_post_meta( $flow_id, 'instant-layout-style', 'yes' );
+		
+		// Track funnel creation method for analytics.
+		$creation_method = isset( $_POST['creation_method'] ) ? sanitize_text_field( wp_unslash( $_POST['creation_method'] ) ) : 'scratch';
+		AdminHelper::track_funnel_creation_method( $creation_method );
 
 		/**
 		 * Redirect to the new flow edit screen
@@ -734,9 +738,9 @@ class Importer extends AjaxBase {
 			$btn = '';
 			if ( 'not-installed' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
-				$btn = sprintf( __( 'CartFlows Pro Required! %1$sUpgrade to CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/">', '</a>' );
+				$btn = sprintf( __( 'CartFlows Pro Required! %1$sUpgrade to CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
 				/* translators: %1$s: link html start, %2$s: link html end*/
-				$cta = sprintf( __( 'To import the premium flow %1$supgrade to CartFlows Pro%2$s.', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/">', '</a>' );
+				$cta = sprintf( __( 'To import the premium flow %1$supgrade to CartFlows Pro%2$s.', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
 			} elseif ( 'inactive' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
 				$btn = sprintf( __( 'Activate the CartFlows Pro to import the flow! %1$sActivate CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="' . admin_url( 'plugins.php?plugin_status=search&paged=1&s=CartFlows+Pro' ) . '">', '</a>' );
@@ -854,6 +858,10 @@ class Importer extends AjaxBase {
 		if ( ! $first_flow_imported ) {
 			update_option( 'wcf_first_flow_imported', true );
 		}
+		
+		// Track funnel creation method for analytics.
+		$creation_method = isset( $_POST['creation_method'] ) ? sanitize_text_field( wp_unslash( $_POST['creation_method'] ) ) : 'ready_made_template';
+		AdminHelper::track_funnel_creation_method( $creation_method );
 
 		wcf()->logger->import_log( 'COMPLETE! Importing Flow' );
 
@@ -930,7 +938,7 @@ class Importer extends AjaxBase {
 			$cta = '';
 			if ( 'not-installed' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
-				$cta = sprintf( __( '%1$sUpgrade to CartFlows Pro.%2$s', 'cartflows' ), '<a target="_blanks" class="wcf-button wcf-primary-button" href="https://cartflows.com/">', '</a>' );
+				$cta = sprintf( __( '%1$sUpgrade to CartFlows Pro.%2$s', 'cartflows' ), '<a target="_blanks" class="wcf-button wcf-primary-button" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
 				$msg = __( 'To import the premium step, please upgrade to CartFlows Pro', 'cartflows' );
 			} elseif ( 'inactive' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
@@ -1053,7 +1061,7 @@ class Importer extends AjaxBase {
 			$cta = '';
 			if ( 'not-installed' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
-				$cta = sprintf( __( 'Upgrade to %1$sCartFlows Pro.%2$s', 'cartflows' ), '<a target="_blanks" href="https://cartflows.com/">', '</a>' );
+				$cta = sprintf( __( 'Upgrade to %1$sCartFlows Pro.%2$s', 'cartflows' ), '<a target="_blanks" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
 			} elseif ( 'inactive' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
 				$cta = sprintf( __( '%1$sActivate CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="' . admin_url( 'plugins.php?plugin_status=search&paged=1&s=CartFlows+Pro' ) . '">', '</a>' );

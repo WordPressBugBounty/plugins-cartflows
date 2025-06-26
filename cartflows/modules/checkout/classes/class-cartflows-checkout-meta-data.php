@@ -922,7 +922,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 				'multiple'    => false,
 				'allow_clear' => true,
 				/* translators: %1$1s: link html start, %2$12: link html end*/
-				'desc'        => sprintf( __( 'For more information about the CartFlows coupon please %1$1s Click here.%2$2s', 'cartflows' ), '<a href="https://cartflows.com/docs/enable-coupons-on-cartflows-page/" class="!text-gray-600" target="_blank">', '</a>' ),
+				'desc'        => sprintf( __( 'For more information about the CartFlows coupon please %1$1s Click here.%2$2s', 'cartflows' ), '<a href="https://cartflows.com/docs/enable-coupons-on-cartflows-page/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" class="!text-gray-600" target="_blank">', '</a>' ),
 			),
 
 		);
