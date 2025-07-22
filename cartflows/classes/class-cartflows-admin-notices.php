@@ -149,24 +149,29 @@ class Cartflows_Admin_Notices {
                             <div class="notice-heading">
                                 %2$s
                             </div>
-                            %3$s<br />
+                            <div class="notice-description">
+								%3$s
+							</div>
                             <div class="astra-review-notice-container">
                                 <a href="%4$s" class="astra-notice-close astra-review-notice button-primary" target="_blank">
-                                %5$s
+									<span class="dashicons dashicons-yes"></span>
+                                	%5$s
                                 </a>
-                            <span class="dashicons dashicons-calendar"></span>
-                                <a href="#" data-repeat-notice-after="%6$s" class="astra-notice-close astra-review-notice">
-                                %7$s
+
+								<a href="#" data-repeat-notice-after="%6$s" class="astra-notice-close astra-review-notice">
+									<span class="dashicons dashicons-calendar"></span>
+                                	%7$s
                                 </a>
-                            <span class="dashicons dashicons-smiley"></span>
+
                                 <a href="#" class="astra-notice-close astra-review-notice">
-                                %8$s
+								    <span class="dashicons dashicons-smiley"></span>
+                                	<u>%8$s</u>
                                 </a>
                             </div>
                         </div>',
 					$image_path,
 					__( 'Hi there! You recently used CartFlows to build a sales funnel &mdash; Thanks a ton!', 'cartflows' ),
-					__( 'It would be awesome if you give us a 5-star review and share your experience on WordPress. Your reviews pump us up and also help other WordPress users make a better decision when choosing CartFlows!', 'cartflows' ),
+					__( 'It would be awesome if you could leave us a 5-star review—it helps us grow and guide others in choosing CartFlows!', 'cartflows' ),
 					'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post',
 					__( 'Ok, you deserve it', 'cartflows' ),
 					MONTH_IN_SECONDS,

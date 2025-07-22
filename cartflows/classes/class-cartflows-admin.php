@@ -461,6 +461,8 @@ class Cartflows_Admin {
 			'internal_referer'           => ! empty( $bsf_internal_referer['cartflows'] ) ? $bsf_internal_referer['cartflows'] : '',
 			// NPS Survey status for analytics tracking (first display, dismiss, submit, etc.).
 			'nps-survey-status'          => get_option( 'nps-survey-cartflows', array() ),
+			// Add KPI for CartFlows Pro license key presence.
+			'pro_license_key_exists'     => $this->check_pro_license_key_exists() ? true : false,
 		);
 
 		return $default_data;
@@ -772,6 +774,19 @@ class Cartflows_Admin {
 			'suretriggers_active'           => is_plugin_active( 'suretriggers/suretriggers.php' ),
 		);
 
+	}
+
+	/**
+	 * Check if CartFlows Pro license key exists.
+	 *
+	 * @return bool
+	 */
+	private function check_pro_license_key_exists() {
+		if ( _is_cartflows_pro() && class_exists( 'CartFlows_Pro_Licence' ) ) {
+			$license_data = get_option( 'wc_am_client_' . \CartFlows_Pro_Licence::get_instance()->product_id . '_api_key', array() );
+			return ! empty( $license_data['api_key'] );
+		}
+		return false;
 	}
 }
 

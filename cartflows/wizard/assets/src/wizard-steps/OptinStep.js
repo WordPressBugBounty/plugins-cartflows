@@ -280,13 +280,13 @@ function OptinStep() {
 										name="cf_analytics_optin"
 										value="yes"
 										label={ __(
-											'I agree to share anonymous usage data to help improve CartFlows.',
+											'I agree to share usage data to help improve CartFlows.',
 											'cartflows'
 										) }
 										desc={ sprintf(
 											/* translators: %1$s: anchor tag start, %2$s: anchor tag close*/
 											__(
-												'We never collect personal info, Only anonymized data like PHP version, admin language, and feature usage. To learn what we collect and why, see this %1$sdocument%2$s.',
+												"We don't collect any personal information—just basic details like your PHP version, admin language, and which features you use. %1$sLearn more%2$s about what we collect and why.",
 												'cartflows'
 											),
 											'<a href="https://my.cartflows.com/usage-tracking/" target="_blank" class="text-primary-500 hover:text-primary-600" title="' +

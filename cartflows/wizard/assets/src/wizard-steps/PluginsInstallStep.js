@@ -15,7 +15,9 @@ function PluginsInstallStep() {
 		useStateValue();
 	const history = useHistory();
 
-	const required_plugins = cartflows_wizard.plugins;
+	const required_plugins = cartflows_wizard.plugins.filter(
+		( plugin ) => plugin.status !== 'active'
+	);
 	let installed_plugins_count = 0;
 
 	/**

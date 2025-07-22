@@ -189,7 +189,7 @@ class AdminHelper {
 			)
 		);
 
-		$common = self::get_admin_settings_option( '_cartflows_common', false, false );
+		$common = self::get_admin_settings_option( '_cartflows_common', false, true );
 
 		$common = wp_parse_args( $common, $common_default );
 
@@ -263,7 +263,7 @@ class AdminHelper {
 			)
 		);
 
-		$permalink_data = self::get_admin_settings_option( '_cartflows_permalink', false, false );
+		$permalink_data = self::get_admin_settings_option( '_cartflows_permalink', false, true );
 
 		$permalink_data = wp_parse_args( $permalink_data, $permalink_default );
 
@@ -295,7 +295,7 @@ class AdminHelper {
 			'facebook_pixel_tracking_for_site' => 'disable',
 		);
 
-		$facebook = self::get_admin_settings_option( '_cartflows_facebook', false, false );
+		$facebook = self::get_admin_settings_option( '_cartflows_facebook', false, true );
 
 		$facebook = wp_parse_args( $facebook, $facebook_default );
 

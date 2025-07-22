@@ -197,7 +197,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 				define( 'CARTFLOWS_HTTPS', is_ssl() ? true : false );
 			}
 
-			define( 'CARTFLOWS_NPS_WEBHOOK_URL', 'https://app.ottokit.com/workflows/af2151cc-6fe3-40a4-a9d3-12859be4d602' );
+			define( 'CARTFLOWS_NPS_WEBHOOK_URL', 'https://webhook.ottokit.com/ottokit/af2151cc-6fe3-40a4-a9d3-12859be4d602' );
 
 			$GLOBALS['wcf_step'] = null;
 		}

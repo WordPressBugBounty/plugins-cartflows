@@ -291,7 +291,7 @@ class CommonSettings extends AjaxBase {
 		$common_settings = get_option( '_cartflows_common', false );
 		$new_settings    = wp_parse_args( $new_settings, $common_settings );
 
-		AdminHelper::update_admin_settings_option( '_cartflows_common', $new_settings, false );
+		AdminHelper::update_admin_settings_option( '_cartflows_common', $new_settings, true );
 
 	}
 
@@ -448,7 +448,7 @@ class CommonSettings extends AjaxBase {
 
 		}
 
-		AdminHelper::update_admin_settings_option( '_cartflows_permalink', $new_settings, false );
+		AdminHelper::update_admin_settings_option( '_cartflows_permalink', $new_settings, true );
 
 		update_option( 'cartflows_permalink_refresh', true );
 	}

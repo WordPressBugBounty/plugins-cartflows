@@ -1,3 +1,8 @@
+Version 2.1.15 - Tuesday, 22nd July 2025
+- Fix: Addressed a conflict with LearnDash and the Classic Editor plugin.
+- Fix: Resolved issues in the onboarding flow for a smoother setup experience.
+- Fix: Page Builder and Permalink options were not saving correctly on WordPress Multisite installations.
+
 Version 2.1.14 - Thursday, 26th June 2025
 - Improvement: Funnel import from a JSON file is now possible even when no funnels exist, as the Import button is displayed.
 - Fix: Fixed the issue of image render on Instant Checkout Thank you page.

@@ -37,6 +37,7 @@ class Cartflows_Learndash_Compatibility {
 	public function __construct() {
 		add_filter( 'learndash_post_args', array( $this, 'cartflows_course_setting_fields' ) );
 		add_action( 'template_redirect', array( $this, 'cartflows_override_course_template' ) );
+		add_filter( 'learndash_metabox_save_fields', array( $this, 'cartflows_save_setting_for_classic_editor' ), 10, 1 );
 
 	}
 
@@ -79,54 +80,73 @@ class Cartflows_Learndash_Compatibility {
 	 * @return mixed
 	 */
 	public function cartflows_course_setting_fields( $fields ) {
-		global $post;
+		// Only add the field when we're editing a course.
+		if ( isset( $_GET['post'] ) && '' !== $_GET['post'] && isset( $_GET['action'] ) && 'edit' === $_GET['action'] ) { //phpcs:ignore
+			$post_id   = isset( $_GET['post'] ) ? intval( $_GET['post'] ) : 0; //phpcs:ignore
+			$post_type = get_post_type( $post_id );
+			if ( 'sfwd-courses' === $post_type ) {
+				$all_posts = array(
+					'none' => __( 'None', 'cartflows' ),
+				);
 
-		$all_posts = array(
-			'none' => __( 'None', 'cartflows' ),
-		);
-
-		$landing_steps = get_posts(
-			array(
-				'posts_per_page' => -1,
-				'post_type'      => CARTFLOWS_STEP_POST_TYPE,
-				'post_status'    => 'publish',
-				'orderby'        => 'ID',
-				'order'          => 'DESC',
-				'meta_query'     => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				$landing_steps = get_posts(
 					array(
-						'key'     => 'wcf-step-type',
-						'value'   => array( 'landing', 'checkout', 'optin' ),
-						'compare' => 'IN',
-					),
-				),
-			)
-		);
+						'posts_per_page' => -1,
+						'post_type'      => CARTFLOWS_STEP_POST_TYPE,
+						'post_status'    => 'publish',
+						'orderby'        => 'ID',
+						'order'          => 'DESC',
+						'meta_query'     => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+							array(
+								'key'     => 'wcf-step-type',
+								'value'   => array( 'landing', 'checkout', 'optin' ),
+								'compare' => 'IN',
+							),
+						),
+					)
+				);
 
-		foreach ( $landing_steps as $landing_step ) {
-			$all_posts[ $landing_step->ID ] = get_the_title( $landing_step->ID ) . ' ( #' . $landing_step->ID . ')';
+				foreach ( $landing_steps as $landing_step ) {
+					$all_posts[ $landing_step->ID ] = get_the_title( $landing_step->ID ) . ' ( #' . $landing_step->ID . ')';
+				}
+
+				$description = sprintf(
+					/* translators: 1: anchor start, 2: anchor close */
+					__( 'Non-enrolled students will redirect to the selected CartFlows template. If you have not created any Flow already, add new Flow from %1$shere%2$s.', 'cartflows' ),
+					'<a href="' . esc_url( admin_url( 'edit.php?post_type=' . CARTFLOWS_FLOW_POST_TYPE . '&add-new-flow' ) ) . '">',
+					'</a>'
+				);
+
+				$fields['sfwd-courses']['fields']['wcf_course_template'] = array(
+					'name'            => __( 'Select CartFlows Template for this Course', 'cartflows' ),
+					'type'            => 'select',
+					'initial_options' => $all_posts,
+					'default'         => 'none',
+					'help_text'       => $description,
+					'show_in_rest'    => true,
+					'rest_args'       => array(
+						'schema' => array(
+							'type' => 'string',
+						),
+					),
+				);
+			}
 		}
 
-		$selected    = get_post_meta( get_the_ID(), 'wcf_course_template', true );
-		$description = sprintf(
-			/* translators: 1: anchor start, 2: anchor close */
-			__( 'Non-enrolled students will redirect to the selected CartFlows template. If you have not created any Flow already, add new Flow from %1$shere%2$s.', 'cartflows' ),
-			'<a href="' . esc_url( admin_url( 'edit.php?post_type=' . CARTFLOWS_FLOW_POST_TYPE . '&add-new-flow' ) ) . '">',
-			'</a>'
-		);
+		return $fields;
+	}
 
-		$fields['sfwd-courses']['fields']['wcf_course_template'] = array(
-			'name'            => __( 'Select CartFlows Template for this Course', 'cartflows' ),
-			'type'            => 'select',
-			'initial_options' => $all_posts,
-			'default'         => 'none',
-			'help_text'       => $description,
-			'show_in_rest'    => true,
-			'rest_args'       => array(
-				'schema' => array(
-					'type' => 'string',
-				),
-			),
-		);
+	/**
+	 * Save CartFlows settings in classic editor.
+	 *
+	 * @param mixed $fields The settings fields to be updated.
+	 *
+	 * @return mixed
+	 */
+	public function cartflows_save_setting_for_classic_editor( $fields ) {
+		if ( isset( $_POST['sfwd-courses_wcf_course_template'] ) ) { //phpcs:ignore
+			$fields['wcf_course_template'] = sanitize_text_field( wp_unslash( $_POST['sfwd-courses_wcf_course_template'] ) ); //phpcs:ignore
+		}
 
 		return $fields;
 	}
