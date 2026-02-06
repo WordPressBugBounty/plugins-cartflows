@@ -49,6 +49,19 @@ class Cartflows_Permalink {
 	}
 
 	/**
+	 * Checks if the permalink base removal is allowed based on permalink structure or filter.
+	 *
+	 * @param string $structure The global WordPress permalink structure.
+	 * @return bool
+	 */
+	private function is_permalink_base_removal_allowed( $structure ) {
+		// Apply the filter and pass the permalink structure as an argument.
+		$allow_remove_permalink_base = apply_filters( 'cartflows_allow_remove_permalink_base', false, $structure );
+
+		return '/%postname%/' === $structure || $allow_remove_permalink_base;
+	}
+
+	/**
 	 * Modify permalink
 	 *
 	 * @param string $post_link post link.
@@ -79,7 +92,7 @@ class Cartflows_Permalink {
 
 				$structure = get_option( 'permalink_structure' );
 
-				if ( '/%postname%/' === $structure ) {
+				if ( $this->is_permalink_base_removal_allowed( $structure ) ) {
 
 					$post_link = str_replace( '/' . $post->post_type . '/', '/', $post_link );
 
@@ -96,8 +109,8 @@ class Cartflows_Permalink {
 	public function rewrite_step_rule() {
 
 		$cf_permalink = Cartflows_Helper::get_permalink_settings();
-
-		if ( isset( $cf_permalink['permalink_structure'] ) ) {
+		$structure    = get_option( 'permalink_structure' );
+		if ( isset( $cf_permalink['permalink_structure'] ) && ! empty( $cf_permalink['permalink_structure'] ) ) {
 			switch ( $cf_permalink['permalink_structure'] ) {
 				case '/cartflows_flow/%flowname%/cartflows_step':
 					add_rewrite_rule( '^' . $cf_permalink['permalink_flow_base'] . '/([^/]*)/' . $cf_permalink['permalink'] . '/([^\/]*)/?', 'index.php?cartflows_step=$matches[2]', 'top' );
@@ -115,8 +128,23 @@ class Cartflows_Permalink {
 				default:
 					break;
 			}
+		} elseif ( $this->is_permalink_base_removal_allowed( $structure ) ) {
+			/*
+			 * This checks the Post Name structure OR if the external filter has enabled base removal.
+			 * We only need the custom rewrite rule if the standard structure is NOT 'Post Name' 
+			 * and base removal is requested via the filter.
+			 */
+			if ( '/%postname%/' !== $structure ) {
+				$post_type = CARTFLOWS_STEP_POST_TYPE;
+				
+				// Custom rule for base-less slugs.
+				add_rewrite_rule(
+					'^([^/]+)/?$',
+					'index.php?post_type=' . $post_type . '&name=$matches[1]',
+					'top'
+				);
+			}
 		}
-
 	}
 
 	/**
@@ -156,10 +184,8 @@ class Cartflows_Permalink {
 
 			if ( 2 !== count( $query->query ) ) {
 				return;
-			} else {
-				if ( ! isset( $query->query['page'] ) ) {
+			} elseif ( ! isset( $query->query['page'] ) ) {
 					return;
-				}
 			}
 		}
 

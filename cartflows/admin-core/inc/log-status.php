@@ -63,7 +63,6 @@ class LogStatus {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -146,6 +145,12 @@ class LogStatus {
 	 * @return array
 	 */
 	public function get_log_files() {
+		// Condition for multisite instances:
+		// Return empty array if log directory doesn't exist yet or is not readable. 
+		if ( ! is_dir( CARTFLOWS_LOG_DIR ) || ! is_readable( CARTFLOWS_LOG_DIR ) ) {
+			return array();
+		}
+		
 		$files  = scandir( CARTFLOWS_LOG_DIR );
 		$result = array();
 
@@ -219,7 +224,6 @@ class LogStatus {
 		echo file_get_contents( $file_path ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		exit;
 	}
-
 }
 
 LogStatus::get_instance();

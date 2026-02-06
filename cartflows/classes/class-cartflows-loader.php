@@ -127,6 +127,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			add_action( 'plugins_loaded', array( $this, 'load_plugin' ), 99 );
 			add_action( 'init', array( $this, 'load_cf_textdomain' ) );
 
+			add_action( 'init', array( $this, 'deactivation_survey_data_handler' ) );
 		}
 
 		/**
@@ -140,12 +141,12 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '2.1.14' );
+			define( 'CARTFLOWS_VER', '2.2.1' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
 
-			define( 'CARTFLOWS_REQ_CF_PRO_VER', '2.1.0' );
+			define( 'CARTFLOWS_REQ_CF_PRO_VER', '2.2.0' );
 
 			// For backward compatibility we are setting CARTFLOWS_LEGACY_ADMIN to false, so pro-loader for new UI will be load.
 			define( 'CARTFLOWS_LEGACY_ADMIN', false );
@@ -349,6 +350,33 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 				require_once CARTFLOWS_DIR . 'libraries/bsf-analytics/class-bsf-analytics-loader.php';
 			}
 
+			$this->utils   = Cartflows_Utils::get_instance();
+			$this->options = Cartflows_Default_Meta::get_instance();
+
+			// Plugin major update notice.
+			if ( ! class_exists( 'Cartflows_Plugin_Update_Notifications' ) ) {
+				require_once CARTFLOWS_DIR . 'libraries/cartflows-plugin-update-notifications/class-cartflows-plugin-update-notifications.php';
+			}
+
+			// Load the NPS Survey library.
+			if ( ! class_exists( 'Cartflows_Nps_Survey' ) ) {
+				require_once CARTFLOWS_DIR . 'libraries/class-cartflows-nps-survey.php';
+			}
+
+			// Load the CartFlows Pointer library.
+			if ( ! class_exists( 'Cartflows_Pointer' ) ) {
+				require_once CARTFLOWS_DIR . 'libraries/cartflows-pointer/class-cartflows-pointer.php';
+			}
+		}
+
+		/**
+		 * Deactivation Survey Data Handler
+		 *
+		 * @since 2.1.17
+		 *
+		 * @return void
+		 */
+		public function deactivation_survey_data_handler() {
 			$bsf_analytics = BSF_Analytics_Loader::get_instance();
 
 			$bsf_analytics->set_entity(
@@ -377,20 +405,6 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 					),
 				)
 			);
-
-			$this->utils   = Cartflows_Utils::get_instance();
-			$this->options = Cartflows_Default_Meta::get_instance();
-
-			// Plugin major update notice.
-			if ( ! class_exists( 'Cartflows_Plugin_Update_Notifications' ) ) {
-				require_once CARTFLOWS_DIR . 'libraries/cartflows-plugin-update-notifications/class-cartflows-plugin-update-notifications.php';
-			}
-
-			// Load the NPS Survey library.
-			if ( ! class_exists( 'Cartflows_Nps_Survey' ) ) {
-				require_once CARTFLOWS_DIR . 'libraries/class-cartflows-nps-survey.php';
-			}
-
 		}
 
 		/**
@@ -668,7 +682,6 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 		 * Deactivation Reset
 		 */
 		public function deactivation_reset() {
-
 		}
 
 		/**
@@ -691,7 +704,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
  *
  * @return object
  */
-function wcf() {
+function wcf() { //phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed
 	return Cartflows_Loader::get_instance();
 }
 

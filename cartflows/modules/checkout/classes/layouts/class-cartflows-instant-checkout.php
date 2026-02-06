@@ -60,7 +60,6 @@ class Cartflows_Instant_Checkout {
 
 		// Product quantity badge.
 		add_filter( 'cartflows_checkout_order_review_item_image', array( $this, 'add_product_quantity_badge' ), 10, 5 );
-
 	}
 
 	/**
@@ -81,7 +80,6 @@ class Cartflows_Instant_Checkout {
 		$show_message = false;
 
 		return $show_message;
-
 	}
 
 	/**
@@ -145,9 +143,6 @@ class Cartflows_Instant_Checkout {
 		// Order Review template.
 		add_action( 'woocommerce_checkout_after_order_review', array( $this, 'show_collapsed_order_summary' ), 11, 1 );
 		add_filter( 'cartflows_get_order_review_template_path', array( $this, 'update_path_for_order_review_template' ), 10, 2 );
-
-
-
 	}
 
 	/**
@@ -160,7 +155,6 @@ class Cartflows_Instant_Checkout {
 		$checkout_layout = 'instant-checkout';
 
 		return $checkout_layout;
-
 	}
 
 	/**
@@ -226,7 +220,6 @@ class Cartflows_Instant_Checkout {
 		} else {
 			return $file;
 		}
-
 	}
 
 	/**
@@ -335,7 +328,6 @@ class Cartflows_Instant_Checkout {
 	public function update_path_for_order_review_template( $path, $checkout_layout ) {
 
 		return CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/instant-checkout-review-order.php';
-
 	}
 
 	/**
@@ -389,7 +381,6 @@ class Cartflows_Instant_Checkout {
 		}
 
 		return $text;
-
 	}
 
 	/**
@@ -528,7 +519,6 @@ class Cartflows_Instant_Checkout {
 				<?php
 			endif;
 		}
-
 	}
 
 	/**
@@ -657,7 +647,7 @@ class Cartflows_Instant_Checkout {
 							</div>
 					<?php } ?>
 				<?php } else { ?>
-							<div class="wcf-logged-in-customer-info"> <?php /* translators: %1$s: username, %2$s emailid */ echo esc_html( apply_filters( 'cartflows_logged_in_customer_info_text', sprintf( __( ' Welcome Back %1$s ( %2$s )', 'cartflows' ), $current_user_name, $current_user_email ) ) ); ?>
+							<div class="wcf-logged-in-customer-info"> <?php /* translators: %1$s: username, %2$s emailid */ echo esc_html( apply_filters( 'cartflows_logged_in_customer_info_text', sprintf( __( ' Welcome Back %1$s (%2$s)', 'cartflows' ), $current_user_name, $current_user_email ) ) ); ?>
 								<div><input type="hidden" class="wcf-email-address" id="billing_email" name="billing_email" value="<?php echo esc_attr( $current_user_email ); ?>"/></div>
 							</div>
 				<?php } ?>
@@ -767,7 +757,6 @@ class Cartflows_Instant_Checkout {
 		if ( null != WC()->session && function_exists( 'woocommerce_output_all_notices' ) ) {
 			woocommerce_output_all_notices();
 		}
-
 	}
 
 	/**
@@ -932,9 +921,7 @@ class Cartflows_Instant_Checkout {
 			</div>
 		</div>
 		<?php
-
 	}
-
 }
 
 /**

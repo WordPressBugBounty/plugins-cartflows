@@ -78,7 +78,7 @@ class MetaData extends AjaxBase {
 		$term = ! empty( $_POST['term'] ) ? sanitize_text_field( wp_unslash( $_POST['term'] ) ) : '';
 
 		// CartFlows supported product types.
-		$supported_product_types = array( 'simple', 'variable', 'variation', 'subscription', 'variable-subscription', 'subscription_variation', 'course' );
+		$supported_product_types = apply_filters( 'cartflows_supported_product_types_for_search', array( 'simple', 'variable', 'variation', 'subscription', 'variable-subscription', 'subscription_variation', 'course' ) );
 
 		// Allowed product types.
 		if ( isset( $_POST['allowed_products'] ) && ! empty( $_POST['allowed_products'] ) ) {
@@ -161,7 +161,6 @@ class MetaData extends AjaxBase {
 		}
 
 		wp_send_json( $products_found );
-
 	}
 
 	/**
@@ -325,5 +324,4 @@ class MetaData extends AjaxBase {
 
 		return $original_price;
 	}
-
 }

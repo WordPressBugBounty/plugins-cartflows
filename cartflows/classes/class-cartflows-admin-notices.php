@@ -38,20 +38,50 @@ class Cartflows_Admin_Notices {
 
 	/**
 	 * Constructor
+	 *
+	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Add the notices script.
+		add_action( 'admin_enqueue_scripts', array( $this, 'notices_scripts' ) );
 
+		// Group the admin notices actions.
+		$this->register_admin_notices();
+
+		// Group the ajax action callbacks.
+		$this->register_ajax_callbacks();
+	}
+
+	/**
+	 * Registers admin notices for CartFlows.
+	 *
+	 * Hooks the methods responsible for displaying admin and NPS notices
+	 * to appropriate WordPress admin actions.
+	 *
+	 * @since 2.1.17
+	 * @return void
+	 */
+	public function register_admin_notices() {
 		add_action( 'admin_head', array( $this, 'show_admin_notices' ) );
 
 		add_action( 'admin_footer', array( $this, 'show_nps_notice' ), 999 );
-
-		add_action( 'admin_enqueue_scripts', array( $this, 'notices_scripts' ) );
-
-		add_action( 'wp_ajax_cartflows_ignore_gutenberg_notice', array( $this, 'ignore_gb_notice' ) );
-
-		add_action( 'wp_ajax_cartflows_disable_weekly_report_email_notice', array( $this, 'disable_weekly_report_email_notice' ) );
 	}
 
+	/**
+	 * Registers AJAX callbacks for various CartFlows admin notices.
+	 *
+	 * This method hooks AJAX actions to their corresponding handler functions,
+	 * allowing notices (such as Gutenberg, weekly report email, and custom offer notices)
+	 * to be dismissed or acknowledged via AJAX requests in the WordPress admin area.
+	 *
+	 * @since 2.1.17
+	 * @return void
+	 */
+	public function register_ajax_callbacks() {
+		add_action( 'wp_ajax_cartflows_ignore_gutenberg_notice', array( $this, 'ignore_gb_notice' ) );
+		add_action( 'wp_ajax_cartflows_disable_weekly_report_email_notice', array( $this, 'disable_weekly_report_email_notice' ) );
+	}
+	
 	/**
 	 * Show the weekly email Notice
 	 *
@@ -77,7 +107,6 @@ class Cartflows_Admin_Notices {
 
 			echo wp_kses_post( $output );
 		}
-
 	}
 
 	/**
@@ -171,7 +200,7 @@ class Cartflows_Admin_Notices {
                         </div>',
 					$image_path,
 					__( 'Hi there! You recently used CartFlows to build a sales funnel &mdash; Thanks a ton!', 'cartflows' ),
-					__( 'It would be awesome if you could leave us a 5-star review—it helps us grow and guide others in choosing CartFlows!', 'cartflows' ),
+					__( 'It would be awesome if you could leave us a 5-star review-it helps us grow and guide others in choosing CartFlows!', 'cartflows' ),
 					'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post',
 					__( 'Ok, you deserve it', 'cartflows' ),
 					MONTH_IN_SECONDS,
@@ -264,9 +293,11 @@ class Cartflows_Admin_Notices {
 	 * Check allowed screen for notices.
 	 *
 	 * @since 1.0.0
-	 * @return bool
+	 *
+	 * @param array $exclude_page_ids Optional. Array of screen IDs to exclude from displaying notices.
+	 * @return bool True if the notice should be displayed, false otherwise.
 	 */
-	public function allowed_screen_for_notices() {
+	public function allowed_screen_for_notices( $exclude_page_ids = array() ) {
 
 		$screen          = get_current_screen();
 		$screen_id       = $screen ? $screen->id : '';
@@ -275,6 +306,11 @@ class Cartflows_Admin_Notices {
 			'dashboard',
 			'plugins',
 		);
+
+		// Exclude any page ids passed in $exclude_page_ids from $allowed_screens.
+		if ( ! empty( $exclude_page_ids ) && is_array( $exclude_page_ids ) ) {
+			$allowed_screens = array_diff( $allowed_screens, $exclude_page_ids );
+		}
 
 		if ( in_array( $screen_id, $allowed_screens, true ) ) {
 			return true;

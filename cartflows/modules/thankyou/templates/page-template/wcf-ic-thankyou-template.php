@@ -12,7 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $post;
 
-$site_logo = get_custom_logo();
+$site_logo       = get_custom_logo();
+$header_template = Cartflows_Thankyou_Markup::get_instance()->instant_checkout_header_template();
 
 ?>
 <!DOCTYPE html>
@@ -28,7 +29,7 @@ $site_logo = get_custom_logo();
 
 	<body <?php body_class(); ?>>
 		<div class="wrapper">
-			<?php echo wp_kses_post( Cartflows_Thankyou_Markup::get_instance()->instant_checkout_header_template() ); ?>
+			<?php echo ! empty( $header_template ) ? wp_kses_post( $header_template ) : ''; ?>
 
 			<div class="main-container">
 				<div class='wcf-instant-thankyou' id='wcf-instant-thankyou'>

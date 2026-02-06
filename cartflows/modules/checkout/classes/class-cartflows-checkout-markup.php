@@ -45,6 +45,9 @@ class Cartflows_Checkout_Markup {
 
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_checkout_fields' ), 10, 2 );
 
+		/* Add order meta for payment gateways that use store api for checkout */
+		add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'add_order_meta_for_store_api_checkout' ) );
+
 		/* Show notice if cart is empty */
 		add_action( 'cartflows_checkout_cart_empty', array( $this, 'display_woo_notices' ) );
 
@@ -209,7 +212,6 @@ class Cartflows_Checkout_Markup {
 		if ( _is_wcf_doing_checkout_ajax() ) {
 			add_filter( 'woocommerce_order_button_text', array( $this, 'place_order_button_text' ), 99, 1 );
 		}
-
 	}
 
 	/**
@@ -430,7 +432,6 @@ class Cartflows_Checkout_Markup {
 
 		return $button_text;
 		//phpcs:enable WordPress.Security.NonceVerification.Recommended
-
 	}
 
 	/**
@@ -665,7 +666,9 @@ class Cartflows_Checkout_Markup {
 
 							$cart_item_data = array(
 								'wcf_product_data' => array(
-									'unique_id' => $data['unique_id'],
+									'unique_id'       => $data['unique_id'],
+									'wcf_checkout_id' => $checkout_id,
+									'wcf_flow_id'     => $flow_id,
 								),
 							);
 
@@ -834,7 +837,6 @@ class Cartflows_Checkout_Markup {
 	public function add_customized_shipping_section() {
 
 		add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'add_custom_shipping_section' ), 10 );
-
 	}
 
 	/**
@@ -974,7 +976,6 @@ class Cartflows_Checkout_Markup {
 		}
 
 		return $checkout_id;
-
 	}
 
 	/**
@@ -1360,6 +1361,8 @@ class Cartflows_Checkout_Markup {
 	 */
 	public function save_checkout_fields( $order_id, $posted ) {
 		//phpcs:disable WordPress.Security.NonceVerification
+		$checkout_id = '';
+		$flow_id     = '';
 		if ( isset( $_POST['_wcf_checkout_id'] ) ) {
 			$checkout_id = intval( $_POST['_wcf_checkout_id'] );
 			$flow_id     = isset( $_POST['_wcf_flow_id'] ) ? intval( $_POST['_wcf_flow_id'] ) : 0;
@@ -1367,25 +1370,124 @@ class Cartflows_Checkout_Markup {
 		} elseif ( isset( $_GET['wcf_checkout_id'] ) ) {
 			$checkout_id = intval( $_GET['wcf_checkout_id'] );
 			$flow_id     = wcf()->utils->get_flow_id_from_step_id( $checkout_id );
+		} elseif ( isset( $posted['_wcf_checkout_id'] ) ) {
+			$checkout_id = intval( $posted['_wcf_checkout_id'] );
+			$flow_id     = isset( $posted['_wcf_flow_id'] ) ? intval( $posted['_wcf_flow_id'] ) : wcf()->utils->get_flow_id_from_step_id( $checkout_id );
 		}
 
-		if ( ! empty( $flow_id ) && ! empty( $checkout_id ) ) {
+		if ( empty( $checkout_id ) && empty( $flow_id ) ) {
+			$meta_data = $this->get_cartflows_checkout_id_and_flow_id_from_cart();
 
-			$order = wc_get_order( $order_id );
-			if ( $order ) {
-
-				if ( CARTFLOWS_FLOW_POST_TYPE === get_post_type( $flow_id ) ) {
-					$order->update_meta_data( '_wcf_flow_id', $flow_id );
-				}
-
-				if ( CARTFLOWS_STEP_POST_TYPE === get_post_type( $checkout_id ) ) {
-					$order->update_meta_data( '_wcf_checkout_id', $checkout_id );
-				}
-
-				$order->save();
+			if ( ! empty( $meta_data ) && is_array( $meta_data ) ) {
+				$checkout_id = $meta_data['checkout_id'];
+				$flow_id     = $meta_data['flow_id'];
 			}
 		}
+
+		$order = wc_get_order( $order_id );
+		$this->store_flow_metadata_on_order( $checkout_id, $flow_id, $order );
 		//phpcs:enable WordPress.Security.NonceVerification
+	}
+
+	/**
+	 * Add the checkout ID and Flow ID to the order meta data.
+	 *
+	 * @param WC_Order $order The order object.
+	 * @return void
+	 */
+	public function add_order_meta_for_store_api_checkout( $order ) {
+		// Ensure $order is a WC_Order instance.
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		
+		$checkout_id = '';
+		$flow_id     = '';
+		$meta_data   = $this->get_cartflows_checkout_id_and_flow_id_from_cart();
+
+		if ( ! empty( $meta_data ) && is_array( $meta_data ) ) {
+			$checkout_id = $meta_data['checkout_id'];
+			$flow_id     = $meta_data['flow_id'];
+		}
+
+		$this->store_flow_metadata_on_order( $checkout_id, $flow_id, $order );
+	}
+
+	/**
+	 * Retrieve CartFlows checkout ID and flow ID stored in cart item meta.
+	 * If no matching cart item or cart is empty, returns null.
+	 *
+	 * @return array{checkout_id: string, flow_id: string}|null
+	 */
+	private function get_cartflows_checkout_id_and_flow_id_from_cart() {
+		if ( WC()->cart instanceof WC_Cart ) {
+			$checkout_id   = '';
+			$flow_id       = '';
+			$cart_contents = WC()->cart->get_cart_contents();
+			if ( empty( $cart_contents ) ) {
+				return null;
+			}
+
+			foreach ( $cart_contents as $cart_item ) {
+				if ( ! isset( $cart_item['wcf_product_data'] ) ) {
+					continue;
+				}
+
+				$checkout_id = (string) $cart_item['wcf_product_data']['wcf_checkout_id'];
+				$flow_id     = (string) $cart_item['wcf_product_data']['wcf_flow_id'];
+
+				// if both found, stop scanning further items.
+				if ( ! empty( $checkout_id ) && ! empty( $flow_id ) ) {
+					break;
+				}
+			}
+
+			if ( ! empty( $flow_id ) && ! empty( $checkout_id ) ) {
+				return array(
+					'checkout_id' => $checkout_id,
+					'flow_id'     => $flow_id,
+				);
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Add checkout ID and flow ID as order meta on a given order.
+	 *
+	 * Accepts either a WC_Order object. Validates that
+	 * the provided post IDs match the expected post types (CARTFLOWS_FLOW_POST_TYPE
+	 * and CARTFLOWS_STEP_POST_TYPE) before saving meta.
+	 *
+	 * @param int|string    $checkout_id Checkout (step) post ID (or empty).
+	 * @param int|string    $flow_id     Flow post ID (or empty).
+	 * @param WC_Order|bool $order WC_Order object, or null.
+	 * @return void
+	 */
+	private function store_flow_metadata_on_order( $checkout_id, $flow_id, $order ) {
+		if ( empty( $flow_id ) || empty( $checkout_id ) ) {
+			// nothing to store.
+			return;
+		}
+		// Ensure $order is a WC_Order instance.
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
+		// Convert to integers to get post type.
+		$checkout_id = absint( $checkout_id );
+		$flow_id     = absint( $flow_id );
+
+		if ( CARTFLOWS_FLOW_POST_TYPE === get_post_type( $flow_id ) ) {
+			$order->update_meta_data( '_wcf_flow_id', (string) $flow_id );
+		}
+
+		if ( CARTFLOWS_STEP_POST_TYPE === get_post_type( $checkout_id ) ) {
+			$order->update_meta_data( '_wcf_checkout_id', (string) $checkout_id );
+		}
+
+		$order->save();
 	}
 
 	/**
@@ -1755,7 +1857,6 @@ class Cartflows_Checkout_Markup {
 		);
 
 		return $toggle_texts[ $text ];
-
 	}
 
 	/**
@@ -1896,7 +1997,6 @@ class Cartflows_Checkout_Markup {
 			<?php
 		endif;
 	}
-
 }
 
 

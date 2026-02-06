@@ -71,7 +71,6 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 				 */
 				include_once CARTFLOWS_DIR . 'compatibilities/themes/astra/class-cartflows-astra-compatibility.php';
 			}
-
 		}
 
 		/**
@@ -85,7 +84,6 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 			$localize['get_suretriggers_data_nonce'] = wp_create_nonce( 'cartflows_get_suretriggers_data' );
 
 			return $localize;
-
 		}
 
 		/**
@@ -132,12 +130,20 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-learndash-compatibility.php';
 			}
 
+			if ( defined( 'TUTOR_VERSION' ) ) {
+				require_once CARTFLOWS_DIR . 'compatibilities/plugins/tutor-lms/class-cartflows-tutor-compatibility.php';
+			}
+
 			if ( defined( 'ASTRA_EXT_VER' ) ) {
 				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-astra-addon-compatibility.php';
 			}
 
 			if ( defined( 'POSTNL_WC_PLUGIN_FILE' ) ) {
 				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-postnl-for-woocommerce-compatibility.php';
+			}
+
+			if ( class_exists( 'WC_SC_Coupon_Actions' ) ) {
+				require_once CARTFLOWS_DIR . 'compatibilities/plugins/class-cartflows-smart-coupons-compatibility.php';
 			}
 
 			// Load the gateway support files for the checkout page compatibility.
@@ -147,7 +153,7 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 			if ( class_exists( 'ModernCart\Plugin_Loader' ) ) {
 				add_filter(
 					'moderncart_redirect_after_add_to_cart',
-					function( $allow ) {
+					function ( $allow ) {
 						return 'yes';
 					}
 				);
@@ -221,7 +227,7 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 			$theme_name = '';
 			$theme      = wp_get_theme();
 
-			if ( isset( $theme->parent_theme ) && '' != $theme->parent_theme || null != $theme->parent_theme ) {
+			if ( ! empty( $theme->parent_theme ) ) {
 				$theme_name = $theme->parent_theme;
 			} else {
 				$theme_name = $theme->name;
@@ -616,10 +622,7 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 				wp_add_inline_style( 'wcf-frontend-global', $custom_css );
 			}
 		}
-
-
 	}
 }
 
 Cartflows_Compatibility::get_instance();
-

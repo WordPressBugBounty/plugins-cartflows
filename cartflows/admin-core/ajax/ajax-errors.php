@@ -54,7 +54,15 @@ class AjaxErrors {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		add_action( 'init', array( $this, 'prepare_ajax_errors' ) );
+	}
 
+	/**
+	 * Prepare Ajax Error Messages
+	 *
+	 * @return void
+	 */
+	public function prepare_ajax_errors() {
 		self::$errors = array(
 			'permission' => __( 'Sorry, you are not allowed to do this operation.', 'cartflows' ),
 			'nonce'      => __( 'Nonce validation failed', 'cartflows' ),

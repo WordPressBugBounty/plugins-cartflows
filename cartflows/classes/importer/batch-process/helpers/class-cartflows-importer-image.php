@@ -144,7 +144,7 @@ if ( ! class_exists( 'CartFlows_Import_Image' ) ) :
 						"SELECT post_id FROM {$wpdb->postmeta}
 						WHERE meta_key = '_wp_attached_file'
 						AND meta_value LIKE %s",
-						'%/' . $filename . '%'
+						'%' . $filename . '%'
 					)
 				);
 
@@ -236,6 +236,7 @@ if ( ! class_exists( 'CartFlows_Import_Image' ) ) :
 				wp_generate_attachment_metadata( $post_id, $upload['file'] )
 			);
 			update_post_meta( $post_id, '_cartflows_image_hash', $this->get_hash_image( $attachment['url'] ) );
+			// update_post_meta( $post_id, '_cartflows_original_url', $attachment['url'] );
 
 			$new_attachment = array(
 				'id'  => $post_id,

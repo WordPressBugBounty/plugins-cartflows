@@ -330,8 +330,6 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 				
 			),
 		);
-
-
 	}
 
 	/**
@@ -375,7 +373,6 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 				
 			),
 		);
-		
 	}
 
 	/**
@@ -496,6 +493,10 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 					'property' => 'background-color',
 					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce .wcf-custom-coupon-field .wcf-coupon-code-input',
 				),
+				array(
+					'property' => 'background-color',
+					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .select2-container--default .select2-selection--single',
+				),
 			),
 		);
 
@@ -528,151 +529,37 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 			),
 		);
 
-		
-		$this->controls['input_border_style'] = array(
-			'label'       => __( 'Border Style', 'cartflows' ),
-			'type'        => 'select',
+
+		$this->controls['input_border'] = array(
+			'label'       => __( 'Input Border', 'cartflows' ),
+			'type'        => 'border',
 			'label_block' => false,
-			'default'     => '',
-			'options'     => array(
-				''       => __( 'Inherit', 'cartflows' ),
-				'solid'  => __( 'Solid', 'cartflows' ),
-				'double' => __( 'Double', 'cartflows' ),
-				'dotted' => __( 'Dotted', 'cartflows' ),
-				'dashed' => __( 'Dashed', 'cartflows' ),
-			),
 			'group'       => 'input_section',
 			'css'         => array( 
 				array(
-					'property' => 'border-style',
+					'property' => 'border',
 					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form #order_review .wcf-custom-coupon-field input[type="text"]',
 				),
 				array(
-					'property' => 'border-style',
+					'property' => 'border',
 					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row input.input-text',
 				),
 				array(
-					'property' => 'border-style',
+					'property' => 'border',
 					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row textarea',
 				),
 				array(
-					'property' => 'border-style',
+					'property' => 'border',
 					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .select2-container--default .select2-selection--single',
 				),
 				array(
-					'property' => 'border-style',
+					'property' => 'border',
 					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row select.select',
 				),
 				array(
-					'property' => 'border-style',
+					'property' => 'border',
 					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row select',
 				),
-
-			),
-		);
-
-		$this->controls['input_border_size'] = array(
-			'label'       => __( 'Border Width', 'cartflows' ),
-			'type'        => 'dimensions',
-			'label_block' => false,
-			'default'     => '',
-			'group'       => 'input_section',
-			'css'         => array( 
-				array(
-					'property' => 'border-width',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form #order_review .wcf-custom-coupon-field input[type="text"]',
-				),
-				array(
-					'property' => 'border-width',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row input.input-text',
-				),
-				array(
-					'property' => 'border-width',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row textarea',
-				),
-				array(
-					'property' => 'border-width',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .select2-container--default .select2-selection--single',
-				),
-				array(
-					'property' => 'border-width',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row select.select',
-				),
-				array(
-					'property' => 'border-width',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row select',
-				),
-
-			),
-		);
-
-		$this->controls['input_border_color'] = array(
-			'label'       => __( 'Border Color', 'cartflows' ),
-			'type'        => 'color',
-			'label_block' => false,
-			'default'     => '',
-			'group'       => 'input_section',
-			'css'         => array( 
-				array(
-					'property' => 'border-color',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form #order_review .wcf-custom-coupon-field input[type="text"]',
-				),
-				array(
-					'property' => 'border-color',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row input.input-text',
-				),
-				array(
-					'property' => 'border-color',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row textarea',
-				),
-				array(
-					'property' => 'border-color',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .select2-container--default .select2-selection--single',
-				),
-				array(
-					'property' => 'border-color',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row select.select',
-				),
-				array(
-					'property' => 'border-color',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row select',
-				),
-
-			),
-		);
-
-		$this->controls['input_radius'] = array(
-			'label'       => __( 'Rounded Corners', 'cartflows' ),
-			'type'        => 'dimensions',
-			'label_block' => false,
-			'default'     => '',
-			'group'       => 'input_section',
-			'css'         => array( 
-				array(
-					'property' => 'border-radius',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form #order_review .wcf-custom-coupon-field input[type="text"]',
-				),
-				array(
-					'property' => 'border-radius',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row input.input-text',
-				),
-				array(
-					'property' => 'border-radius',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row textarea',
-				),
-				array(
-					'property' => 'border-radius',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .select2-container--default .select2-selection--single',
-				),
-				array(
-					'property' => 'border-radius',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row select.select',
-				),
-				array(
-					'property' => 'border-radius',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce form .form-row select',
-				),
-
 			),
 		);
 	}
@@ -889,8 +776,6 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 				),
 			),
 		);
-
-		
 	}
 
 	/**
@@ -1041,7 +926,6 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 				
 			),
 		);
-
 	}
 
 	/**
@@ -1099,7 +983,38 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 			),
 		);
 
-
+		$this->controls['order_review_section_border'] = array(
+			'label'       => __( 'Border', 'cartflows' ),
+			'type'        => 'border',
+			'label_block' => false,
+			'group'       => 'section_order_review_column',
+			'css'         => array( 
+				array(
+					'property' => 'border',
+					'selector' => '.wcf-embed-checkout-form table.shop_table',
+				),
+				array(
+					'property' => 'border',
+					'selector' => '.wcf-embed-checkout-form table.shop_table tbody',
+				),
+				array(
+					'property' => 'border',
+					'selector' => '.wcf-embed-checkout-form table.shop_table tfoot tr.cart-discount',
+				),
+				array(
+					'property' => 'border',
+					'selector' => '.wcf-embed-checkout-form. table.shop_table tfoot tr.cart-subtotal',
+				),
+				array(
+					'property' => 'border',
+					'selector' => '.wcf-embed-checkout-form table.shop_table tfoot tr.order-total:not( .recurring-total ) th',
+				),
+				array(
+					'property' => 'border',
+					'selector' => '.wcf-embed-checkout-form table.shop_table tfoot tr.order-total:not( .recurring-total ) td',
+				),
+			),
+		);
 	}
 
 	/**
@@ -1147,12 +1062,7 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 			'css'         => array(
 				array(
 					'property' => 'background-color',
-					'selector' => '.woocommerce-checkout #payment div.payment_box',
-				),
-				
-				array(
-					'property' => 'border-bottom-color',
-					'selector' => '.wcf-bricks-checkout-form .wcf-embed-checkout-form .woocommerce-checkout #payment div.payment_box::before',
+					'selector' => '.woocommerce-checkout #payment ul.payment_methods',
 				),
 			),
 		);
@@ -1195,9 +1105,29 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 				),
 			),
 		);
-			
 	}
 
+	/**
+	 * Register shipping method column style controls
+	 * 
+	 * @access protected
+	 * @return void
+	 */
+	protected function register_shipping_method_style_controls() {
+
+		$this->controls['shipping_method_section_bg_color'] = array(
+			'label'       => __( 'Background Color', 'cartflows' ),
+			'type'        => 'color',
+			'label_block' => true,
+			'group'       => 'section_shipping_method_column',
+			'css'         => array(
+				array(
+					'property' => 'background-color',
+					'selector' => '.woocommerce-checkout .wcf-customer-shipping ul#shipping_method',
+				),
+			),
+		);
+	}
    
 	/**
 	 * Function to get skin types.
@@ -1222,35 +1152,38 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 	 * @access public
 	 */
 	public function set_control_groups() {
-		$this->control_groups['section_general_style_fields'] = array(
+		$this->control_groups['section_general_style_fields']   = array(
 			'title' => esc_html__( 'Global', 'cartflows' ),
 			'tab'   => 'style',
 		);
-		$this->control_groups['input_section']                = array(
+		$this->control_groups['input_section']                  = array(
 			'title' => esc_html__( 'Input Fields', 'cartflows' ),
 			'tab'   => 'style',
 		);
-		$this->control_groups['section_heading_style_fields'] = array(
+		$this->control_groups['section_heading_style_fields']   = array(
 			'title' => esc_html__( 'Heading', 'cartflows' ),
 			'tab'   => 'style',
 		);
-		$this->control_groups['button_section']               = array(
+		$this->control_groups['button_section']                 = array(
 			'title' => esc_html__( 'Buttons (Normal)', 'cartflows' ),
 			'tab'   => 'style',
 		);
-		$this->control_groups['section_order_review_column']  = array(
+		$this->control_groups['section_order_review_column']    = array(
 			'title' => esc_html__( 'Order Review', 'cartflows' ),
 			'tab'   => 'style',
 		);
-		$this->control_groups['section_error_style_fields']   = array(
+		$this->control_groups['section_error_style_fields']     = array(
 			'title' => esc_html__( 'Field Validation & Error Messages', 'cartflows' ),
 			'tab'   => 'style',
 		);
-		$this->control_groups['section_payment_style_fields'] = array(
+		$this->control_groups['section_payment_style_fields']   = array(
 			'title' => esc_html__( 'Payment Section', 'cartflows' ),
 			'tab'   => 'style',
 		);
-		
+		$this->control_groups['section_shipping_method_column'] = array(
+			'title' => esc_html__( 'Shipping Method', 'cartflows' ),
+			'tab'   => 'style',
+		);
 	}
 	/**
 	 * Constructor function.
@@ -1264,7 +1197,7 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 		$this->register_payment_section_style_controls();
 		$this->register_error_style_controls();
 		$this->register_order_review_style_controls();
-
+		$this->register_shipping_method_style_controls();
 	}
 	
 	/**
@@ -1289,7 +1222,6 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 			</div>
 		</div>
 		<?php
-
 	}
 
 	/**
@@ -1335,5 +1267,4 @@ class Cartflows_Bricks_Checkout_Form extends \Bricks\Element {
 
 		do_action( 'cartflows_bricks_checkout_options_filters', $this->settings );
 	}
-	
 }

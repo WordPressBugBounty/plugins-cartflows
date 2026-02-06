@@ -19,7 +19,7 @@ $logo_height     = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-c
 $header_bg_color = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-color' );
 $custom_logo_src = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo' );
 
-$custom_logo_styles = 'width: auto; height: ' . $logo_height . ';';
+$custom_logo_styles = 'width: auto; height: ' . $logo_height . 'px;';
 $custom_logo        = ! empty( $custom_logo_src ) ? "<img src='" . esc_url( $custom_logo_src ) . "' class='custom-logo' alt='" . esc_attr( $site_title ) . "' style='" . $custom_logo_styles . "' />" : '';
 
 $site_logo = apply_filters( 'cartflows_instant_checkout_header_logo', ! empty( $custom_logo ) ? $custom_logo : get_custom_logo(), $site_title );

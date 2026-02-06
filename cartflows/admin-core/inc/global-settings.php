@@ -109,7 +109,7 @@ class GlobalSettings {
 						'name'     => '_cartflows_common[override_global_checkout]',
 						'label'    => __( 'Override Store Checkout', 'cartflows' ),
 						/* translators: %1$1s: link html start, %2$12: link html end*/
-						'desc'     => sprintf( __( 'For more information about the Store Checkout settings please %1$sClick here%2$s.', 'cartflows' ), '<a href="https://cartflows.com/docs/global-checkout/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),
+						'desc'     => sprintf( __( 'For more information about the Store Checkout settings please %1$sclick here%2$s.', 'cartflows' ), '<a href="https://cartflows.com/docs/store-checkout/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),
 					),
 					'global_checkout_seperator' => array(
 						'type' => 'separator',

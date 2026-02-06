@@ -35,8 +35,8 @@
 	color: #f56e28;
 }
 
-.toplevel_page_cartflows .wp-submenu li:has( > a[href*="path=free-vs-pro"]) a{
-    background-color: #00a32a !important;
-    color: #fff !important;
+.toplevel_page_cartflows .wp-submenu a[href*="pricing"] {
+	background-color: #00a32a !important;
+	color: #fff !important;
 	font-weight: 600;
 }

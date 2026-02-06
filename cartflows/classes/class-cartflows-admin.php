@@ -74,6 +74,9 @@ class Cartflows_Admin {
 		add_filter( 'bsf_core_stats', array( $this, 'get_specific_stats' ) );
 
 		$this->do_not_cache_admin_pages_actions();
+
+		// Provide pointer configuration via filter.
+		add_filter( 'cartflows_pointer_config', array( $this, 'get_pointer_config' ) );
 	}
 
 	/**
@@ -180,7 +183,6 @@ class Cartflows_Admin {
 			</div>
 		</div>
 		<?php
-
 	}
 
 	/**
@@ -218,7 +220,6 @@ class Cartflows_Admin {
 			flush_rewrite_rules(); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.flush_rewrite_rules_flush_rewrite_rules
 			delete_option( 'cartflows_permalink_refresh' );
 		}
-
 	}
 
 	/**
@@ -424,7 +425,6 @@ class Cartflows_Admin {
 		}
 
 		return $stats_data;
-
 	}
 
 	/**
@@ -544,7 +544,7 @@ class Cartflows_Admin {
 	 * This function queries the database to count the number of steps of each type (optin, landing, checkout, upsell, downsell, thankyou).
 	 * It returns an array with the count of each step type.
 	 *
-	 * @since x.x.x
+	 * @since 2.2.0
 	 * @return array An array containing the count of each step type.
 	 */
 	public function get_all_steps_count() {
@@ -588,7 +588,6 @@ class Cartflows_Admin {
 		// Merge the updated counts with the defaults.
 		$all_step_count = wp_parse_args( json_decode( $step_counts[0]['counts'] ), $default_step_counts );
 		return $all_step_count;
-
 	}
 
 	/**
@@ -597,7 +596,7 @@ class Cartflows_Admin {
 	 * This function queries the database to count the number of funnels that have the instant layout style enabled.
 	 * It returns the count of such funnels.
 	 *
-	 * @since x.x.x
+	 * @since 2.2.0
 	 * @return int $posts_count The count of funnels with instant layout enabled.
 	 */
 	public function get_funnels_with_instant_layout() {
@@ -630,7 +629,7 @@ class Cartflows_Admin {
 	 * This function queries the database to count the number of steps (optin and checkout) that have custom fields enabled.
 	 * It returns the count of such steps.
 	 *
-	 * @since x.x.x
+	 * @since 2.2.0
 	 * @return array $all_step_count The count of steps with custom fields enabled, categorized by step type.
 	 */
 	public function get_custom_fields_enabled_data() {
@@ -682,7 +681,6 @@ class Cartflows_Admin {
 		// Merge the updated counts with the defaults.
 		$all_step_count = wp_parse_args( json_decode( $step_counts[0]['counts'] ), $default_step_counts );
 		return $all_step_count;
-
 	}
 
 	/**
@@ -711,7 +709,6 @@ class Cartflows_Admin {
 		}
 
 		return $enabled_gateways;
-
 	}
 
 	/**
@@ -747,7 +744,6 @@ class Cartflows_Admin {
 			'gads-settings'      => $gads_settings,
 			'snapchat-settings'  => $snapchat_settings,
 		);
-
 	}
 	/**
 	 * Retrieve all global features tracking data.
@@ -773,7 +769,6 @@ class Cartflows_Admin {
 			'is-child-theme'                => $theme_data['child_theme'],
 			'suretriggers_active'           => is_plugin_active( 'suretriggers/suretriggers.php' ),
 		);
-
 	}
 
 	/**
@@ -787,6 +782,33 @@ class Cartflows_Admin {
 			return ! empty( $license_data['api_key'] );
 		}
 		return false;
+	}
+
+	/**
+	 * Provide CartFlows Pointer configuration via filter.
+	 *
+	 * @param array<string, mixed> $config Existing configuration.
+	 * @return array<string, mixed> Pointer configuration.
+	 */
+	public function get_pointer_config( $config ) {
+		return array(
+			'option_name'     => 'cartflows_pointer_data',
+			'title'           => __( 'CartFlows is waiting for you!', 'cartflows' ),
+			'content'         => sprintf(
+				/* translators: %1$s opening <strong> tag, %2$s closing </strong> tag */
+				__( '%1$sLaunch your first funnel in minutes.%2$s Follow a guided setup to start capturing leads or sales immediately.', 'cartflows' ),
+				'<strong>',
+				'</strong>'
+			),
+			'button_text'     => __( 'Create My First Funnel', 'cartflows' ),
+			'button_url'      => admin_url( 'admin.php?page=cartflows' ),
+			'dismiss_text'    => __( 'Dismiss', 'cartflows' ),
+			'target_selector' => '#toplevel_page_cartflows',
+			'fallback_target' => '#menu-plugins',
+			'allowed_pages'   => array( 'index.php', 'plugins.php' ),
+			'post_type'       => CARTFLOWS_FLOW_POST_TYPE,
+			'max_posts'       => 0,
+		);
 	}
 }
 

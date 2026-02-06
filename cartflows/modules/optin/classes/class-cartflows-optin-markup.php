@@ -82,7 +82,7 @@ class Cartflows_Optin_Markup {
 
 		add_action(
 			'cartflows_elementor_editor_compatibility',
-			function( $post_id, $elementor_ajax ) {
+			function ( $post_id, $elementor_ajax ) {
 
 				add_action( 'cartflows_elementor_before_optin_shortcode', array( $this, 'before_optin_shortcode_actions' ) );
 			},
@@ -98,7 +98,7 @@ class Cartflows_Optin_Markup {
 
 		add_action(
 			'cartflows_bb_editor_compatibility',
-			function( $post_id ) {
+			function ( $post_id ) {
 				add_action( 'cartflows_bb_before_optin_shortcode', array( $this, 'before_optin_shortcode_actions' ) );
 			},
 			10,
@@ -660,19 +660,25 @@ class Cartflows_Optin_Markup {
 	public function save_optin_fields( $order_id, $posted ) {
 		// We are calling this function on WooCommerce action where nonce is verified.
 		//phpcs:disable WordPress.Security.NonceVerification.Missing
-		$optin_id = isset( $_POST['_wcf_optin_id'] ) ? intval( wp_unslash( $_POST['_wcf_optin_id'] ) ) : 0;
-
-		if ( CARTFLOWS_STEP_POST_TYPE === get_post_type( $optin_id ) ) {
-			update_post_meta( $order_id, '_wcf_optin_id', $optin_id );
+		if ( isset( $_POST['_wcf_optin_id'] ) ) {
+			$optin_id = intval( $_POST['_wcf_optin_id'] );
+			$flow_id  = isset( $_POST['_wcf_flow_id'] ) ? intval( wp_unslash( $_POST['_wcf_flow_id'] ) ) : 0;
 		}
 
-		$flow_id = isset( $_POST['_wcf_flow_id'] ) ? intval( wp_unslash( $_POST['_wcf_flow_id'] ) ) : 0;
+		if ( ! empty( $flow_id ) && ! empty( $optin_id ) ) {
 
-		if ( CARTFLOWS_FLOW_POST_TYPE === get_post_type( $flow_id ) ) {
-			update_post_meta( $order_id, '_wcf_flow_id', $flow_id );
+			$order = wc_get_order( $order_id );
+			if ( CARTFLOWS_STEP_POST_TYPE === get_post_type( $optin_id ) ) {
+				$order->update_meta_data( '_wcf_optin_id', $optin_id );
+			}
+
+			if ( CARTFLOWS_FLOW_POST_TYPE === get_post_type( $flow_id ) ) {
+				$order->update_meta_data( '_wcf_flow_id', $flow_id );
+			}
+
+			$order->save();
 		}
 		//phpcs:enable WordPress.Security.NonceVerification.Missing
-
 	}
 
 	/**
@@ -709,14 +715,12 @@ class Cartflows_Optin_Markup {
 			global $post;
 
 			$optin_id = $post->ID;
-		} else {
+		} elseif ( _is_wcf_doing_optin_ajax() && wcf()->utils->get_optin_id_from_post_data() ) {
 
-			if ( _is_wcf_doing_optin_ajax() && wcf()->utils->get_optin_id_from_post_data() ) {
 
 				$optin_id = wcf()->utils->get_optin_id_from_post_data();
-			} else {
-				return $fields;
-			}
+		} else {
+			return $fields;
 		}
 
 		$first_name = $fields['first_name'];
@@ -746,14 +750,12 @@ class Cartflows_Optin_Markup {
 			global $post;
 
 			$optin_id = $post->ID;
-		} else {
+		} elseif ( _is_wcf_doing_optin_ajax() && wcf()->utils->get_optin_id_from_post_data() ) {
 
-			if ( _is_wcf_doing_optin_ajax() && wcf()->utils->get_optin_id_from_post_data() ) {
 
 				$optin_id = wcf()->utils->get_optin_id_from_post_data();
-			} else {
-				return $fields;
-			}
+		} else {
+			return $fields;
 		}
 
 		$billing_first_name = $fields['billing']['billing_first_name'];
@@ -790,19 +792,15 @@ class Cartflows_Optin_Markup {
 
 			if ( $post ) {
 				$optin_id = $post->ID;
-			} else {
+			} elseif ( is_admin() && isset( $_POST['id'] ) ) {
 
-				if ( is_admin() && isset( $_POST['id'] ) ) {
 					$optin_id = intval( $_POST['id'] );
-				}
 			}
-		} else {
+		} elseif ( _is_wcf_doing_optin_ajax() && wcf()->utils->get_optin_id_from_post_data() ) {
 
-			if ( _is_wcf_doing_optin_ajax() && wcf()->utils->get_optin_id_from_post_data() ) {
 				$optin_id = wcf()->utils->get_optin_id_from_post_data();
-			} else {
-				return $fields;
-			}
+		} else {
+			return $fields;
 		}
 
 		if ( is_wc_endpoint_url( 'edit-address' ) ) {

@@ -741,3 +741,25 @@ function wcf_is_current_theme_is_fse_theme() {
 function wcf_show_deprecated_step_notes() {
 	return apply_filters( 'cartflows_show_deprecated_step_notes', false );
 }
+
+/**
+ * Checks if file modifications are disabled in WordPress.
+ *
+ * This function determines whether file modifications (such as updates and installations)
+ * are disabled by checking the DISALLOW_FILE_MODS constant.
+ *
+ * @since 2.2.0
+ * @return bool True if file modifications are disabled, false otherwise.
+ */
+function wcf_file_mod_disabled() {
+	
+	$is_disabled = false;
+
+	$disallow_file_mods = defined( 'DISALLOW_FILE_MODS' ) ? DISALLOW_FILE_MODS : false;
+
+	if ( apply_filters( 'cartflows_file_mod_disabled', $disallow_file_mods ) ) {
+		$is_disabled = true;
+	}
+
+	return $is_disabled;
+}

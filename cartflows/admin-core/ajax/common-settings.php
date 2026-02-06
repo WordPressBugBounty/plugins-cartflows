@@ -86,7 +86,6 @@ class CommonSettings extends AjaxBase {
 			'messsage' => __( 'Successfully deleted the dynamic CSS keys!', 'cartflows' ),
 		);
 		wp_send_json_success( $response_data );
-
 	}
 
 	/**
@@ -261,7 +260,6 @@ class CommonSettings extends AjaxBase {
 			$enable_non_sensative_data_tracking = sanitize_text_field( $_POST['cf_analytics_optin'] );
 			AdminHelper::update_admin_settings_option( 'cf_analytics_optin', $enable_non_sensative_data_tracking, false );
 		}
-
 	}
 
 	/**
@@ -292,7 +290,6 @@ class CommonSettings extends AjaxBase {
 		$new_settings    = wp_parse_args( $new_settings, $common_settings );
 
 		AdminHelper::update_admin_settings_option( '_cartflows_common', $new_settings, true );
-
 	}
 
 	/**
@@ -312,7 +309,6 @@ class CommonSettings extends AjaxBase {
 		foreach ( $cf_cap as $cap ) {
 			$user_role_obj->remove_cap( $cap );
 		}
-
 	}
 
 	/**

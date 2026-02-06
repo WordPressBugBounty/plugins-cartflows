@@ -27,7 +27,7 @@ if ( ! class_exists( 'Cartflows_Wc_Stripe_Compatibility' ) ) :
 		/**
 		 * Initiator
 		 *
-		 * @since x.x.x
+		 * @since 2.2.0
 		 * @return self
 		 */
 		public static function get_instance() {
@@ -40,7 +40,7 @@ if ( ! class_exists( 'Cartflows_Wc_Stripe_Compatibility' ) ) :
 		/**
 		 * Constructor
 		 *
-		 * @since x.x.x
+		 * @since 2.2.0
 		 */
 		public function __construct() {
 
@@ -50,7 +50,7 @@ if ( ! class_exists( 'Cartflows_Wc_Stripe_Compatibility' ) ) :
 		/**
 		 * Function to check if the current page is a checkout page and it is doing the API call.
 		 *
-		 * @since x.x.x
+		 * @since 2.2.0
 		 * @param bool $should_update The default value for should to update the custom price or not.
 		 * @return bool $should_update Should the custom price be updated.
 		 */
@@ -78,7 +78,6 @@ if ( ! class_exists( 'Cartflows_Wc_Stripe_Compatibility' ) ) :
 			// Return the value.
 			return $should_update;
 		}
-
 	}
 
 	/**

@@ -25,12 +25,17 @@ $get_subtotal_to_display = Cartflows_Thankyou_Markup::get_instance()->get_subtot
 		<div class="wcf-ic-order-item-wrap">
 			<div class="wcf-ic-cart-order-item-wrap">
 				<?php
-					$order_items = $order->get_items( 'line_item' );
-
-					$child_orders_ids = $order->get_meta( '_cartflows_offer_child_orders' );
-
-				$total_price = $order->get_total();
-				$sub_total   = wc_tax_enabled() ? $get_subtotal_to_display : $order->get_subtotal();
+				$order_items          = $order->get_items( 'line_item' );
+				$filtered_order_items = array();
+				$total_price          = 0;
+				$sub_total            = 0;
+				// Only add main order items if the main order is NOT cancelled.
+				if ( $order->get_status() !== 'cancelled' ) {
+					$filtered_order_items = $order_items;
+					$total_price          = $order->get_total();
+					$sub_total            = wc_tax_enabled() ? $get_subtotal_to_display : $order->get_subtotal();
+				}
+				$child_orders_ids = $order->get_meta( '_cartflows_offer_child_orders' );
 
 				if ( ! empty( $child_orders_ids ) ) {
 					foreach ( $child_orders_ids as $child_order_id => $child_data ) {
@@ -38,14 +43,14 @@ $get_subtotal_to_display = Cartflows_Thankyou_Markup::get_instance()->get_subtot
 						if ( ! $child_order ) {
 							continue;
 						}
-						$child_order_items = $child_order->get_items( 'line_item' );
-						$order_items       = array_merge( $order_items, $child_order_items );
-						$total_price      += $child_order->get_total();
-						$sub_total        += wc_tax_enabled() ? Cartflows_Thankyou_Markup::get_instance()->get_subtotal_to_display( $child_order ) : $child_order->get_subtotal();
+						$child_order_items    = $child_order->get_items( 'line_item' );
+						$filtered_order_items = array_merge( $filtered_order_items, $child_order_items );
+						$total_price         += $child_order->get_total();
+						$sub_total           += wc_tax_enabled() ? Cartflows_Thankyou_Markup::get_instance()->get_subtotal_to_display( $child_order ) : $child_order->get_subtotal();
 					}
 				}
 
-				foreach ( $order_items as $item_id => $item ) {
+				foreach ( $filtered_order_items as $item_id => $item ) {
 					$product      = $item->get_product();
 					$qty          = $item->get_quantity();
 					$refunded_qty = $order->get_qty_refunded_for_item( $item_id );
@@ -124,23 +129,25 @@ $get_subtotal_to_display = Cartflows_Thankyou_Markup::get_instance()->get_subtot
 			</div>
 			<?php
 				$order_totals = $order->get_order_item_totals();
-			foreach ( $order_totals as $key => $total ) {
-				if ( 'payment_method' === $key || 'cart_subtotal' === $key || 'order_total' === $key ) {
-					continue;
-				}
-				?>
-						<div class="wcf-ic-cart-totals <?php echo 'wcf-ic-cart-totals--' . esc_html( $key ); ?>">
-							<div class="wcf-ic-cart-totals__label"><span><?php echo esc_html( trim( $total['label'], ':' ) ); ?></span></div>
-							<div class="wcf-ic-cart-totals__value">
-							<?php
-							if ( 'order_total' == $key ) {
-								echo sprintf( '<div class="wcf-ic-cart-totals__currency-badge">%s</div>', esc_html( $order->get_currency() ) );
-							}
-							?>
-								<span><?php echo wp_kses_post( $total['value'] ); ?></span>
+			if ( $order->get_status() !== 'cancelled' ) {
+				foreach ( $order_totals as $key => $total ) {
+					if ( 'payment_method' === $key || 'cart_subtotal' === $key || 'order_total' === $key ) {
+						continue;
+					}
+					?>
+							<div class="wcf-ic-cart-totals <?php echo 'wcf-ic-cart-totals--' . esc_html( $key ); ?>">
+								<div class="wcf-ic-cart-totals__label"><span><?php echo esc_html( trim( $total['label'], ':' ) ); ?></span></div>
+								<div class="wcf-ic-cart-totals__value">
+								<?php
+								if ( 'order_total' == $key ) {
+									printf( '<div class="wcf-ic-cart-totals__currency-badge">%s</div>', esc_html( $order->get_currency() ) );
+								}
+								?>
+									<span><?php echo wp_kses_post( $total['value'] ); ?></span>
+								</div>
 							</div>
-						</div>
-				<?php
+					<?php
+				}
 			}
 			?>
 			<div class="wcf-ic-cart-totals total">
@@ -150,7 +157,7 @@ $get_subtotal_to_display = Cartflows_Thankyou_Markup::get_instance()->get_subtot
 				<div class="wcf-ic-cart-totals__value">
 					<?php
 						
-						echo sprintf( '<div class="wcf-ic-cart-totals__currency-badge">%s</div>', esc_html( $order->get_currency() ) );
+						printf( '<div class="wcf-ic-cart-totals__currency-badge">%s</div>', esc_html( $order->get_currency() ) );
 					?>
 					<span><?php echo wp_kses_post( wc_price( $total_price, array( 'currency' => $order->get_currency() ) ) ); ?></span>
 				</div>

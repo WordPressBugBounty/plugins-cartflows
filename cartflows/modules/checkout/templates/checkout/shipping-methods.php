@@ -25,7 +25,7 @@ $show_shipping_calculator = ! empty( $show_shipping_calculator );
 $calculator_text          = '';
 ?>
 
-	<div class="wcf-shipping-methods-wrapper">
+	<div class="wcf-shipping-methods-wrapper" data-update-time="<?php echo esc_attr( time() ); ?>" >
 		<h3 class="wcf-shipping-methods-title"><?php echo wp_kses_post( $package_name ); ?></h3>
 		<div class="wcf-shipping-method-options">
 			<?php if ( $available_methods ) : ?>

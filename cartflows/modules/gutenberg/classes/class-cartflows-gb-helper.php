@@ -100,9 +100,17 @@ if ( ! class_exists( 'Cartflows_Gb_Helper' ) ) {
 			require CARTFLOWS_DIR . 'modules/gutenberg/classes/class-cartflows-block-helper.php';
 			require CARTFLOWS_DIR . 'modules/gutenberg/classes/class-cartflows-block-js.php';
 
-			self::$block_list = Cartflows_Block_Config::get_block_attributes();
-
+			add_action( 'init', array( $this, 'prepare_block_list' ) );
 			add_action( 'wp', array( $this, 'wp_actions' ), 10 );
+		}
+
+		/**
+		 * Prepare Block List
+		 *
+		 * @return void
+		 */
+		public function prepare_block_list() {
+			self::$block_list = Cartflows_Block_Config::get_block_attributes();
 		}
 
 		/**
@@ -118,8 +126,6 @@ if ( ! class_exists( 'Cartflows_Gb_Helper' ) ) {
 				add_action( 'wp_head', array( $this, 'frontend_gfonts' ), 120 );
 				add_action( 'wp_footer', array( $this, 'print_script' ), 1000 );
 			}
-
-
 		}
 
 		/**
@@ -273,7 +279,6 @@ if ( ! class_exists( 'Cartflows_Gb_Helper' ) ) {
 					wp_enqueue_style( $val );
 				}
 			}
-
 		}
 
 		/**
@@ -668,7 +673,6 @@ if ( ! class_exists( 'Cartflows_Gb_Helper' ) ) {
 				'css' => $css,
 				'js'  => $js,
 			);
-
 		}
 
 		/**

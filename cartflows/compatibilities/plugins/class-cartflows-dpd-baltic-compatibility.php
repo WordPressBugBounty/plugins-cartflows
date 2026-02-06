@@ -27,7 +27,7 @@ if ( ! class_exists( 'Cartflows_Dpd_Baltic_Compatibility' ) ) :
 		/**
 		 * Initiator
 		 *
-		 * @since x.x.x
+		 * @since 2.2.0
 		 * @return self
 		 */
 		public static function get_instance() {
@@ -40,7 +40,7 @@ if ( ! class_exists( 'Cartflows_Dpd_Baltic_Compatibility' ) ) :
 		/**
 		 * Constructor
 		 *
-		 * @since x.x.x
+		 * @since 2.2.0
 		 */
 		public function __construct() {
 			// Action hook to handle DPD Baltic shipping options review during checkout.
@@ -50,7 +50,7 @@ if ( ! class_exists( 'Cartflows_Dpd_Baltic_Compatibility' ) ) :
 		/**
 		 * Handles the review order after shipping process for DPD Baltic compatibility.
 		 *
-		 * @since x.x.x
+		 * @since 2.2.0
 		 * @return void
 		 */
 		public function dpd_baltic_review_order_after_shipping() {
@@ -72,7 +72,6 @@ if ( ! class_exists( 'Cartflows_Dpd_Baltic_Compatibility' ) ) :
 				}
 			}
 		}
-
 	}
 
 	/**

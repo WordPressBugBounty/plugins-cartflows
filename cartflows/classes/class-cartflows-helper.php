@@ -159,7 +159,6 @@ class Cartflows_Helper {
 		} else {
 			update_option( $key, $value );
 		}
-
 	}
 
 	/**
@@ -203,7 +202,6 @@ class Cartflows_Helper {
 		}
 
 		return $value;
-
 	}
 
 	/**
@@ -380,7 +378,7 @@ class Cartflows_Helper {
 				)
 			);
 
-			$common = self::get_admin_settings_option( '_cartflows_common', false, false );
+			$common = self::get_admin_settings_option( '_cartflows_common', false, true );
 
 			$common = wp_parse_args( $common, $common_default );
 
@@ -696,7 +694,6 @@ class Cartflows_Helper {
 		}
 
 		return $has_product_assigned;
-
 	}
 
 	/**
@@ -922,7 +919,6 @@ class Cartflows_Helper {
 		if ( 'enable' === $fb_settings['facebook_pixel_tracking'] ) {
 			setcookie( 'wcf_order_details', wp_json_encode( self::prepare_purchase_data_fb_response( $order_id, $offer_data ) ), strtotime( '+1 year' ), '/', COOKIE_DOMAIN, CARTFLOWS_HTTPS, true ); //phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 		}
-
 	}
 
 	/**
@@ -1282,7 +1278,6 @@ class Cartflows_Helper {
 		}
 
 		return $flows;
-
 	}
 
 	/**
@@ -1314,7 +1309,6 @@ class Cartflows_Helper {
 			'cartflows_admin_exclude_import_meta_keys',
 			$meta_keys
 		);
-
 	}
 
 	/**
@@ -1736,7 +1730,6 @@ class Cartflows_Helper {
 		}
 
 		return apply_filters( 'cartflows_page_template', get_post_meta( $post_id, '_wp_page_template', true ) );
-
 	}
 
 	/**
@@ -1819,7 +1812,7 @@ class Cartflows_Helper {
 
 			$rollback_versions = array_slice( $rollback_versions, 0, $max_versions, true );
 
-			set_transient( 'cartflows_' . CARTFLOWS_VER, $rollback_versions, WEEK_IN_SECONDS );
+			set_transient( 'cartflows_rollback_versions_' . CARTFLOWS_VER, $rollback_versions, WEEK_IN_SECONDS );
 		}
 
 		return (array) $rollback_versions;

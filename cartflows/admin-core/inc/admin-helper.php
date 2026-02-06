@@ -241,7 +241,6 @@ class AdminHelper {
 		} else {
 			update_option( $key, $value );
 		}
-
 	}
 
 	/**
@@ -740,7 +739,6 @@ class AdminHelper {
 		}
 
 		return $steps;
-
 	}
 
 	/**
@@ -948,15 +946,18 @@ class AdminHelper {
 		return $actions;
 	}
 
-		/**
-		 * Calculate earning.
-		 *
-		 * @param string $start_date start date.
-		 * @param string $end_date end date.
-		 *
-		 * @return array
-		 */
-	public static function get_earnings( $start_date, $end_date ) {
+	/**
+	 * Calculate earning.
+	 *
+	 * @param string $start_date start date.
+	 * @param string $end_date end date.
+	 * @param string $flow_id flow id.
+	 * @param string $screen_type screen_type.
+	 * @param string $comparison_range_type comparison range type - 'previous-period' | 'previous-year'.
+	 *
+	 * @return array
+	 */
+	public static function get_earnings( $start_date, $end_date, $flow_id = '', $screen_type = 'funnels', $comparison_range_type = '' ) {
 
 		$currency_symbol = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '';
 
@@ -980,11 +981,14 @@ class AdminHelper {
 					'total_visits'         => '0',
 				),
 				$start_date,
-				$end_date
+				$end_date,
+				$flow_id,
+				$screen_type,
+				$comparison_range_type
 			);
 		}
 
-		$orders      = self::get_orders_by_flow( $start_date, $end_date );
+		$orders      = self::get_orders_by_flow( $start_date, $end_date, $flow_id );
 		$gross_sale  = 0;
 		$order_count = 0;
 
@@ -1014,7 +1018,6 @@ class AdminHelper {
 			'total_offers_revenue' => '0',
 			'total_visits'         => '0',
 		);
-
 	}
 
 
@@ -1026,9 +1029,10 @@ class AdminHelper {
 	 *
 	 * @param string $start_date start date.
 	 * @param string $end_date end date.
+	 * @param string $flow_id flow id.
 	 * @return wc_order object.
 	 */
-	public static function get_orders_by_flow( $start_date, $end_date ) {
+	public static function get_orders_by_flow( $start_date, $end_date, $flow_id = '' ) {
 
 		global $wpdb;
 
@@ -1060,9 +1064,13 @@ class AdminHelper {
 
 		$where = self::get_items_query_where( $conditions );
 
+		if ( ! empty( $flow_id ) ) {
+			$where .= " AND tb2.meta_value = '" . $flow_id . "'";
+		}
+
 		$where .= ' AND ( tb1.' . $order_date_key . " BETWEEN IF (tb2.meta_key='wcf-analytics-reset-date'>'" . $start_date . "', tb2.meta_key, '" . $start_date . "')  AND '" . $end_date . "' )";
 		$where .= " AND ( ( tb2.meta_key = '_wcf_flow_id' ) OR ( tb2.meta_key = '_cartflows_parent_flow_id' ) )";
-		$where .= ' AND tb1.' . $order_status_key . " IN ( 'wc-completed', 'wc-processing', 'wc-cancelled' )";
+		$where .= ' AND tb1.' . $order_status_key . " IN ( 'wc-completed', 'wc-processing' )";
 
 		$query = 'SELECT tb1.ID, DATE( tb1.' . $order_date_key . ' ) date, tb2.meta_value FROM ' . $order_table . ' tb1
 		INNER JOIN ' . $order_meta_table . ' tb2
@@ -1071,7 +1079,6 @@ class AdminHelper {
 
 		return $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery
 	}
-
 
 	/**
 	 * Prepare where items for query.
@@ -1233,4 +1240,3 @@ class AdminHelper {
 		update_option( 'cartflows_funnel_creation_method', $funnel_creation_stats );
 	}
 }
-

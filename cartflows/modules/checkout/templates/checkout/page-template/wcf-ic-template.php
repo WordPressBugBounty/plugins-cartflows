@@ -28,10 +28,11 @@ if ( empty( $post->ID ) ) {
 	return;
 }
 
-	$checkout_html = do_shortcode( '[cartflows_checkout]' );
+	$checkout_html   = do_shortcode( '[cartflows_checkout]' );
+	$header_template = Cartflows_Instant_Checkout::get_instance()->instant_checkout_header_template();
 ?>
 		<div class="cartflows-checkout-main-wrapper">
-			<?php echo wp_kses_post( Cartflows_Instant_Checkout::get_instance()->instant_checkout_header_template() ); ?>
+			<?php echo ! empty( $header_template ) ? wp_kses_post( $header_template ) : ''; ?>
 
 			<div class="main-container--wrapper">
 				<div class="checkout-form--wrapper">

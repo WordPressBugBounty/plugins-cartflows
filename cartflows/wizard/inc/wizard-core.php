@@ -260,7 +260,6 @@ class WizardCore {
 		wp_enqueue_script( 'cartflows-setup-helper' );
 		wp_enqueue_media();
 		wp_enqueue_script( 'jquery-ui' );
-
 	}
 
 	/**
@@ -299,7 +298,6 @@ class WizardCore {
 		);
 
 		return $default_url;
-
 	}
 
 
@@ -320,6 +318,11 @@ class WizardCore {
 				'name'   => 'Cart Abandonment',
 				'slug'   => 'woo-cart-abandonment-recovery',
 				'status' => $this->get_plugin_status( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php' ),
+			),
+			array(
+				'name'   => 'Modern cart',
+				'slug'   => 'modern-cart',
+				'status' => $this->get_plugin_status( 'modern-cart/modern-cart.php' ),
 			),
 			array(
 				'name'   => 'WooCommerce Payments',

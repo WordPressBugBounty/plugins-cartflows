@@ -41,7 +41,6 @@ class Cartflows_Modern_Checkout {
 		add_action( 'cartflows_checkout_form_before', array( $this, 'modern_checkout_layout_actions' ), 10, 1 );
 
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'unset_fields_for_modern_checkout' ), 10, 1 );
-
 	}
 
 	/**
@@ -255,7 +254,7 @@ class Cartflows_Modern_Checkout {
 								</div>
 						<?php } ?>
 					<?php } else { ?>
-								<div class="wcf-logged-in-customer-info"> <?php /* translators: %1$s: username, %2$s emailid */ echo esc_html( apply_filters( 'cartflows_logged_in_customer_info_text', sprintf( __( ' Welcome Back %1$s ( %2$s )', 'cartflows' ), $current_user_name, $current_user_email ) ) ); ?>
+								<div class="wcf-logged-in-customer-info"> <?php /* translators: %1$s: username, %2$s emailid */ echo esc_html( apply_filters( 'cartflows_logged_in_customer_info_text', sprintf( __( ' Welcome Back %1$s (%2$s)', 'cartflows' ), $current_user_name, $current_user_email ) ) ); ?>
 									<div><input type="hidden" class="wcf-email-address" id="billing_email" name="billing_email" value="<?php echo esc_attr( $current_user_email ); ?>"/></div>
 								</div>
 					<?php } ?>

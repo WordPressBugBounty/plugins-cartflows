@@ -71,6 +71,10 @@ class Cartflows_Bricks_Elements_Loader {
 	 * @return void
 	 */
 	public function register_elements() {
+		// Bail early if Bricks is not available.
+		if ( ! class_exists( '\Bricks\Elements' ) ) {
+			return;
+		}
 		// Register Dynamic Content Tags.
 		require_once CARTFLOWS_DIR . 'modules/bricks/class-cartflows-bricks-dynamic-data.php';
 		
@@ -83,7 +87,6 @@ class Cartflows_Bricks_Elements_Loader {
 				\Bricks\Elements::register_element( $file );
 			}
 		}
-
 	}
 
 	/**
@@ -126,8 +129,12 @@ class Cartflows_Bricks_Elements_Loader {
 	 * @return void
 	 */
 	public function update_required_step_meta_data( $elements, $area ) {
-		global $post;
-		$post_ID    = $post->ID;
+		$post_ID = get_the_ID();
+
+		if ( ! $post_ID ) {
+			return;
+		}
+		
 		$step_type  = get_post_meta( $post_ID, 'wcf-step-type', true );
 		$block_data = '';
 		$meta_keys  = array();
@@ -173,9 +180,6 @@ class Cartflows_Bricks_Elements_Loader {
 		}
 		return false;
 	}
- 
-
-
 }
 /**
  * Kicking this off by calling 'get_instance()' method

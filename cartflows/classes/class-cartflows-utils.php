@@ -676,7 +676,7 @@ class Cartflows_Utils {
 		}
 
 		// Return the query strings.
-		return $original_query_strings;
+		return apply_filters( 'cartflows_may_be_append_query_strings_args', $original_query_strings );
 	}
 	
 	/**
@@ -688,13 +688,11 @@ class Cartflows_Utils {
 	 * @return bool True if the cart is empty and the session is valid, otherwise false.
 	 */
 	public function is_woo_cart_empty() {
-		$is_empty = false;
-
-		if ( function_exists( 'WC' ) && WC()->cart->is_empty() && ! is_customize_preview() && apply_filters( 'woocommerce_checkout_update_order_review_expired', true ) ) {
-			$is_empty = true;
-		}
-		
-		return $is_empty;
+		return function_exists( 'WC' ) 
+			&& WC()->cart instanceof WC_Cart 
+			&& WC()->cart->is_empty() 
+			&& ! is_customize_preview() 
+			&& apply_filters( 'woocommerce_checkout_update_order_review_expired', true );
 	}
 }
 
@@ -709,7 +707,7 @@ class Cartflows_Utils {
  *
  * @return null|string|mixed The value
  */
-function wcf_get_prop( $array, $prop, $default = null ) {
+function wcf_get_prop( $array, $prop, $default = null ) { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed
 
 	if ( ! is_array( $array ) && ! ( is_object( $array ) && $array instanceof ArrayAccess ) ) {
 		return $default;

@@ -120,7 +120,6 @@ class Importer extends AjaxBase {
 		}
 
 		wp_send_json_success( $response_data );
-
 	}
 
 	/**
@@ -232,7 +231,6 @@ class Importer extends AjaxBase {
 			'flows'     => wp_json_encode( $flows ),
 		);
 		wp_send_json_success( $response_data );
-
 	}
 
 	/**
@@ -433,7 +431,6 @@ class Importer extends AjaxBase {
 			'redirect_url' => admin_url( 'post.php?action=edit&post=' . $new_step_id ),
 		);
 		wp_send_json_success( $response_data );
-
 	}
 
 	/**
@@ -999,7 +996,6 @@ class Importer extends AjaxBase {
 		wcf()->logger->import_log( 'COMPLETE! Importing Step' );
 
 		wp_send_json_success( $response_data );
-
 	}
 
 	/**
@@ -1117,7 +1113,6 @@ class Importer extends AjaxBase {
 		wcf()->logger->import_log( 'COMPLETE! Importing Step' );
 
 		wp_send_json_success( $response_data );
-
 	}
 
 	/**
@@ -1181,7 +1176,6 @@ class Importer extends AjaxBase {
 		do_action( 'cartflows_after_template_import', $new_step_id, $response );
 
 		wcf()->logger->import_log( 'COMPLETE! Importing Step' );
-
 	}
 
 	/**
@@ -1294,7 +1288,6 @@ class Importer extends AjaxBase {
 		do_action( 'cartflows_after_template_import', $new_step_id, $response );
 
 		wcf()->logger->import_log( 'COMPLETE! Importing Step' );
-
 	}
 
 	/**
@@ -1323,7 +1316,12 @@ class Importer extends AjaxBase {
 			if ( $meta_value ) {
 
 				if ( is_serialized( $meta_value, true ) ) {
-					$raw_data = maybe_unserialize( stripslashes( $meta_value ) );
+					// Security: Using unserialize with allowed_classes=>false to prevent object injection.
+					$raw_data = unserialize( stripslashes( $meta_value ), array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, PHPCompatibility.FunctionUse.NewFunctionParameters.unserialize_optionsFound
+					// Drop malicious payloads completely to prevent fatal errors.
+					if ( false === $raw_data || is_object( $raw_data ) ) {
+						$raw_data = '';
+					}
 				} elseif ( is_array( $meta_value ) ) {
 					$raw_data = json_decode( stripslashes( $meta_value ), true );
 				} else {
@@ -1342,10 +1340,8 @@ class Importer extends AjaxBase {
 				if ( '_elementor_data' !== $meta_key && '_elementor_draft' !== $meta_key && '_fl_builder_data' !== $meta_key && '_fl_builder_draft' !== $meta_key ) {
 					if ( is_array( $raw_data ) ) {
 						wcf()->logger->import_log( '✓ Added post meta ' . $meta_key /* . ' | ' . wp_json_encode( $raw_data ) */ );
-					} else {
-						if ( ! is_object( $raw_data ) ) {
+					} elseif ( ! is_object( $raw_data ) ) {
 							wcf()->logger->import_log( '✓ Added post meta ' . $meta_key /* . ' | ' . $raw_data */ );
-						}
 					}
 				}
 
@@ -1510,7 +1506,6 @@ class Importer extends AjaxBase {
 				$this->elementor_find_and_replace_template_data( $element['elements'], $posted_data );
 			}
 		}
-
 	}
 
 	/**
@@ -1541,7 +1536,6 @@ class Importer extends AjaxBase {
 				$this->gutenberg_find_and_replace_template_data( $element['innerBlocks'], $posted_data );
 			}
 		}
-
 	}
 
 	/**

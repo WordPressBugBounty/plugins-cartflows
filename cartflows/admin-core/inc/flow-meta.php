@@ -61,7 +61,7 @@ class FlowMeta {
 						'value'        => get_post_meta( $flow_id, 'instant-layout-style', true ),
 						'desc'         => sprintf(
 							/* translators: %1$s: Break line, %2$s: link html Start, %3$s: Link html end. */
-							__( 'This layout will replace the default page template for the Checkout, Upsell/Downsell and Thank You steps. You can customize the design %1$sin the Checkout, Upsell/Downsell and Thank You step\'s settings, under the design tab. %2$sRead More.%3$s', 'cartflows' ),
+							__( 'This layout will replace the default page template for the Checkout, Upsell/Downsell and Thank You steps. You can customize %1$sthe design in the Checkout, Upsell/Downsell and Thank You step\'s settings, under the design tab. %2$sRead More.%3$s', 'cartflows' ),
 							'<br>',
 							'<a href="https://cartflows.com/docs/cartflows-instant-checkout-layout/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">',
 							'</a>'
@@ -239,16 +239,6 @@ class FlowMeta {
 						'label'         => __( 'Funnel Slug', 'cartflows' ),
 						'value'         => get_post_field( 'post_name', $flow_id ),
 						'display_align' => 'vertical',
-					),
-					'sandbox_mode'  => array(
-						'type'         => 'toggle',
-						'label'        => __( 'Enable Test Mode', 'cartflows' ),
-						'name'         => 'wcf-testing',
-						'value'        => get_post_meta( $flow_id, 'wcf-testing', true ),
-						'tooltip'      => ! $is_store_checkout_flow 
-							? __( 'The Test Mode automatically adds sample products to your funnel if you haven\'t selected any. This helps you preview and test the checkout experience easily.', 'cartflows' ) 
-							: __( 'The Test Mode automatically adds sample products to your store checkout funnel if you haven\'t selected any. This helps you preview and test the experience easily on all steps except the Checkout page.', 'cartflows' ),
-						'is_fullwidth' => true,
 					),
 					'flow_indexing' => array(
 						'type'          => 'select',

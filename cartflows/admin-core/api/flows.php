@@ -145,6 +145,10 @@ class Flows extends ApiBase {
 				}
 			}
 
+			if ( null === $request->get_param( 'post_status' ) ) {
+				$args['post_status'] = 'publish';
+			}
+
 			if ( isset( $_REQUEST['start_date'] ) & isset( $_REQUEST['end_date'] ) ) { //phpcs:ignore
 				$args['date_query'] = array(
 					array(
@@ -336,6 +340,5 @@ class Flows extends ApiBase {
 		}
 
 		return str_replace( '&nbsp;', '', wc_price( $gross_sale ) );
-
 	}
 }

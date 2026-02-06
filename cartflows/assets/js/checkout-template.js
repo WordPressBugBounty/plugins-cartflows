@@ -255,6 +255,9 @@
 						} );
 					} );
 
+				// Fix the dutch address order.
+				fixDutchAddressOrder();
+
 				cartflows_checkout_form = JSON.stringify( checkout_data );
 				localStorage.setItem(
 					'cartflows_checkout_form',
@@ -292,6 +295,34 @@
 					}
 				}
 			},
+		};
+
+		const fixDutchAddressOrder = function () {
+			const billing_country = $( '#billing_country' ).val();
+			const billing_address = $( '#billing_address_1' ).val();
+
+			if ( billing_country === 'NL' && billing_address ) {
+				const match_billing =
+					billing_address.match( /^(\d+\S*)\s+(.+)$/ );
+				if ( match_billing ) {
+					$( '#billing_address_1' ).val(
+						match_billing[ 2 ] + ' ' + match_billing[ 1 ]
+					);
+				}
+			}
+
+			const shipping_country = $( '#shipping_country' ).val();
+			const shipping_address = $( '#shipping_address_1' ).val();
+
+			if ( shipping_country === 'NL' && shipping_address ) {
+				const match_shipping =
+					shipping_address.match( /^(\d+\S*)\s+(.+)$/ );
+				if ( match_shipping ) {
+					$( '#shipping_address_1' ).val(
+						match_shipping[ 2 ] + ' ' + match_shipping[ 1 ]
+					);
+				}
+			}
 		};
 
 		wcf_form_data.get();

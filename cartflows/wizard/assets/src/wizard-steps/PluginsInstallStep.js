@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { __ } from '@wordpress/i18n';
 import { useHistory } from 'react-router-dom';
 import { useStateValue } from '../utils/StateProvider';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 function PluginsInstallStep() {
 	const [ processing, setProcessing ] = useState( {
@@ -15,9 +16,7 @@ function PluginsInstallStep() {
 		useStateValue();
 	const history = useHistory();
 
-	const required_plugins = cartflows_wizard.plugins.filter(
-		( plugin ) => plugin.status !== 'active'
-	);
+	const required_plugins = cartflows_wizard.plugins;
 	let installed_plugins_count = 0;
 
 	/**
@@ -121,7 +120,7 @@ function PluginsInstallStep() {
 
 	return (
 		<div className="wcf-container wcf-wizard--plugin-install">
-			<div className="wcf-row mt-12">
+			<div className="mt-12">
 				<div className="bg-white rounded mx-auto px-11 text-center">
 					<span className="text-sm font-medium text-primary-600 mb-10 text-center block tracking-[.24em] uppercase">
 						{ __( 'Step 3 of 6', 'cartflows' ) }
@@ -158,12 +157,16 @@ function PluginsInstallStep() {
 									const plugin_name = plugin.name,
 										plugin_stat = plugin.status;
 
-									// Skip the display of Spectra plugin if default page builder is set other than gutenberg.
+									// Skip the display of Spectra plugin if default page builder is set other than gutenberg,
+									// and is not empty.
 									if (
 										'gutenberg' !== selected_page_builder &&
+										'' !== selected_page_builder &&
 										'ultimate-addons-for-gutenberg' ===
 											plugin.slug
 									) {
+										// Increasing the plugin count for the non-gutenberg page builders.
+										installed_plugins_count++;
 										return '';
 									}
 
@@ -195,15 +198,19 @@ function PluginsInstallStep() {
 
 												<label
 													htmlFor={ plugin.slug }
-													className="font-medium text-slate-800 capitalize"
+													className="font-medium text-slate-800 capitalize flex items-center gap-2"
 												>
 													{ 'ultimate-addons-for-gutenberg' ===
-													plugin
+													plugin.slug
 														? __(
 																'Spectra',
 																'cartflows'
 														  )
 														: plugin_name }{ ' ' }
+													{ 'active' ===
+														plugin_stat && (
+														<CheckCircleIcon className="w-5 h-5 text-green-600" />
+													) }
 													<span className="capitalize text-xs italic sr-only">
 														({ plugin_stat })
 													</span>
