@@ -336,14 +336,35 @@ class Cartflows_Step_Post_Type {
 	 * Query fixe throwing error on 404 page due our post type changes.
 	 * We are setting post_type as empty array to fix the issue.
 	 * Ther error was throwing due to redirect_canonical function
-	 * This fix is apply for 404 page only
+	 * This fix is apply for 404 page only.
+	 * 
+	 * Also redirects disabled steps to the next enabled step in the flow. 
 	 */
 	public function query_fix() {
 
-		global $wp_query;
+		global $wp_query, $post;
 
 		if ( $wp_query->is_404() ) {
 			$wp_query->set( 'post_type', array() );
+		} elseif ( ! empty( $post->ID ) && CARTFLOWS_STEP_POST_TYPE == $post->post_type && wcf()->utils->is_step_disabled( $post->ID ) ) {
+			$flow_id       = (int) wcf()->utils->get_flow_id_from_step_id( $post->ID );
+			$steps         = get_post_meta( $flow_id, 'wcf-steps', true );
+			$next_step_url = '';
+			if ( is_array( $steps ) && ! empty( $steps ) ) {
+
+				// Find the next enabled step.
+				foreach ( $steps as $step ) {
+					if ( isset( $step['id'] ) && $post->ID !== $step['id'] && ! wcf()->utils->is_step_disabled( $step['id'] ) ) {
+						$next_step_url = get_permalink( $step['id'] );
+						break;
+					}
+				}
+			}
+
+			if ( $next_step_url ) {
+				wp_safe_redirect( $next_step_url );
+				exit;
+			}
 		}
 	}
 

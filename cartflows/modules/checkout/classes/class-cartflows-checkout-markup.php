@@ -552,6 +552,11 @@ class Cartflows_Checkout_Markup {
 			return;
 		}
 
+		// Skip cart manipulation for order-pay pages as the order already exists.
+		if ( is_checkout_pay_page() ) {
+			return;
+		}
+
 		global $post, $wcf_step;
 
 		if ( _is_wcf_checkout_type() ) {
@@ -824,8 +829,88 @@ class Cartflows_Checkout_Markup {
 
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'checkout_fields_actions' ), 10, 1 );
 
+		// Add file field type support.
+		add_filter( 'woocommerce_form_field_file', array( $this, 'render_file_field' ), 10, 4 );
+
 		$this->update_the_checkout_strings();
 		$this->add_customized_shipping_section();
+	}
+
+	/**
+	 * Render file upload field for checkout.
+	 *
+	 * @param string $field Field HTML.
+	 * @param string $key Field key.
+	 * @param array  $args Field arguments.
+	 * @param string $value Field value.
+	 * @return string
+	 */
+	public function render_file_field( $field, $key, $args, $value ) {
+
+		$required    = ! empty( $args['required'] ) ? ' <abbr class="required">*</abbr>' : '';
+		$label       = isset( $args['label'] ) ? $args['label'] : '';
+		$label_class = ! empty( $args['label_class'] ) ? implode( ' ', $args['label_class'] ) : '';
+		$field_class = ! empty( $args['class'] ) ? implode( ' ', $args['class'] ) : '';
+		$validate    = ! empty( $args['required'] ) ? 'validate-required' : '';
+
+		$attrs = isset( $args['custom_attributes'] ) && is_array( $args['custom_attributes'] )
+			? $args['custom_attributes']
+			: array();
+
+		$max_size  = ! empty( $attrs['file_size'] ) ? absint( $attrs['file_size'] ) : 5;
+		$raw_types = isset( $attrs['accepted_file_types'] ) ? $attrs['accepted_file_types'] : array();
+
+		/**
+		 * Master frontend allowlist
+		 */
+		$master_types = Cartflows_Helper::get_allowed_file_extensions();
+
+		/**
+		 * Normalize admin-restricted file types.
+		 */
+		$restricted = array();
+
+		if ( ! empty( $raw_types ) ) {
+			foreach ( (array) $raw_types as $item ) {
+				if ( is_array( $item ) && isset( $item['value'] ) ) {
+					$restricted[] = strtolower( trim( $item['value'] ) );
+				} elseif ( is_string( $item ) ) {
+					foreach ( array_map( 'trim', explode( ',', $item ) ) as $ext ) {
+						if ( '' !== $ext ) {
+							$restricted[] = strtolower( $ext );
+						}
+					}
+				}
+			}
+		}
+
+		$allowed_types = empty( $restricted )
+			? $master_types
+			: array_intersect( $master_types, $restricted );
+
+		$accept_parts = array();
+
+		foreach ( $allowed_types as $ext ) {
+			$accept_parts[] = '.' . ltrim( $ext, '.' );
+		}
+
+		$accept_attr = implode( ',', $accept_parts );
+
+		$field  = '<p class="form-row ' . esc_attr( $field_class . ' ' . $validate ) . '" id="' . esc_attr( $key ) . '_field">';
+		$field .= '<label for="' . esc_attr( $key ) . '" class="woocommerce-form__label-for-file ' . esc_attr( $label_class ) . '">';
+		$field .= wp_kses_post( $label ) . $required . '</label>';
+		$field .= '<span class="woocommerce-input-wrapper wcf-file-input-wrapper">';
+		$field .= '<input type="file"
+			id="' . esc_attr( $key ) . '_file"
+			class="wcf-checkout-file-input"
+			data-field-key="' . esc_attr( $key ) . '"
+			accept="' . esc_attr( $accept_attr ) . '"
+			data-max-size="' . esc_attr( (string) $max_size ) . '" />';
+		$field .= '<input type="hidden" id="' . esc_attr( $key ) . '" name="' . esc_attr( $key ) . '" class="wcf-checkout-file-url" value="' . esc_attr( $value ) . '" />';
+		$field .= '<span class="wcf-file-error" id="' . esc_attr( $key ) . '_error"></span>';
+		$field .= '</span></p>';
+
+		return $field;
 	}
 
 	/**
@@ -1385,8 +1470,58 @@ class Cartflows_Checkout_Markup {
 		}
 
 		$order = wc_get_order( $order_id );
+		// Ensure $order is a WC_Order instance.
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
 		$this->store_flow_metadata_on_order( $checkout_id, $flow_id, $order );
+
+		// Save file upload custom field values to order meta.
+		if ( $checkout_id ) {
+			$this->save_file_field_meta( (int) $checkout_id, $order );
+		}
 		//phpcs:enable WordPress.Security.NonceVerification
+	}
+
+	/**
+	 * Save file upload field values to order meta.
+	 *
+	 * @param int      $checkout_id The checkout step ID.
+	 * @param WC_Order $order The order object.
+	 * @return void
+	 */
+	private function save_file_field_meta( $checkout_id, $order ) {
+
+		$field_groups = array(
+			'wcf_field_order_billing',
+			'wcf_field_order_shipping',
+		);
+
+		foreach ( $field_groups as $meta_key ) {
+			$saved_fields = get_post_meta( $checkout_id, $meta_key, true );
+
+			if ( ! is_array( $saved_fields ) ) {
+				continue;
+			}
+
+			foreach ( $saved_fields as $field_key => $field_data ) {
+				if ( ! isset( $field_data['type'] ) || 'file' !== $field_data['type'] ) {
+					continue;
+				}
+
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing
+				if ( ! empty( $_POST[ $field_key ] ) ) {
+					
+					$file_url = esc_url_raw( wp_unslash( $_POST[ $field_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+					if ( ! empty( $file_url ) ) {
+						$order->update_meta_data( $field_key, $file_url );
+					}
+				}
+			}
+		}
+
+		$order->save();
 	}
 
 	/**
@@ -1638,6 +1773,8 @@ class Cartflows_Checkout_Markup {
 
 		$vars['woocommerce_login_nonce'] = wp_create_nonce( 'woocommerce-login' );
 
+		$vars['wcf_file_upload_nonce'] = wp_create_nonce( 'wcf-file-upload' );
+
 		$vars['allow_persistence'] = apply_filters( 'cartflows_allow_persistence', 'yes' );
 
 		$vars['is_logged_in'] = is_user_logged_in();
@@ -1663,6 +1800,22 @@ class Cartflows_Checkout_Markup {
 			'is_enabled' => wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-enable-checkout-field-validation-text' ),
 			'error_msg'  => wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-checkout-field-validation-text' ),
 		);
+
+		// Detect whether any file upload fields exist on checkout.
+		$has_file_field = false;
+		if ( $checkout_id ) {
+			$billing_fields  = get_post_meta( $checkout_id, 'wcf_field_order_billing', true );
+			$shipping_fields = get_post_meta( $checkout_id, 'wcf_field_order_shipping', true );
+			$all_fields      = array_merge( is_array( $billing_fields ) ? $billing_fields : array(), is_array( $shipping_fields ) ? $shipping_fields : array() );
+
+			foreach ( $all_fields as $field_data ) {
+				if ( isset( $field_data['type'] ) && 'file' === $field_data['type'] && ! empty( $field_data['enabled'] ) ) {
+					$has_file_field = true;
+					break;
+				}
+			}
+		}
+		$vars['has_file_field'] = $has_file_field;
 
 		return $vars;
 	}

@@ -308,16 +308,13 @@ class AdminMenu {
 					'admin.php?page=' . $this->menu_slug . '&path=addons'
 				);
 
-				if ( ! get_option( 'wcf_setup_page_skipped', false ) && '1' === get_option( 'wcf_setup_skipped', false ) && $this->maybe_skip_setup_menu() ) {
-
-					add_submenu_page(
-						$parent_slug,
-						__( 'Setup', 'cartflows' ),
-						__( 'Setup', 'cartflows' ),
-						$capability,
-						'admin.php?page=' . $this->menu_slug . '&path=setup'
-					);
-				}
+				add_submenu_page(
+					$parent_slug,
+					__( 'Learn', 'cartflows' ),
+					__( 'Learn', 'cartflows' ),
+					$capability,
+					'admin.php?page=' . $this->menu_slug . '&path=learn'
+				);
 
 				if ( ! _is_cartflows_pro() ) {
 					add_submenu_page(
@@ -334,39 +331,6 @@ class AdminMenu {
 			// Disable phpcs since we need to override submenu name.
 			$submenu[ $parent_slug ][0][0] = __( 'Dashboard', 'cartflows' ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
-	}
-
-	/**
-	 * Add custom capabilities to Admin user.
-	 */
-	public function maybe_skip_setup_menu() {
-
-		$is_wcar_active = is_plugin_active( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php' );
-
-		if ( ! $is_wcar_active ) {
-			return true;
-		}
-
-		$cpsw_connection_status = 'success' === get_option( 'cpsw_test_con_status', false ) || 'success' === get_option( 'cpsw_con_status', false );
-
-		if ( ! $cpsw_connection_status ) {
-			return true;
-		}
-
-		$is_set_report_email_ids = get_option( 'cartflows_stats_report_email_ids', false );
-
-		if ( ! $is_set_report_email_ids ) {
-			return true;
-		}
-
-		$is_store_checkout = \Cartflows_Helper::get_common_setting( 'global_checkout' );
-
-		if ( empty( $is_store_checkout ) ) {
-			return true;
-		}
-
-		update_option( 'wcf_setup_page_skipped', true );
-		return false;
 	}
 
 	/**
@@ -479,7 +443,7 @@ class AdminMenu {
 
 		$cf_pro_status        = $this->get_cartflows_pro_plugin_status();
 		$cf_pro_type_inactive = '';
-		if ( 'inactive' === $cf_pro_status ) {
+		if ( 'inactive' === $cf_pro_status || 'not-installed' === $cf_pro_status ) {
 
 			if ( ! function_exists( 'get_plugins' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -853,6 +817,9 @@ class AdminMenu {
 		$localize['is_flows_limit'] = false; // Removed the flow count condition.
 
 		$localize = $this->debugger_scripts( $localize );
+
+		$localize['save_learn_completed_nonce'] = wp_create_nonce( 'cartflows_save_learn_completed' );
+		$localize['activate_plugin_nonce']      = wp_create_nonce( 'cartflows_activate_plugin' );
 
 		wp_localize_script( $handle, 'cartflows_admin', $localize );
 	}

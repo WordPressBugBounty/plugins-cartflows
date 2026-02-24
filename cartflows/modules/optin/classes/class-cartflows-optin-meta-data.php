@@ -495,7 +495,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 								),
 							),
 						),
-						'button-bg-color'           => array(
+						'button-text-color'         => array(
 							'type'   => 'color-picker',
 							'label'  => __( 'Text Color', 'cartflows' ),
 							'name'   => 'wcf-submit-color',
@@ -568,6 +568,14 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 							'label'         => __( 'Step Slug', 'cartflows' ),
 							'value'         => get_post_field( 'post_name' ),
 							'display_align' => 'vertical',
+						),
+						'wcf-disable-step-toggle' => array(
+							'type'         => 'toggle',
+							'label'        => __( 'Disable step', 'cartflows' ),
+							'name'         => 'wcf-disable-step',
+							'value'        => $options['wcf-disable-step'],
+							'tooltip'      => __( 'Turn this on to disable the step', 'cartflows' ),
+							'is_fullwidth' => true,
 						),
 						'wcf-optin-custom-script' => array(
 							'type'          => 'textarea',
@@ -742,7 +750,6 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 		}
 
 		return $optin_data;
-
 	}
 
 	/**
@@ -755,13 +762,10 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 		$meta_option = wcf()->options->get_optin_fields( $post_id );
 
 		return $meta_option;
-
 	}
-
 }
 
 /**
  * Kicking this off by calling 'get_instance()' method.
  */
 Cartflows_Optin_Meta_Data::get_instance();
-

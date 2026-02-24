@@ -275,13 +275,13 @@ class WizardCore {
 
 		$allow_usage_tracking = isset( $_POST['allow_usage_tracking'] ) && 'true' == $_POST['allow_usage_tracking'] ? 'yes' : 'no';
 
-		$usage_tracking = get_site_option( 'cf_analytics_optin' );
+		$usage_tracking = get_site_option( 'cf_usage_optin' );
 
 		if ( ( false === $usage_tracking ) || $allow_usage_tracking !== $usage_tracking ) {
-			update_site_option( 'cf_analytics_optin', $allow_usage_tracking );
+			update_site_option( 'cf_usage_optin', $allow_usage_tracking );
 		}
 
-		wp_send_json_success( get_site_option( 'cf_analytics_optin' ) );
+		wp_send_json_success( get_site_option( 'cf_usage_optin' ) );
 	}
 
 	/**

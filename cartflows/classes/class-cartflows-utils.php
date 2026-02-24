@@ -361,6 +361,25 @@ class Cartflows_Utils {
 	}
 
 	/**
+	 * Check if a step is disabled.
+	 *
+	 * @since 2.1.20
+	 * @param int $step_id step ID.
+	 * @return bool
+	 */
+	public function is_step_disabled( $step_id ) {
+
+		if ( empty( $step_id ) ) {
+			return false;
+		}
+
+		$is_disabled = get_post_meta( $step_id, 'wcf-disable-step', true );
+
+		// Step is enabled by default, so if disabled step meta is set to 'yes', the step is disabled.
+		return ( 'yes' === $is_disabled );
+	}
+
+	/**
 	 *  Check if loaded page requires woo.
 	 *
 	 * @return bool
@@ -693,6 +712,24 @@ class Cartflows_Utils {
 			&& WC()->cart->is_empty() 
 			&& ! is_customize_preview() 
 			&& apply_filters( 'woocommerce_checkout_update_order_review_expired', true );
+	}
+
+	/**
+	 * Checks if WooCommerce HPOS (High-Performance Order Storage) is enabled.
+	 *
+	 * @since 2.2.2
+	 *
+	 * @return bool True if HPOS is enabled, false otherwise.
+	 */
+	public function is_hpos_enabled() {
+
+		if (
+			class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' )
+			&& method_exists( '\Automattic\WooCommerce\Utilities\OrderUtil', 'custom_orders_table_usage_is_enabled' )
+		) {
+			return \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+		}
+		return false;
 	}
 }
 

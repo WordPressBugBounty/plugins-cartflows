@@ -46,7 +46,7 @@ class Cartflows_Helper {
 	/**
 	 * Common Debug data
 	 *
-	 * @var zapier
+	 * @var debug_data
 	 */
 	private static $debug_data = null;
 
@@ -337,32 +337,46 @@ class Cartflows_Helper {
 	}
 
 	/**
-	 * Get plugin status
+	 * Determine the status of a given plugin.
+	 *
+	 * Returns 'install' if the plugin is not installed,
+	 * 'activate' if installed but not active,
+	 * 'inactive' if installed and active but $send_active is not true,
+	 * or 'active' if installed and active and $send_active is true.
 	 *
 	 * @since 1.1.4
 	 *
-	 * @param  string $plugin_init_file Plguin init file.
-	 * @return mixed
+	 * @param  string $plugin_init_file Plugin init file (e.g., 'plugin-folder/plugin-file.php').
+	 * @param  bool   $send_active      If true, returns 'active' for active plugins; otherwise returns 'inactive'.
+	 * @return string  The status: 'install', 'activate', 'inactive', or 'active'.
 	 */
-	public static function get_plugin_status( $plugin_init_file ) {
+	public static function get_plugin_status( $plugin_init_file, $send_active = false ) {
 
 		if ( null == self::$installed_plugins ) {
 			self::$installed_plugins = get_plugins();
 		}
 
-		if ( ! isset( self::$installed_plugins[ $plugin_init_file ] ) ) {
-			return 'install';
-		} elseif ( ! is_plugin_active( $plugin_init_file ) ) {
-			return 'activate';
-		} else {
-			return 'inactive';
+		if ( $send_active && is_plugin_active( $plugin_init_file ) ) {
+			return 'active';
 		}
+
+		$plugin_status = '';
+
+		if ( ! isset( self::$installed_plugins[ $plugin_init_file ] ) ) {
+			$plugin_status = 'install';
+		} elseif ( ! is_plugin_active( $plugin_init_file ) ) {
+			$plugin_status = 'activate';
+		} else {
+			$plugin_status = 'inactive';
+		}
+
+		return $plugin_status;
 	}
 
 	/**
 	 * Get zapier settings.
 	 *
-	 * @return  array.
+	 * @return array
 	 */
 	public static function get_common_settings() {
 
@@ -373,6 +387,7 @@ class Cartflows_Helper {
 				array(
 					'global_checkout'          => '',
 					'override_global_checkout' => 'enable',
+					'override_store_order_pay' => 'disable',
 					'disallow_indexing'        => 'disable',
 					'default_page_builder'     => 'elementor',
 				)
@@ -395,7 +410,7 @@ class Cartflows_Helper {
 	/**
 	 * Get debug settings data.
 	 *
-	 * @return  array.
+	 * @return array
 	 */
 	public static function get_debug_settings() {
 
@@ -521,37 +536,6 @@ class Cartflows_Helper {
 		}
 
 		return $fields;
-	}
-
-	/**
-	 * Get checkout fields settings.
-	 *
-	 * @return  array.
-	 */
-	public static function get_checkout_fields_settings() {
-
-		if ( null === self::$checkout_fields ) {
-			$checkout_fields_default = array(
-				'enable_customization'  => 'disable',
-				'enable_billing_fields' => 'disable',
-			);
-
-			$billing_fields = self::get_checkout_fields( 'billing' );
-
-			if ( is_array( $billing_fields ) && ! empty( $billing_fields ) ) {
-
-				foreach ( $billing_fields as $key => $value ) {
-
-					$checkout_fields_default[ $key ] = 'enable';
-				}
-			}
-
-			$checkout_fields = self::get_admin_settings_option( '_wcf_checkout_fields', false, false );
-
-			self::$checkout_fields = wp_parse_args( $checkout_fields, $checkout_fields_default );
-		}
-
-		return self::$checkout_fields;
 	}
 
 	/**
@@ -1357,6 +1341,7 @@ class Cartflows_Helper {
 		$is_checkbox     = 'checkbox' == $type ? true : false;
 		$is_radiobutton  = 'radio' == $type ? true : false;
 		$is_select       = 'select' == $type ? true : false;
+		$is_file         = 'file' == $type ? true : false;
 		$is_custom_field = isset( $field_args['custom'] ) && true === (bool) $field_args['custom'] ? true : false;
 
 		$data_array['field_options'] = array(
@@ -1470,7 +1455,7 @@ class Cartflows_Helper {
 			$data_array['field_options']['field-default']['placeholder'] = $date_placeholder;
 		}
 
-		if ( ! in_array( $type, array( 'checkbox', 'select', 'radio', 'datetime-local', 'date', 'time', 'number' ), true ) ) {
+		if ( ! in_array( $type, array( 'checkbox', 'select', 'radio', 'datetime-local', 'date', 'time', 'number', 'file' ), true ) ) {
 			$data_array['field_options']['field-placeholder'] = array(
 				'type'  => 'text',
 				'label' => __( 'Placeholder', 'cartflows' ),
@@ -1491,6 +1476,35 @@ class Cartflows_Helper {
 				'label' => __( 'Max Number', 'cartflows' ),
 				'name'  => $name . '[custom_attributes][max]',
 				'value' => $field_args['custom_attributes']['max'],
+			);
+		}
+
+		// Remove default field option for file type as files cannot have default values.
+		if ( $is_file ) {
+			unset( $data_array['field_options']['field-default'] );
+
+			$data_array['field_options']['field-file-size'] = array(
+				'type'    => 'number',
+				'label'   => __( 'File Size (MB)', 'cartflows' ),
+				'name'    => $name . '[custom_attributes][file_size]',
+				'value'   => isset( $field_args['custom_attributes']['file_size'] ) ? $field_args['custom_attributes']['file_size'] : 5,
+				'min'     => 0,
+				'tooltip' => __( 'Enter maximum file size allowed. Default is 5MB.', 'cartflows' ),
+			);
+
+			// Normalize stored value: could be a comma-separated string or an array of {value, label} objects from a previous Select2Field save.
+			$stored_types = isset( $field_args['custom_attributes']['accepted_file_types'] )
+				? $field_args['custom_attributes']['accepted_file_types']
+				: '';
+
+			$normalized_value = self::sanitize_accepted_file_types( $stored_types );
+
+			$data_array['field_options']['field-accepted-file-types'] = array(
+				'type'    => 'text',
+				'label'   => __( 'Accepted File Types', 'cartflows' ),
+				'name'    => $name . '[custom_attributes][accepted_file_types]',
+				'value'   => $normalized_value,
+				'tooltip' => __( 'Enter comma-separated file extensions (e.g. jpg, png, pdf).', 'cartflows' ),
 			);
 		}
 
@@ -1864,5 +1878,41 @@ class Cartflows_Helper {
 		}
 
 		return $rollback_versions_options;
+	}
+
+	/**
+	 * Get the master allowlist of file extensions for checkout file uploads.
+	 *
+	 * @return array<string> Allowed file extensions.
+	 */
+	public static function get_allowed_file_extensions() {
+		return array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'ico', 'pdf', 'mp3', 'm4a', 'wav', 'mp4', 'm4v', 'mov' );
+	}
+
+	/**
+	 * Sanitize accepted file types input against the master allowlist.
+	 *
+	 * Strips any extensions not in the allowlist and returns a clean comma-separated string.
+	 *
+	 * @param string $raw_types Comma-separated file extensions from user input.
+	 * @return string Sanitized comma-separated file extensions.
+	 */
+	public static function sanitize_accepted_file_types( $raw_types ) {
+		if ( empty( $raw_types ) ) {
+			return '';
+		}
+
+		$allowed   = self::get_allowed_file_extensions();
+		$input     = array_map( 'trim', explode( ',', sanitize_text_field( $raw_types ) ) );
+		$validated = array();
+
+		foreach ( $input as $ext ) {
+			$ext = strtolower( $ext );
+			if ( ! empty( $ext ) && in_array( $ext, $allowed, true ) ) {
+				$validated[] = $ext;
+			}
+		}
+
+		return implode( ', ', array_unique( $validated ) );
 	}
 }

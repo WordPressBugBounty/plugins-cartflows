@@ -187,7 +187,6 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 			'page_settings'   => $this->get_page_settings( $step_id ),
 			'design_settings' => $design_settings,
 		);
-
 	}
 
 	/**
@@ -402,7 +401,6 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'value'             => $options['wcf-heading-font-family'],
 							'font_weight_name'  => 'wcf-heading-font-weight',
 							'font_weight_value' => $options['wcf-heading-font-weight'],
-							'for'               => 'wcf-heading',
 							'display_align'     => 'vertical',
 							'conditions'        => array(
 								'fields' => array(
@@ -413,7 +411,6 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 									),
 								),
 							),
-							'display_align'     => 'vertical',
 						),
 
 						'input-field-section'       => array(
@@ -465,7 +462,6 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'value'             => $options['wcf-input-font-family'],
 							'font_weight_name'  => 'wcf-input-font-weight',
 							'font_weight_value' => $options['wcf-input-font-weight'],
-							'for'               => 'wcf-input',
 							'conditions'        => array(
 								'fields' => array(
 									array(
@@ -636,7 +632,6 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'value'             => $options['wcf-button-font-family'],
 							'font_weight_name'  => 'wcf-button-font-weight',
 							'font_weight_value' => $options['wcf-button-font-weight'],
-							'for'               => 'wcf-button',
 							'conditions'        => array(
 								'fields' => array(
 									array(
@@ -1021,6 +1016,14 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 							'display_align' => 'vertical',
 							'tooltip'       => __( 'This is the name (slug) of the current step. Changing it will update the URL for this step, so be cautious!', 'cartflows' ),
 						),
+						'wcf-disable-step-toggle'    => array(
+							'type'         => 'toggle',
+							'label'        => __( 'Disable step', 'cartflows' ),
+							'name'         => 'wcf-disable-step',
+							'value'        => $options['wcf-disable-step'],
+							'tooltip'      => __( 'Turn this on to disable the step', 'cartflows' ),
+							'is_fullwidth' => true,
+						),
 						'wcf-checkout-custom-script' => array(
 							'type'          => 'textarea',
 							'label'         => __( 'Custom Script', 'cartflows' ),
@@ -1097,7 +1100,6 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 		}
 
 		return $optin_data;
-
 	}
 
 	/**
@@ -1110,7 +1112,6 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 		$meta_option = wcf()->options->get_checkout_fields( $post_id );
 
 		return $meta_option;
-
 	}
 
 	/**
@@ -1128,7 +1129,6 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 			$formatted_name = rawurldecode( $product_object->get_formatted_name() );
 		}
 		return $formatted_name;
-
 	}
 
 	/**
@@ -1515,12 +1515,9 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 
 		return $field_args;
 	}
-
-
 }
 
 /**
  * Kicking this off by calling 'get_instance()' method.
  */
 Cartflows_Checkout_Meta_Data::get_instance();
-

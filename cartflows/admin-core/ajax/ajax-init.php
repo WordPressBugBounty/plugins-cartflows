@@ -73,8 +73,8 @@ class AjaxInit {
 			'CartflowsAdmin\AdminCore\Ajax\MetaData',
 			'CartflowsAdmin\AdminCore\Ajax\FlowsStats',
 			'CartflowsAdmin\AdminCore\Ajax\AbSteps',
-			'CartflowsAdmin\AdminCore\Ajax\SetupPage',
 			'CartflowsAdmin\AdminCore\Ajax\Debugger',
+			'CartflowsAdmin\AdminCore\Ajax\Learn',
 		);
 
 		foreach ( $controllers as $controller ) {

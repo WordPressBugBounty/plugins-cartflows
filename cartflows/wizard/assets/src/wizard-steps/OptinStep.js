@@ -109,7 +109,7 @@ function OptinStep() {
 		const name = document.getElementById( 'wcf-user-name' ).value;
 		const email = document.getElementById( 'wcf-user-email' ).value;
 		const usage_tracking_enabled = document.querySelector(
-			'input[type=checkbox][name="cf_analytics_optin"]'
+			'input[type=checkbox][name="cf_usage_optin"]'
 		).checked;
 
 		if ( validateForm( { name, email } ) ) {
@@ -277,7 +277,7 @@ function OptinStep() {
 								<div className="relative block">
 									<CheckboxField
 										class="wcf-analytics_optin"
-										name="cf_analytics_optin"
+										name="cf_usage_optin"
 										value="yes"
 										label={ __(
 											'I agree to share usage data to help improve CartFlows.',

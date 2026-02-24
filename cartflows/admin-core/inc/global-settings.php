@@ -111,6 +111,22 @@ class GlobalSettings {
 						/* translators: %1$1s: link html start, %2$12: link html end*/
 						'desc'     => sprintf( __( 'For more information about the Store Checkout settings please %1$sclick here%2$s.', 'cartflows' ), '<a href="https://cartflows.com/docs/store-checkout/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),
 					),
+					'override_store_order_pay'  => array(
+						'type'       => 'toggle',
+						'backComp'   => true,
+						'name'       => '_cartflows_common[override_store_order_pay]',
+						'label'      => __( 'Override Order Pay Page', 'cartflows' ),
+						'desc'       => __( 'Enable this to apply your Store Checkout design to the order-pay page, providing a unified checkout experience when customers pay for pending orders.', 'cartflows' ),
+						'conditions' => array(
+							'fields' => array(
+								array(
+									'name'     => '_cartflows_common[override_global_checkout]',
+									'operator' => '===',
+									'value'    => 'enable',
+								),
+							),
+						),
+					),
 					'global_checkout_seperator' => array(
 						'type' => 'separator',
 					),
@@ -1411,7 +1427,7 @@ class GlobalSettings {
 					),
 					'non-sensitive-data-analytics' => array(
 						'type'  => 'toggle',
-						'name'  => 'cf_analytics_optin',
+						'name'  => 'cf_usage_optin',
 						'label' => __( 'Help Us Improve Your Experience', 'cartflows' ),
 						/* translators: %1$1s: link html start, %2$12: link html end*/
 						'desc'  => sprintf( __( 'Collect non-sensitive information from your website, such as the PHP version and features used, to help us fix bugs faster, make smarter decisions, and build features that actually matter to you. %1$1s Learn More%2$2s.', 'cartflows' ), '<a href="https://my.cartflows.com/usage-tracking/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),

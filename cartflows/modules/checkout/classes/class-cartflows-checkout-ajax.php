@@ -54,6 +54,8 @@ class Cartflows_Checkout_Ajax {
 		add_action( 'wp_ajax_nopriv_wcf_check_email_exists', array( $this, 'check_email_exists' ) );
 		add_action( 'wp_ajax_nopriv_wcf_woocommerce_login', array( $this, 'woocommerce_user_login' ) );
 
+		add_action( 'wp_ajax_wcf_upload_checkout_file', array( $this, 'upload_checkout_file' ) );
+		add_action( 'wp_ajax_nopriv_wcf_upload_checkout_file', array( $this, 'upload_checkout_file' ) );
 	}
 
 	/**
@@ -282,6 +284,160 @@ class Cartflows_Checkout_Ajax {
 		wp_send_json_success( $response );
 	}
 
+	/**
+	 * Handle checkout file upload via AJAX.
+	 *
+	 * @since 2.2.2
+	 * @return void
+	 */
+	public function upload_checkout_file() {
+
+		if ( ! check_ajax_referer( 'wcf-file-upload', 'security', false ) ) {
+			wp_send_json_error(
+				array( 'error' => __( 'Nonce validation failed.', 'cartflows' ) )
+			);
+		}
+
+		if ( empty( $_FILES['wcf_checkout_file']['tmp_name'] ) ) {
+			wp_send_json_error(
+				array( 'error' => __( 'No file uploaded.', 'cartflows' ) )
+			);
+		}
+
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		$file         = $_FILES['wcf_checkout_file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput, WordPress.Security.NonceVerification.Missing
+		$file['name'] = sanitize_file_name( $file['name'] );
+		$file['ext']  = strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) );
+
+		$master_allowed = Cartflows_Helper::get_allowed_file_extensions();
+
+		$restrictions = $this->get_field_restrictions();
+
+		$allowed_extensions = empty( $restrictions['extensions'] )
+			? $master_allowed
+			: array_values( array_intersect( $master_allowed, $restrictions['extensions'] ) );
+
+		if ( ! in_array( $file['ext'], $allowed_extensions, true ) ) {
+			wp_send_json_error( array( 'error' => __( 'File type is not allowed.', 'cartflows' ) ) );
+		}
+
+		if ( (int) $file['size'] > $restrictions['max_size'] ) {
+			wp_send_json_error( array( 'error' => __( 'File size exceeds the allowed limit.', 'cartflows' ) ) );
+		}
+
+		$check = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'], wp_get_mime_types() );
+
+		if ( empty( $check['ext'] ) || $check['ext'] !== $file['ext'] ) {
+			wp_send_json_error( array( 'error' => __( 'Invalid or corrupted file.', 'cartflows' ) ) );
+		}
+
+		$result = $this->move_uploaded_file( $file );
+
+		wp_send_json_success(
+			array(
+				'success'  => true,
+				'url'      => esc_url_raw( $result['url'] ),
+				'filename' => sanitize_file_name( basename( $result['file'] ) ),
+			)
+		);
+	}
+
+	/**
+	 * Retrieve file size and type restrictions from field settings.
+	 *
+	 * @since 2.2.2
+	 *
+	 * @return array{max_size:int, extensions:string[]} Field-level upload restrictions.
+	 */
+	private function get_field_restrictions() {
+
+		$max_size   = 5 * 1024 * 1024; // 5MB default
+		$extensions = array();
+
+		$field_key   = empty( $_POST['field_key'] ) ? '' : sanitize_text_field( wp_unslash( $_POST['field_key'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$checkout_id = empty( $_POST['checkout_id'] ) ? 0 : absint( $_POST['checkout_id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		if ( empty( $field_key ) || empty( $checkout_id ) ) {
+			return compact( 'max_size', 'extensions' );
+		}
+
+		$field_type   = ( 0 === strpos( $field_key, 'shipping_' ) ) ? 'shipping' : 'billing';
+		$saved_fields = get_post_meta( $checkout_id, 'wcf_field_order_' . $field_type, true );
+
+		if ( ! is_array( $saved_fields ) || empty( $saved_fields[ $field_key ] ) || ! is_array( $saved_fields[ $field_key ] ) ) {
+			return compact( 'max_size', 'extensions' );
+		}
+
+		$custom_attributes = empty( $saved_fields[ $field_key ]['custom_attributes'] ) || ! is_array( $saved_fields[ $field_key ]['custom_attributes'] )
+			? array()
+			: $saved_fields[ $field_key ]['custom_attributes'];
+
+		if ( empty( $custom_attributes ) ) {
+			return compact( 'max_size', 'extensions' );
+		}
+
+		if ( ! empty( $custom_attributes['file_size'] ) && is_scalar( $custom_attributes['file_size'] ) ) {
+			$max_size = max( 1, absint( $custom_attributes['file_size'] ) ) * 1024 * 1024;
+		}
+
+		if ( ! empty( $custom_attributes['accepted_file_types'] ) ) {
+			$extensions = $this->normalize_extension_list( $custom_attributes['accepted_file_types'] );
+		}
+
+		return compact( 'max_size', 'extensions' );
+	}
+
+	/**
+	 * Normalize accepted file types into a lowercase extension list.
+	 *
+	 * @since 2.2.2
+	 *
+	 * @param string $raw Raw accepted file types value.
+	 * @return array Normalized extensions.
+	 */
+	private function normalize_extension_list( $raw ) {
+
+		if ( ! is_string( $raw ) || '' === trim( $raw ) ) {
+			return array();
+		}
+
+		$extensions = array_map( 'strtolower', array_map( 'trim', explode( ',', $raw ) ) );
+		
+		return array_values( array_filter( $extensions ) );
+	}
+
+	/**
+	 * Move the uploaded file into the WordPress uploads directory.
+	 *
+	 * @since 2.2.2
+	 *
+	 * @param array $file Normalized file data.
+	 * @return array Upload result.
+	 */
+	private function move_uploaded_file( array $file ) {
+
+		$upload_dir   = wp_upload_dir();
+		$file['name'] = wp_unique_filename( $upload_dir['path'], 'wcf_' . wp_generate_uuid4() . '.' . $file['ext'] );
+
+		$result = wp_handle_upload(
+			$file,
+			array(
+				'test_form' => false,
+				'mimes'     => wp_get_mime_types(),
+			)
+		);
+
+		if ( isset( $result['error'] ) ) {
+			wp_send_json_error(
+				array( 'error' => esc_html( $result['error'] ) )
+			);
+		}
+
+		return $result;
+	}
 }
 
 /**

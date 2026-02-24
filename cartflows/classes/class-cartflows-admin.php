@@ -410,13 +410,14 @@ class Cartflows_Admin {
 
 		$step_specific_features = array();
 
-		if ( apply_filters( 'cartflows_enable_non_sensitive_data_tracking', get_option( 'cf_analytics_optin', false ) ) ) {
+		if ( apply_filters( 'cartflows_enable_non_sensitive_data_tracking', get_option( 'cf_usage_optin', false ) ) ) {
 
 			// Combine all features to make a full list.
 			$theme_data = $this->get_active_theme();
 
 			// Prepare default data to be tracked.
 			$stats_data['plugin_data']['cartflows']                   = $this->get_default_stats( $theme_data );
+			$stats_data['plugin_data']['cartflows']['kpi_records']    = $this->get_kpi_tracking_data();
 			$stats_data['plugin_data']['cartflows']['numeric_values'] = $this->get_numeric_data_stats();
 			$stats_data['plugin_data']['cartflows']['boolean_values'] = $this->get_boolean_data_stats( $theme_data );
 
@@ -447,25 +448,104 @@ class Cartflows_Admin {
 		}
 
 		$default_data = array(
-			'website-domain'             => str_ireplace( array( 'http://', 'https://' ), '', home_url() ),
-			'site_language'              => get_locale(),
-			'cartflows-lite-version'     => CARTFLOWS_VER,
-			'cartflows-pro-version'      => _is_cartflows_pro() ? CARTFLOWS_PRO_VER : '',
-			'woocommerce-version'        => $woo_version,
-			'default-page-builder'       => Cartflows_Helper::get_common_setting( 'default_page_builder' ),
-			'active-theme'               => $theme_data['parent_theme'],
-			'active-gateways'            => wcf()->is_woo_active ? $this->get_active_gateways() : '',
-			'social-tracking'            => $this->get_all_social_features_tracking_data(),
-			'store-country'              => ! empty( $store_location['country'] ) ? $store_location['country'] : '',
-			'documentation-search-terms' => get_option( 'cartflows_kb_searches', array() ),
-			'internal_referer'           => ! empty( $bsf_internal_referer['cartflows'] ) ? $bsf_internal_referer['cartflows'] : '',
+			'website-domain'              => str_ireplace( array( 'http://', 'https://' ), '', home_url() ),
+			'site_language'               => get_locale(),
+			'cartflows-lite-version'      => CARTFLOWS_VER,
+			'cartflows-pro-version'       => _is_cartflows_pro() ? CARTFLOWS_PRO_VER : '',
+			'woocommerce-version'         => $woo_version,
+			'default-page-builder'        => Cartflows_Helper::get_common_setting( 'default_page_builder' ),
+			'active-theme'                => $theme_data['parent_theme'],
+			'active-gateways'             => wcf()->is_woo_active ? $this->get_active_gateways() : '',
+			'social-tracking'             => $this->get_all_social_features_tracking_data(),
+			'store-country'               => ! empty( $store_location['country'] ) ? $store_location['country'] : '',
+			'documentation-search-terms'  => get_option( 'cartflows_kb_searches', array() ),
+			'internal_referer'            => ! empty( $bsf_internal_referer['cartflows'] ) ? $bsf_internal_referer['cartflows'] : '',
 			// NPS Survey status for analytics tracking (first display, dismiss, submit, etc.).
-			'nps-survey-status'          => get_option( 'nps-survey-cartflows', array() ),
+			'nps-survey-status'           => get_option( 'nps-survey-cartflows', array() ),
 			// Add KPI for CartFlows Pro license key presence.
-			'pro_license_key_exists'     => $this->check_pro_license_key_exists() ? true : false,
+			'pro_license_key_exists'      => $this->check_pro_license_key_exists() ? true : false,
+			// Learn tab: list of module IDs the user has completed.
+			'learn-tab-completed-modules' => get_option( 'wcf_learn_data', array() ),
 		);
 
 		return $default_data;
+	}
+
+	/**
+	 * Get KPI tracking data for the last 2 days (excluding today).
+	 *
+	 * @since 2.2.2
+	 * @return array KPI data organized by date
+	 */
+	private function get_kpi_tracking_data() {
+		$kpi_data = array();
+		$today    = current_time( 'Y-m-d' );
+
+		// Get data for yesterday and day before yesterday.
+		for ( $i = 1; $i <= 2; $i++ ) {
+			$date        = gmdate( 'Y-m-d', (int) strtotime( $today . ' -' . $i . ' days' ) );
+			$order_count = $this->get_daily_orders_count( $date );
+
+			// Always include data, even if submissions is 0.
+			$kpi_data[ $date ] = array(
+				'numeric_values' => array(
+					'order_count' => $order_count,
+				),
+			);
+		}
+
+		return $kpi_data;
+	}
+
+	/**
+	 * Get daily submissions count for a specific date.
+	 *
+	 * @param string $date Date in Y-m-d format.
+	 * @since 2.2.2
+	 * @return int Daily submissions count
+	 */
+	private function get_daily_orders_count( $date ) {
+		global $wpdb;
+
+		$start_date = $date . ' 00:00:00';
+		$end_date   = $date . ' 23:59:59';
+
+		// HPOS compatibility check.
+		if ( wcf()->utils->is_hpos_enabled() ) {
+			$order_date_key   = 'date_created_gmt';
+			$order_status_key = 'status';
+			$order_id_key     = 'order_id';
+			$order_table      = $wpdb->prefix . 'wc_orders';
+			$order_meta_table = $wpdb->prefix . 'wc_orders_meta';
+			$order_type_key   = 'type';
+			$order_table_id   = 'id';
+		} else {
+			$order_date_key   = 'post_date';
+			$order_status_key = 'post_status';
+			$order_id_key     = 'post_id';
+			$order_table      = $wpdb->prefix . 'posts';
+			$order_meta_table = $wpdb->prefix . 'postmeta';
+			$order_type_key   = 'post_type';
+			$order_table_id   = 'ID';
+		}
+
+		//phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*)
+				FROM $order_table o
+				INNER JOIN $order_meta_table om ON o.$order_table_id = om.$order_id_key AND om.meta_key IN ('_wcf_flow_id', '_cartflows_parent_flow_id')
+				WHERE o.$order_type_key = 'shop_order'
+					AND o.$order_status_key IN ('wc-completed', 'wc-processing')
+					AND o.$order_date_key >= %s
+					AND o.$order_date_key <= %s",
+				$start_date,
+				$end_date
+			)
+		);
+		//phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return absint( $count );
 	}
 
 	/**

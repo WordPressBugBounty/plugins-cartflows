@@ -38,7 +38,6 @@ class Cartflows_Landing_Meta_Data extends Cartflows_Step_Meta_Base {
 	 * Constructor
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -114,6 +113,14 @@ class Cartflows_Landing_Meta_Data extends Cartflows_Step_Meta_Base {
 							'value'         => get_post_field( 'post_name' ),
 							'display_align' => 'vertical',
 						),
+						'wcf-disable-step-toggle'   => array(
+							'type'         => 'toggle',
+							'label'        => __( 'Disable step', 'cartflows' ),
+							'name'         => 'wcf-disable-step',
+							'value'        => $options['wcf-disable-step'],
+							'tooltip'      => __( 'Turn this on to disable the step', 'cartflows' ),
+							'is_fullwidth' => true,
+						),
 						'wcf-landing-custom-script' => array(
 							'type'          => 'textarea',
 							'label'         => __( 'Custom Script', 'cartflows' ),
@@ -167,7 +174,6 @@ class Cartflows_Landing_Meta_Data extends Cartflows_Step_Meta_Base {
 		}
 
 		return $optin_data;
-
 	}
 
 	/**
@@ -180,7 +186,6 @@ class Cartflows_Landing_Meta_Data extends Cartflows_Step_Meta_Base {
 		$meta_option = wcf()->options->get_landing_fields( $post_id );
 
 		return $meta_option;
-
 	}
 }
 

@@ -210,7 +210,7 @@ class Wizard extends AjaxBase {
 		}
 
 		// Enable the usage tracking for BSF Analytics.
-		update_option( 'cf_analytics_optin', $usage_tracking );
+		update_option( 'cf_usage_optin', $usage_tracking );
 
 		$api_args = array(
 			'timeout' => 90, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
@@ -807,5 +807,4 @@ class Wizard extends AjaxBase {
 			'new_flow_id'  => $flow_id,
 		);
 	}
-
 }

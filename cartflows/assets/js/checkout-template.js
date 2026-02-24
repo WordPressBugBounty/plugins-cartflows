@@ -748,6 +748,119 @@
 		}
 	};
 
+	const wcf_file_upload = {
+		init() {
+			$( document.body ).on(
+				'change',
+				'.wcf-checkout-file-input',
+				this.handle_file_change
+			);
+		},
+
+		handle_file_change() {
+			const $input = $( this ),
+				fieldKey = $input.data( 'field-key' ),
+				$hiddenField = $( '#' + fieldKey ),
+				$error = $( '#' + fieldKey + '_error' ),
+				maxSize = parseInt( $input.data( 'max-size' ) ) || 5;
+
+			// Clear previous errors.
+			$error.empty();
+
+			if ( ! this.files.length ) {
+				$hiddenField.val( '' );
+				return;
+			}
+
+			const file = this.files[ 0 ];
+
+			// Client-side file size validation.
+			if ( file.size > maxSize * 1024 * 1024 ) {
+				$error.html( 'File size exceeds ' + maxSize + 'MB limit.' );
+				$input.val( '' );
+				return;
+			}
+
+			// Client-side file type validation.
+			const ext = file.name.split( '.' ).pop().toLowerCase();
+
+			let allowed = [];
+
+			const allowedTypes = (
+				$input.data( 'allowed-types' ) || ''
+			).toString();
+			if ( allowedTypes ) {
+				allowed = allowedTypes.split( ',' ).map( function ( t ) {
+					return t.trim().toLowerCase();
+				} );
+			} else {
+				// Fallback to master allowlist.
+				allowed = [
+					'jpg',
+					'jpeg',
+					'png',
+					'webp',
+					'gif',
+					'pdf',
+					'mp3',
+					'm4a',
+					'wav',
+					'mp4',
+					'mov',
+				];
+			}
+
+			if ( allowed.length && ! allowed.includes( ext ) ) {
+				$error.html( 'File type not allowed.' );
+				$input.val( '' );
+				return;
+			}
+
+			const $wrapper = $input.closest( '.wcf-file-input-wrapper' );
+			// Show uploading state.
+			$wrapper.addClass( 'wcf-file-uploading' );
+
+			const formData = new FormData();
+			formData.append( 'wcf_checkout_file', file );
+			formData.append( 'action', 'wcf_upload_checkout_file' );
+			formData.append( 'security', cartflows.wcf_file_upload_nonce );
+			formData.append( 'field_key', fieldKey );
+			formData.append(
+				'checkout_id',
+				$( '._wcf_checkout_id' ).val() || ''
+			);
+
+			$.ajax( {
+				url: cartflows.ajax_url,
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success( response ) {
+					$wrapper.removeClass( 'wcf-file-uploading' );
+
+					if ( response.success && response.data ) {
+						$hiddenField.val( response.data.url );
+					} else {
+						const errorMsg =
+							response.data && response.data.error
+								? response.data.error
+								: 'Upload failed';
+						$error.html( errorMsg );
+						$hiddenField.val( '' );
+						$input.val( '' );
+					}
+				},
+				error() {
+					$wrapper.removeClass( 'wcf-file-uploading' );
+					$error.html( 'Upload failed. Please try again.' );
+					$hiddenField.val( '' );
+					$input.val( '' );
+				},
+			} );
+		},
+	};
+
 	$( function () {
 		wcf_persistent_data();
 
@@ -768,6 +881,10 @@
 		);
 
 		wcf_anim_field_style_two();
+
+		if ( cartflows.has_file_field ) {
+			wcf_file_upload.init();
+		}
 
 		// On email input field change.
 		$( '.wcf-customer-info #billing_email' ).on( 'input', function () {

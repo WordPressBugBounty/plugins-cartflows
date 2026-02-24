@@ -41,9 +41,9 @@ class Cartflows_Global_Checkout {
 
 		/* Global Checkout */
 		add_action( 'wp', array( $this, 'override_global_checkout' ), 0 );
+		add_action( 'wp', array( $this, 'maybe_override_order_pay_page' ), 0 );
 		add_action( 'template_redirect', array( $this, 'global_checkout_template_redirect' ), 1 );
 		add_action( 'admin_bar_menu', array( $this, 'update_checkout_link_for_global_checkout' ), 999 );
-
 	}
 
 	/**
@@ -170,6 +170,63 @@ class Cartflows_Global_Checkout {
 
 		$is_allow = ( isset( $_GET['key'] ) || isset( $_GET['order'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return apply_filters( 'cartflows_allow_display_global_checkout', $is_allow, $checkout_id );
+	}
+
+	/**
+	 * Override order-pay page with store checkout template.
+	 *
+	 * @since 2.2.2
+	 *
+	 * @return void
+	 */
+	public function maybe_override_order_pay_page() {
+
+		if ( ! is_checkout_pay_page() ) {
+			return;
+		}
+
+		if ( wcf()->utils->is_step_post_type() ) {
+			return;
+		}
+
+		$common = Cartflows_Helper::get_common_settings();
+
+		$global_checkout          = $common['global_checkout'];
+		$override_global_checkout = $common['override_global_checkout'];
+		$override_store_order_pay = $common['override_store_order_pay'];
+
+		if ( empty( $global_checkout ) || 'enable' !== $override_global_checkout || 'enable' !== $override_store_order_pay ) {
+			return;
+		}
+
+		// Ensure this is the store checkout and not a funnel.
+		$store_checkout = Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' );
+
+		if ( empty( $store_checkout ) ) {
+			return;
+		}
+
+		$flow_id = wcf()->utils->get_flow_id_from_step_id( $global_checkout );
+
+		if ( intval( $store_checkout ) !== intval( $flow_id ) ) {
+			return;
+		}
+
+		$checkout_post = get_post( $global_checkout );
+
+		if ( ! $checkout_post || 'publish' !== $checkout_post->post_status ) {
+			return;
+		}
+
+		if ( isset( $GLOBALS['posts'][0] ) ) {
+			$GLOBALS['posts'][0] = $checkout_post; //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		}
+
+		if ( isset( $GLOBALS['wp_the_query']->post ) ) {
+			$GLOBALS['wp_the_query']->post = $checkout_post; //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		}
+
+		$GLOBALS['post'] = $checkout_post; //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 	}
 }
 

@@ -177,7 +177,6 @@ class Cartflows_Step_Factory {
 	 * Set flow steps map
 	 */
 	public function set_flow_steps_map() {
-
 	}
 
 	/**
@@ -231,19 +230,19 @@ class Cartflows_Step_Factory {
 			$control_step = $this->get_control_step();
 
 			if ( is_array( $flow_steps ) ) {
+				$flow_steps_count = count( $flow_steps );
 
 				foreach ( $flow_steps as $index => $data ) {
 
 					if ( intval( $data['id'] ) === $control_step ) {
 
-						$next_step_index = $index + 1;
+						for ( $i = $index + 1; $i < $flow_steps_count; $i++ ) {
 
-						if ( isset( $flow_steps[ $next_step_index ] ) ) {
-
-							$next_step_id = intval( $flow_steps[ $next_step_index ]['id'] );
+							if ( isset( $flow_steps[ $i ]['id'] ) && ! wcf()->utils->is_step_disabled( $flow_steps[ $i ]['id'] ) ) {
+								$next_step_id = intval( $flow_steps[ $i ]['id'] );
+								break;
+							}
 						}
-
-						break;
 					}
 				}
 			}

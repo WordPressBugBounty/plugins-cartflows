@@ -172,7 +172,6 @@ class Cartflows_Checkout_Fields {
 		add_filter( 'woocommerce_get_country_locale_default', array( $this, 'prepare_country_locale' ) );
 
 		add_filter( 'woocommerce_default_address_fields', array( $this, 'woo_default_address_fields' ), 1000 );
-
 	}
 
 		/**
@@ -613,6 +612,9 @@ class Cartflows_Checkout_Fields {
 				if ( isset( $fields[ $type ] ) && is_array( $fields[ $type ] ) ) {
 
 					foreach ( $fields[ $type ] as $key => $field ) {
+						if ( ! empty( $fields[ $type ][ $key ]['type'] ) && 'file' === $fields[ $type ][ $key ]['type'] ) {
+							continue;
+						}
 						// Add label as placeholder if the placeholder value is empty.
 						if ( empty( $fields[ $type ][ $key ]['placeholder'] ) ) {
 							$fields[ $type ][ $key ]['placeholder'] = $fields[ $type ][ $key ]['label'];

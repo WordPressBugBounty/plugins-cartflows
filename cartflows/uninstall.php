@@ -43,7 +43,7 @@ if ( 'enable' === $is_delete ) {
 		'_cartflows_offer_global_settings',
 
 		'cf_analytics_installed_time',
-		'cf_analytics_optin',
+		'cf_usage_optin',
 		'cartflows_delete_plugin_data',
 		'wcf-instant-checkout-notice-skipped',
 	);
@@ -56,4 +56,3 @@ if ( 'enable' === $is_delete ) {
 		as_unschedule_all_actions( 'cartflows_send_report_summary_email' );
 	}
 }
-

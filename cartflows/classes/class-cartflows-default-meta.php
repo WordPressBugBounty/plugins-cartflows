@@ -114,6 +114,10 @@ class Cartflows_Default_Meta {
 					'default'  => $this->get_show_design_meta_value(),
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
+				'wcf-disable-step'                         => array(
+					'default'  => 'no',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
 				'wcf-field-google-font-url'                => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SANITIZE_URL',
@@ -524,7 +528,6 @@ class Cartflows_Default_Meta {
 		}
 
 		return apply_filters( "cartflows_checkout_meta_{$key}", $value );
-
 	}
 
 	/**
@@ -551,6 +554,10 @@ class Cartflows_Default_Meta {
 			self::$thankyou_fields = array(
 				'wcf-enable-design-settings'               => array(
 					'default'  => $this->get_show_design_meta_value(),
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
+				'wcf-disable-step'                         => array(
+					'default'  => 'no',
 					'sanitize' => 'FILTER_SANITIZE_STRING',
 				),
 				'wcf-field-google-font-url'                => array(
@@ -730,6 +737,10 @@ class Cartflows_Default_Meta {
 
 		if ( null === self::$landing_fields ) {
 			self::$landing_fields = array(
+				'wcf-disable-step'  => array(
+					'default'  => 'no',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
 				'wcf-custom-script' => array(
 					'default'  => '',
 					'sanitize' => 'FILTER_SCRIPT',
@@ -754,6 +765,10 @@ class Cartflows_Default_Meta {
 		if ( null === self::$optin_fields ) {
 			self::$optin_fields = array(
 
+				'wcf-disable-step'               => array(
+					'default'  => 'no',
+					'sanitize' => 'FILTER_SANITIZE_STRING',
+				),
 				'wcf-optin-product'              => array(
 					'default'  => array(),
 					'sanitize' => 'FILTER_CARTFLOWS_ARRAY',

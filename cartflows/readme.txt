@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, funnel builder, sales funnels, custom checkout, WooCommerce checkout
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -394,6 +394,15 @@ You can report the issue through our [Bug Bounty Program](https://brainstormforc
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 2.2.2 - Tuesday, 24th February 2026 =
+* New: Added Learn tab with guided setup to help users understand and configure core CartFlows features.
+* New: Introduced Order Pay page template for Store Checkout.
+* Improvement: Added toggle setting to enable or disable steps in the backend.
+* Improvement: Checkout: Added file input field support in the Custom Editor within Checkout step settings.
+* Fix: Checkout: Fixed preview not opening in full screen in Checkout Offer settings in the backend.
+* Fix: Checkout: Improved UX for the Dynamic Offers product condition setting in the backend.
+* Fix: Checkout: Fixed an issue for missing favicon on Instant Checkout in the frontend.
 
 = Version 2.2.1 - Wednesday, 4th February 2026 =
 * New: Introduced Tutor LMS compatibility allowing non-enrolled users to be redirected to CartFlows templates.

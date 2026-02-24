@@ -58,8 +58,10 @@ class Cartflows_Elementor_Compatibility {
 		add_action( 'wp_enqueue_scripts', array( $this, 'generate_gcp_elem_css_style' ), 10000 );
 		add_filter( 'rest_post_dispatch', array( $this, 'elementor_add_cartflows_colors' ), 1000, 3 );
 		add_filter( 'rest_request_after_callbacks', array( $this, 'display_cartflows_global_colors_front_end' ), 1000, 3 );
-	
-		
+
+		// Bypass Elementor's kit trash confirmation when trashing CartFlows posts.
+		add_action( 'wp_trash_post', array( $this, 'skip_elementor_kit_trash_confirmation' ), 1 );
+		add_action( 'before_delete_post', array( $this, 'skip_elementor_kit_trash_confirmation' ), 1 );
 	}
 
 	/**
@@ -235,6 +237,50 @@ class Cartflows_Elementor_Compatibility {
 		);
 		
 		return $response;
+	}
+	/**
+	 * Bypass Elementor's kit trash confirmation when a CartFlows post is being trashed or deleted.
+	 *
+	 * Elementor's Manager::before_delete_kit() hooks into `wp_trash_post` and `before_delete_post`
+	 * at priority 10 and calls wp_die() with a confirmation popup when it detects an active kit
+	 * is being trashed. It already provides a bypass via the `force_delete_kit` GET flag.
+	 * Setting it here at priority 1 — before Elementor's hook fires — ensures the check is
+	 * skipped for CartFlows flow and step post types without affecting any other post types.
+	 * A valid nonce for any CartFlows trash or delete action is required before bypassing.
+	 *
+	 * @since 2.2.2
+	 * @param int $post_id Post ID being trashed or deleted.
+	 * @return void
+	 */
+	public function skip_elementor_kit_trash_confirmation( $post_id ) {
+		// Get the post type of the post being trashed or deleted.
+		$post_type = get_post_type( $post_id );
+
+		// Only proceed if the post type is a CartFlows Flow or Step.
+		if ( ! in_array( $post_type, array( CARTFLOWS_FLOW_POST_TYPE, CARTFLOWS_STEP_POST_TYPE ), true ) ) {
+			return;
+		}
+
+		// Retrieve and sanitize the AJAX action and security nonce if present.
+		// These are set by CartFlows when performing trash/delete via AJAX or bulk actions.
+		$ajax_action = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$nonce       = isset( $_POST['security'] ) ? sanitize_text_field( wp_unslash( $_POST['security'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		// List of CartFlows AJAX actions that trigger trash or delete operations.
+		$cartflows_delete_actions = array(
+			'cartflows_trash_flows_in_bulk',   // Bulk trash flows.
+			'cartflows_trash_flow',            // Trash a single flow.
+			'cartflows_delete_flow',           // Permanently delete a flow.
+			'cartflows_delete_flows_permanently', // Bulk permanently delete flows.
+			'cartflows_delete_step',           // Delete a step.
+		);
+
+		// Only set the `force_delete_kit` flag if a recognized CartFlows delete action is being run and the nonce is valid.
+		if ( in_array( $ajax_action, $cartflows_delete_actions, true ) && wp_verify_nonce( $nonce, $ajax_action ) ) {
+			// Set the `force_delete_kit` GET parameter so Elementor skips its trash confirmation for kits.
+			// This prevents interruption for CartFlows flows and steps during delete/trash.
+			$_GET['force_delete_kit'] = '1'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
 	}
 }
 

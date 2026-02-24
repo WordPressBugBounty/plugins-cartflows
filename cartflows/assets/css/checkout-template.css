@@ -2671,7 +2671,7 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 
 /* Modern Floating Style */
 .wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row:not( .wcf-anim-hidden-label ).wcf-anim-label:has( .select2 .select2-selection__placeholder ) > label,
-.wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row:not( .wcf-anim-hidden-label ) label:not( .woocommerce-form__label-for-checkbox, .checkbox, .input-radio ) {
+.wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row:not( .wcf-anim-hidden-label ) label:not( .woocommerce-form__label-for-checkbox, .woocommerce-form__label-for-file .checkbox, .input-radio ) {
 	-webkit-user-select: none;
 	user-select: none;
 	pointer-events: none;
@@ -2702,7 +2702,7 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 	transition-timing-function: ease-out, ease;
 }
 
-.wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row.wcf-anim-label label:not( .woocommerce-form__label-for-checkbox ) {
+.wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row.wcf-anim-label label:not( .woocommerce-form__label-for-checkbox, .woocommerce-form__label-for-file ) {
 	opacity: 1;
 	z-index: 1000;
 }
@@ -4084,3 +4084,68 @@ h3#wcf_shipping_options_heading {
 * Instant Checkout Layout Style End
 * ***********************************
 */
+
+/**
+* ***********************************
+* File Upload Field Styles
+* ***********************************
+*/
+.wcf-embed-checkout-form .wcf-file-field-wrapper {
+	width: 100%;
+}
+
+.wcf-embed-checkout-form .wcf-file-input-wrapper {
+	display: block;
+	position: relative;
+}
+
+.wcf-embed-checkout-form .wcf-checkout-file-input {
+	width: 100%;
+	padding: 10px;
+	border: 1px dashed var( --wcf-field-border-color );
+	border-radius: 4px;
+	background-color: var( --wcf-field-bg-color );
+	cursor: pointer;
+}
+
+.wcf-embed-checkout-form .wcf-checkout-file-input:hover {
+	border-color: var( --wcf-primary-color );
+}
+
+.wcf-embed-checkout-form .wcf-file-input-wrapper.wcf-file-uploading .wcf-checkout-file-input {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.wcf-embed-checkout-form .wcf-file-preview {
+	display: block;
+	margin-top: 10px;
+}
+
+.wcf-embed-checkout-form .wcf-file-preview-image {
+	max-width: 100px;
+	max-height: 100px;
+	border-radius: 4px;
+	border: 1px solid var( --wcf-field-border-color );
+	margin-right: 10px;
+	vertical-align: middle;
+}
+
+.wcf-embed-checkout-form .wcf-file-name {
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 14px;
+	color: var( --wcf-text-color );
+}
+
+.wcf-embed-checkout-form .wcf-file-uploading-text {
+	color: var( --wcf-text-color );
+	font-style: italic;
+}
+
+.wcf-embed-checkout-form .wcf-file-error {
+	color: var( --wcf-field-error-color, #e2401c );
+	font-size: 13px;
+	display: block;
+	margin-top: 5px;
+}

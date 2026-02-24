@@ -173,7 +173,7 @@ class AdminHelper {
 	/**
 	 * Get Common settings.
 	 *
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_common_settings() {
 
@@ -246,7 +246,7 @@ class AdminHelper {
 	/**
 	 * Get Common settings.
 	 *
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_permalink_settings() {
 
@@ -276,7 +276,7 @@ class AdminHelper {
 	/**
 	 * Get Common settings.
 	 *
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_facebook_settings() {
 
@@ -310,7 +310,7 @@ class AdminHelper {
 	/**
 	 * Get Common settings.
 	 *
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_google_analytics_settings() {
 
@@ -343,7 +343,7 @@ class AdminHelper {
 	/**
 	 * Get Common settings.
 	 *
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_tiktok_settings() {
 
@@ -377,7 +377,7 @@ class AdminHelper {
 	/**
 	 * Get Common settings of pinterest.
 	 *
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_pinterest_settings() {
 
@@ -413,7 +413,7 @@ class AdminHelper {
 	 * Get Common settings.
 	 *
 	 * @since 2.1.0
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_google_ads_settings() {
 
@@ -450,7 +450,7 @@ class AdminHelper {
 	 * Get Snapchat settings.
 	 *
 	 * @since 2.1.0
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_snapchat_settings() {
 
@@ -485,7 +485,7 @@ class AdminHelper {
 	/**
 	 * Get User role settings.
 	 *
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_user_role_management_settings() {
 		global $wp_roles;
@@ -517,7 +517,7 @@ class AdminHelper {
 	/**
 	 * Get Google Auto-Address Fields settings.
 	 *
-	 * @return array.
+	 * @return array
 	 */
 	public static function get_google_auto_fields_settings() {
 		$options = array();
@@ -693,6 +693,7 @@ class AdminHelper {
 				$step_id                             = $step['id'];
 				$steps[ $in ]['title']               = get_the_title( $step_id );
 				$steps[ $in ]['is_product_assigned'] = \Cartflows_Helper::has_product_assigned( $step_id );
+				$steps[ $in ]['step_disabled']       = get_post_meta( $step_id, 'wcf-disable-step', true ) === 'yes';
 
 				$steps[ $in ]['actions']      = self::get_step_actions( $flow_id, $step_id );
 				$steps[ $in ]['menu_actions'] = self::get_step_actions( $flow_id, $step_id, 'menu' );
@@ -710,6 +711,7 @@ class AdminHelper {
 						$ab_test_variations[ $variation_in ]['actions']             = self::get_ab_test_step_actions( $flow_id, $variation['id'] );
 						$ab_test_variations[ $variation_in ]['menu_actions']        = self::get_ab_test_step_actions( $flow_id, $variation['id'], 'menu' );
 						$ab_test_variations[ $variation_in ]['is_product_assigned'] = \Cartflows_Helper::has_product_assigned( $variation['id'] );
+						$ab_test_variations[ $variation_in ]['step_disabled']       = get_post_meta( $variation['id'], 'wcf-disable-step', true ) === 'yes';
 					}
 
 					$steps[ $in ]['ab-test-variations'] = $ab_test_variations;

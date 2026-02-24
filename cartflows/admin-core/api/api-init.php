@@ -83,6 +83,7 @@ class ApiInit {
 			'CartflowsAdmin\AdminCore\Api\CommonSettings',
 			'CartflowsAdmin\AdminCore\Api\HomePage',
 			'CartflowsAdmin\AdminCore\Api\Product\ProductData',
+			'CartflowsAdmin\AdminCore\Api\Learn',
 		);
 
 		foreach ( $controllers as $controller ) {
