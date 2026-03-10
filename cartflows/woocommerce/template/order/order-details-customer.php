@@ -22,7 +22,7 @@ $thankyou_id = wcf()->flow->get_thankyou_page_id( $order );
 $thankyou_layout = wcf()->options->get_thankyou_meta_value( $thankyou_id, 'wcf-tq-layout' );
 ?>
 <section class="woocommerce-customer-details">
-<?php if('modern-tq-layout' === $thankyou_layout) : ?>
+<?php if('modern-tq-layout' === $thankyou_layout || 'tq-layout-3' === $thankyou_layout) : ?>
     <div class="customer-details-box">
         <h2 class="woocommerce-customer-details__title woocommerce-column__title"><?php esc_html_e( 'Customer Details', 'woocommerce' ); ?></h2>
         <table class="customer-details-table woocommerce-table woocommerce-table--customer-details">

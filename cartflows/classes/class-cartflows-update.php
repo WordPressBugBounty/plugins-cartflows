@@ -162,6 +162,11 @@ if ( ! class_exists( 'Cartflows_Update' ) ) :
 				}
 			}
 
+			// Migrate old combined custom script meta to separate JS and CSS meta fields.
+			if ( version_compare( $saved_version, '2.2.2', '<' ) ) {
+				$this->migrate_custom_scripts();
+			}
+
 			// Update auto saved version number.
 			update_option( 'cartflows-version', CARTFLOWS_VER );
 
@@ -187,6 +192,362 @@ if ( ! class_exists( 'Cartflows_Update' ) ) :
 			}
 
 			wcf()->create_files();
+		}
+
+		/**
+		 * Set script migration status.
+		 *
+		 * @param string $status Migration status value.
+		 * @since 2.2.2
+		 * @return void
+		 */
+		public function set_script_migration_status( $status ) {
+			update_option( 'cartflows_script_migration_status', $status );
+		}
+
+		/**
+		 * Determine if the migration notice should be shown.
+		 *
+		 * Returns false if migration is completed or accepted.
+		 * Returns false if status is 'skipped' and 7 days have not yet passed.
+		 * Returns false if no old script values exist (auto-sets status to 'completed').
+		 *
+		 * @since 2.2.2
+		 * @return bool
+		 */
+		public function should_show_migration_notice() {
+			$status = \CartFlows_Helper::get_script_migration_status();
+
+			if ( 'completed' === $status || 'accepted' === $status ) {
+				return false;
+			}
+
+			if ( 'skipped' === $status ) {
+				$skip_timestamp = (int) get_option( 'cartflows_script_migration_skip_timestamp', 0 );
+
+				// Show again only after 7 days have passed since last skip.
+				if ( ( time() - $skip_timestamp ) < WEEK_IN_SECONDS ) {
+					return false;
+				}
+			}
+
+			// Check cached result first to avoid running the meta query on every page load.
+			$has_old_scripts = get_option( 'cartflows_has_old_custom_scripts', '' );
+
+			if ( '' === $has_old_scripts ) {
+				// First time check — run the query once and cache the result.
+				$has_old_scripts = $this->has_old_custom_scripts() ? 'yes' : 'no';
+				update_option( 'cartflows_has_old_custom_scripts', $has_old_scripts, true );
+			}
+
+			// If no old script values exist, auto-complete migration and enable the code editor.
+			if ( 'yes' !== $has_old_scripts ) {
+				$this->set_script_migration_status( 'completed' );
+				return false;
+			}
+
+			return true;
+		}
+
+		/**
+		 * Check if any posts have old combined custom script meta values.
+		 *
+		 * Queries the database for any cartflows_step or cartflows_flow posts
+		 * that have non-empty 'wcf-custom-script' or 'wcf-flow-custom-script' meta.
+		 *
+		 * @since 2.2.3
+		 * @return bool True if old script data exists, false otherwise.
+		 */
+		public function has_old_custom_scripts() {
+
+			global $wpdb;
+
+			$result = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prepare(
+					"SELECT 1 FROM {$wpdb->postmeta} pm
+					INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+					WHERE p.post_type IN (%s, %s)
+					AND pm.meta_key IN (%s, %s)
+					AND pm.meta_value != ''
+					LIMIT 1",
+					'cartflows_step',
+					'cartflows_flow',
+					'wcf-custom-script',
+					'wcf-flow-custom-script'
+				)
+			);
+
+			return ( null !== $result );
+		}
+
+		/**
+		 * Get current migration skip count.
+		 *
+		 * @since 2.2.2
+		 * @return int
+		 */
+		public function get_migration_skip_count() {
+			return (int) get_option( 'cartflows_script_migration_skip_count', 0 );
+		}
+
+		/**
+		 * Increment migration skip count and record the skip timestamp.
+		 *
+		 * @since 2.2.2
+		 * @return void
+		 */
+		public function increment_migration_skip_count() {
+			$count = $this->get_migration_skip_count();
+			update_option( 'cartflows_script_migration_skip_count', $count + 1 );
+			update_option( 'cartflows_script_migration_skip_timestamp', time() );
+		}
+
+		/**
+		 * Run on-demand migration of custom scripts triggered by user action.
+		 *
+		 * Unlike migrate_custom_scripts() which runs during version updates,
+		 * this method is called only when the user explicitly clicks "Migrate Data"
+		 * in the admin notice. It returns a count of migrated posts and updates
+		 * the migration status to 'completed'.
+		 *
+		 * @since 2.2.2
+		 * @return int Number of posts that had data migrated.
+		 */
+		public function migrate_custom_scripts_on_demand() {
+
+			$migrated_count = 0;
+
+			// Migrate step-level custom scripts.
+			$migrated_count += $this->migrate_post_type_scripts_counted(
+				'cartflows_step',
+				'wcf-custom-script',
+				'wcf-step-custom-js',
+				'wcf-step-custom-css'
+			);
+
+			// Migrate flow-level custom scripts.
+			$migrated_count += $this->migrate_post_type_scripts_counted(
+				'cartflows_flow',
+				'wcf-flow-custom-script',
+				'wcf-flow-custom-js',
+				'wcf-flow-custom-css'
+			);
+
+			$this->set_script_migration_status( 'completed' );
+
+			return $migrated_count;
+		}
+
+		/**
+		 * Migrate custom scripts for a specific post type and return the count of migrated posts.
+		 *
+		 * @param string $post_type The post type to query.
+		 * @param string $old_meta_key The old combined script meta key.
+		 * @param string $new_js_meta_key The new JS-only meta key.
+		 * @param string $new_css_meta_key The new CSS-only meta key.
+		 *
+		 * @since 2.2.2
+		 * @return int Number of posts migrated.
+		 */
+		public function migrate_post_type_scripts_counted( $post_type, $old_meta_key, $new_js_meta_key, $new_css_meta_key ) {
+
+			global $wpdb;
+
+			$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prepare(
+					"SELECT p.ID, pm.meta_value FROM {$wpdb->posts} p
+					INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+					WHERE p.post_type = %s AND pm.meta_key = %s AND pm.meta_value != ''
+					LIMIT 500",
+					$post_type,
+					$old_meta_key
+				)
+			);
+
+			if ( empty( $results ) || ! is_array( $results ) ) {
+				return 0;
+			}
+
+			$migrated = 0;
+
+			foreach ( $results as $row ) {
+				$post_id   = $row->ID;
+				$old_value = $row->meta_value;
+
+				// Skip if the new meta fields already have values (don't overwrite manual entries).
+				$existing_js  = get_post_meta( $post_id, $new_js_meta_key, true );
+				$existing_css = get_post_meta( $post_id, $new_css_meta_key, true );
+
+				if ( ! empty( $existing_js ) || ! empty( $existing_css ) ) {
+					continue;
+				}
+
+				// Decode HTML entities first since the old value was stored encoded.
+				$decoded = html_entity_decode( $old_value, ENT_QUOTES, 'UTF-8' );
+
+				// Extract CSS and JS from the combined script.
+				$parsed = $this->parse_combined_script( $decoded );
+
+				$did_migrate = false;
+
+				if ( ! empty( $parsed['css'] ) ) {
+					update_post_meta( $post_id, $new_css_meta_key, htmlentities( $parsed['css'] ) );
+					$did_migrate = true;
+				}
+
+				if ( ! empty( $parsed['js'] ) ) {
+					update_post_meta( $post_id, $new_js_meta_key, htmlentities( $parsed['js'] ) );
+					$did_migrate = true;
+				}
+
+				if ( $did_migrate ) {
+					++$migrated;
+				}
+			}
+
+			return $migrated;
+		}
+
+		/**
+		 * Migrate old combined custom script meta to separate JS and CSS meta fields.
+		 *
+		 * Previously, a single textarea accepted both JS and CSS with <script>/<style> tags.
+		 * Now we have separate CodeMirror editors for JS and CSS, so we need to split the
+		 * old combined value into the new separate meta fields.
+		 *
+		 * @since 2.2.2
+		 * @return void
+		 */
+		public function migrate_custom_scripts() {
+
+			// Migrate step-level custom scripts.
+			$this->migrate_post_type_scripts(
+				'cartflows_step',
+				'wcf-custom-script',
+				'wcf-step-custom-js',
+				'wcf-step-custom-css'
+			);
+
+			// Migrate flow-level custom scripts.
+			$this->migrate_post_type_scripts(
+				'cartflows_flow',
+				'wcf-flow-custom-script',
+				'wcf-flow-custom-js',
+				'wcf-flow-custom-css'
+			);
+		}
+
+		/**
+		 * Migrate custom scripts for a specific post type from old combined meta to separate JS/CSS meta.
+		 *
+		 * @param string $post_type The post type to query.
+		 * @param string $old_meta_key The old combined script meta key.
+		 * @param string $new_js_meta_key The new JS-only meta key.
+		 * @param string $new_css_meta_key The new CSS-only meta key.
+		 *
+		 * @since 2.2.2
+		 * @return void
+		 */
+		public function migrate_post_type_scripts( $post_type, $old_meta_key, $new_js_meta_key, $new_css_meta_key ) {
+
+			global $wpdb;
+
+			// Get all posts of this type that have the old custom script meta with a non-empty value.
+			$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prepare(
+					"SELECT p.ID, pm.meta_value FROM {$wpdb->posts} p
+					INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+					WHERE p.post_type = %s AND pm.meta_key = %s AND pm.meta_value != ''
+					LIMIT 500", // Limit to 500 posts per batch to avoid memory issues.
+					$post_type,
+					$old_meta_key
+				)
+			);
+
+			if ( empty( $results ) || ! is_array( $results ) ) {
+				return;
+			}
+
+			foreach ( $results as $row ) {
+				$post_id   = $row->ID;
+				$old_value = $row->meta_value;
+
+				// Skip if the new meta fields already have values (don't overwrite manual entries).
+				$existing_js  = get_post_meta( $post_id, $new_js_meta_key, true );
+				$existing_css = get_post_meta( $post_id, $new_css_meta_key, true );
+
+				if ( ! empty( $existing_js ) || ! empty( $existing_css ) ) {
+					continue;
+				}
+
+				// Decode HTML entities first since the old value was stored encoded.
+				$decoded = html_entity_decode( $old_value, ENT_QUOTES, 'UTF-8' );
+
+				// Extract CSS and JS from the combined script.
+				$parsed = $this->parse_combined_script( $decoded );
+
+				if ( ! empty( $parsed['css'] ) ) {
+					// Store encoded with htmlentities to match the FILTER_SCRIPT save format.
+					update_post_meta( $post_id, $new_css_meta_key, htmlentities( $parsed['css'] ) );
+				}
+
+				if ( ! empty( $parsed['js'] ) ) {
+					// Store encoded with htmlentities to match the FILTER_SCRIPT save format.
+					update_post_meta( $post_id, $new_js_meta_key, htmlentities( $parsed['js'] ) );
+				}
+			}
+		}
+
+		/**
+		 * Parse a combined script string to extract CSS and JS portions.
+		 *
+		 * The old custom script field could contain:
+		 * - <style>...CSS...</style> blocks
+		 * - <script>...JS...</script> blocks
+		 * - Bare JS code (no tags, treated as JS)
+		 *
+		 * @param string $content The combined script content (decoded).
+		 * @return array Associative array with 'js' and 'css' keys.
+		 *
+		 * @since 2.2.2
+		 */
+		public function parse_combined_script( $content ) {
+
+			$css = '';
+			$js  = '';
+
+			// Extract all <style>...</style> blocks as CSS.
+			if ( preg_match_all( '/<style[^>]*>(.*?)<\/style>/is', $content, $style_matches ) ) {
+				$css = trim( implode( "\n", $style_matches[1] ) );
+			}
+
+			// Extract all <script>...</script> blocks as JS.
+			if ( preg_match_all( '/<script[^>]*>(.*?)<\/script>/is', $content, $script_matches ) ) {
+				$js = trim( implode( "\n", $script_matches[1] ) );
+			}
+
+			// Remove all <style>...</style> and <script>...</script> blocks from the content.
+			$remaining = preg_replace( '/<style[^>]*>.*?<\/style>/is', '', $content );
+			if ( null === $remaining ) {
+				$remaining = '';
+			}
+
+			$remaining = preg_replace( '/<script[^>]*>.*?<\/script>/is', '', $remaining );
+			if ( null === $remaining ) {
+				$remaining = '';
+			}
+
+			$remaining = trim( $remaining );
+
+			// Any remaining content (not inside tags) is treated as JS.
+			if ( ! empty( $remaining ) ) {
+				$js = trim( $js . "\n" . $remaining );
+			}
+
+			return array(
+				'css' => $css,
+				'js'  => $js,
+			);
 		}
 
 		/**

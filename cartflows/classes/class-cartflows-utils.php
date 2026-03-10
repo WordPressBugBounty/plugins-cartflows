@@ -707,10 +707,13 @@ class Cartflows_Utils {
 	 * @return bool True if the cart is empty and the session is valid, otherwise false.
 	 */
 	public function is_woo_cart_empty() {
-		return function_exists( 'WC' ) 
-			&& WC()->cart instanceof WC_Cart 
-			&& WC()->cart->is_empty() 
-			&& ! is_customize_preview() 
+
+		$wc            = function_exists( 'WC' ) ? WC() : null;
+		$cart          = ( $wc && $wc->cart instanceof WC_Cart ) ? $wc->cart : null;
+		$cart_is_empty = ! $cart || $cart->is_empty();
+
+		return $cart_is_empty
+			&& ! is_customize_preview()
 			&& apply_filters( 'woocommerce_checkout_update_order_review_expired', true );
 	}
 

@@ -1915,4 +1915,17 @@ class Cartflows_Helper {
 
 		return implode( ', ', array_unique( $validated ) );
 	}
+
+	/**
+	 * Get the script migration status.
+	 *
+	 * Returns the current status of the custom script migration from old textarea
+	 * fields to new CodeMirror editor fields.
+	 *
+	 * @since 2.2.3
+	 * @return string Migration status: 'pending', 'accepted', 'completed', or 'skipped'.
+	 */
+	public static function get_script_migration_status() {
+		return get_option( 'cartflows_script_migration_status', 'pending' );
+	}
 }

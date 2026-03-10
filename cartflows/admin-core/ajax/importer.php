@@ -1319,8 +1319,16 @@ class Importer extends AjaxBase {
 					// Security: Using unserialize with allowed_classes=>false to prevent object injection.
 					$raw_data = unserialize( stripslashes( $meta_value ), array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, PHPCompatibility.FunctionUse.NewFunctionParameters.unserialize_optionsFound
 					// Drop malicious payloads completely to prevent fatal errors.
-					if ( false === $raw_data || is_object( $raw_data ) ) {
+					// Security: Block serialized meta that contains nested PHP objects.
+					// Even with allowed_classes => false, unserialized payloads may contain
+					// __PHP_Incomplete_Class instances which WordPress attempts to mutate
+					// during wp_unslash(), causing fatal errors and violating object safety.
+					if (
+						false === $raw_data ||
+						$this->has_nested_object_payload( $raw_data )
+					) {
 						$raw_data = '';
+						continue;
 					}
 				} elseif ( is_array( $meta_value ) ) {
 					$raw_data = json_decode( stripslashes( $meta_value ), true );
@@ -1344,7 +1352,6 @@ class Importer extends AjaxBase {
 							wcf()->logger->import_log( '✓ Added post meta ' . $meta_key /* . ' | ' . $raw_data */ );
 					}
 				}
-
 				update_post_meta( $post_id, $meta_key, $raw_data );
 			}
 		}
@@ -1603,5 +1610,36 @@ class Importer extends AjaxBase {
 		}
 
 		wcf()->logger->import_log( 'End: ' . __CLASS__ . ' :: ' . __FUNCTION__ );
+	}
+
+	/**
+	 * Detect whether the given value contains objects at any depth.
+	 *
+	 * This is used as a hard security guard to prevent storing
+	 * unserialized payloads that contain PHP objects (including
+	 * __PHP_Incomplete_Class), which can cause fatal errors and
+	 * violate object injection protections.
+	 *
+	 * @since 2.2.1
+	 *
+	 * @param mixed $value The value to inspect recursively.
+	 *
+	 * @return bool True if an object is found anywhere in the payload.
+	 */
+	private function has_nested_object_payload( $value ) {
+
+		if ( is_object( $value ) ) {
+			return true;
+		}
+
+		if ( is_array( $value ) ) {
+			foreach ( $value as $v ) {
+				if ( $this->has_nested_object_payload( $v ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }

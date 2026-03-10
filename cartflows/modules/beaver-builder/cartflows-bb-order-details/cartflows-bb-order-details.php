@@ -69,7 +69,7 @@ class Cartflows_BB_Order_Details_Form extends FLBuilderModule {
 
 			add_filter(
 				'cartflows_thankyou_meta_wcf-tq-text',
-				function( $text ) {
+				function ( $text ) {
 
 					$text = $this->settings->thankyou_text;
 
@@ -84,7 +84,7 @@ class Cartflows_BB_Order_Details_Form extends FLBuilderModule {
 
 			add_filter(
 				'cartflows_thankyou_meta_wcf-tq-layout',
-				function( $text ) {
+				function ( $text ) {
 
 					$text = $this->settings->layout;
 
@@ -94,9 +94,7 @@ class Cartflows_BB_Order_Details_Form extends FLBuilderModule {
 				1
 			);
 		}
-
 	}
-
 }
 
 /**
@@ -116,8 +114,9 @@ FLBuilder::register_module(
 							'label'   => __( 'Layout', 'cartflows' ),
 							'default' => 'legacy-tq-layout',
 							'options' => array(
-								'legacy-tq-layout' => __( 'Legacy', 'cartflows' ),
-								'modern-tq-layout' => __( 'Modern', 'cartflows' ),
+								'legacy-tq-layout' => __( 'Layout 1', 'cartflows' ),
+								'modern-tq-layout' => __( 'Layout 2', 'cartflows' ),
+								'tq-layout-3'      => __( 'Layout 3', 'cartflows' ),
 							),
 						),
 						'thankyou_text'         => array(

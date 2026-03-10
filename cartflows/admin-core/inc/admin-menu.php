@@ -544,6 +544,21 @@ class AdminMenu {
 			)
 		);
 
+		// Load the codemirror for code editor.
+		wp_enqueue_code_editor(
+			array(
+				'type' => 'text/javascript',
+			) 
+		);
+		wp_enqueue_code_editor(
+			array(
+				'type' => 'text/css',
+			) 
+		);
+
+		wp_enqueue_script( 'wp-code-editor' );
+		wp_enqueue_style( 'wp-codemirror' );
+
 		if ( $this->is_current_page( $this->menu_slug ) ) {
 			$this->settings_app_scripts( $localize );
 		} elseif ( $this->is_current_page( 'cartflows', array( 'wcf-edit-flow' ) ) ) {

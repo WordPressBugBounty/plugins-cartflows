@@ -140,7 +140,10 @@ class Cartflows_Instant_Checkout {
 		// Update the cart total price to display on button and on the mobile order view section.
 		add_filter( 'woocommerce_update_order_review_fragments', array( $this, 'instant_checkout_order_review' ), 99, 1 );
 
-		// Order Review template.
+		// Show collapsed order summary at bottom position — after checkout fields, before payment.
+		add_action( 'woocommerce_checkout_after_customer_details', array( $this, 'show_collapsed_order_summary_bottom' ), 14, 1 );
+
+		// Order Review template — closes the right-column wrapper div.
 		add_action( 'woocommerce_checkout_after_order_review', array( $this, 'show_collapsed_order_summary' ), 11, 1 );
 		add_filter( 'cartflows_get_order_review_template_path', array( $this, 'update_path_for_order_review_template' ), 10, 2 );
 	}
@@ -731,14 +734,14 @@ class Cartflows_Instant_Checkout {
 	 */
 	public function instant_checkout_wrapper_start( $checkout_id ) {
 
+		if ( ! $checkout_id ) {
+			$checkout_id = _get_wcf_checkout_id();
+		}
+
 		$position_class = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-order-review-summary-position' );
 
 		if ( 'top' === $position_class ) {
 			include CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/collapsed-order-summary.php';
-		}
-
-		if ( ! $checkout_id ) {
-			$checkout_id = _get_wcf_checkout_id();
 		}
 
 		do_action( 'cartflows_checkout_before_instant_checkout_layout', $checkout_id );
@@ -829,26 +832,40 @@ class Cartflows_Instant_Checkout {
 	}
 
 	/**
-	 * Order summary.
+	 * Close the right-column wrapper div opened by order_review_wrapper_start.
 	 *
 	 * @param int $checkout_id checkout ID.
 	 *
 	 * @return void
 	 */
 	public function show_collapsed_order_summary( $checkout_id ) {
-		ob_start();
-		?>
-		</div>
-		<?php
+		echo '</div>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Show collapsed order summary at the bottom position for instant checkout.
+	 *
+	 * Hooked at priority 14 on woocommerce_checkout_after_customer_details — after
+	 * the billing/shipping fields but before order_review_wrapper_start (priority 15)
+	 * which adds the payment button. This mirrors the normal-layout behaviour where
+	 * the summary appears after checkout fields and before the payment section.
+	 *
+	 * Hidden on desktop/tablet via CSS; shown only on mobile (≤768 px).
+	 *
+	 * @param int $checkout_id checkout ID.
+	 *
+	 * @return void
+	 */
+	public function show_collapsed_order_summary_bottom( $checkout_id ) {
+		if ( ! $checkout_id ) {
+			$checkout_id = _get_wcf_checkout_id();
+		}
+
 		$position_class = wcf()->options->get_checkout_meta_value( $checkout_id, 'wcf-order-review-summary-position' );
+
 		if ( 'bottom' === $position_class ) {
 			include CARTFLOWS_CHECKOUT_DIR . 'templates/checkout/collapsed-order-summary.php';
 		}
-		?>
-		<?php
-		$order_summary = ob_get_contents();
-		ob_end_clean();
-		echo $order_summary; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

@@ -49,7 +49,7 @@ if( $order->has_status( 'cancelled' ) ){
 	?>
 	<section class="woocommerce-order-details">
 		<?php do_action( 'woocommerce_order_details_before_order_table', $order ); ?>
-		<?php if('modern-tq-layout' === $thankyou_layout) { ?>
+		<?php if('modern-tq-layout' === $thankyou_layout || 'tq-layout-3' === $thankyou_layout) { ?>
 			<h2 class="woocommerce-order-details__title woocommerce-column__title"><?php esc_html_e( 'Order #', 'woocommerce' ); ?><?php echo esc_html( $order->get_order_number() ); ?></h2>
 		<?php } else { ?>
 			<h2 class="woocommerce-order-details__title"><?php esc_html_e( 'Order details', 'woocommerce' ); ?></h2>
@@ -92,7 +92,7 @@ if( $order->has_status( 'cancelled' ) ){
 				<?php } 
 
 				foreach ( $order->get_order_item_totals() as $key => $total ) {
-					if ( 'modern-tq-layout' === $thankyou_layout && $key === 'payment_method' ) {
+					if ( ( 'modern-tq-layout' === $thankyou_layout || 'tq-layout-3' === $thankyou_layout ) && $key === 'payment_method' ) {
 						continue;
 					}
 					?>

@@ -506,28 +506,112 @@ class Cartflows_Frontend {
 	 */
 	public function custom_script_option() {
 
-		/* Add custom script to header in frontend. */
-		$script = $this->get_custom_script();
+		// Check if migration to separate JS/CSS fields is completed.
+		$migration_completed = 'completed' === Cartflows_Helper::get_script_migration_status();
 
-		$flow_script = $this->get_flow_custom_script();
+		$global_css = trim( $this->get_global_custom_css() );
+		$global_js  = trim( $this->get_global_custom_js() );
+		$flow_css   = '';
+		$flow_js    = '';
+		$step_css   = '';
+		$step_js    = '';
 
-		if ( '' !== $flow_script ) {
-			if ( false === strpos( $flow_script, htmlentities( '<script' ) ) && false === strpos( $flow_script, htmlentities( '<style' ) ) ) {
-				$flow_script = '<script>' . $flow_script . '</script>';
-			}
-			echo '<!-- Flow Custom CartFlows Script -->';
-			echo html_entity_decode( $flow_script ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '<!-- End Flow Custom CartFlows Script -->';
+		// Old combined script values (used only if migration not completed).
+		$script      = '';
+		$flow_script = '';
+
+		if ( $migration_completed ) {
+			// Migration completed: load from new separate JS and CSS meta keys.
+			$flow_css = trim( $this->get_flow_custom_css() );
+			$flow_js  = trim( $this->get_flow_custom_js() );
+			$step_css = trim( $this->get_step_custom_css() );
+			$step_js  = trim( $this->get_step_custom_js() );
+		} else {
+			// Migration not completed: load from old combined script meta keys.
+			$script      = $this->get_custom_script();
+			$flow_script = $this->get_flow_custom_script();
 		}
 
-		if ( '' !== $script ) {
-			if ( false === strpos( $script, htmlentities( '<script' ) ) && false === strpos( $script, htmlentities( '<style' ) ) ) {
-				$script = '<script>' . $script . '</script>';
+		// -------------------------
+		// CSS Output (Global → Flow → Step)
+		// Step CSS takes priority due to later output.
+		// -------------------------
+		if ( '' !== $global_css || '' !== $flow_css || '' !== $step_css ) {
+			echo '<!-- CartFlows Custom CSS -->';
+			echo '<style>';
+
+			if ( '' !== $global_css ) {
+				// Global CSS is already pure CSS from settings.
+				echo html_entity_decode( $global_css ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
-			echo '<!-- Custom CartFlows Script -->';
-			echo html_entity_decode( $script ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '<!-- End Custom CartFlows Script -->';
+
+			if ( '' !== $flow_css ) {
+				// New format: pure CSS. Old format: strip style tags.
+				$flow_css_output = $migration_completed ? $flow_css : $this->strip_script_style_tags( $flow_css );
+				echo html_entity_decode( $flow_css_output ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+
+			if ( '' !== $step_css ) {
+				// New format: pure CSS. Old format: strip style tags.
+				$step_css_output = $migration_completed ? $step_css : $this->strip_script_style_tags( $step_css );
+				echo html_entity_decode( $step_css_output ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+
+			echo '</style>';
+			echo '<!-- End CartFlows Custom CSS -->';
+			echo PHP_EOL;
 		}
+
+		// -------------------------
+		// JS Output (Global → Flow → Step)
+		// Step JS takes priority due to later execution.
+		// -------------------------
+		echo '<!-- CartFlows Custom JS -->';
+		echo '<script>';
+
+		// Global JS.
+		if ( '' !== $global_js ) {
+			echo str_replace( '</script>', '<\/script>', html_entity_decode( $global_js ) ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		// Flow JS (new or old format).
+		if ( $migration_completed && '' !== $flow_js ) {
+			// New format: already pure JS, just escape closing tags.
+			echo str_replace( '</script>', '<\/script>', html_entity_decode( $flow_js ) ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		} elseif ( ! $migration_completed && '' !== $flow_script ) {
+			// Old format: strip any existing script/style tags and output raw JS.
+			$flow_script_output = $this->strip_script_style_tags( $flow_script );
+			echo str_replace( '</script>', '<\/script>', html_entity_decode( $flow_script_output ) ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		// Step JS (new or old format).
+		if ( $migration_completed && '' !== $step_js ) {
+			// New format: already pure JS, just escape closing tags.
+			echo str_replace( '</script>', '<\/script>', html_entity_decode( $step_js ) ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		} elseif ( ! $migration_completed && '' !== $script ) {
+			// Old format: strip any existing script/style tags and output raw JS.
+			$step_script_output = $this->strip_script_style_tags( $script );
+			echo str_replace( '</script>', '<\/script>', html_entity_decode( $step_script_output ) ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		echo '</script>';
+		echo '<!-- End CartFlows Custom JS -->';
+		echo PHP_EOL;
+	}
+
+	/**
+	 * Strip <script> and <style> tags from content, returning only the inner content.
+	 *
+	 * @since 2.2.3
+	 * @param string $content Content to strip tags from.
+	 * @return string Content with script/style tags removed.
+	 */
+	private function strip_script_style_tags( $content ) {
+		// Remove <script>...</script> tags but keep inner content.
+		$content = preg_replace( '/<script[^>]*>(.*?)<\/script>/is', '$1', $content );
+		// Remove <style>...</style> tags but keep inner content.
+		$content = preg_replace( '/<style[^>]*>(.*?)<\/style>/is', '$1', $content );
+		return trim( $content );
 	}
 
 	/**
@@ -603,6 +687,61 @@ class Cartflows_Frontend {
 	/**
 	 * Replace the dynamic vars in the custom script.
 	 *
+	}
+
+	/**
+	 *  Get custom script data.
+	 *
+	 * @since 1.0.0
+	 */
+	public function get_flow_custom_script() {
+
+		global $post;
+
+		$step_id = $post->ID;
+
+		$flow_id = wcf()->utils->get_flow_id_from_step_id( $step_id );
+
+		$script = get_post_meta( $flow_id, 'wcf-flow-custom-script', true );
+
+		$script = $this->maybe_replace_vars( $script );
+
+		return $script;
+	}
+
+	/**
+	 *  Get custom JS script for steps.
+	 *
+	 * @since 2.2.2
+	 */
+	public function get_step_custom_js() {
+
+		global $post;
+
+		$script = get_post_meta( $post->ID, 'wcf-step-custom-js', true );
+
+		$script = $this->maybe_replace_vars( $script );
+
+		return $script;
+	}
+
+	/**
+	 *  Get custom CSS script for steps.
+	 *
+	 * @since 2.2.2
+	 */
+	public function get_step_custom_css() {
+
+		global $post;
+
+		$style = get_post_meta( $post->ID, 'wcf-step-custom-css', true );
+
+		return is_string( $style ) ? $style : '';
+	}
+
+	/**
+	 * Replace the dynamic vars in the custom script.
+	 *
 	 * @param string $script custom script.
 	 * @return string $script modified custom script.
 	 *
@@ -632,11 +771,46 @@ class Cartflows_Frontend {
 	}
 
 	/**
-	 *  Get custom script data.
+	 * Get global custom CSS from settings.
 	 *
-	 * @since 1.0.0
+	 * @since 2.2.2
+	 * @return string
 	 */
-	public function get_flow_custom_script() {
+	public function get_global_custom_css() {
+
+		$global_scripts = get_option( '_cartflows_global_scripts', array() );
+
+		if ( ! is_array( $global_scripts ) || empty( $global_scripts['global_css'] ) ) {
+			return '';
+		}
+
+		return (string) $global_scripts['global_css'];
+	}
+
+	/**
+	 * Get global custom JS from settings.
+	 *
+	 * @since 2.2.2
+	 * @return string
+	 */
+	public function get_global_custom_js() {
+
+		$global_scripts = get_option( '_cartflows_global_scripts', array() );
+
+		if ( ! is_array( $global_scripts ) || empty( $global_scripts['global_js'] ) ) {
+			return '';
+		}
+
+		return (string) $global_scripts['global_js'];
+	}
+
+	/**
+	 *  Get custom JS script for flow.
+	 *
+	 * @since 2.2.2
+	 * @return string
+	 */
+	public function get_flow_custom_js() {
 
 		global $post;
 
@@ -644,13 +818,31 @@ class Cartflows_Frontend {
 
 		$flow_id = wcf()->utils->get_flow_id_from_step_id( $step_id );
 
-		$script = get_post_meta( $flow_id, 'wcf-flow-custom-script', true );
+		$script = get_post_meta( $flow_id, 'wcf-flow-custom-js', true );
 
 		$script = $this->maybe_replace_vars( $script );
 
 		return $script;
 	}
 
+	/**
+	 *  Get custom CSS script for flow.
+	 *
+	 * @since 2.2.2
+	 * @return string
+	 */
+	public function get_flow_custom_css() {
+
+		global $post;
+
+		$step_id = $post->ID;
+
+		$flow_id = wcf()->utils->get_flow_id_from_step_id( $step_id );
+
+		$style = get_post_meta( $flow_id, 'wcf-flow-custom-css', true );
+
+		return is_string( $style ) ? $style : '';
+	}
 
 	/**
 	 * Set appropriate filter sctions.

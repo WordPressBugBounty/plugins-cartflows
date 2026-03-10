@@ -1621,6 +1621,11 @@ a.et_pb_more_button::after {
 	flex: 1 0 100%;
 }
 
+.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce-checkout #wc-stripe-express-checkout-element,
+.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce-checkout #wc-stripe-express-checkout-button-separator {
+	flex: 1 0 100%;
+}
+
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .wcf-customer-info-main-wrapper {
 	width: 60%;
 	padding: 0 45px 0 0;
@@ -3073,6 +3078,12 @@ body.cartflows-instant-checkout .main-header--content .main-header--action .main
 	margin: 0 -20px;
 }
 
+/* Hide the bottom-position collapsed order summary inside the left column on
+   desktop/tablet. It is only relevant on mobile where the columns stack. */
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .wcf-ic-layout-left-column .wcf-collapsed-order-review-section {
+	display: none;
+}
+
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-instant-checkout-wrapper .wcf-ic-layout-right-column {
 	display: block;
 	background-color: var( --wcf-ic-right-column-bg-color );
@@ -3083,7 +3094,9 @@ body.cartflows-instant-checkout .main-header--content .main-header--action .main
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .woocommerce-shipping-fields [type="checkbox"],
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce-checkout #payment div.payment_box.payment_method_stripe [type="checkbox"],
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce input[type="checkbox"],
-.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce #order_review input[type="checkbox"] {
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce #order_review input[type="checkbox"],
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-bump-order-wrap.wcf-before-checkout .wcf-bump-order-field-wrap input[type="checkbox"],
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-bump-order-wrap.wcf-after-customer .wcf-bump-order-field-wrap input[type="checkbox"] {
 	border-radius: 4px;
 	height: 18px;
 	margin: 0 5px 4px 0;
@@ -3095,7 +3108,9 @@ body.cartflows-instant-checkout .main-header--content .main-header--action .main
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .woocommerce-shipping-fields [type="checkbox"]:checked,
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce-checkout #payment div.payment_box.payment_method_stripe [type="checkbox"]:checked,
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce input[type="checkbox"]:checked,
-.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce #order_review input[type="checkbox"]:checked {
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce #order_review input[type="checkbox"]:checked,
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-bump-order-wrap.wcf-before-checkout .wcf-bump-order-field-wrap input[type="checkbox"]:checked,
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-bump-order-wrap.wcf-after-customer .wcf-bump-order-field-wrap input[type="checkbox"]:checked {
 	background-color: var( --wcf-primary-color );
 }
 
@@ -3948,6 +3963,11 @@ ul#wcf-ic-breadcrumbs {
 		width: 100% !important;
 		padding: 15px 0;
 		background-color: var( --wcf-ic-left-column-bg-color );
+	}
+
+	/* Reveal the bottom-position collapsed order summary on mobile. */
+	.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .wcf-ic-layout-left-column .wcf-collapsed-order-review-section {
+		display: block;
 	}
 
 	.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-order-review-toggle {

@@ -541,6 +541,30 @@ class AdminHelper {
 	}
 
 	/**
+	 * Get Global CSS & Scripts settings.
+	 *
+	 * @return array.
+	 */
+	public static function get_global_scripts_settings() {
+		$options = array();
+
+		$default = array(
+			'global_css' => '',
+			'global_js'  => '',
+		);
+
+		$global_scripts = self::get_admin_settings_option( '_cartflows_global_scripts', false, false );
+
+		$global_scripts = wp_parse_args( $global_scripts, $default );
+
+		foreach ( $global_scripts as $key => $data ) {
+			$options[ '_cartflows_global_scripts[' . $key . ']' ] = $data;
+		}
+
+		return $options;
+	}
+
+	/**
 	 * Clear Page Builder Cache
 	 */
 	public static function clear_cache() {
@@ -667,7 +691,8 @@ class AdminHelper {
 		$snap_settings      = self::get_snapchat_settings();
 		$urm_settings       = self::get_user_role_management_settings();
 		$auto_fields        = self::get_google_auto_fields_settings();
-		$options            = array_merge( $general_settings, $permalink_settings, $fb_settings, $tik_settings, $ga_settings, $gads_settings, $pin_settings, $snap_settings, $urm_settings, $auto_fields );
+		$global_scripts     = self::get_global_scripts_settings();
+		$options            = array_merge( $general_settings, $permalink_settings, $fb_settings, $tik_settings, $ga_settings, $gads_settings, $pin_settings, $snap_settings, $urm_settings, $auto_fields, $global_scripts );
 		$options            = apply_filters( 'cartflows_admin_global_data_options', $options );
 
 		return $options;
@@ -1240,5 +1265,31 @@ class AdminHelper {
 		}
 
 		update_option( 'cartflows_funnel_creation_method', $funnel_creation_stats );
+	}
+
+	/**
+	 * Determine whether to show the CodeMirror code editor fields.
+	 *
+	 * Returns true when the custom script migration status is 'completed',
+	 * meaning users should see the new separate JS and CSS code editors
+	 * instead of the old combined textarea.
+	 *
+	 * @since 2.2.2
+	 * @return bool
+	 */
+	public static function should_show_code_editor() {
+		return 'completed' === \CartFlows_Helper::get_script_migration_status();
+	}
+
+	/**
+	 * Get the field type for custom script fields based on migration status.
+	 *
+	 * Returns 'code' after migration is completed, 'textarea' otherwise.
+	 *
+	 * @since 2.2.2
+	 * @return string 'code' or 'textarea'
+	 */
+	public static function get_custom_script_field_type() {
+		return self::should_show_code_editor() ? 'code' : 'textarea';
 	}
 }

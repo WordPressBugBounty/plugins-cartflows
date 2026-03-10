@@ -80,8 +80,10 @@ class Cartflows_Admin_Notices {
 	public function register_ajax_callbacks() {
 		add_action( 'wp_ajax_cartflows_ignore_gutenberg_notice', array( $this, 'ignore_gb_notice' ) );
 		add_action( 'wp_ajax_cartflows_disable_weekly_report_email_notice', array( $this, 'disable_weekly_report_email_notice' ) );
+		add_action( 'wp_ajax_cartflows_snooze_script_migration', array( $this, 'snooze_script_migration_notice' ) );
+		add_action( 'wp_ajax_cartflows_dismiss_script_migration_complete_notice', array( $this, 'dismiss_script_migration_complete_notice' ) );
 	}
-	
+
 	/**
 	 * Show the weekly email Notice
 	 *
@@ -126,6 +128,80 @@ class Cartflows_Admin_Notices {
 	}
 
 	/**
+	 * Show the custom script migration notice.
+	 *
+	 * Renders an admin notice prompting users to migrate custom script data
+	 * from the old textarea format to the new CodeMirror editor format.
+	 *
+	 * @since 2.2.2
+	 * @return void
+	 */
+	public function show_script_migration_notice() {
+
+		if ( ! $this->allowed_screen_for_notices() ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! Cartflows_Update::get_instance()->should_show_migration_notice() ) {
+			return;
+		}
+
+		$output  = '<div class="wcf-notice script-migration-notice wcf-dismissible-notice notice notice-warning">';
+		$output .= '<p>';
+		$output .= '<strong>' . esc_html__( 'CartFlows: Custom Script Migration', 'cartflows' ) . '</strong><br>';
+		$output .= esc_html__( 'CartFlows now has dedicated JavaScript and CSS editors for custom scripts in your funnels and steps. Click "Migrate Data" to move your existing scripts to the new editors, or choose "Remind Me Later" to be notified again in 7 days.', 'cartflows' );
+		$output .= '</p>';
+		$output .= '<p>';
+		$output .= '<button class="button button-primary wcf-migrate-scripts-btn" data-action="migrate_scripts">' . esc_html__( 'Migrate Data', 'cartflows' ) . '</button>';
+		$output .= '&nbsp;';
+		$output .= '<button class="button button-secondary wcf-snooze-migration-btn" data-action="remind_later">' . esc_html__( 'Remind Me Later', 'cartflows' ) . '</button>';
+		$output .= '</p>';
+		$output .= '</div>';
+
+		echo wp_kses_post( $output );
+	}
+
+	/**
+	 * Handle snooze (remind me later) AJAX request for the script migration notice.
+	 *
+	 * Increments the skip counter and updates the skip timestamp.
+	 * After 2 skips, sets the status to 'accepted' to stop showing the notice.
+	 *
+	 * @since 2.2.2
+	 * @return void
+	 */
+	public function snooze_script_migration_notice() {
+
+		if ( ! check_ajax_referer( 'cartflows-snooze-script-migration', 'security', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce.', 'cartflows' ) ) );
+		}
+		
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'cartflows' ) ) );
+		}
+
+		$update = Cartflows_Update::get_instance();
+
+		if ( $update instanceof Cartflows_Update ) {
+			$update->set_script_migration_status( 'skipped' );
+			$update->increment_migration_skip_count();
+
+			// After 2 skips, stop showing the notice permanently.
+			if ( $update->get_migration_skip_count() >= 2 ) {
+				$update->set_script_migration_status( 'accepted' );
+			}
+
+			wp_send_json_success( array( 'message' => __( 'You will be reminded in 7 days.', 'cartflows' ) ) );
+		}
+
+		wp_send_json_error( array( 'message' => __( 'Unable to update migration status.', 'cartflows' ) ) );
+	}
+
+	/**
 	 *  After save of permalinks.
 	 */
 	public function notices_scripts() {
@@ -141,6 +217,9 @@ class Cartflows_Admin_Notices {
 		$localize_vars = array(
 			'ignore_gb_notice'                   => wp_create_nonce( 'cartflows-ignore-gutenberg-notice' ),
 			'dismiss_weekly_report_email_notice' => wp_create_nonce( 'cartflows-disable-weekly-report-email-notice' ),
+			'snooze_script_migration'            => wp_create_nonce( 'cartflows-snooze-script-migration' ),
+			'migrate_custom_scripts'             => wp_create_nonce( 'cartflows_migrate_custom_scripts' ),
+			'dismiss_migration_complete_notice'  => wp_create_nonce( 'cartflows-dismiss-script-migration-complete-notice' ),
 		);
 
 		wp_localize_script( 'cartflows-notices', 'cartflows_notices', $localize_vars );
@@ -162,6 +241,8 @@ class Cartflows_Admin_Notices {
 		}
 
 		add_action( 'admin_notices', array( $this, 'show_weekly_report_email_settings_notice' ) );
+		add_action( 'admin_notices', array( $this, 'show_script_migration_notice' ) );
+		add_action( 'admin_notices', array( $this, 'show_script_migration_complete_notice' ) );
 
 		$image_path = esc_url( CARTFLOWS_URL . 'assets/images/cartflows-logo-small.jpg' );
 		Astra_Notices::add_notice(
@@ -290,6 +371,64 @@ class Cartflows_Admin_Notices {
 	}
 
 	/**
+	 * Show the custom script migration complete notice.
+	 *
+	 * Renders an admin notice informing users that their custom scripts
+	 * have been successfully migrated to the new dedicated code editors.
+	 *
+	 * @since 2.2.2
+	 * @return void
+	 */
+	public function show_script_migration_complete_notice() {
+
+		if ( ! $this->allowed_screen_for_notices() ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( 'completed' !== \CartFlows_Helper::get_script_migration_status() ) {
+			return;
+		}
+
+		if ( 'yes' === get_option( 'cartflows_script_migration_complete_notice_dismissed', 'no' ) ) {
+			return;
+		}
+
+		$output  = '<div class="wcf-notice script-migration-complete-notice wcf-dismissible-notice notice notice-success is-dismissible">';
+		$output .= '<p>';
+		$output .= '<strong>' . esc_html__( 'CartFlows: Custom Script Migration Complete', 'cartflows' ) . '</strong><br>';
+		$output .= esc_html__( 'Your scripts have been successfully migrated to the dedicated JavaScript and CSS editors.', 'cartflows' );
+		$output .= '</p>';
+		$output .= '</div>';
+
+		echo wp_kses_post( $output );
+	}
+
+	/**
+	 * Handle dismiss AJAX request for the script migration complete notice.
+	 *
+	 * Permanently hides the migration complete notice once the user dismisses it.
+	 *
+	 * @since 2.2.2
+	 * @return void
+	 */
+	public function dismiss_script_migration_complete_notice() {
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'cartflows' ) ) );
+		}
+
+		check_ajax_referer( 'cartflows-dismiss-script-migration-complete-notice', 'security' );
+
+		update_option( 'cartflows_script_migration_complete_notice_dismissed', 'yes' );
+
+		wp_send_json_success();
+	}
+
+	/**
 	 * Check allowed screen for notices.
 	 *
 	 * @since 1.0.0
@@ -302,7 +441,6 @@ class Cartflows_Admin_Notices {
 		$screen          = get_current_screen();
 		$screen_id       = $screen ? $screen->id : '';
 		$allowed_screens = array(
-			'toplevel_page_cartflows',
 			'dashboard',
 			'plugins',
 		);

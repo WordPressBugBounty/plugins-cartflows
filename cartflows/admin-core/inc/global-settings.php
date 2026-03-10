@@ -1456,9 +1456,37 @@ class GlobalSettings {
 					$all_roles
 				),
 			),
+			'webhooks'               => array(
+				'title' => '',
+			),
 			'automations'            => array(
 				'title' => '',
 			),
+			'global_scripts'         => array(
+				'title'  => '',
+				'fields' => array(
+					'global_js'           => array(
+						'type'          => 'code',
+						'display_align' => 'vertical',
+						'name'          => '_cartflows_global_scripts[global_js]',
+						'label'         => __( 'Global JavaScript', 'cartflows' ),
+						'language'      => 'javascript',
+						'tooltip'       => __( 'Any JavaScript added here will run across all funnels. Do not include script tags.', 'cartflows' ),
+					),
+					'global_js_seperator' => array(
+						'type' => 'separator',
+					),
+					'global_css'          => array(
+						'type'          => 'code',
+						'display_align' => 'vertical',
+						'name'          => '_cartflows_global_scripts[global_css]',
+						'label'         => __( 'Global CSS', 'cartflows' ),
+						'language'      => 'css',
+						'tooltip'       => __( 'Any CSS added here will run across all funnels. Do not include style tags.', 'cartflows' ),
+					),
+				),
+			),
+
 		);
 
 		$settings = apply_filters( 'cartflows_admin_global_settings_data', $settings );

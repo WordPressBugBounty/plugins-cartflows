@@ -78,3 +78,13 @@
 .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details__title {
 	font-size: 14px;
 }
+
+/** Order Details: Layout 3 CSS */
+.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-tq-layout-3 .woocommerce-order-details .woocommerce-table .woocommerce-table__line-item.order_item {
+	border: unset;
+}
+
+.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-tq-layout-3 .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li {
+	border-bottom: unset;
+	border-right-style: none;
+}

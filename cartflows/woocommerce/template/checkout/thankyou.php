@@ -56,12 +56,17 @@ $thankyou_layout = wcf()->options->get_thankyou_meta_value( $thankyou_id, 'wcf-t
 					<strong><?php echo $order->get_order_number(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
 				</li>
 				<li class="woocommerce-order-overview__date date">
-					<?php 
-					if('modern-tq-layout' === $thankyou_layout) {
+					<?php
+					if ( 'modern-tq-layout' === $thankyou_layout ) {
 						esc_html_e( 'Order Date:', 'woocommerce' ); ?>
 						<p><?php echo wc_format_datetime( $order->get_date_created() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 					<?php
-					} else { 
+					} elseif ( 'tq-layout-3' === $thankyou_layout ) {
+						?>
+						<strong><?php esc_html_e( 'Order Date:', 'woocommerce' ); ?></strong>
+						<p><?php echo wc_format_datetime( $order->get_date_created() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+					<?php
+					} else {
 						esc_html_e( 'Date:', 'woocommerce' ); ?>
 						<strong><?php echo wc_format_datetime( $order->get_date_created() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
 					<?php 
@@ -82,11 +87,21 @@ $thankyou_layout = wcf()->options->get_thankyou_meta_value( $thankyou_id, 'wcf-t
 
 				<?php if ( $order->get_payment_method_title() ) : ?>
 					<li class="woocommerce-order-overview__payment-method method">
-						<?php esc_html_e( 'Payment method:', 'woocommerce' ); ?>
-						<?php if('modern-tq-layout' === $thankyou_layout) { ?>
+						<?php if ( 'modern-tq-layout' === $thankyou_layout ) { ?>
+
+							<?php esc_html_e( 'Payment method:', 'woocommerce' ); ?>
 							<p><?php echo wp_kses_post( $order->get_payment_method_title() ); ?></p>
+
+						<?php } elseif ( 'tq-layout-3' === $thankyou_layout ) { ?>
+
+							<strong><?php esc_html_e( 'Payment method:', 'woocommerce' ); ?></strong>
+							<p><?php echo wp_kses_post( $order->get_payment_method_title() ); ?></p>
+
 						<?php } else { ?>
+
+							<?php esc_html_e( 'Payment method:', 'woocommerce' ); ?>
 							<strong><?php echo wp_kses_post( $order->get_payment_method_title() ); ?></strong>
+
 						<?php } ?>
 					</li>
 				<?php endif; ?>

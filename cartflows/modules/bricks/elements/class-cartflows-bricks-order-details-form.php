@@ -116,7 +116,6 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 		$this->register_section_downloads_style_controls();
 		$this->register_section_order_details_style_controls();
 		$this->register_section_customer_details_style_controls();
-
 	}
 
 	/**
@@ -128,8 +127,9 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'label'         => esc_html__( 'Layout', 'cartflows' ),
 			'type'          => 'select',
 			'options'       => array(
-				'legacy-tq-layout' => esc_html__( 'Legacy', 'cartflows' ),
-				'modern-tq-layout' => esc_html__( 'Modern', 'cartflows' ),
+				'legacy-tq-layout' => esc_html__( 'Layout 1', 'cartflows' ),
+				'modern-tq-layout' => esc_html__( 'Layout 2', 'cartflows' ),
+				'tq-layout-3'      => esc_html__( 'Layout 3', 'cartflows' ),
 			),
 			'default'       => 'legacy-tq-layout',
 			'reload'        => true,
@@ -173,7 +173,6 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'default' => true,
 			'group'   => 'section_thankyou_fields',
 		);
-
 	}
 
 	/**
@@ -213,7 +212,6 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 				),
 			),
 		);
-
 	}
 
 	/**
@@ -247,7 +245,6 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			),
 			'group' => 'order_details_form_heading_styling',
 		);
-
 	}
 	
 
@@ -290,7 +287,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'css'   => array(
 				array(
 					'property' => 'font',
-					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li p',
+					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li p, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-tq-layout-3 .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li p',
 				),
 				array(
 					'property' => 'font',
@@ -331,8 +328,6 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			),
 			'group' => 'order_details_form_general_styling',
 		);
-
-	
 	}
 
 	/**
@@ -350,7 +345,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'css'   => array(
 				array(
 					'property' => 'font',
-					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li p',
+					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li p, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-tq-layout-3 .woocommerce-order-overview.woocommerce-thankyou-order-details.order_details li p',
 				),
 			),
 
@@ -418,8 +413,6 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 				),
 			),
 		);
-
-		
 	}
 
 	/**
@@ -466,7 +459,6 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 				),
 			),
 		);
-
 	}
 
 
@@ -495,7 +487,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'css'   => array(
 				array(
 					'property' => 'font',
-					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details tr *',
+					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order .woocommerce-customer-details address, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details tr *, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-tq-layout-3 .woocommerce-customer-details tr *',
 				),
 			),
 
@@ -508,11 +500,10 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 			'css'   => array(
 				array(
 					'property' => 'background-color',
-					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-customer-details, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .customer-details-box',
+					'selector' => '.cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order:not(.wcf-modern-tq-layout) .woocommerce-customer-details, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-modern-tq-layout .woocommerce-customer-details .customer-details-box, .cartflows-bricks__order-details-form .wcf-thankyou-wrap .woocommerce-order.wcf-tq-layout-3 .woocommerce-customer-details .customer-details-box',
 				),
 			),
 		);
-
 	}
 
 	/**
@@ -569,7 +560,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 
 			add_filter(
 				'cartflows_thankyou_meta_wcf-tq-text',
-				function( $text ) {
+				function ( $text ) {
 
 					$text = $this->settings['thankyou_text'];
 
@@ -584,7 +575,7 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 
 			add_filter(
 				'cartflows_thankyou_meta_wcf-tq-layout',
-				function( $text ) {
+				function ( $text ) {
 
 					$text = $this->settings['layout'];
 
@@ -594,7 +585,5 @@ class Cartflows_Bricks_Order_Details_Form extends \Bricks\Element {
 				1
 			);
 		}
-
 	}
-
 }

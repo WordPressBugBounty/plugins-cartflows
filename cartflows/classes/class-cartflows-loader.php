@@ -141,7 +141,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '2.2.2' );
+			define( 'CARTFLOWS_VER', '2.2.3' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -501,6 +501,8 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			include_once CARTFLOWS_DIR . 'classes/deprecated/deprecated-hooks.php';
 
 			include_once CARTFLOWS_DIR . 'modules/gutenberg/classes/class-cartflows-block-loader.php';
+
+			include_once CARTFLOWS_DIR . 'modules/webhook/class-cartflows-webhook-loader.php';
 		}
 
 		/**

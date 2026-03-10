@@ -93,8 +93,9 @@ class MetaOps {
 					break;
 
 				case 'FILTER_SCRIPT':
-					// Reason for ignoring phpcs rule: Here we are saving the custom JS script. Encoding it before sacing to db. No escaping function working here.
-					$meta_value = htmlentities( wp_unslash( $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					// Reason for ignoring phpcs rule: Here we are saving the custom JS/CSS script. Encoding it before saving to db. No escaping function working here.
+					// We first decode any existing HTML entities to prevent double-encoding on multiple saves, then encode once.
+					$meta_value = htmlentities( html_entity_decode( wp_unslash( $_POST[ $key ] ), ENT_QUOTES, 'UTF-8' ), ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					break;
 
 				case 'FILTER_WP_KSES_POST':

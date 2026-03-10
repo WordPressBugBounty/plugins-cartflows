@@ -79,3 +79,9 @@
 .cartflows-elementor__checkout-form .wcf-embed-checkout-form .woocommerce #order_review button.wcf-btn-small {
 	border-width: 0;
 }
+
+/** Order Details: Layout 3 CSS */
+.cartflows-elementor__display-billing-address-no.cartflows-elementor__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order:not( .wcf-tq-layout-3 ) .woocommerce-customer-details,
+.cartflows-elementor__display-billing-address-no.cartflows-elementor__display-shipping-address-no .wcf-thankyou-wrap .woocommerce-order.wcf-tq-layout-3 .woocommerce-customer-details .cartflows-customer-details-table-address {
+	display: none;
+}
