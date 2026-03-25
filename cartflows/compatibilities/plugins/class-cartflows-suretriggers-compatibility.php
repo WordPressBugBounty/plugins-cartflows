@@ -118,7 +118,7 @@ if ( ! class_exists( 'Cartflows_SureTriggers_Compatibility' ) ) :
 
 			// If the current user don't have the manage setting access, then return.
 			if ( ! current_user_can( 'cartflows_manage_settings' ) ) {
-				return;
+				wp_send_json_error( $response_data );
 			}
 
 			/**

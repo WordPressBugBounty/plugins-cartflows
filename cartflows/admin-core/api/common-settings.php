@@ -125,7 +125,8 @@ class CommonSettings extends ApiBase {
 	 */
 	public function get_items_permissions_check( $request ) {
 
-		if ( ! current_user_can( 'cartflows_manage_flows_steps' ) ) {
+		// Security: Settings endpoint requires cartflows_manage_settings to prevent sensitive data exposure.
+		if ( ! current_user_can( 'cartflows_manage_settings' ) ) {
 			return new \WP_Error( 'cartflows_rest_cannot_view', __( 'Sorry, you cannot list resources.', 'cartflows' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 

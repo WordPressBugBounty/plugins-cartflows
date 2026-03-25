@@ -439,7 +439,7 @@ class Importer extends AjaxBase {
 	public function activate_plugin() {
 		$response_data = array( 'message' => $this->get_error_msg( 'permission' ) );
 
-		if ( ! current_user_can( 'cartflows_manage_flows_steps' ) ) {
+		if ( ! current_user_can( 'cartflows_manage_flows_steps' ) || ! current_user_can( 'activate_plugins' ) ) {
 			wp_send_json_error( $response_data );
 		}
 
@@ -501,7 +501,7 @@ class Importer extends AjaxBase {
 		// Verify Nonce.
 		$response_data = array( 'message' => $this->get_error_msg( 'permission' ) );
 
-		if ( ! current_user_can( 'cartflows_manage_flows_steps' ) ) {
+		if ( ! current_user_can( 'cartflows_manage_flows_steps' ) || ! current_user_can( 'switch_themes' ) ) {
 			wp_send_json_error( $response_data );
 		}
 
@@ -1311,6 +1311,11 @@ class Importer extends AjaxBase {
 				continue;
 			}
 
+			// Security: Only allow meta keys matching known prefixes to prevent arbitrary DB writes.
+			if ( ! \Cartflows_Helper::get_instance()->is_meta_key_allowed_for_import( $meta_key ) ) {
+				continue;
+			}
+
 			$meta_value = isset( $meta_value[0] ) ? $meta_value[0] : '';
 
 			if ( $meta_value ) {
@@ -1393,7 +1398,11 @@ class Importer extends AjaxBase {
 				if ( $meta_value ) {
 
 					if ( is_serialized( $meta_value, true ) ) {
-						$raw_data = maybe_unserialize( stripslashes( $meta_value ) );
+						// Security: Using unserialize with allowed_classes=>false to prevent object injection.
+						$raw_data = unserialize( stripslashes( $meta_value ), array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, PHPCompatibility.FunctionUse.NewFunctionParameters.unserialize_optionsFound
+						if ( false === $raw_data || is_object( $raw_data ) ) {
+							continue;
+						}
 					} elseif ( is_array( $meta_value ) ) {
 						$raw_data = json_decode( stripslashes( $meta_value ), true );
 					} else {

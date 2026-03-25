@@ -332,10 +332,10 @@ class CommonSettings extends AjaxBase {
 			$new_settings = $this->sanitize_form_inputs( wp_unslash( $_POST['_cartflows_common'] ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 
-		$common_settings = get_option( '_cartflows_common', false );
+		$common_settings = AdminHelper::get_admin_settings_option( '_cartflows_common', false, false );
 		$new_settings    = wp_parse_args( $new_settings, $common_settings );
 
-		AdminHelper::update_admin_settings_option( '_cartflows_common', $new_settings, true );
+		AdminHelper::update_admin_settings_option( '_cartflows_common', $new_settings, false );
 	}
 
 	/**
@@ -367,6 +367,13 @@ class CommonSettings extends AjaxBase {
 	 */
 	public function add_selected_cf_cap( $user_role_obj, $access_key ) {
 
+		// Security: Validate access_key against allowlist to prevent privilege escalation.
+		$allowed_keys = array( 'access_to_cartflows', 'access_to_flows_and_step', 'no_access' );
+
+		if ( ! in_array( $access_key, $allowed_keys, true ) ) {
+			return;
+		}
+
 		switch ( $access_key ) {
 
 			case 'access_to_cartflows':
@@ -379,7 +386,7 @@ class CommonSettings extends AjaxBase {
 				break;
 
 			default:
-				$user_role_obj->add_cap( '' );
+				// No capabilities to add for 'no_access'.
 				break;
 
 		}
@@ -395,9 +402,16 @@ class CommonSettings extends AjaxBase {
 	 */
 	public function user_role_management( $new_settings, $old_settings ) {
 
+		// Security: Protect administrator role from modification via this endpoint.
+		$protected_roles = array( 'administrator' );
+
 		foreach ( $new_settings as $user_role => $access_key ) {
 
-			if ( $old_settings[ $user_role ] !== $access_key ) {
+			if ( in_array( $user_role, $protected_roles, true ) ) {
+				continue;
+			}
+
+			if ( ! isset( $old_settings[ $user_role ] ) || $old_settings[ $user_role ] !== $access_key ) {
 
 				$user_role_obj = get_role( $user_role );
 
@@ -522,6 +536,10 @@ class CommonSettings extends AjaxBase {
 	 * @return void
 	 */
 	public function track_kb_search() {
+		if ( ! current_user_can( 'cartflows_manage_settings' ) ) {
+			wp_send_json_error( array( 'message' => $this->get_error_msg( 'permission' ) ) );
+		}
+
 		/**
 		 * Nonce verification
 		 */

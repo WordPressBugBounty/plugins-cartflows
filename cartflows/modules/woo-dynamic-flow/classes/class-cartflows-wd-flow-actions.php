@@ -38,7 +38,6 @@ class Cartflows_Wd_Flow_Actions {
 
 		add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_cf_hidden_fields' ) );
 		add_filter( 'woocommerce_add_to_cart_redirect', array( $this, 'redirect_to_next_flow_step' ), 10, 2 );
-
 	}
 
 	/**
@@ -85,6 +84,10 @@ class Cartflows_Wd_Flow_Actions {
 
 			$step_id = intval( $_REQUEST['wcf-step-id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
+			if ( CARTFLOWS_STEP_POST_TYPE !== get_post_type( $step_id ) ) {
+				return $redirect_url;
+			}
+
 			$wcf_step_obj = wcf_get_step( $step_id );
 			$next_step_id = $wcf_step_obj->get_direct_next_step_id();
 
@@ -103,7 +106,6 @@ class Cartflows_Wd_Flow_Actions {
 
 		return $redirect_url;
 	}
-
 }
 
 /**

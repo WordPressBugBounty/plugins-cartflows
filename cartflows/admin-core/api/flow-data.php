@@ -99,7 +99,12 @@ class FlowData extends ApiBase {
 	 */
 	public function get_item( $request ) {
 
-		$flow_id = $request->get_param( 'id' );
+		$flow_id = absint( $request->get_param( 'id' ) );
+
+		// Validate the post type to prevent accessing non-flow posts.
+		if ( CARTFLOWS_FLOW_POST_TYPE !== get_post_type( $flow_id ) ) {
+			return new \WP_Error( 'cartflows_invalid_flow', __( 'Invalid flow ID.', 'cartflows' ), array( 'status' => 404 ) );
+		}
 
 		$meta_options = AdminHelper::get_flow_meta_options( $flow_id );
 

@@ -1,3 +1,9 @@
+Version 2.2.4 - Wednesday, 25th March 2026
+- New: Added Power Coupons to the Addons page for quick access and activation.
+- New: Introduced WordPress Abilities API integration to enable AI-powered automation for CartFlows.
+- Security Fix: Hardened the security of the plugin.
+- Fix: Fixed Store Checkout setting not persisting on WordPress Multisite subsites.
+
 Version 2.2.3 - Tuesday, 10th March 2026
 - New: Added a new layout for the Thank You page.
 - New: Introduced CartFlows native webhook integration.

@@ -131,11 +131,11 @@ class Cartflows_Flow_Frontend {
 
 		$test_mode = wcf()->options->get_flow_meta_value( $flow_id, 'wcf-testing' );
 
-		if ( 'no' === $test_mode ) {
-			return false;
+		if ( 'yes' === $test_mode ) {
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**

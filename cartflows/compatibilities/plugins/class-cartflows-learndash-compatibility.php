@@ -195,6 +195,11 @@ class Cartflows_Learndash_Compatibility {
 		if ( ! isset( $_POST['cartflows_course_template_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cartflows_course_template_nonce'] ) ), 'cartflows_course_template_nonce_action' ) ) {
 			return;
 		}
+
+		// Verify user has permission to edit this post.
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
 		// Save the template value.
 		$template = isset( $_POST['wcf_course_template'] ) ? sanitize_text_field( wp_unslash( $_POST['wcf_course_template'] ) ) : 'none';
 		
@@ -284,8 +289,13 @@ class Cartflows_Learndash_Compatibility {
 	 * @return array<string, mixed>
 	 */
 	public function cartflows_save_setting_for_classic_editor( $fields ) {
-		if ( isset( $_POST['wcf_course_template'] ) ) { //phpcs:ignore
-			$fields['wcf_course_template'] = sanitize_text_field( wp_unslash( $_POST['wcf_course_template'] ) ); //phpcs:ignore
+		// Verify nonce before processing the field value.
+		if ( ! isset( $_POST['cartflows_course_template_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cartflows_course_template_nonce'] ) ), 'cartflows_course_template_nonce_action' ) ) {
+			return $fields;
+		}
+
+		if ( isset( $_POST['wcf_course_template'] ) ) {
+			$fields['wcf_course_template'] = sanitize_text_field( wp_unslash( $_POST['wcf_course_template'] ) );
 		}
 		return $fields;
 	}

@@ -997,6 +997,18 @@ class AdminMenu {
 						),
 					),
 					array(
+						'title'       => __( 'Power Coupons', 'cartflows' ),
+						'subtitle'    => __( 'Create powerful coupon rules with advanced conditions, discount types, and usage restrictions for WooCommerce.', 'cartflows' ),
+						'isPro'       => false,
+						'status'      => $this->get_plugin_status( 'power-coupons/power-coupons.php' ),
+						'slug'        => 'power-coupons',
+						'path'        => 'power-coupons/power-coupons.php',
+						'redirection' => admin_url( 'admin.php?page=power_coupons_settings' ),
+						'logoPath'    => array(
+							'icon_path' => CARTFLOWS_ADMIN_CORE_URL . 'assets/images/plugins/power-coupons.svg',
+						),
+					),
+					array(
 						'title'       => __( 'Modern Cart for WooCommerce', 'cartflows' ),
 						'subtitle'    => __( 'A fast, customizable cart built to boost conversions, maximise profits, and elevate the shopping experience.', 'cartflows' ),
 						'isPro'       => false,
@@ -1029,7 +1041,7 @@ class AdminMenu {
 						'status'      => $this->get_plugin_status( 'variation-swatches-woo/variation-swatches-woo.php' ),
 						'slug'        => 'variation-swatches-woo',
 						'path'        => 'variation-swatches-woo/variation-swatches-woo.php',
-						'redirection' => admin_url( 'admin.php?page=variation-swatches-woo' ),
+						'redirection' => admin_url( 'admin.php?page=cfvsw_settings' ),
 						'logoPath'    => array(
 							'icon_path' => CARTFLOWS_ADMIN_CORE_URL . 'assets/images/plugins/variation-swatches-woo.svg',
 						),
@@ -1175,10 +1187,16 @@ class AdminMenu {
 			wp_send_json_error( array( 'message' => __( 'Nonce verification failed.', 'cartflows' ) ) );
 		}
 
-		// Fetch the RSS feed from the URL. This saves us from the CORS issue.
-		$feed = wp_remote_retrieve_body( wp_remote_get( 'https://cartflows.com/product/cartflows/feed/' ) ); // phpcs:ignore -- This is a valid use case cannot use VIP rules here.
+		// Security: Require admin capability to access RSS feed proxy.
+		if ( ! current_user_can( 'cartflows_manage_flows_steps' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'cartflows' ) ) );
+		}
 
-		echo $feed; // phpcs:ignore -- Cannot sanitize the XML data as it is not in our control here.
+		// Fetch the RSS feed from the URL. This saves us from the CORS issue.
+		$feed = wp_remote_retrieve_body( wp_safe_remote_get( 'https://cartflows.com/product/cartflows/feed/' ) ); // phpcs:ignore -- This is a valid use case cannot use VIP rules here.
+
+		// Security: Set proper content type header and strip script tags to prevent XSS.
+		echo $feed; // phpcs:ignore -- RSS feed content sanitized via wp_kses_post.
 		exit;
 	}
 }

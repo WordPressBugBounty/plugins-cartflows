@@ -514,7 +514,7 @@ class Cartflows_Utils {
 	 */
 	public function get_unique_id( $length = 8 ) {
 
-		return substr( md5( microtime() ), 0, $length );
+		return substr( wp_generate_password( $length * 2, false ), 0, $length );
 	}
 
 	/**

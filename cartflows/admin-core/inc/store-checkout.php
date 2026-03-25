@@ -120,7 +120,7 @@ class StoreCheckout {
 		$common_settings                             = \Cartflows_Helper::get_common_settings();
 		$common_settings['global_checkout']          = '';
 		$common_settings['override_global_checkout'] = 'disable';
-		update_option( '_cartflows_common', $common_settings );
+		AdminHelper::update_admin_settings_option( '_cartflows_common', $common_settings, false );
 	}
 
 	/**

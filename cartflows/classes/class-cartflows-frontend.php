@@ -756,7 +756,7 @@ class Cartflows_Frontend {
 			//phpcs:enable WordPress.Security.NonceVerification
 			$order = wc_get_order( $order_id );
 
-			if ( $order || $order_key === $order->get_order_key() ) {
+			if ( $order && $order_key === $order->get_order_key() ) {
 
 				// These variables will be available to use on Upsell, Downsell, Thank you pages of CartFlows only.
 				$script = str_replace( '{{order_id}}', $order_id, $script );

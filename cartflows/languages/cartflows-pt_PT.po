@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: gpt-po v1.2.4\n"
+"Last-Translator: gpt-po v1.1.1\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -12,6 +12,7 @@ msgstr ""
 "Language: \n"
 
 #: cartflows.php
+#: abilities/class-cartflows-ability-runtime.php:49
 #: classes/class-cartflows-admin-notices.php:317
 #: modules/bricks/class-cartflows-bricks-dynamic-data.php:62
 #: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:71
@@ -74,9 +75,9 @@ msgstr "Desculpe, você não tem permissão para realizar esta operação."
 #: admin-core/ajax/common-settings.php:227
 #: admin-core/ajax/common-settings.php:263
 #: admin-core/ajax/common-settings.php:324
-#: admin-core/ajax/common-settings.php:428
-#: admin-core/ajax/common-settings.php:461
-#: admin-core/ajax/common-settings.php:529
+#: admin-core/ajax/common-settings.php:442
+#: admin-core/ajax/common-settings.php:475
+#: admin-core/ajax/common-settings.php:547
 #: admin-core/inc/meta-ops.php:32
 #: modules/checkout/classes/class-cartflows-checkout-ajax.php:112
 #: wizard/ajax/ajax-errors.php:69
@@ -106,7 +107,7 @@ msgstr "Dados salvos com sucesso!"
 
 #: admin-core/ajax/debugger.php:82
 #: admin-core/ajax/debugger.php:133
-#: admin-core/ajax/debugger.php:157
+#: admin-core/ajax/debugger.php:190
 msgid "You don't have permission to perform this action."
 msgstr "Você não tem permissão para realizar esta ação."
 
@@ -119,17 +120,17 @@ msgstr "Sincronização bem-sucedida."
 msgid "You don't have permission to view this page."
 msgstr "Você não tem permissão para visualizar esta página."
 
-#: admin-core/ajax/debugger.php:139
+#: admin-core/ajax/debugger.php:142
 #: admin-core/inc/log-status.php:180
 msgid "Filename is empty. Please refresh the page and retry."
 msgstr "O nome do arquivo está vazio. Por favor, atualize a página e tente novamente."
 
-#: admin-core/ajax/debugger.php:174
+#: admin-core/ajax/debugger.php:224
 #: admin-core/inc/log-status.php:215
 msgid "Invalid file."
 msgstr "Arquivo inválido."
 
-#: admin-core/ajax/debugger.php:181
+#: admin-core/ajax/debugger.php:232
 msgid "Export logs successfully"
 msgstr "Exportar logs com sucesso"
 
@@ -168,96 +169,96 @@ msgid "Successfully deleted the Funnels!"
 msgstr "Funis excluídos com sucesso!"
 
 #: admin-core/ajax/flows.php:274
-#: admin-core/ajax/flows.php:352
-#: admin-core/ajax/flows.php:987
+#: admin-core/ajax/flows.php:356
+#: admin-core/ajax/flows.php:995
 msgid "No Funnel IDs has been supplied to delete!"
 msgstr "Nenhum ID de funil foi fornecido para exclusão!"
 
-#: admin-core/ajax/flows.php:323
-#: admin-core/ajax/flows.php:391
+#: admin-core/ajax/flows.php:327
+#: admin-core/ajax/flows.php:395
 msgid "Successfully trashed the Funnels!"
 msgstr "Os Funis foram movidos para a lixeira com sucesso!"
 
-#: admin-core/ajax/flows.php:422
+#: admin-core/ajax/flows.php:426
 msgid "Invalid Funnel ID has been supplied to update title."
 msgstr "Foi fornecido um ID de funil inválido para atualizar o título."
 
-#: admin-core/ajax/flows.php:427
+#: admin-core/ajax/flows.php:431
 msgid "Can't update the flow title"
 msgstr "Não é possível atualizar o título do fluxo"
 
-#: admin-core/ajax/flows.php:443
+#: admin-core/ajax/flows.php:447
 #. translators: %s flow id
 #, php-format
 msgid "Funnel title updated - %s"
 msgstr "Título do funil atualizado - %s"
 
-#: admin-core/ajax/flows.php:468
+#: admin-core/ajax/flows.php:472
 msgid "Invalid Funnel ID has been supplied to clone!"
 msgstr "Foi fornecido um ID de funil inválido para clonar!"
 
-#: admin-core/ajax/flows.php:502
+#: admin-core/ajax/flows.php:506
 msgid "Invalid Funnel ID has been supplied to duplicate!"
 msgstr "Foi fornecido um ID de funil inválido para duplicar!"
 
-#: admin-core/ajax/flows.php:679
+#: admin-core/ajax/flows.php:683
 msgid "Successfully cloned the Funnel!"
 msgstr "Funil clonado com sucesso!"
 
-#: admin-core/ajax/flows.php:707
+#: admin-core/ajax/flows.php:711
 msgid "Invalid Funnel ID has been supplied to restore!"
 msgstr "Foi fornecido um ID de Funil inválido para restaurar!"
 
-#: admin-core/ajax/flows.php:747
+#: admin-core/ajax/flows.php:751
 msgid "Successfully restored the Funnel!"
 msgstr "Funil restaurado com sucesso!"
 
-#: admin-core/ajax/flows.php:774
+#: admin-core/ajax/flows.php:778
 msgid "Invalid Funnel ID has been supplied to trash!"
 msgstr "Foi fornecido um ID de funil inválido para a lixeira!"
 
-#: admin-core/ajax/flows.php:813
+#: admin-core/ajax/flows.php:817
 msgid "Successfully trashed the Funnel!"
 msgstr "Funil movido para a lixeira com sucesso!"
 
-#: admin-core/ajax/flows.php:840
+#: admin-core/ajax/flows.php:844
 msgid "Invalid Funnel ID has been supplied to delete!"
 msgstr "Foi fornecido um ID de funil inválido para exclusão!"
 
-#: admin-core/ajax/flows.php:881
+#: admin-core/ajax/flows.php:885
 msgid "Successfully deleted the Funnel!"
 msgstr "Funil excluído com sucesso!"
 
-#: admin-core/ajax/flows.php:908
+#: admin-core/ajax/flows.php:912
 msgid "Invalid Funnel IDs has been supplied to update status!"
 msgstr "IDs de Funil inválidos foram fornecidos para atualizar o status!"
 
-#: admin-core/ajax/flows.php:957
-#: admin-core/ajax/flows.php:1016
+#: admin-core/ajax/flows.php:965
+#: admin-core/ajax/flows.php:1024
 msgid "Successfully updated the Funnel status!"
 msgstr "Status do Funil atualizado com sucesso!"
 
-#: admin-core/ajax/flows.php:1056
+#: admin-core/ajax/flows.php:1064
 msgid "Invalid flow ID has been provided."
 msgstr "Foi fornecido um ID de fluxo inválido."
 
-#: admin-core/ajax/flows.php:1072
+#: admin-core/ajax/flows.php:1080
 #. translators: %s flow id
 #, php-format
 msgid "Steps not sorted for flow - %s"
 msgstr "Etapas não ordenadas para o fluxo - %s"
 
-#: admin-core/ajax/flows.php:1112
+#: admin-core/ajax/flows.php:1120
 #. translators: %s flow id
 #, php-format
 msgid "Steps sorted for flow - %s"
 msgstr "Etapas ordenadas para o fluxo - %s"
 
-#: admin-core/ajax/flows.php:1145
+#: admin-core/ajax/flows.php:1153
 msgid "No Funnel ID is been supplied"
 msgstr "Nenhum ID de funil foi fornecido"
 
-#: admin-core/ajax/flows.php:1158
+#: admin-core/ajax/flows.php:1166
 #. translators: %s flow id
 msgid "Notice Dismissed"
 msgstr "Aviso Dispensado"
@@ -267,6 +268,7 @@ msgid "No Funnels to export"
 msgstr "Nenhum funil para exportar"
 
 #: admin-core/ajax/importer.php:222
+#: admin-core/api/flow-data.php:106
 msgid "Invalid flow ID."
 msgstr "ID de fluxo inválido."
 
@@ -290,7 +292,7 @@ msgstr "Tema ativado"
 
 #: admin-core/ajax/importer.php:590
 #: admin-core/ajax/importer.php:605
-#: modules/flow/classes/class-cartflows-step-post-type.php:262
+#: modules/flow/classes/class-cartflows-step-post-type.php:263
 #: wizard/ajax/wizard.php:717
 msgid "Checkout"
 msgstr "Finalizar compra"
@@ -298,7 +300,7 @@ msgstr "Finalizar compra"
 #: admin-core/ajax/importer.php:594
 #: admin-core/ajax/importer.php:609
 #: admin-core/ajax/importer.php:621
-#: modules/flow/classes/class-cartflows-step-post-type.php:269
+#: modules/flow/classes/class-cartflows-step-post-type.php:270
 #: wizard/ajax/wizard.php:721
 #: wizard/ajax/wizard.php:732
 #: admin-core/assets/build/editor-app.js:23
@@ -315,7 +317,7 @@ msgid "Sales Landing"
 msgstr "Página de Vendas"
 
 #: admin-core/ajax/importer.php:617
-#: modules/flow/classes/class-cartflows-step-post-type.php:248
+#: modules/flow/classes/class-cartflows-step-post-type.php:249
 #: wizard/ajax/wizard.php:728
 msgid "Landing"
 msgstr "Pouso"
@@ -384,7 +386,7 @@ msgstr "ID de dados de etapa não encontrado para importação."
 msgid "Funnel ID not found in the request."
 msgstr "ID do funil não encontrado na solicitação."
 
-#: admin-core/inc/admin-helper.php:1161
+#: admin-core/inc/admin-helper.php:1167
 #. translators: %1$s: HTML, %2$s: HTML
 #, php-format
 msgid ""
@@ -456,12 +458,12 @@ msgid "Invalid step id %1$s or post id %2$s."
 msgstr "ID de etapa %1$s ou ID de postagem %2$s inválido."
 
 #: admin-core/ajax/importer.php:1195
-#: admin-core/inc/admin-menu.php:1175
+#: admin-core/inc/admin-menu.php:1187
 #: admin-core/inc/store-checkout.php:110
 msgid "Nonce verification failed."
 msgstr "A verificação do nonce falhou."
 
-#: admin-core/ajax/importer.php:1483
+#: admin-core/ajax/importer.php:1492
 #: wizard/ajax/wizard.php:388
 msgid "Successful!"
 msgstr "Bem-sucedido!"
@@ -534,13 +536,13 @@ msgstr "Foi fornecido um Id de Etapa inválido."
 msgid "Data saved successfully for step id %s"
 msgstr "Dados salvos com sucesso para o id do passo %s"
 
-#: admin-core/api/common-settings.php:129
-#: admin-core/api/flow-data.php:139
-#: admin-core/api/flows.php:291
-#: admin-core/api/home-page.php:172
+#: admin-core/api/common-settings.php:130
+#: admin-core/api/flow-data.php:144
+#: admin-core/api/flows.php:300
+#: admin-core/api/home-page.php:179
 #: admin-core/api/learn.php:602
 #: admin-core/api/product/product-data.php:121
-#: admin-core/api/step-data.php:144
+#: admin-core/api/step-data.php:149
 msgid "Sorry, you cannot list resources."
 msgstr "Desculpe, você não pode listar recursos."
 
@@ -548,13 +550,13 @@ msgstr "Desculpe, você não pode listar recursos."
 msgid "Flow ID."
 msgstr "ID de fluxo."
 
-#: admin-core/api/flows.php:198
+#: admin-core/api/flows.php:207
 #: modules/flow/classes/class-cartflows-flow-post-type.php:229
 #: admin-core/assets/build/settings-app.js:84
 msgid "View"
 msgstr "Ver"
 
-#: admin-core/api/flows.php:206
+#: admin-core/api/flows.php:215
 #: admin-core/assets/build/editor-app.js:1
 #: admin-core/assets/build/editor-app.js:11
 #: admin-core/assets/build/editor-app.js:39
@@ -564,19 +566,19 @@ msgstr "Ver"
 msgid "Edit"
 msgstr "Editar"
 
-#: admin-core/api/flows.php:214
+#: admin-core/api/flows.php:223
 #: admin-core/inc/admin-helper.php:788
 #: admin-core/inc/admin-helper.php:870
 #: admin-core/assets/build/settings-app.js:32
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: admin-core/api/flows.php:221
+#: admin-core/api/flows.php:230
 #: admin-core/assets/build/settings-app.js:32
 msgid "Export"
 msgstr "Exportar"
 
-#: admin-core/api/flows.php:228
+#: admin-core/api/flows.php:237
 #: admin-core/inc/admin-helper.php:805
 #: admin-core/inc/admin-helper.php:879
 #: admin-core/inc/admin-helper.php:947
@@ -590,6 +592,28 @@ msgstr "Exportar"
 msgid "Delete"
 msgstr "Excluir"
 
+#: abilities/class-cartflows-ability-config.php:217
+#: abilities/class-cartflows-ability-config.php:296
+#: abilities/class-cartflows-ability-config.php:881
+#: abilities/class-cartflows-ability-config.php:1095
+#: abilities/class-cartflows-ability-config.php:1520
+#: abilities/class-cartflows-ability-config.php:1596
+#: abilities/class-cartflows-ability-config.php:1690
+#: abilities/class-cartflows-ability-config.php:1790
+#: abilities/class-cartflows-ability-config.php:1852
+#: abilities/class-cartflows-ability-config.php:1923
+#: abilities/class-cartflows-ability-config.php:2028
+#: abilities/class-cartflows-ability-config.php:2086
+#: abilities/class-cartflows-ability-config.php:2165
+#: abilities/class-cartflows-ability-config.php:2242
+#: abilities/class-cartflows-ability-config.php:2308
+#: abilities/class-cartflows-ability-config.php:2373
+#: abilities/class-cartflows-ability-config.php:2431
+#: abilities/class-cartflows-ability-config.php:2501
+#: abilities/class-cartflows-ability-config.php:2566
+#: abilities/class-cartflows-ability-config.php:2632
+#: abilities/class-cartflows-ability-config.php:2694
+#: abilities/class-cartflows-ability-config.php:3413
 #: admin-core/api/product/product-data.php:68
 #: admin-core/api/step-data.php:69
 msgid "Step ID."
@@ -597,8 +621,8 @@ msgstr "ID do passo."
 
 #: admin-core/inc/admin-helper.php:603
 #: admin-core/inc/flow-meta.php:72
-#: classes/class-cartflows-helper.php:1391
-#: classes/class-cartflows-helper.php:1408
+#: classes/class-cartflows-helper.php:1436
+#: classes/class-cartflows-helper.php:1453
 #: modules/beaver-builder/cartflows-bb-checkout-form/cartflows-bb-checkout-form.php:167
 #: modules/beaver-builder/cartflows-bb-next-step/cartflows-bb-next-step.php:194
 #: modules/beaver-builder/cartflows-bb-optin-form/cartflows-bb-optin-form.php:96
@@ -662,15 +686,15 @@ msgstr "Esconder"
 msgid "Restore"
 msgstr "Restaurar"
 
-#: admin-core/inc/admin-helper.php:1149
+#: admin-core/inc/admin-helper.php:1155
 msgid "Ooops! Something went wrong. Please open a support ticket from the website."
 msgstr "Ops! Algo deu errado. Por favor, abra um ticket de suporte no site."
 
-#: admin-core/inc/admin-helper.php:1150
+#: admin-core/inc/admin-helper.php:1156
 msgid "No error found."
 msgstr "Nenhum erro encontrado."
 
-#: admin-core/inc/admin-helper.php:1175
+#: admin-core/inc/admin-helper.php:1181
 #. translators: %1$s: HTML, %2$s: HTML, %3$s: HTML
 #, php-format
 msgid ""
@@ -680,7 +704,7 @@ msgstr ""
 "Desculpe pelo inconveniente, mas o seu site parece estar tendo problemas para se conectar ao nosso servidor. %1$s Por "
 "favor, abra um %2$sticket de suporte técnico%3$s e compartilhe o endereço IP de saída do servidor."
 
-#: admin-core/inc/admin-helper.php:1177
+#: admin-core/inc/admin-helper.php:1183
 msgid "Server's outgoing IP address: "
 msgstr "Endereço IP de saída do servidor:"
 
@@ -792,26 +816,26 @@ msgstr "WooCommerce"
 msgid "WooCommerce is a customizable, open-source ecommerce platform built on WordPress."
 msgstr "WooCommerce é uma plataforma de comércio eletrônico personalizável e de código aberto construída no WordPress."
 
-#: admin-core/inc/admin-menu.php:1100
+#: admin-core/inc/admin-menu.php:1112
 msgid "SureMembers"
 msgstr "SureMembers"
 
-#: admin-core/inc/admin-menu.php:1089
+#: admin-core/inc/admin-menu.php:1101
 msgid "Transform your WordPress form-building experience with stunning designs, ai integration, and no-code flexibility."
 msgstr ""
 "Transforme sua experiência de criação de formulários no WordPress com designs deslumbrantes, integração com IA e "
 "flexibilidade sem código."
 
-#: admin-core/inc/admin-menu.php:1088
+#: admin-core/inc/admin-menu.php:1100
 msgid "SureForms"
 msgstr "SureForms"
 
-#: admin-core/inc/admin-menu.php:1076
+#: admin-core/inc/admin-menu.php:1088
 #: wizard/assets/build/wizard-app.js:1
 msgid "Spectra"
 msgstr "Espectros"
 
-#: admin-core/inc/admin-menu.php:1077
+#: admin-core/inc/admin-menu.php:1089
 msgid "Power-up the Gutenberg editor with advanced and powerful blocks."
 msgstr "Potencie o editor Gutenberg com blocos avançados e poderosos."
 
@@ -820,23 +844,23 @@ msgstr "Potencie o editor Gutenberg com blocos avançados e poderosos."
 msgid "Cart Abandonment"
 msgstr "Abandono de Carrinho"
 
-#: admin-core/inc/admin-menu.php:1014
+#: admin-core/inc/admin-menu.php:1026
 msgid "Recover abandonded carts with ease in less than 10 minutes."
 msgstr "Recupere carrinhos abandonados com facilidade em menos de 10 minutos."
 
-#: admin-core/inc/admin-menu.php:1026
+#: admin-core/inc/admin-menu.php:1038
 msgid "Variation Swatches for WooCommerce"
 msgstr "Variações de Amostras para WooCommerce"
 
-#: admin-core/inc/admin-menu.php:1027
+#: admin-core/inc/admin-menu.php:1039
 msgid "Convert dropdown boxes into highly engaging variation swatches."
 msgstr "Converta caixas suspensas em amostras de variação altamente envolventes."
 
-#: admin-core/inc/admin-menu.php:1118
+#: admin-core/inc/admin-menu.php:1130
 msgid "Astra"
 msgstr "Astra"
 
-#: admin-core/inc/admin-menu.php:1119
+#: admin-core/inc/admin-menu.php:1131
 msgid ""
 "Astra is fast, fully customizable & beautiful WordPress theme suitable for blog, personal portfolio, business website "
 "and WooCommerce storefront."
@@ -844,11 +868,11 @@ msgstr ""
 "Astra é um tema WordPress rápido, totalmente personalizável e bonito, adequado para blog, portfólio pessoal, site de "
 "negócios e loja WooCommerce."
 
-#: admin-core/inc/admin-menu.php:1129
+#: admin-core/inc/admin-menu.php:1141
 msgid "Spectra One"
 msgstr "Spectra One"
 
-#: admin-core/inc/admin-menu.php:1130
+#: admin-core/inc/admin-menu.php:1142
 msgid ""
 "Spectra One is a beautiful and modern WordPress theme built with the Full Site Editing (FSE) feature. It's a versatile "
 "theme that can be used for blogs, portfolios, businesses, and more."
@@ -1600,90 +1624,90 @@ msgstr "Sobrenome"
 msgid "Email address"
 msgstr "Endereço de e-mail"
 
-#: classes/class-cartflows-helper.php:1349
+#: classes/class-cartflows-helper.php:1394
 msgid "Enable Field"
 msgstr "Ativar Campo"
 
-#: classes/class-cartflows-helper.php:1355
+#: classes/class-cartflows-helper.php:1400
 msgid "Field Width"
 msgstr "Largura do Campo"
 
-#: classes/class-cartflows-helper.php:1361
+#: classes/class-cartflows-helper.php:1406
 #: admin-core/assets/build/editor-app.js:39
 #: admin-core/assets/build/settings-app.js:51
 msgid "33%"
 msgstr "33%"
 
-#: classes/class-cartflows-helper.php:1365
+#: classes/class-cartflows-helper.php:1410
 #: admin-core/assets/build/editor-app.js:39
 #: admin-core/assets/build/settings-app.js:51
 msgid "50%"
 msgstr "50%"
 
-#: classes/class-cartflows-helper.php:1369
+#: classes/class-cartflows-helper.php:1414
 #: admin-core/assets/build/editor-app.js:39
 #: admin-core/assets/build/settings-app.js:51
 msgid "100%"
 msgstr "100%"
 
-#: classes/class-cartflows-helper.php:1376
+#: classes/class-cartflows-helper.php:1421
 msgid "Field Label"
 msgstr "Rótulo do Campo"
 
-#: classes/class-cartflows-helper.php:1381
+#: classes/class-cartflows-helper.php:1426
 #: admin-core/assets/build/editor-app.js:40
 #: admin-core/assets/build/settings-app.js:52
 msgid "Field ID"
 msgstr "ID do campo"
 
-#: classes/class-cartflows-helper.php:1385
+#: classes/class-cartflows-helper.php:1430
 msgid "Copy this field id to use in Order Custom Field rule of dynamic offers."
 msgstr "Copie este ID de campo para usar na regra de Campo Personalizado de Pedido de ofertas dinâmicas."
 
-#: classes/class-cartflows-helper.php:1397
+#: classes/class-cartflows-helper.php:1442
 #: admin-core/assets/build/editor-app.js:41
 #: admin-core/assets/build/settings-app.js:53
 msgid "Checked"
 msgstr "Verificado"
 
-#: classes/class-cartflows-helper.php:1401
+#: classes/class-cartflows-helper.php:1446
 msgid "Un-Checked"
 msgstr "Desmarcado"
 
-#: classes/class-cartflows-helper.php:1418
+#: classes/class-cartflows-helper.php:1463
 #: modules/thankyou/classes/class-cartflows-thankyou-meta-data.php:451
 #: admin-core/assets/build/editor-app.js:41
 #: admin-core/assets/build/settings-app.js:53
 msgid "Options"
 msgstr "Opções"
 
-#: classes/class-cartflows-helper.php:1442
+#: classes/class-cartflows-helper.php:1487
 msgid "Min Date"
 msgstr "Data Mín"
 
-#: classes/class-cartflows-helper.php:1449
+#: classes/class-cartflows-helper.php:1494
 msgid "Max Date"
 msgstr "Data Máxima"
 
-#: classes/class-cartflows-helper.php:1461
+#: classes/class-cartflows-helper.php:1506
 #: admin-core/assets/build/editor-app.js:41
 #: admin-core/assets/build/settings-app.js:53
 msgid "Placeholder"
 msgstr "Espaço reservado"
 
-#: classes/class-cartflows-helper.php:1470
+#: classes/class-cartflows-helper.php:1515
 msgid "Min Number"
 msgstr "Número Mín"
 
-#: classes/class-cartflows-helper.php:1476
+#: classes/class-cartflows-helper.php:1521
 msgid "Max Number"
 msgstr "Número Máximo"
 
-#: classes/class-cartflows-helper.php:1514
+#: classes/class-cartflows-helper.php:1559
 msgid "Show In Email"
 msgstr "Mostrar no Email"
 
-#: classes/class-cartflows-helper.php:1521
+#: classes/class-cartflows-helper.php:1566
 #: admin-core/assets/build/editor-app.js:39
 #: admin-core/assets/build/editor-app.js:41
 #: admin-core/assets/build/settings-app.js:51
@@ -1691,25 +1715,25 @@ msgstr "Mostrar no Email"
 msgid "Required"
 msgstr "Obrigatório"
 
-#: classes/class-cartflows-helper.php:1529
+#: classes/class-cartflows-helper.php:1574
 #: admin-core/assets/build/editor-app.js:41
 #: admin-core/assets/build/settings-app.js:53
 msgid "Collapsible"
 msgstr "Dobrável"
 
-#: classes/class-cartflows-helper.php:1579
+#: classes/class-cartflows-helper.php:1624
 msgid "CartFlows Primary Color"
 msgstr "Cor Primária do CartFlows"
 
-#: classes/class-cartflows-helper.php:1580
+#: classes/class-cartflows-helper.php:1625
 msgid "CartFlows Secondary Color"
 msgstr "Cor Secundária do CartFlows"
 
-#: classes/class-cartflows-helper.php:1581
+#: classes/class-cartflows-helper.php:1626
 msgid "CartFlows Text Color"
 msgstr "Cor do Texto do CartFlows"
 
-#: classes/class-cartflows-helper.php:1582
+#: classes/class-cartflows-helper.php:1627
 msgid "CartFlows Heading/Accent Color"
 msgstr "Cor do Título/Acento do CartFlows"
 
@@ -1731,13 +1755,13 @@ msgstr ""
 "Você está usando uma versão mais antiga de %1$s%3$s%2$s. Por favor, atualize o plugin %1$s%3$s%2$s para a versão "
 "%1$s%4$s%2$s ou superior."
 
-#: classes/class-cartflows-loader.php:630
+#: classes/class-cartflows-loader.php:632
 #. translators: %s: html tags
 #, php-format
 msgid "This %1$sCartFlows%2$s page requires %1$sWooCommerce%2$s plugin installed & activated."
 msgstr "Esta página %1$sCartFlows%2$s requer o plugin %1$sWooCommerce%2$s instalado e ativado."
 
-#: classes/class-cartflows-loader.php:640
+#: classes/class-cartflows-loader.php:642
 #: admin-core/assets/build/editor-app.js:45
 #: admin-core/assets/build/editor-app.js:47
 #: admin-core/assets/build/settings-app.js:23
@@ -1747,7 +1771,7 @@ msgid "Activate WooCommerce"
 msgstr "Ativar WooCommerce"
 
 #: admin-core/api/learn.php:96
-#: classes/class-cartflows-loader.php:647
+#: classes/class-cartflows-loader.php:649
 #: admin-core/assets/build/editor-app.js:47
 #: admin-core/assets/build/settings-app.js:23
 #: admin-core/assets/build/settings-app.js:34
@@ -1758,23 +1782,23 @@ msgstr "Instalar WooCommerce"
 msgid "CartFlows <p>Rollback to Previous Version</p>"
 msgstr "CartFlows <p>Reverter para a Versão Anterior</p>"
 
-#: classes/class-cartflows-tracking.php:1396
+#: classes/class-cartflows-tracking.php:1434
 msgid "We use Pinterest tags to improve your experience. Do you consent to our use of Pinterest tags?"
 msgstr "Usamos tags do Pinterest para melhorar sua experiência. Você consente com o uso de tags do Pinterest?"
 
-#: classes/class-cartflows-tracking.php:1397
+#: classes/class-cartflows-tracking.php:1435
 msgid "Accept"
 msgstr "Aceitar"
 
-#: classes/class-cartflows-tracking.php:1398
+#: classes/class-cartflows-tracking.php:1436
 msgid "Decline"
 msgstr "Recusar"
 
-#: classes/class-cartflows-tracking.php:1403
+#: classes/class-cartflows-tracking.php:1441
 msgid "Pinterest Consent"
 msgstr "Consentimento do Pinterest"
 
-#: classes/importer/batch-process/class-cartflows-batch-process.php:482
+#: classes/importer/batch-process/class-cartflows-batch-process.php:485
 msgid ""
 "ERROR! Cron schedules are disabled by setting constant DISABLE_WP_CRON to true.<br/>To start the import process please "
 "enable the cron by setting the constant to false. E.g. define( 'DISABLE_WP_CRON', false );"
@@ -1783,7 +1807,7 @@ msgstr ""
 "processo de importação, por favor, ative o cron definindo a constante como false. Ex.: define( 'DISABLE_WP_CRON', false "
 ");"
 
-#: classes/importer/batch-process/class-cartflows-batch-process.php:486
+#: classes/importer/batch-process/class-cartflows-batch-process.php:489
 msgid ""
 "ERROR! Cron schedules are disabled by setting constant ALTERNATE_WP_CRON to true.<br/>To start the import process "
 "please enable the cron by setting the constant to false. E.g. define( 'ALTERNATE_WP_CRON', false );"
@@ -1792,7 +1816,7 @@ msgstr ""
 "iniciar o processo de importação, ative o cron definindo a constante como falsa. Por exemplo, defina( "
 "'ALTERNATE_WP_CRON', false );"
 
-#: classes/importer/batch-process/class-cartflows-batch-process.php:522
+#: classes/importer/batch-process/class-cartflows-batch-process.php:525
 #. translators: 1: The HTTP response code.
 #, php-format
 msgid "Unexpected HTTP response code: %s"
@@ -1814,13 +1838,13 @@ msgstr "Conteúdo inválido. Esperava um array."
 msgid "All processes are complete"
 msgstr "Todos os processos estão concluídos"
 
-#: classes/importer/batch-process/helpers/class-wp-background-process.php:440
+#: classes/importer/batch-process/helpers/class-wp-background-process.php:443
 #. Translators: %d: interval
 #, php-format
 msgid "Every %d Minutes"
 msgstr "A cada %d minutos"
 
-#: classes/importer/class-cartflows-api.php:428
+#: classes/importer/class-cartflows-api.php:427
 msgid "Request successfully processed!"
 msgstr "Pedido processado com sucesso!"
 
@@ -3815,19 +3839,19 @@ msgstr "Mostrar"
 msgid "Sections"
 msgstr "Seções"
 
-#: modules/email-report/class-cartflows-admin-report-emails.php:104
+#: modules/email-report/class-cartflows-admin-report-emails.php:103
 msgid "There"
 msgstr "Lá"
 
-#: modules/email-report/class-cartflows-admin-report-emails.php:142
+#: modules/email-report/class-cartflows-admin-report-emails.php:148
 msgid "You have successfully unsubscribed from our weekly emails list."
 msgstr "Você cancelou com sucesso a inscrição na nossa lista de e-mails semanais."
 
-#: modules/email-report/class-cartflows-admin-report-emails.php:142
+#: modules/email-report/class-cartflows-admin-report-emails.php:148
 msgid "Unsubscribed"
 msgstr "Cancelado"
 
-#: modules/email-report/class-cartflows-admin-report-emails.php:174
+#: modules/email-report/class-cartflows-admin-report-emails.php:179
 msgid "Here’s how your store performed last week!"
 msgstr "Aqui está o desempenho da sua loja na semana passada!"
 
@@ -3958,8 +3982,8 @@ msgstr "Ver Fluxo"
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:109
 #: modules/flow/classes/class-cartflows-flow-post-type.php:111
-#: modules/flow/classes/class-cartflows-step-post-type.php:176
-#: modules/flow/classes/class-cartflows-step-post-type.php:178
+#: modules/flow/classes/class-cartflows-step-post-type.php:177
+#: modules/flow/classes/class-cartflows-step-post-type.php:179
 #: admin-core/assets/build/settings-app.js:25
 msgid "Add New"
 msgstr "Adicionar Novo"
@@ -3986,64 +4010,64 @@ msgstr "Lesma"
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:332
 #: modules/flow/classes/class-cartflows-flow-post-type.php:338
-#: modules/flow/classes/class-cartflows-step-post-type.php:431
-#: modules/flow/classes/class-cartflows-step-post-type.php:437
+#: modules/flow/classes/class-cartflows-step-post-type.php:432
+#: modules/flow/classes/class-cartflows-step-post-type.php:438
 #. translators: %s: singular custom post type name
 #, php-format
 msgid "%s updated."
 msgstr "%s atualizado."
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:334
-#: modules/flow/classes/class-cartflows-step-post-type.php:433
+#: modules/flow/classes/class-cartflows-step-post-type.php:434
 #. translators: %s: singular custom post type name
 #, php-format
 msgid "Custom %s updated."
 msgstr "%s personalizado atualizado."
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:336
-#: modules/flow/classes/class-cartflows-step-post-type.php:435
+#: modules/flow/classes/class-cartflows-step-post-type.php:436
 #. translators: %s: singular custom post type name
 #, php-format
 msgid "Custom %s deleted."
 msgstr "%s personalizado excluído."
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:340
-#: modules/flow/classes/class-cartflows-step-post-type.php:439
+#: modules/flow/classes/class-cartflows-step-post-type.php:440
 #. translators: %1$s: singular custom post type name ,%2$s: date and time of the revision
 #, php-format
 msgid "%1$s restored to revision from %2$s"
 msgstr "%1$s restaurado para a revisão de %2$s"
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:342
-#: modules/flow/classes/class-cartflows-step-post-type.php:441
+#: modules/flow/classes/class-cartflows-step-post-type.php:442
 #. translators: %s: singular custom post type name
 #, php-format
 msgid "%s published."
 msgstr "%s publicado."
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:344
-#: modules/flow/classes/class-cartflows-step-post-type.php:443
+#: modules/flow/classes/class-cartflows-step-post-type.php:444
 #. translators: %s: singular custom post type name
 #, php-format
 msgid "%s saved."
 msgstr "%s salvo."
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:346
-#: modules/flow/classes/class-cartflows-step-post-type.php:445
+#: modules/flow/classes/class-cartflows-step-post-type.php:446
 #. translators: %s: singular custom post type name
 #, php-format
 msgid "%s submitted."
 msgstr "%s enviado."
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:348
-#: modules/flow/classes/class-cartflows-step-post-type.php:447
+#: modules/flow/classes/class-cartflows-step-post-type.php:448
 #. translators: %s: singular custom post type name
 #, php-format
 msgid "%s scheduled for."
 msgstr "%s agendado para."
 
 #: modules/flow/classes/class-cartflows-flow-post-type.php:350
-#: modules/flow/classes/class-cartflows-step-post-type.php:449
+#: modules/flow/classes/class-cartflows-step-post-type.php:450
 #. translators: %s: singular custom post type name
 #, php-format
 msgid "%s draft updated."
@@ -4058,7 +4082,7 @@ msgstr "Design"
 msgid "Custom script lets you add your own custom script on front end of this flow page."
 msgstr "O script personalizado permite que você adicione seu próprio script personalizado na interface desta página de fluxo."
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:172
+#: modules/flow/classes/class-cartflows-step-post-type.php:173
 #: admin-core/assets/build/editor-app.js:62
 #: admin-core/assets/build/editor-app.js:72
 #: admin-core/assets/build/settings-app.js:73
@@ -4066,46 +4090,47 @@ msgstr "O script personalizado permite que você adicione seu próprio script pe
 msgid "Search Steps"
 msgstr "Etapas de Pesquisa"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:173
+#: modules/flow/classes/class-cartflows-step-post-type.php:174
 msgid "All Steps"
 msgstr "Todos os passos"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:174
+#: modules/flow/classes/class-cartflows-step-post-type.php:175
 msgid "Edit Step"
 msgstr "Editar Etapa"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:175
+#: modules/flow/classes/class-cartflows-step-post-type.php:176
 msgid "View Step"
 msgstr "Ver Etapa"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:177
+#: modules/flow/classes/class-cartflows-step-post-type.php:178
 msgid "Update Step"
 msgstr "Etapa de Atualização"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:179
+#: modules/flow/classes/class-cartflows-step-post-type.php:180
 msgid "New Step Name"
 msgstr "Novo Nome do Passo"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:220
+#: modules/flow/classes/class-cartflows-step-post-type.php:221
 msgid "Step Type"
 msgstr "Tipo de Etapa"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:230
+#: modules/flow/classes/class-cartflows-step-post-type.php:231
 msgid "Step Flow"
 msgstr "Fluxo de Etapas"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:255
+#: modules/flow/classes/class-cartflows-step-post-type.php:256
 msgid "Optin"
 msgstr "Optin"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:276
+#: modules/flow/classes/class-cartflows-step-post-type.php:277
 msgid "Upsell"
 msgstr "Venda adicional"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:283
+#: modules/flow/classes/class-cartflows-step-post-type.php:284
 msgid "Downsell"
 msgstr "Venda adicional"
 
+#: admin-core/inc/admin-menu.php:1192
 #: modules/gutenberg/classes/class-cartflows-init-blocks.php:146
 #: modules/gutenberg/classes/class-cartflows-init-blocks.php:201
 #: modules/gutenberg/classes/class-cartflows-init-blocks.php:311
@@ -4234,20 +4259,20 @@ msgstr "Você pode passar o valor do campo como um parâmetro de URL para a pró
 msgid "We can't seem to find an order for you."
 msgstr "Parece que não conseguimos encontrar um pedido para você."
 
-#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:272
-#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:662
+#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:271
+#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:658
 msgid "No completed or processing order found to show the order details form demo."
 msgstr "Nenhum pedido concluído ou em processamento encontrado para mostrar o formulário de detalhes do pedido demo."
 
-#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:280
+#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:278
 msgid "Order not found. You cannot access this page directly."
 msgstr "Pedido não encontrado. Você não pode acessar esta página diretamente."
 
-#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:673
+#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:669
 msgid "Order Details Not Found."
 msgstr "Detalhes do Pedido Não Encontrados."
 
-#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:675
+#: modules/thankyou/classes/class-cartflows-thankyou-markup.php:671
 msgid "Return to Shopping"
 msgstr "Voltar às Compras"
 
@@ -4570,20 +4595,24 @@ msgid "Reset"
 msgstr "Redefinir"
 
 #: admin-core/assets/build/editor-app.js:1
+#: admin-core/assets/build/settings-app.js:1
 msgid "Image Preview"
 msgstr "Pré-visualização da imagem"
 
 #: admin-core/assets/build/editor-app.js:1
+#: admin-core/assets/build/settings-app.js:1
 #: admin-core/assets/build/settings-app.js:24
 msgid "Upload a file"
 msgstr "Carregar um arquivo"
 
 #: admin-core/assets/build/editor-app.js:1
+#: admin-core/assets/build/settings-app.js:1
 #: admin-core/assets/build/settings-app.js:24
 msgid "or drag and drop"
 msgstr "ou arraste e solte"
 
 #: admin-core/assets/build/editor-app.js:1
+#: admin-core/assets/build/settings-app.js:1
 msgid "PNG, JPG, GIF up to 10MB"
 msgstr "PNG, JPG, GIF até 10MB"
 
@@ -6355,6 +6384,7 @@ msgstr "Importando etapa.."
 msgid "Close"
 msgstr "Fechar"
 
+#: modules/email-report/class-cartflows-admin-report-emails.php:127
 #: admin-core/assets/build/editor-app.js:70
 #: admin-core/assets/build/settings-app.js:34
 msgid "Error"
@@ -7577,6 +7607,7 @@ msgid "Replace image"
 msgstr "Substituir imagem"
 
 #: admin-core/assets/build/editor-app.js:1
+#: admin-core/assets/build/settings-app.js:1
 #: modules/gutenberg/dist/blocks.build.js:1
 msgid "Remove Image"
 msgstr "Remover imagem"
@@ -8053,7 +8084,7 @@ msgstr "Tutorial Estendido de Passo a Passo do CartFlows"
 msgid "Finishing the Setup"
 msgstr "Finalizando a Configuração"
 
-#: admin-core/inc/admin-menu.php:1101
+#: admin-core/inc/admin-menu.php:1113
 msgid "A simple yet powerful way to add content restriction to your website."
 msgstr "Uma maneira simples, mas poderosa, de adicionar restrição de conteúdo ao seu site."
 
@@ -8436,11 +8467,11 @@ msgstr ""
 msgid "Modern Cart"
 msgstr "Carrinho Moderno"
 
-#: admin-core/inc/admin-menu.php:1051
+#: admin-core/inc/admin-menu.php:1063
 msgid "OttoKit"
 msgstr "OttoKit"
 
-#: admin-core/inc/admin-menu.php:1052
+#: admin-core/inc/admin-menu.php:1064
 msgid ""
 "OttoKit helps people automate their work by integrating multiple apps and plugins, allowing them to share data and "
 "perform tasks automatically."
@@ -8448,7 +8479,7 @@ msgstr ""
 "OttoKit ajuda as pessoas a automatizar seu trabalho integrando vários aplicativos e plugins, permitindo que "
 "compartilhem dados e realizem tarefas automaticamente."
 
-#: admin-core/inc/admin-menu.php:1000
+#: admin-core/inc/admin-menu.php:1012
 msgid "Modern Cart for WooCommerce"
 msgstr "Carrinho Moderno para WooCommerce"
 
@@ -8849,30 +8880,30 @@ msgstr "Ao continuar, você concorda com nossos %1$sTermos%2$s e %3$sPolítica d
 msgid "A Store Checkout funnel already exists. Importing this funnel will replace the current Store Checkout funnel."
 msgstr "Um funil de Checkout da Loja já existe. Importar este funil substituirá o atual funil de Checkout da Loja."
 
-#: admin-core/inc/admin-menu.php:1001
+#: admin-core/inc/admin-menu.php:1013
 msgid "A fast, customizable cart built to boost conversions, maximise profits, and elevate the shopping experience."
 msgstr ""
 "Um carrinho rápido e personalizável, criado para aumentar as conversões, maximizar os lucros e elevar a experiência de "
 "compra."
 
 #: admin-core/api/learn.php:212
-#: admin-core/inc/admin-menu.php:1013
+#: admin-core/inc/admin-menu.php:1025
 msgid "Cart Abandonment Recovery"
 msgstr "Recuperação de Carrinho Abandonado"
 
-#: admin-core/inc/admin-menu.php:1039
+#: admin-core/inc/admin-menu.php:1051
 msgid "WooPayments: Integrated WooCommerce Payments"
 msgstr "WooPayments: Pagamentos WooCommerce Integrados"
 
-#: admin-core/inc/admin-menu.php:1040
+#: admin-core/inc/admin-menu.php:1052
 msgid "Payments made simple, with no monthly fees – designed exclusively for WooCommerce stores."
 msgstr "Pagamentos simplificados, sem taxas mensais – projetados exclusivamente para lojas WooCommerce."
 
-#: admin-core/inc/admin-menu.php:1064
+#: admin-core/inc/admin-menu.php:1076
 msgid "Ultimate addons for Elementor"
 msgstr "Complementos definitivos para Elementor"
 
-#: admin-core/inc/admin-menu.php:1065
+#: admin-core/inc/admin-menu.php:1077
 msgid ""
 "Powerful Elementor addon with InfoCard, Fancy Heading, Before/After Slider, Price Box, FAQ Schema, WooCommerce widgets "
 "& Header-Footer builder."
@@ -8933,7 +8964,7 @@ msgstr ""
 "Os alunos não matriculados serão redirecionados para o modelo CartFlows selecionado. Se você ainda não criou nenhum "
 "Fluxo, adicione um novo Fluxo a partir de %1$saqui%2$s."
 
-#: compatibilities/plugins/class-cartflows-learndash-compatibility.php:322
+#: compatibilities/plugins/class-cartflows-learndash-compatibility.php:332
 msgid "Select a CartFlows template to redirect non-enrolled students to when they try to access this course."
 msgstr "Selecione um modelo do CartFlows para redirecionar os alunos não matriculados quando tentarem acessar este curso."
 
@@ -9395,7 +9426,7 @@ msgstr ""
 "Não coletamos nenhuma informação pessoal—apenas detalhes básicos como sua versão do PHP, idioma do administrador e "
 "quais recursos você usa. %1$sSaiba mais%2$s sobre o que coletamos e por quê."
 
-#: admin-core/ajax/common-settings.php:582
+#: admin-core/ajax/common-settings.php:600
 #. translators: %d: number of posts migrated
 #, php-format
 msgid "Migration completed successfully. %d post(s) migrated."
@@ -9709,23 +9740,23 @@ msgstr "Criar Meu Primeiro Funil"
 msgid "Dismiss"
 msgstr "Dispensar"
 
-#: classes/class-cartflows-helper.php:1488
+#: classes/class-cartflows-helper.php:1533
 #: admin-core/assets/build/editor-app.js:41
 #: admin-core/assets/build/settings-app.js:53
 msgid "File Size (MB)"
 msgstr "Tamanho do Arquivo (MB)"
 
-#: classes/class-cartflows-helper.php:1492
+#: classes/class-cartflows-helper.php:1537
 msgid "Enter maximum file size allowed. Default is 5MB."
 msgstr "Insira o tamanho máximo do arquivo permitido. O padrão é 5MB."
 
-#: classes/class-cartflows-helper.php:1504
+#: classes/class-cartflows-helper.php:1549
 #: admin-core/assets/build/editor-app.js:41
 #: admin-core/assets/build/settings-app.js:53
 msgid "Accepted File Types"
 msgstr "Tipos de Arquivos Aceitos"
 
-#: classes/class-cartflows-helper.php:1507
+#: classes/class-cartflows-helper.php:1552
 msgid "Enter comma-separated file extensions (e.g. jpg, png, pdf)."
 msgstr "Insira extensões de arquivo separadas por vírgula (por exemplo, jpg, png, pdf)."
 
@@ -10144,6 +10175,2062 @@ msgstr "Assistir Vídeo"
 msgid "Delete Webhook"
 msgstr "Excluir Webhook"
 
+#: abilities/class-cartflows-ability-config.php:50
+msgid "List funnels"
+msgstr "Listar funis"
+
+#: abilities/class-cartflows-ability-config.php:51
+msgid ""
+"Returns a paginated list of CartFlows funnels. Supports filtering by status (publish, draft, trash) and keyword search. "
+"Excludes the store checkout flow. Use to browse or discover funnels before taking action on them."
+msgstr ""
+"Retorna uma lista paginada de funis do CartFlows. Suporta filtragem por status (publicado, rascunho, lixo) e pesquisa "
+"por palavra-chave. Exclui o fluxo de checkout da loja. Use para navegar ou descobrir funis antes de tomar uma ação "
+"sobre eles."
+
+#: abilities/class-cartflows-ability-config.php:63
+msgid "Filter funnels by post status."
+msgstr "Filtrar funis por status da postagem."
+
+#: abilities/class-cartflows-ability-config.php:68
+msgid "Keyword to search in funnel titles."
+msgstr "Palavra-chave para pesquisar nos títulos do funil."
+
+#: abilities/class-cartflows-ability-config.php:73
+#: abilities/class-cartflows-ability-config.php:2928
+#: abilities/class-cartflows-ability-config.php:3267
+msgid "Page number (1-based)."
+msgstr "Número da página (baseado em 1)."
+
+#: abilities/class-cartflows-ability-config.php:78
+msgid "Funnels per page (max 100)."
+msgstr "Funis por página (máx. 100)."
+
+#: abilities/class-cartflows-ability-config.php:87
+msgid "The funnels."
+msgstr "Os funis."
+
+#: abilities/class-cartflows-ability-config.php:93
+#: abilities/class-cartflows-ability-config.php:185
+#: abilities/class-cartflows-ability-config.php:482
+#: abilities/class-cartflows-ability-config.php:539
+#: abilities/class-cartflows-ability-config.php:666
+#: abilities/class-cartflows-ability-config.php:724
+#: abilities/class-cartflows-ability-config.php:794
+#: abilities/class-cartflows-ability-config.php:871
+msgid "Funnel ID."
+msgstr "ID do funil."
+
+#: abilities/class-cartflows-ability-config.php:97
+#: abilities/class-cartflows-ability-config.php:189
+#: abilities/class-cartflows-ability-config.php:3116
+#: abilities/class-cartflows-ability-config.php:3403
+msgid "Funnel title."
+msgstr "Título do funil."
+
+#: abilities/class-cartflows-ability-config.php:101
+#: abilities/class-cartflows-ability-config.php:197
+msgid "Post status."
+msgstr "Status da postagem."
+
+#: abilities/class-cartflows-ability-config.php:105
+msgid "Date created."
+msgstr "Data de criação."
+
+#: abilities/class-cartflows-ability-config.php:109
+msgid "Date last modified."
+msgstr "Data da última modificação."
+
+#: abilities/class-cartflows-ability-config.php:114
+#: abilities/class-cartflows-ability-config.php:317
+msgid "Frontend URL."
+msgstr "URL do Frontend."
+
+#: abilities/class-cartflows-ability-config.php:119
+#: abilities/class-cartflows-ability-config.php:207
+#: abilities/class-cartflows-ability-config.php:807
+msgid "Admin edit URL."
+msgstr "Editar URL do administrador."
+
+#: abilities/class-cartflows-ability-config.php:123
+msgid "Whether in test/sandbox mode."
+msgstr "Seja no modo de teste/sandbox."
+
+#: abilities/class-cartflows-ability-config.php:130
+msgid "Total matching funnels."
+msgstr "Total de funis correspondentes."
+
+#: abilities/class-cartflows-ability-config.php:134
+#: abilities/class-cartflows-ability-config.php:2975
+msgid "Total pages."
+msgstr "Total de páginas."
+
+#: abilities/class-cartflows-ability-config.php:138
+#: abilities/class-cartflows-ability-config.php:2979
+#: abilities/class-cartflows-ability-config.php:3337
+msgid "Current page."
+msgstr "Página atual."
+
+#: abilities/class-cartflows-ability-config.php:164
+msgid "Get funnel"
+msgstr "Obter funil"
+
+#: abilities/class-cartflows-ability-config.php:165
+msgid ""
+"Returns full data for a single CartFlows funnel by ID, including its ordered steps, settings, and admin/frontend URLs. "
+"Use before editing, cloning, or inspecting a funnel."
+msgstr ""
+"Retorna dados completos para um único funil do CartFlows por ID, incluindo suas etapas ordenadas, configurações e URLs "
+"de administração/frontend. Use antes de editar, clonar ou inspecionar um funil."
+
+#: abilities/class-cartflows-ability-config.php:176
+#: abilities/class-cartflows-ability-config.php:855
+msgid "The funnel ID."
+msgstr "O ID do funil."
+
+#: abilities/class-cartflows-ability-config.php:193
+msgid "URL slug."
+msgstr "Slug de URL."
+
+#: abilities/class-cartflows-ability-config.php:202
+msgid "Frontend permalink."
+msgstr "Link permanente do frontend."
+
+#: abilities/class-cartflows-ability-config.php:211
+msgid "Ordered steps in this funnel."
+msgstr "Etapas ordenadas neste funil."
+
+#: abilities/class-cartflows-ability-config.php:221
+#: abilities/class-cartflows-ability-config.php:300
+#: abilities/class-cartflows-ability-config.php:885
+#: abilities/class-cartflows-ability-config.php:3191
+#: abilities/class-cartflows-ability-config.php:3417
+msgid "Step title."
+msgstr "Título da etapa."
+
+#: abilities/class-cartflows-ability-config.php:225
+#: abilities/class-cartflows-ability-config.php:304
+msgid "Step type: checkout, thankyou, optin, or landing."
+msgstr "Tipo de etapa: checkout, obrigado, optin ou landing."
+
+#: abilities/class-cartflows-ability-config.php:229
+msgid "Step post status (publish, draft, trash)."
+msgstr "Etapa de status da postagem (publicar, rascunho, lixeira)."
+
+#: abilities/class-cartflows-ability-config.php:233
+msgid "Whether the step is disabled."
+msgstr "Se a etapa está desativada."
+
+#: abilities/class-cartflows-ability-config.php:238
+msgid "Step frontend URL."
+msgstr "URL do frontend do passo."
+
+#: abilities/class-cartflows-ability-config.php:245
+msgid "Funnel settings panel data."
+msgstr "Dados do painel de configurações do funil."
+
+#: abilities/class-cartflows-ability-config.php:275
+msgid "Get step"
+msgstr "Obter passo"
+
+#: abilities/class-cartflows-ability-config.php:276
+msgid ""
+"Returns full data for a single CartFlows step by ID, including its type (checkout, thankyou, optin, landing), settings, "
+"and page-builder edit link. Use to inspect a step before editing or cloning it."
+msgstr ""
+"Retorna dados completos para uma única etapa do CartFlows por ID, incluindo seu tipo (checkout, obrigado, optin, "
+"landing), configurações e link de edição do construtor de páginas. Use para inspecionar uma etapa antes de editá-la ou "
+"cloná-la."
+
+#: abilities/class-cartflows-ability-config.php:287
+msgid "The step ID."
+msgstr "O ID do passo."
+
+#: abilities/class-cartflows-ability-config.php:308
+#: abilities/class-cartflows-ability-config.php:1026
+#: abilities/class-cartflows-ability-config.php:3187
+msgid "Parent funnel ID."
+msgstr "ID do funil pai."
+
+#: abilities/class-cartflows-ability-config.php:312
+msgid "Parent funnel title."
+msgstr "Título do funil pai."
+
+#: abilities/class-cartflows-ability-config.php:322
+msgid "WP admin edit link."
+msgstr "Link de edição do administrador do WP."
+
+#: abilities/class-cartflows-ability-config.php:327
+msgid "Page builder direct edit link."
+msgstr "Link de edição direta do construtor de páginas."
+
+#: abilities/class-cartflows-ability-config.php:331
+msgid "Step settings."
+msgstr "Configurações de etapa."
+
+#: abilities/class-cartflows-ability-config.php:361
+msgid "Get funnel analytics"
+msgstr "Obter análises de funil"
+
+#: abilities/class-cartflows-ability-config.php:362
+msgid ""
+"Returns revenue and order analytics for CartFlows funnels within a date range. Optionally filter by a specific funnel "
+"ID. Returns totals, per-date breakdowns, and the 4 most recent orders. Requires WooCommerce."
+msgstr ""
+"Retorna análises de receita e pedidos para funis do CartFlows dentro de um intervalo de datas. Opcionalmente, filtre "
+"por um ID de funil específico. Retorna totais, divisões por data e os 4 pedidos mais recentes. Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:374
+msgid "Start date in YYYY-MM-DD format. Defaults to 30 days ago if empty."
+msgstr "Data de início no formato AAAA-MM-DD. Padrão para 30 dias atrás se vazio."
+
+#: abilities/class-cartflows-ability-config.php:380
+msgid "End date in YYYY-MM-DD format. Defaults to today if empty."
+msgstr "Data de término no formato AAAA-MM-DD. Padrão para hoje se vazio."
+
+#: abilities/class-cartflows-ability-config.php:385
+msgid "Filter by funnel ID. Set to 0 for all funnels."
+msgstr "Filtrar por ID do funil. Defina como 0 para todos os funis."
+
+#: abilities/class-cartflows-ability-config.php:394
+msgid "Aggregated earnings and order counts for the date range."
+msgstr "Ganhos agregados e contagem de pedidos para o intervalo de datas."
+
+#: abilities/class-cartflows-ability-config.php:398
+msgid "The 4 most recent CartFlows orders."
+msgstr "Os 4 pedidos mais recentes do CartFlows."
+
+#: abilities/class-cartflows-ability-config.php:404
+msgid "WooCommerce order ID."
+msgstr "ID do pedido WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:408
+msgid "Customer full name."
+msgstr "Nome completo do cliente."
+
+#: abilities/class-cartflows-ability-config.php:413
+msgid "Customer email."
+msgstr "Email do cliente."
+
+#: abilities/class-cartflows-ability-config.php:417
+msgid "Formatted order total with currency symbol."
+msgstr "Total do pedido formatado com símbolo de moeda."
+
+#: abilities/class-cartflows-ability-config.php:421
+msgid "Order status."
+msgstr "Status do pedido."
+
+#: abilities/class-cartflows-ability-config.php:425
+msgid "Order date (YYYY-MM-DD)."
+msgstr "Data do pedido (AAAA-MM-DD)."
+
+#: abilities/class-cartflows-ability-config.php:458
+msgid "Publish funnel"
+msgstr "Publicar funil"
+
+#: abilities/class-cartflows-ability-config.php:459
+msgid ""
+"Sets a CartFlows funnel to published (active) status, making it and all its steps visible to visitors. Use to activate "
+"a funnel that is ready to go live."
+msgstr ""
+"Define um funil do CartFlows para o status publicado (ativo), tornando-o e todos os seus passos visíveis para os "
+"visitantes. Use para ativar um funil que está pronto para ser lançado."
+
+#: abilities/class-cartflows-ability-config.php:473
+msgid "The funnel ID to publish."
+msgstr "O ID do funil para publicar."
+
+#: abilities/class-cartflows-ability-config.php:486
+msgid "New status (publish)."
+msgstr "Novo status (publicar)."
+
+#: abilities/class-cartflows-ability-config.php:490
+#: abilities/class-cartflows-ability-config.php:547
+#: abilities/class-cartflows-ability-config.php:617
+#: abilities/class-cartflows-ability-config.php:674
+#: abilities/class-cartflows-ability-config.php:732
+#: abilities/class-cartflows-ability-config.php:811
+#: abilities/class-cartflows-ability-config.php:896
+#: abilities/class-cartflows-ability-config.php:961
+#: abilities/class-cartflows-ability-config.php:1038
+#: abilities/class-cartflows-ability-config.php:1103
+#: abilities/class-cartflows-ability-config.php:1402
+#: abilities/class-cartflows-ability-config.php:1462
+#: abilities/class-cartflows-ability-config.php:1798
+#: abilities/class-cartflows-ability-config.php:1860
+#: abilities/class-cartflows-ability-config.php:1939
+#: abilities/class-cartflows-ability-config.php:2036
+#: abilities/class-cartflows-ability-config.php:2173
+#: abilities/class-cartflows-ability-config.php:2250
+#: abilities/class-cartflows-ability-config.php:2320
+#: abilities/class-cartflows-ability-config.php:2381
+#: abilities/class-cartflows-ability-config.php:2513
+#: abilities/class-cartflows-ability-config.php:2574
+#: abilities/class-cartflows-ability-config.php:2644
+#: abilities/class-cartflows-ability-config.php:2824
+#: abilities/class-cartflows-ability-config.php:3053
+msgid "Result message."
+msgstr "Mensagem de resultado."
+
+#: abilities/class-cartflows-ability-config.php:515
+msgid "Unpublish funnel"
+msgstr "Despublicar funil"
+
+#: abilities/class-cartflows-ability-config.php:516
+msgid ""
+"Sets a CartFlows funnel to draft (inactive) status, hiding it and all its steps from visitors. Use to temporarily "
+"disable a funnel without deleting it."
+msgstr ""
+"Define um funil do CartFlows para o status de rascunho (inativo), ocultando-o e todos os seus passos dos visitantes. "
+"Use para desativar temporariamente um funil sem excluí-lo."
+
+#: abilities/class-cartflows-ability-config.php:530
+msgid "The funnel ID to unpublish."
+msgstr "O ID do funil para despublicar."
+
+#: abilities/class-cartflows-ability-config.php:543
+msgid "New status (draft)."
+msgstr "Novo status (rascunho)."
+
+#: abilities/class-cartflows-ability-config.php:572
+msgid "Clone funnel"
+msgstr "Clonar funil"
+
+#: abilities/class-cartflows-ability-config.php:573
+msgid ""
+"Creates a full duplicate of a CartFlows funnel, including all its steps and their settings. The new funnel is titled "
+"\"[Original Title] Clone\". Use to create a variation or template-based copy of an existing funnel."
+msgstr ""
+"Cria uma duplicata completa de um funil do CartFlows, incluindo todas as suas etapas e suas configurações. O novo funil "
+"é intitulado \"[Título Original] Clone\". Use para criar uma variação ou cópia baseada em modelo de um funil existente."
+
+#: abilities/class-cartflows-ability-config.php:587
+msgid "The funnel ID to clone."
+msgstr "O ID do funil para clonar."
+
+#: abilities/class-cartflows-ability-config.php:596
+#: abilities/class-cartflows-ability-config.php:3112
+#: abilities/class-cartflows-ability-config.php:3399
+msgid "New funnel ID."
+msgstr "Novo ID do funil."
+
+#: abilities/class-cartflows-ability-config.php:600
+msgid "Original funnel ID."
+msgstr "ID do funil original."
+
+#: abilities/class-cartflows-ability-config.php:604
+#: abilities/class-cartflows-ability-config.php:780
+msgid "New funnel title."
+msgstr "Novo título do funil."
+
+#: abilities/class-cartflows-ability-config.php:609
+msgid "Admin edit URL for new funnel."
+msgstr "URL de edição do administrador para novo funil."
+
+#: abilities/class-cartflows-ability-config.php:613
+msgid "Number of steps cloned."
+msgstr "Número de etapas clonadas."
+
+#: abilities/class-cartflows-ability-config.php:642
+msgid "Trash funnel"
+msgstr "Funil de lixo"
+
+#: abilities/class-cartflows-ability-config.php:643
+msgid ""
+"Moves a CartFlows funnel and all its steps to the WordPress trash. The funnel can be restored using restore-flow. "
+"Prefer this over permanent deletion."
+msgstr ""
+"Move um funil do CartFlows e todas as suas etapas para a lixeira do WordPress. O funil pode ser restaurado usando "
+"restore-flow. Prefira isso em vez da exclusão permanente."
+
+#: abilities/class-cartflows-ability-config.php:657
+msgid "The funnel ID to trash."
+msgstr "O ID do funil para mover para a lixeira."
+
+#: abilities/class-cartflows-ability-config.php:670
+msgid "New status (trash)."
+msgstr "Novo status (lixo)."
+
+#: abilities/class-cartflows-ability-config.php:700
+msgid "Restore funnel from trash"
+msgstr "Restaurar funil da lixeira"
+
+#: abilities/class-cartflows-ability-config.php:701
+msgid ""
+"Restores a trashed CartFlows funnel and all its steps back to their previous published/draft status. Use to undo a "
+"trash-flow operation."
+msgstr ""
+"Restaura um funil do CartFlows que foi movido para a lixeira e todos os seus passos de volta ao seu status anterior de "
+"publicado/rascunho. Use para desfazer uma operação de exclusão de fluxo."
+
+#: abilities/class-cartflows-ability-config.php:715
+msgid "The funnel ID to restore from trash."
+msgstr "O ID do funil para restaurar da lixeira."
+
+#: abilities/class-cartflows-ability-config.php:728
+msgid "Restored status."
+msgstr "Status restaurado."
+
+#: abilities/class-cartflows-ability-config.php:761
+msgid "Update funnel"
+msgstr "Atualizar funil"
+
+#: abilities/class-cartflows-ability-config.php:762
+msgid "Updates a CartFlows funnel's title and optionally its URL slug. Use to rename a funnel or change its permalink."
+msgstr ""
+"Atualiza o título de um funil do CartFlows e, opcionalmente, seu slug de URL. Use para renomear um funil ou alterar seu "
+"permalink."
+
+#: abilities/class-cartflows-ability-config.php:776
+msgid "The funnel ID to update."
+msgstr "O ID do funil a ser atualizado."
+
+#: abilities/class-cartflows-ability-config.php:785
+msgid "New URL slug (optional). Leave empty to keep current slug."
+msgstr "Novo slug de URL (opcional). Deixe em branco para manter o slug atual."
+
+#: abilities/class-cartflows-ability-config.php:798
+#: abilities/class-cartflows-ability-config.php:1099
+msgid "Updated title."
+msgstr "Título atualizado."
+
+#: abilities/class-cartflows-ability-config.php:802
+msgid "Updated slug."
+msgstr "Slug atualizado."
+
+#: abilities/class-cartflows-ability-config.php:840
+msgid "Reorder funnel steps"
+msgstr "Reordenar etapas do funil"
+
+#: abilities/class-cartflows-ability-config.php:841
+msgid ""
+"Changes the display order of steps within a CartFlows funnel. Provide the complete ordered array of step IDs. Call "
+"get-flow first to retrieve the current step IDs."
+msgstr ""
+"Altera a ordem de exibição das etapas dentro de um funil do CartFlows. Forneça o array completo e ordenado de IDs de "
+"etapas. Chame get-flow primeiro para recuperar os IDs de etapas atuais."
+
+#: abilities/class-cartflows-ability-config.php:859
+msgid "Full ordered array of step IDs in the desired order."
+msgstr "Matriz completa de IDs de etapas na ordem desejada."
+
+#: abilities/class-cartflows-ability-config.php:875
+msgid "Steps in updated order."
+msgstr "Etapas na ordem atualizada."
+
+#: abilities/class-cartflows-ability-config.php:889
+#: abilities/class-cartflows-ability-config.php:1034
+#: abilities/class-cartflows-ability-config.php:3195
+#: abilities/class-cartflows-ability-config.php:3421
+msgid "Step type."
+msgstr "Tipo de etapa."
+
+#: abilities/class-cartflows-ability-config.php:925
+msgid "Export funnel data"
+msgstr "Exportar dados do funil"
+
+#: abilities/class-cartflows-ability-config.php:926
+msgid ""
+"Exports one or more CartFlows funnels as structured JSON data, including all steps and their settings. Use for backup, "
+"migration between sites, or auditing funnel configuration."
+msgstr ""
+"Exporta um ou mais funis do CartFlows como dados JSON estruturados, incluindo todas as etapas e suas configurações. Use "
+"para backup, migração entre sites ou auditoria da configuração do funil."
+
+#: abilities/class-cartflows-ability-config.php:937
+msgid "Array of funnel IDs to export. At least one required."
+msgstr "Matriz de IDs de funil para exportar. Pelo menos um é necessário."
+
+#: abilities/class-cartflows-ability-config.php:949
+msgid "Array of funnel export objects (one per funnel ID)."
+msgstr "Matriz de objetos de exportação de funil (um por ID de funil)."
+
+#: abilities/class-cartflows-ability-config.php:952
+msgid "Full funnel export data including all steps and settings."
+msgstr "Exportação de dados do funil completo, incluindo todas as etapas e configurações."
+
+#: abilities/class-cartflows-ability-config.php:957
+msgid "Number of funnels exported."
+msgstr "Número de funis exportados."
+
+#: abilities/class-cartflows-ability-config.php:990
+msgid "Clone step"
+msgstr "Etapa de clonagem"
+
+#: abilities/class-cartflows-ability-config.php:991
+msgid ""
+"Creates a duplicate of a CartFlows step within the same funnel, copying all content and settings. The new step is "
+"titled \"[Original Title] Clone\". Use to create a variation of an existing step for A/B testing or reuse."
+msgstr ""
+"Cria um duplicado de uma etapa do CartFlows dentro do mesmo funil, copiando todo o conteúdo e configurações. A nova "
+"etapa é intitulada \"[Título Original] Clone\". Use para criar uma variação de uma etapa existente para testes A/B ou "
+"reutilização."
+
+#: abilities/class-cartflows-ability-config.php:1005
+#: abilities/class-cartflows-ability-config.php:3165
+msgid "The parent funnel ID."
+msgstr "O ID do funil pai."
+
+#: abilities/class-cartflows-ability-config.php:1009
+msgid "The step ID to clone."
+msgstr "O ID do passo a clonar."
+
+#: abilities/class-cartflows-ability-config.php:1018
+#: abilities/class-cartflows-ability-config.php:3183
+msgid "New step ID."
+msgstr "Novo ID de etapa."
+
+#: abilities/class-cartflows-ability-config.php:1022
+msgid "Original step ID."
+msgstr "ID do passo original."
+
+#: abilities/class-cartflows-ability-config.php:1030
+#: abilities/class-cartflows-ability-config.php:1086
+msgid "New step title."
+msgstr "Novo título do passo."
+
+#: abilities/class-cartflows-ability-config.php:1067
+msgid "Update step title"
+msgstr "Atualizar título da etapa"
+
+#: abilities/class-cartflows-ability-config.php:1068
+msgid "Renames a CartFlows step. Use when setting up a new funnel or correcting step names."
+msgstr "Renomeia uma etapa do CartFlows. Use ao configurar um novo funil ou corrigir nomes de etapas."
+
+#: abilities/class-cartflows-ability-config.php:1082
+msgid "The step ID to rename."
+msgstr "O ID do passo a renomear."
+
+#: abilities/class-cartflows-ability-config.php:1132
+msgid "Get general settings"
+msgstr "Obter configurações gerais"
+
+#: abilities/class-cartflows-ability-config.php:1133
+msgid ""
+"Returns CartFlows general settings: default page builder, global checkout page, and display/override flags such as "
+"override_global_checkout and disallow_indexing. Use to inspect the current CartFlows configuration before making "
+"changes."
+msgstr ""
+"Retorna as configurações gerais do CartFlows: construtor de páginas padrão, página de checkout global e sinalizadores "
+"de exibição/substituição, como override_global_checkout e disallow_indexing. Use para inspecionar a configuração atual "
+"do CartFlows antes de fazer alterações."
+
+#: abilities/class-cartflows-ability-config.php:1147
+msgid "Active page builder slug (e.g. elementor, gutenberg, divi)."
+msgstr "Slug do construtor de páginas ativo (por exemplo, elementor, gutenberg, divi)."
+
+#: abilities/class-cartflows-ability-config.php:1151
+msgid "Global checkout flow ID or empty string if not set."
+msgstr "ID de fluxo de checkout global ou string vazia se não estiver definido."
+
+#: abilities/class-cartflows-ability-config.php:1155
+#: abilities/class-cartflows-ability-config.php:1159
+#: abilities/class-cartflows-ability-config.php:1163
+msgid "enable or disable."
+msgstr "ativar ou desativar."
+
+#: abilities/class-cartflows-ability-config.php:1189
+msgid "Get store checkout flow"
+msgstr "Obter fluxo de checkout da loja"
+
+#: abilities/class-cartflows-ability-config.php:1190
+msgid ""
+"Returns the ID and details of the CartFlows flow configured as the global store checkout. Returns is_configured: false "
+"if no store checkout is set. Use to identify which funnel handles the WooCommerce checkout replacement."
+msgstr ""
+"Retorna o ID e os detalhes do fluxo do CartFlows configurado como o checkout global da loja. Retorna is_configured: "
+"false se nenhum checkout da loja estiver definido. Use para identificar qual funil lida com a substituição do checkout "
+"do WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:1204
+msgid "The store checkout flow ID, or 0 if not set."
+msgstr "O ID do fluxo de checkout da loja, ou 0 se não estiver definido."
+
+#: abilities/class-cartflows-ability-config.php:1208
+msgid "The store checkout flow title."
+msgstr "O título do fluxo de checkout da loja."
+
+#: abilities/class-cartflows-ability-config.php:1213
+msgid "Admin edit URL for the store checkout flow."
+msgstr "URL de edição do administrador para o fluxo de checkout da loja."
+
+#: abilities/class-cartflows-ability-config.php:1217
+msgid "Whether a store checkout flow is configured."
+msgstr "Se um fluxo de checkout da loja está configurado."
+
+#: abilities/class-cartflows-ability-config.php:1243
+msgid "Get permalink settings"
+msgstr "Obter configurações de permalink"
+
+#: abilities/class-cartflows-ability-config.php:1244
+msgid ""
+"Returns the CartFlows URL slug configuration for flows and steps: the step base slug, the flow base slug, and the "
+"permalink structure option. Use before updating permalink settings or auditing URL structure."
+msgstr ""
+"Retorna a configuração do slug de URL do CartFlows para fluxos e etapas: o slug base da etapa, o slug base do fluxo e a "
+"opção de estrutura de permalink. Use antes de atualizar as configurações de permalink ou auditar a estrutura de URL."
+
+#: abilities/class-cartflows-ability-config.php:1258
+#: abilities/class-cartflows-ability-config.php:1445
+msgid "Step URL base slug."
+msgstr "Etapa URL base slug."
+
+#: abilities/class-cartflows-ability-config.php:1262
+#: abilities/class-cartflows-ability-config.php:1449
+msgid "Flow URL base slug."
+msgstr "Slug base da URL de fluxo."
+
+#: abilities/class-cartflows-ability-config.php:1266
+msgid "Permalink structure option (empty for default)."
+msgstr "Opção de estrutura de permalink (deixe em branco para o padrão)."
+
+#: abilities/class-cartflows-ability-config.php:1292
+msgid "Get integration settings"
+msgstr "Obter configurações de integração"
+
+#: abilities/class-cartflows-ability-config.php:1293
+msgid ""
+"Returns the active pixel and analytics integration configurations for CartFlows: Facebook, Google Analytics, Google "
+"Ads, TikTok, Pinterest, and Snapchat. Each group contains the pixel/tracking ID and event toggle settings. Use the "
+"integration parameter to fetch a single group or omit it (default: all) to fetch everything at once."
+msgstr ""
+"Retorna as configurações ativas de integração de pixel e análises para CartFlows: Facebook, Google Analytics, Google "
+"Ads, TikTok, Pinterest e Snapchat. Cada grupo contém o ID do pixel/rastreamento e as configurações de alternância de "
+"eventos. Use o parâmetro de integração para buscar um único grupo ou omita-o (padrão: todos) para buscar tudo de uma "
+"vez."
+
+#: abilities/class-cartflows-ability-config.php:1305
+msgid "Which integration group to return. Defaults to all."
+msgstr "Qual grupo de integração retornar. O padrão é todos."
+
+#: abilities/class-cartflows-ability-config.php:1314
+msgid "Facebook Pixel settings."
+msgstr "Configurações do Facebook Pixel."
+
+#: abilities/class-cartflows-ability-config.php:1318
+msgid "Google Analytics (GA4) settings."
+msgstr "Configurações do Google Analytics (GA4)."
+
+#: abilities/class-cartflows-ability-config.php:1322
+msgid "Google Ads conversion settings."
+msgstr "Configurações de conversão do Google Ads."
+
+#: abilities/class-cartflows-ability-config.php:1326
+msgid "TikTok Pixel settings."
+msgstr "Configurações do TikTok Pixel."
+
+#: abilities/class-cartflows-ability-config.php:1330
+msgid "Pinterest Tag settings."
+msgstr "Configurações da Tag do Pinterest."
+
+#: abilities/class-cartflows-ability-config.php:1334
+msgid "Snapchat Pixel settings."
+msgstr "Configurações do Snapchat Pixel."
+
+#: abilities/class-cartflows-ability-config.php:1364
+msgid "Update general settings"
+msgstr "Atualizar configurações gerais"
+
+#: abilities/class-cartflows-ability-config.php:1365
+msgid ""
+"Updates CartFlows general settings: default page builder, global checkout page, override_global_checkout flag, and "
+"disallow_indexing flag. Only fields that are provided are updated; omitted fields retain their current values. Use "
+"get-general-settings first to inspect current values."
+msgstr ""
+"Atualiza as configurações gerais do CartFlows: construtor de páginas padrão, página de checkout global, flag "
+"override_global_checkout e flag disallow_indexing. Apenas os campos fornecidos são atualizados; campos omitidos mantêm "
+"seus valores atuais. Use get-general-settings primeiro para inspecionar os valores atuais."
+
+#: abilities/class-cartflows-ability-config.php:1379
+msgid "The page builder to set as default."
+msgstr "O construtor de páginas para definir como padrão."
+
+#: abilities/class-cartflows-ability-config.php:1383
+msgid "Post ID of the global checkout flow, or empty string to unset."
+msgstr "ID do post do fluxo de checkout global, ou string vazia para desconfigurar."
+
+#: abilities/class-cartflows-ability-config.php:1388
+msgid "Whether to override the WooCommerce checkout with the CartFlows global checkout."
+msgstr "Se deve substituir o checkout do WooCommerce pelo checkout global do CartFlows."
+
+#: abilities/class-cartflows-ability-config.php:1393
+msgid "Whether to block search engine indexing of CartFlows steps."
+msgstr "Se deve bloquear a indexação dos passos do CartFlows pelos motores de busca."
+
+#: abilities/class-cartflows-ability-config.php:1406
+msgid "Updated settings values (full merged state)."
+msgstr "Valores de configurações atualizados (estado completo mesclado)."
+
+#: abilities/class-cartflows-ability-config.php:1431
+msgid "Update permalink settings"
+msgstr "Atualizar configurações de permalink"
+
+#: abilities/class-cartflows-ability-config.php:1432
+msgid ""
+"Updates CartFlows URL slug settings for flows and steps. Forces a permalink flush after saving so changes take effect "
+"immediately. Use get-permalink-settings first to inspect current values before updating."
+msgstr ""
+"Atualiza as configurações de slug de URL do CartFlows para fluxos e etapas. Força uma atualização dos links permanentes "
+"após salvar para que as alterações entrem em vigor imediatamente. Use get-permalink-settings primeiro para inspecionar "
+"os valores atuais antes de atualizar."
+
+#: abilities/class-cartflows-ability-config.php:1453
+msgid "Permalink structure option (empty string for default)."
+msgstr "Opção de estrutura de permalink (string vazia para o padrão)."
+
+#: abilities/class-cartflows-ability-config.php:1466
+msgid "Saved step URL base slug."
+msgstr "Slug base da URL do passo salvo."
+
+#: abilities/class-cartflows-ability-config.php:1470
+msgid "Saved flow URL base slug."
+msgstr "Slug base do URL do fluxo salvo."
+
+#: abilities/class-cartflows-ability-config.php:1499
+msgid "Get checkout step settings"
+msgstr "Obter configurações da etapa de checkout"
+
+#: abilities/class-cartflows-ability-config.php:1500
+msgid ""
+"Returns the full configuration of a checkout step: layout, products assigned, form field toggles, place order button "
+"settings, and design options. Requires WooCommerce. Use to inspect or audit a checkout step before making changes."
+msgstr ""
+"Retorna a configuração completa de uma etapa de checkout: layout, produtos atribuídos, alternâncias de campos de "
+"formulário, configurações do botão de finalizar pedido e opções de design. Requer WooCommerce. Use para inspecionar ou "
+"auditar uma etapa de checkout antes de fazer alterações."
+
+#: abilities/class-cartflows-ability-config.php:1511
+#: abilities/class-cartflows-ability-config.php:1587
+#: abilities/class-cartflows-ability-config.php:1675
+#: abilities/class-cartflows-ability-config.php:1747
+#: abilities/class-cartflows-ability-config.php:1838
+#: abilities/class-cartflows-ability-config.php:1900
+#: abilities/class-cartflows-ability-config.php:1979
+msgid "The checkout step ID."
+msgstr "O ID da etapa de checkout."
+
+#: abilities/class-cartflows-ability-config.php:1524
+msgid "Checkout skin/layout."
+msgstr "Verificar a aparência/layout."
+
+#: abilities/class-cartflows-ability-config.php:1528
+msgid "Primary color hex."
+msgstr "Cor primária hex."
+
+#: abilities/class-cartflows-ability-config.php:1532
+msgid "Base font family."
+msgstr "Família de fontes base."
+
+#: abilities/class-cartflows-ability-config.php:1536
+#: abilities/class-cartflows-ability-config.php:1600
+msgid "Assigned products."
+msgstr "Produtos atribuídos."
+
+#: abilities/class-cartflows-ability-config.php:1541
+msgid "Form-level toggles (coupon, shipping, additional fields)."
+msgstr "Alternâncias no nível do formulário (cupom, envio, campos adicionais)."
+
+#: abilities/class-cartflows-ability-config.php:1545
+msgid "Place order button configuration."
+msgstr "Configuração do botão de fazer pedido."
+
+#: abilities/class-cartflows-ability-config.php:1549
+msgid "Product images, cart editing toggles."
+msgstr "Imagens do produto, alternâncias de edição do carrinho."
+
+#: abilities/class-cartflows-ability-config.php:1575
+msgid "Get checkout products"
+msgstr "Obter produtos do carrinho"
+
+#: abilities/class-cartflows-ability-config.php:1576
+msgid ""
+"Returns the list of WooCommerce products assigned to a checkout step, including product ID, name, quantity, discount "
+"type/value, and thumbnail URL. Requires WooCommerce. Use to inspect what products will be added to cart when a customer "
+"visits this checkout."
+msgstr ""
+"Retorna a lista de produtos do WooCommerce atribuídos a uma etapa de checkout, incluindo ID do produto, nome, "
+"quantidade, tipo/valor de desconto e URL da miniatura. Requer WooCommerce. Use para inspecionar quais produtos serão "
+"adicionados ao carrinho quando um cliente visitar este checkout."
+
+#: abilities/class-cartflows-ability-config.php:1606
+#: abilities/class-cartflows-ability-config.php:1757
+msgid "WooCommerce product ID."
+msgstr "ID do produto WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:1610
+msgid "Product name."
+msgstr "Nome do produto."
+
+#: abilities/class-cartflows-ability-config.php:1614
+msgid "Quantity."
+msgstr "Quantidade."
+
+#: abilities/class-cartflows-ability-config.php:1618
+msgid "Discount type (e.g. discount_percent, discount_price)."
+msgstr "Tipo de desconto (por exemplo, discount_percent, discount_price)."
+
+#: abilities/class-cartflows-ability-config.php:1622
+#: abilities/class-cartflows-ability-config.php:1772
+msgid "Discount amount."
+msgstr "Valor do desconto."
+
+#: abilities/class-cartflows-ability-config.php:1626
+msgid "Whether added to cart (yes/no)."
+msgstr "Se adicionado ao carrinho (sim/não)."
+
+#: abilities/class-cartflows-ability-config.php:1630
+msgid "Product thumbnail URL."
+msgstr "URL da miniatura do produto."
+
+#: abilities/class-cartflows-ability-config.php:1634
+msgid "Regular price."
+msgstr "Preço regular."
+
+#: abilities/class-cartflows-ability-config.php:1663
+msgid "Get checkout form fields"
+msgstr "Obter campos do formulário de checkout"
+
+#: abilities/class-cartflows-ability-config.php:1664
+msgid ""
+"Returns the billing and shipping field configuration for a checkout step, including field order, labels, "
+"enabled/required/optimized states, and widths. Also returns form-level toggles (coupon, additional fields, shipping). "
+"Requires WooCommerce. Use to inspect field layout before making changes."
+msgstr ""
+"Retorna a configuração dos campos de faturamento e envio para uma etapa de checkout, incluindo a ordem dos campos, "
+"rótulos, estados ativados/obrigatórios/otimizados e larguras. Também retorna alternâncias a nível de formulário (cupom, "
+"campos adicionais, envio). Requer WooCommerce. Use para inspecionar o layout dos campos antes de fazer alterações."
+
+#: abilities/class-cartflows-ability-config.php:1681
+msgid "Which field group to return. Defaults to all."
+msgstr "Qual grupo de campos retornar. O padrão é todos."
+
+#: abilities/class-cartflows-ability-config.php:1694
+msgid "Billing field configuration keyed by field name."
+msgstr "Configuração do campo de faturamento identificada pelo nome do campo."
+
+#: abilities/class-cartflows-ability-config.php:1698
+msgid "Shipping field configuration keyed by field name."
+msgstr "Configuração do campo de envio identificada pelo nome do campo."
+
+#: abilities/class-cartflows-ability-config.php:1702
+msgid "Form-level toggles."
+msgstr "Alternâncias no nível do formulário."
+
+#: abilities/class-cartflows-ability-config.php:1732
+msgid "Update checkout products"
+msgstr "Atualizar produtos do carrinho"
+
+#: abilities/class-cartflows-ability-config.php:1733
+msgid ""
+"Sets or replaces the products assigned to a checkout step. Each product entry specifies a WooCommerce product ID, "
+"quantity, and optional discount. Requires WooCommerce. Use to configure which products are pre-loaded into the cart "
+"when a customer visits the checkout."
+msgstr ""
+"Define ou substitua os produtos atribuídos a uma etapa de checkout. Cada entrada de produto especifica um ID de produto "
+"WooCommerce, quantidade e desconto opcional. Requer WooCommerce. Use para configurar quais produtos são pré-carregados "
+"no carrinho quando um cliente visita o checkout."
+
+#: abilities/class-cartflows-ability-config.php:1751
+msgid "Array of product configurations."
+msgstr "Matriz de configurações de produtos."
+
+#: abilities/class-cartflows-ability-config.php:1761
+msgid "Quantity. Defaults to 1."
+msgstr "Quantidade. O padrão é 1."
+
+#: abilities/class-cartflows-ability-config.php:1767
+msgid "Type of discount to apply."
+msgstr "Tipo de desconto a aplicar."
+
+#: abilities/class-cartflows-ability-config.php:1778
+msgid "Whether to add this product to cart."
+msgstr "Se deseja adicionar este produto ao carrinho."
+
+#: abilities/class-cartflows-ability-config.php:1794
+msgid "Saved product list."
+msgstr "Lista de produtos salvos."
+
+#: abilities/class-cartflows-ability-config.php:1823
+msgid "Update checkout layout"
+msgstr "Atualizar layout do checkout"
+
+#: abilities/class-cartflows-ability-config.php:1824
+msgid ""
+"Changes the checkout skin/layout for a step. Available Free layouts: modern-checkout, modern-one-column, one-column, "
+"two-column. Pro-only layouts (two-step, multistep-checkout) are not available through this ability. Requires "
+"WooCommerce."
+msgstr ""
+"Altera o tema/layout do checkout para uma etapa. Layouts gratuitos disponíveis: modern-checkout, modern-one-column, "
+"one-column, two-column. Layouts exclusivos para Pro (two-step, multistep-checkout) não estão disponíveis através desta "
+"funcionalidade. Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:1843
+msgid "Checkout skin to apply."
+msgstr "Verifique a pele para aplicar."
+
+#: abilities/class-cartflows-ability-config.php:1856
+#: abilities/class-cartflows-ability-config.php:2169
+msgid "Applied layout."
+msgstr "Layout aplicado."
+
+#: abilities/class-cartflows-ability-config.php:1885
+msgid "Update place order button"
+msgstr "Atualizar botão de fazer pedido"
+
+#: abilities/class-cartflows-ability-config.php:1886
+msgid ""
+"Configures the checkout Place Order button: text, lock icon toggle, and price display toggle. Only provided fields are "
+"updated; omitted fields retain their current values. Requires WooCommerce."
+msgstr ""
+"Configura o botão Finalizar Pedido no checkout: texto, alternância do ícone de cadeado e alternância de exibição de "
+"preço. Apenas os campos fornecidos são atualizados; os campos omitidos mantêm seus valores atuais. Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:1904
+msgid "Place order button text."
+msgstr "Texto do botão de fazer pedido."
+
+#: abilities/class-cartflows-ability-config.php:1909
+msgid "Show lock icon on button."
+msgstr "Mostrar ícone de cadeado no botão."
+
+#: abilities/class-cartflows-ability-config.php:1914
+msgid "Show cart total on button."
+msgstr "Mostrar total do carrinho no botão."
+
+#: abilities/class-cartflows-ability-config.php:1927
+msgid "Button text."
+msgstr "Texto do botão."
+
+#: abilities/class-cartflows-ability-config.php:1931
+msgid "Lock icon toggle."
+msgstr "Alternar ícone de cadeado."
+
+#: abilities/class-cartflows-ability-config.php:1935
+msgid "Price display toggle."
+msgstr "Alternar exibição de preço."
+
+#: abilities/class-cartflows-ability-config.php:1964
+msgid "Update checkout form settings"
+msgstr "Atualizar configurações do formulário de checkout"
+
+#: abilities/class-cartflows-ability-config.php:1965
+msgid ""
+"Toggles form-level settings on a checkout step: coupon field, collapsible coupon, additional fields, collapsible order "
+"note, ship-to-different-address, Google address autocomplete, product images in order review, and cart editing. Only "
+"provided fields are updated. Requires WooCommerce."
+msgstr ""
+"Alterna as configurações de nível de formulário em uma etapa de checkout: campo de cupom, cupom recolhível, campos "
+"adicionais, nota de pedido recolhível, enviar para um endereço diferente, preenchimento automático de endereço do "
+"Google, imagens de produtos na revisão do pedido e edição do carrinho. Apenas os campos fornecidos são atualizados. "
+"Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:1984
+msgid "Show coupon field."
+msgstr "Mostrar campo de cupom."
+
+#: abilities/class-cartflows-ability-config.php:1989
+msgid "Make coupon field collapsible."
+msgstr "Tornar o campo do cupom recolhível."
+
+#: abilities/class-cartflows-ability-config.php:1994
+msgid "Show additional (order notes) field."
+msgstr "Mostrar campo adicional (notas do pedido)."
+
+#: abilities/class-cartflows-ability-config.php:1999
+msgid "Make order note field collapsible."
+msgstr "Tornar o campo de nota do pedido recolhível."
+
+#: abilities/class-cartflows-ability-config.php:2004
+msgid "Enable ship to different address."
+msgstr "Ativar envio para endereço diferente."
+
+#: abilities/class-cartflows-ability-config.php:2009
+msgid "Enable Google address autocomplete."
+msgstr "Ativar a autocompletação de endereços do Google."
+
+#: abilities/class-cartflows-ability-config.php:2014
+msgid "Show product images in order review."
+msgstr "Mostrar imagens do produto na revisão do pedido."
+
+#: abilities/class-cartflows-ability-config.php:2019
+msgid "Allow removing products from checkout."
+msgstr "Permitir remover produtos do checkout."
+
+#: abilities/class-cartflows-ability-config.php:2032
+msgid "Updated form settings."
+msgstr "Configurações do formulário atualizadas."
+
+#: abilities/class-cartflows-ability-config.php:2065
+msgid "Get thank you step settings"
+msgstr "Obter configurações de etapa de agradecimento"
+
+#: abilities/class-cartflows-ability-config.php:2066
+msgid ""
+"Returns the full configuration of a thank you step: layout skin, section visibility toggles (order overview, order "
+"details, billing, shipping), custom thank you text, redirect settings, and design options. Requires WooCommerce. Use to "
+"inspect or audit a thank you step before making changes."
+msgstr ""
+"Retorna a configuração completa de uma etapa de agradecimento: layout da aparência, alternâncias de visibilidade das "
+"seções (visão geral do pedido, detalhes do pedido, faturamento, envio), texto de agradecimento personalizado, "
+"configurações de redirecionamento e opções de design. Requer WooCommerce. Use para inspecionar ou auditar uma etapa de "
+"agradecimento antes de fazer alterações."
+
+#: abilities/class-cartflows-ability-config.php:2077
+#: abilities/class-cartflows-ability-config.php:2151
+#: abilities/class-cartflows-ability-config.php:2213
+#: abilities/class-cartflows-ability-config.php:2290
+#: abilities/class-cartflows-ability-config.php:2360
+msgid "The thank you step ID."
+msgstr "O ID da etapa de agradecimento."
+
+#: abilities/class-cartflows-ability-config.php:2090
+msgid "Thank you skin (legacy-tq-layout or modern-tq-layout)."
+msgstr "Obrigado skin (legacy-tq-layout ou modern-tq-layout)."
+
+#: abilities/class-cartflows-ability-config.php:2094
+msgid "Section visibility toggles (show_overview, show_details, show_billing, show_shipping)."
+msgstr "Alternar visibilidade da seção (mostrar_visão_geral, mostrar_detalhes, mostrar_faturamento, mostrar_envio)."
+
+#: abilities/class-cartflows-ability-config.php:2098
+msgid "Custom thank you page message text."
+msgstr "Texto da mensagem da página de agradecimento personalizada."
+
+#: abilities/class-cartflows-ability-config.php:2102
+msgid "Redirect settings (enabled, redirect_url)."
+msgstr "Configurações de redirecionamento (ativado, redirect_url)."
+
+#: abilities/class-cartflows-ability-config.php:2106
+msgid "Design settings (colors, fonts, container width)."
+msgstr "Configurações de design (cores, fontes, largura do contêiner)."
+
+#: abilities/class-cartflows-ability-config.php:2136
+msgid "Update thank you layout"
+msgstr "Atualizar layout de agradecimento"
+
+#: abilities/class-cartflows-ability-config.php:2137
+msgid ""
+"Changes the thank you page skin/layout for a step. Available layouts: legacy-tq-layout (classic table-based) or "
+"modern-tq-layout (styled modern design). Requires WooCommerce."
+msgstr ""
+"Altera o tema/layout da página de agradecimento para uma etapa. Layouts disponíveis: legacy-tq-layout (clássico baseado "
+"em tabela) ou modern-tq-layout (design moderno estilizado). Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2156
+msgid "Thank you skin to apply."
+msgstr "Obrigado pele para aplicar."
+
+#: abilities/class-cartflows-ability-config.php:2198
+msgid "Update thank you sections"
+msgstr "Atualizar seções de agradecimento"
+
+#: abilities/class-cartflows-ability-config.php:2199
+msgid ""
+"Toggles visibility of order sections on a thank you step: order overview, order details, billing details, and shipping "
+"details. Only provided fields are updated; omitted fields retain their current values. Requires WooCommerce."
+msgstr ""
+"Alterna a visibilidade das seções do pedido na etapa de agradecimento: visão geral do pedido, detalhes do pedido, "
+"detalhes de faturamento e detalhes de envio. Apenas os campos fornecidos são atualizados; os campos omitidos mantêm "
+"seus valores atuais. Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2218
+msgid "Show order overview section."
+msgstr "Mostrar a seção de visão geral do pedido."
+
+#: abilities/class-cartflows-ability-config.php:2223
+msgid "Show order details section."
+msgstr "Mostrar a seção de detalhes do pedido."
+
+#: abilities/class-cartflows-ability-config.php:2228
+msgid "Show billing details section."
+msgstr "Mostrar a seção de detalhes de faturamento."
+
+#: abilities/class-cartflows-ability-config.php:2233
+msgid "Show shipping details section."
+msgstr "Mostrar a seção de detalhes de envio."
+
+#: abilities/class-cartflows-ability-config.php:2246
+msgid "Updated section visibility state."
+msgstr "Estado de visibilidade da seção atualizado."
+
+#: abilities/class-cartflows-ability-config.php:2275
+msgid "Update thank you redirect"
+msgstr "Atualizar redirecionamento de agradecimento"
+
+#: abilities/class-cartflows-ability-config.php:2276
+msgid ""
+"Configures post-purchase redirect on a thank you step. When enabled, visitors are redirected to the specified URL "
+"instead of seeing the thank you page. Requires WooCommerce."
+msgstr ""
+"Configura o redirecionamento pós-compra em uma etapa de agradecimento. Quando ativado, os visitantes são redirecionados "
+"para a URL especificada em vez de verem a página de agradecimento. Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2295
+msgid "Enable or disable redirect after purchase."
+msgstr "Ativar ou desativar redirecionamento após a compra."
+
+#: abilities/class-cartflows-ability-config.php:2299
+msgid "The URL to redirect to after purchase."
+msgstr "A URL para redirecionar após a compra."
+
+#: abilities/class-cartflows-ability-config.php:2312
+msgid "Redirect enabled state."
+msgstr "Estado de redirecionamento ativado."
+
+#: abilities/class-cartflows-ability-config.php:2316
+msgid "Redirect URL."
+msgstr "Redirecionar URL."
+
+#: abilities/class-cartflows-ability-config.php:2345
+msgid "Update thank you custom text"
+msgstr "Atualizar texto personalizado de agradecimento"
+
+#: abilities/class-cartflows-ability-config.php:2346
+msgid ""
+"Sets the custom message text displayed on a thank you page. This replaces the default WooCommerce \"Thank you. Your "
+"order has been received.\" message. Requires WooCommerce."
+msgstr ""
+"Define o texto da mensagem personalizada exibida em uma página de agradecimento. Isso substitui a mensagem padrão do "
+"WooCommerce \"Obrigado. Seu pedido foi recebido.\". Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2364
+msgid "Custom thank you page message text. Supports shortcodes."
+msgstr "Texto da mensagem da página de agradecimento personalizada. Suporta shortcodes."
+
+#: abilities/class-cartflows-ability-config.php:2377
+msgid "Saved custom text."
+msgstr "Texto personalizado salvo."
+
+#: abilities/class-cartflows-ability-config.php:2410
+msgid "Get optin step settings"
+msgstr "Obter configurações de etapa de opt-in"
+
+#: abilities/class-cartflows-ability-config.php:2411
+msgid ""
+"Returns the full configuration of an optin step: assigned product, submit button text, pass-fields settings, and "
+"billing field list. Requires WooCommerce. Use to inspect or audit an optin step before making changes."
+msgstr ""
+"Retorna a configuração completa de uma etapa de opt-in: produto atribuído, texto do botão de envio, configurações de "
+"campos de passagem e lista de campos de cobrança. Requer WooCommerce. Use para inspecionar ou auditar uma etapa de "
+"opt-in antes de fazer alterações."
+
+#: abilities/class-cartflows-ability-config.php:2422
+#: abilities/class-cartflows-ability-config.php:2488
+#: abilities/class-cartflows-ability-config.php:2553
+#: abilities/class-cartflows-ability-config.php:2614
+msgid "The optin step ID."
+msgstr "O ID da etapa de opt-in."
+
+#: abilities/class-cartflows-ability-config.php:2435
+msgid "Assigned product (id, name). Must be simple, virtual, and free."
+msgstr "Produto atribuído (id, nome). Deve ser simples, virtual e gratuito."
+
+#: abilities/class-cartflows-ability-config.php:2439
+msgid "Submit button text."
+msgstr "Texto do botão de envio."
+
+#: abilities/class-cartflows-ability-config.php:2443
+msgid "URL parameter passing settings (enabled, specific_fields)."
+msgstr "Configurações de passagem de parâmetros de URL (ativado, campos_específicos)."
+
+#: abilities/class-cartflows-ability-config.php:2473
+msgid "Update optin product"
+msgstr "Atualizar produto optin"
+
+#: abilities/class-cartflows-ability-config.php:2474
+msgid ""
+"Sets the WooCommerce product assigned to an optin step. The product must be a Simple, Virtual, and Free (price = 0) "
+"product. Requires WooCommerce."
+msgstr ""
+"Define o produto WooCommerce atribuído a uma etapa de opt-in. O produto deve ser um produto Simples, Virtual e Gratuito "
+"(preço = 0). Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2492
+msgid "WooCommerce product ID. Must be a simple, virtual, and free product."
+msgstr "ID do produto WooCommerce. Deve ser um produto simples, virtual e gratuito."
+
+#: abilities/class-cartflows-ability-config.php:2505
+msgid "Assigned product ID."
+msgstr "ID do produto atribuído."
+
+#: abilities/class-cartflows-ability-config.php:2509
+msgid "Assigned product name."
+msgstr "Nome do produto atribuído."
+
+#: abilities/class-cartflows-ability-config.php:2538
+msgid "Update optin button text"
+msgstr "Atualizar texto do botão de adesão"
+
+#: abilities/class-cartflows-ability-config.php:2539
+msgid ""
+"Changes the submit button text on an optin form. Use to customize the call-to-action, for example \"Get Started\" or "
+"\"Subscribe Now\". Requires WooCommerce."
+msgstr ""
+"Altera o texto do botão de envio em um formulário de inscrição. Use para personalizar a chamada para ação, por exemplo, "
+"\"Começar\" ou \"Inscreva-se Agora\". Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2557
+msgid "New submit button text."
+msgstr "Novo texto do botão de envio."
+
+#: abilities/class-cartflows-ability-config.php:2570
+#: abilities/class-cartflows-ability-config.php:3049
+msgid "Saved button text."
+msgstr "Texto do botão salvo."
+
+#: abilities/class-cartflows-ability-config.php:2599
+msgid "Update optin pass fields"
+msgstr "Atualizar campos de passe de opt-in"
+
+#: abilities/class-cartflows-ability-config.php:2600
+msgid ""
+"Configures whether optin form fields are passed as URL query parameters to the next funnel step. When enabled, specify "
+"which fields to pass (e.g. first_name, last_name, email). Requires WooCommerce."
+msgstr ""
+"Configura se os campos do formulário de opt-in são passados como parâmetros de consulta de URL para o próximo passo do "
+"funil. Quando ativado, especifique quais campos passar (por exemplo, first_name, last_name, email). Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2619
+msgid "Enable or disable passing fields as URL parameters."
+msgstr "Ativar ou desativar a passagem de campos como parâmetros de URL."
+
+#: abilities/class-cartflows-ability-config.php:2623
+msgid "Comma-separated field names to pass (e.g. first_name, last_name)."
+msgstr "Nomes de campos separados por vírgulas para passar (por exemplo, first_name, last_name)."
+
+#: abilities/class-cartflows-ability-config.php:2636
+msgid "Pass fields enabled state."
+msgstr "Passar o estado habilitado dos campos."
+
+#: abilities/class-cartflows-ability-config.php:2640
+msgid "Comma-separated field names."
+msgstr "Nomes de campos separados por vírgula."
+
+#: abilities/class-cartflows-ability-config.php:2673
+msgid "Get landing step settings"
+msgstr "Obter configurações de etapa de pouso"
+
+#: abilities/class-cartflows-ability-config.php:2674
+msgid ""
+"Returns the configuration of a landing step: step slug, next step link shortcode, and disable-step toggle. Landing "
+"pages are page-builder-driven, so this returns only the CartFlows-specific meta. Does not require WooCommerce."
+msgstr ""
+"Retorna a configuração de uma etapa de aterrissagem: slug da etapa, shortcode do link da próxima etapa e alternância de "
+"desativação da etapa. As páginas de destino são geradas por construtores de páginas, portanto, isso retorna apenas os "
+"metadados específicos do CartFlows. Não requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2685
+msgid "The landing step ID."
+msgstr "O ID do passo de aterrissagem."
+
+#: abilities/class-cartflows-ability-config.php:2698
+msgid "Step URL slug."
+msgstr "Etapa URL slug."
+
+#: abilities/class-cartflows-ability-config.php:2702
+msgid "Next step link shortcode/URL for use in page builder."
+msgstr "Próximo passo link shortcode/URL para uso no construtor de páginas."
+
+#: abilities/class-cartflows-ability-config.php:2706
+msgid "Whether step is disabled (yes/no)."
+msgstr "Se o passo está desativado (sim/não)."
+
+#: abilities/class-cartflows-ability-config.php:2736
+msgid "Get email report settings"
+msgstr "Obter configurações de relatório por e-mail"
+
+#: abilities/class-cartflows-ability-config.php:2737
+msgid ""
+"Returns the weekly email report configuration: whether reports are enabled, the list of recipient email addresses, and "
+"the next scheduled send time. Does not require WooCommerce."
+msgstr ""
+"Retorna a configuração do relatório semanal por e-mail: se os relatórios estão ativados, a lista de endereços de e-mail "
+"dos destinatários e o próximo horário agendado para envio. Não requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2751
+msgid "Whether weekly reports are enabled (enable/disable)."
+msgstr "Se os relatórios semanais estão ativados (ativar/desativar)."
+
+#: abilities/class-cartflows-ability-config.php:2755
+msgid "List of recipient email addresses."
+msgstr "Lista de endereços de e-mail dos destinatários."
+
+#: abilities/class-cartflows-ability-config.php:2760
+msgid "Next scheduled send time (ISO 8601) or empty if not scheduled."
+msgstr "Próximo horário de envio agendado (ISO 8601) ou vazio se não estiver agendado."
+
+#: abilities/class-cartflows-ability-config.php:2786
+msgid "Update email report settings"
+msgstr "Atualizar configurações de relatório de e-mail"
+
+#: abilities/class-cartflows-ability-config.php:2787
+msgid ""
+"Toggles the weekly email report on or off and/or updates the list of recipient email addresses. The ActionScheduler "
+"cron is automatically managed by the module. Does not require WooCommerce."
+msgstr ""
+"Alterna o relatório semanal por e-mail ativando ou desativando e/ou atualiza a lista de endereços de e-mail dos "
+"destinatários. O cron do ActionScheduler é gerido automaticamente pelo módulo. Não requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2801
+msgid "Enable or disable the weekly email report."
+msgstr "Ativar ou desativar o relatório semanal por e-mail."
+
+#: abilities/class-cartflows-ability-config.php:2805
+msgid "List of recipient email addresses. Replaces the entire list."
+msgstr "Lista de endereços de e-mail dos destinatários. Substitui a lista inteira."
+
+#: abilities/class-cartflows-ability-config.php:2815
+msgid "Saved enabled status."
+msgstr "Status de ativação salvo."
+
+#: abilities/class-cartflows-ability-config.php:2819
+msgid "Saved recipient email list."
+msgstr "Lista de e-mails dos destinatários salva."
+
+#: abilities/class-cartflows-ability-config.php:2853
+msgid "Get product flow mapping"
+msgstr "Obter mapeamento de fluxo de produto"
+
+#: abilities/class-cartflows-ability-config.php:2854
+msgid ""
+"Returns the CartFlows flow mapping for a WooCommerce product: which flow the product redirects to after add-to-cart, "
+"and any custom button text override. Requires WooCommerce."
+msgstr ""
+"Retorna o mapeamento de fluxo do CartFlows para um produto WooCommerce: para qual fluxo o produto redireciona após ser "
+"adicionado ao carrinho, e qualquer substituição de texto do botão personalizado. Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2865
+#: abilities/class-cartflows-ability-config.php:3020
+msgid "The WooCommerce product ID."
+msgstr "O ID do produto WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2874
+#: abilities/class-cartflows-ability-config.php:2948
+#: abilities/class-cartflows-ability-config.php:3037
+msgid "Product ID."
+msgstr "ID do Produto."
+
+#: abilities/class-cartflows-ability-config.php:2878
+#: abilities/class-cartflows-ability-config.php:2952
+msgid "Product title."
+msgstr "Título do produto."
+
+#: abilities/class-cartflows-ability-config.php:2882
+msgid "Mapped flow ID (0 if none)."
+msgstr "ID de fluxo mapeado (0 se nenhum)."
+
+#: abilities/class-cartflows-ability-config.php:2886
+msgid "Mapped flow title (empty if none)."
+msgstr "Título do fluxo mapeado (vazio se nenhum)."
+
+#: abilities/class-cartflows-ability-config.php:2890
+msgid "Custom add-to-cart button text (empty if default)."
+msgstr "Texto personalizado do botão adicionar ao carrinho (vazio se padrão)."
+
+#: abilities/class-cartflows-ability-config.php:2916
+msgid "List product flow mappings"
+msgstr "Listar mapeamentos de fluxo de produtos"
+
+#: abilities/class-cartflows-ability-config.php:2917
+msgid ""
+"Returns a paginated list of WooCommerce products that have a CartFlows flow mapping configured. Each entry includes the "
+"product, mapped flow, and custom button text. Requires WooCommerce."
+msgstr ""
+"Retorna uma lista paginada de produtos WooCommerce que têm um mapeamento de fluxo do CartFlows configurado. Cada "
+"entrada inclui o produto, o fluxo mapeado e o texto personalizado do botão. Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:2933
+msgid "Products per page (max 100)."
+msgstr "Produtos por página (máx. 100)."
+
+#: abilities/class-cartflows-ability-config.php:2942
+msgid "Products with flow mappings."
+msgstr "Produtos com mapeamentos de fluxo."
+
+#: abilities/class-cartflows-ability-config.php:2956
+msgid "Mapped flow ID."
+msgstr "ID de fluxo mapeado."
+
+#: abilities/class-cartflows-ability-config.php:2960
+msgid "Mapped flow title."
+msgstr "Título do fluxo mapeado."
+
+#: abilities/class-cartflows-ability-config.php:2964
+msgid "Custom button text."
+msgstr "Texto personalizado do botão."
+
+#: abilities/class-cartflows-ability-config.php:2971
+msgid "Total products with mappings."
+msgstr "Total de produtos com mapeamentos."
+
+#: abilities/class-cartflows-ability-config.php:3005
+msgid "Update product flow mapping"
+msgstr "Atualizar mapeamento do fluxo de produtos"
+
+#: abilities/class-cartflows-ability-config.php:3006
+msgid ""
+"Sets or clears the CartFlows flow mapping on a WooCommerce product. When a flow is mapped, adding the product to cart "
+"redirects the customer to that flow. Set flow_id to 0 to clear the mapping. Requires WooCommerce."
+msgstr ""
+"Define ou limpa o mapeamento de fluxo do CartFlows em um produto WooCommerce. Quando um fluxo é mapeado, adicionar o "
+"produto ao carrinho redireciona o cliente para esse fluxo. Defina flow_id como 0 para limpar o mapeamento. Requer "
+"WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:3024
+msgid "Flow ID to map (0 to clear mapping)."
+msgstr "ID de fluxo para mapear (0 para limpar mapeamento)."
+
+#: abilities/class-cartflows-ability-config.php:3028
+msgid "Custom add-to-cart button text (empty string to clear)."
+msgstr "Texto personalizado do botão de adicionar ao carrinho (string vazia para limpar)."
+
+#: abilities/class-cartflows-ability-config.php:3041
+msgid "Saved flow ID."
+msgstr "ID do fluxo salvo."
+
+#: abilities/class-cartflows-ability-config.php:3045
+msgid "Saved flow title."
+msgstr "Título do fluxo salvo."
+
+#: abilities/class-cartflows-ability-config.php:3082
+msgid "Create funnel"
+msgstr "Criar funil"
+
+#: abilities/class-cartflows-ability-config.php:3083
+msgid ""
+"Creates a new empty CartFlows funnel with the given title and optional status. The funnel is created with no steps — "
+"use create-step to add steps after creation. Use to start building a funnel from scratch."
+msgstr ""
+"Cria um novo funil vazio do CartFlows com o título dado e status opcional. O funil é criado sem etapas — use "
+"criar-etapa para adicionar etapas após a criação. Use para começar a construir um funil do zero."
+
+#: abilities/class-cartflows-ability-config.php:3097
+msgid "The funnel title."
+msgstr "O título do funil."
+
+#: abilities/class-cartflows-ability-config.php:3103
+msgid "Post status for the new funnel."
+msgstr "Publicar status para o novo funil."
+
+#: abilities/class-cartflows-ability-config.php:3120
+msgid "Funnel post status."
+msgstr "Status do post do funil."
+
+#: abilities/class-cartflows-ability-config.php:3125
+msgid "Admin edit URL for the new funnel."
+msgstr "URL de edição do administrador para o novo funil."
+
+#: abilities/class-cartflows-ability-config.php:3150
+msgid "Create step"
+msgstr "Criar etapa"
+
+#: abilities/class-cartflows-ability-config.php:3151
+msgid ""
+"Creates a new CartFlows step and attaches it to an existing funnel. Free step types: landing, checkout, optin, "
+"thankyou. Upsell and downsell steps require CartFlows Pro. The step is published immediately and appended to the "
+"funnel's step list."
+msgstr ""
+"Cria um novo passo do CartFlows e o anexa a um funil existente. Tipos de passos gratuitos: landing, checkout, optin, "
+"thankyou. Passos de upsell e downsell requerem o CartFlows Pro. O passo é publicado imediatamente e adicionado à lista "
+"de passos do funil."
+
+#: abilities/class-cartflows-ability-config.php:3169
+msgid "The step title."
+msgstr "O título do passo."
+
+#: abilities/class-cartflows-ability-config.php:3174
+msgid "Step type. Free types: landing, checkout, optin, thankyou."
+msgstr "Tipo de etapa. Tipos livres: landing, checkout, optin, thankyou."
+
+#: abilities/class-cartflows-ability-config.php:3200
+msgid "Admin edit URL for the new step."
+msgstr "URL de edição do administrador para o novo passo."
+
+#: abilities/class-cartflows-ability-config.php:3229
+msgid "List flow templates"
+msgstr "Listar modelos de fluxo"
+
+#: abilities/class-cartflows-ability-config.php:3230
+msgid ""
+"Returns a paginated list of CartFlows flow templates from the cached template library. Supports filtering by type "
+"(free/pro), page builder, step type, category, and keyword search. Use to browse available templates before importing "
+"one with import-flow-template. Pro templates require CartFlows Pro to import."
+msgstr ""
+"Retorna uma lista paginada de modelos de fluxo do CartFlows da biblioteca de modelos em cache. Suporta filtragem por "
+"tipo (gratuito/pro), construtor de páginas, tipo de etapa, categoria e pesquisa por palavra-chave. Use para navegar "
+"pelos modelos disponíveis antes de importar um com import-flow-template. Modelos Pro requerem CartFlows Pro para "
+"importar."
+
+#: abilities/class-cartflows-ability-config.php:3242
+msgid "Filter by template type. \"free\" for free templates, \"pro\" for pro-only templates. Empty returns all."
+msgstr ""
+"Filtrar por tipo de modelo. \"free\" para modelos gratuitos, \"pro\" para modelos exclusivos para profissionais. Vazio "
+"retorna todos."
+
+#: abilities/class-cartflows-ability-config.php:3247
+msgid ""
+"Filter by page builder slug (e.g. elementor, gutenberg, divi, beaver-builder, bricks-builder). Empty returns templates "
+"for the default page builder."
+msgstr ""
+"Filtrar por slug do construtor de páginas (por exemplo, elementor, gutenberg, divi, beaver-builder, bricks-builder). "
+"Vazio retorna modelos para o construtor de páginas padrão."
+
+#: abilities/class-cartflows-ability-config.php:3252
+msgid "Filter by step type (e.g. checkout, optin, landing, thankyou, upsell, downsell). Empty returns all types."
+msgstr ""
+"Filtrar por tipo de etapa (por exemplo, checkout, optin, landing, thankyou, upsell, downsell). Vazio retorna todos os "
+"tipos."
+
+#: abilities/class-cartflows-ability-config.php:3257
+msgid ""
+"Filter by category slug (e.g. sales-funnel, product-landing, lead-generation, store-checkout). Empty returns all "
+"categories."
+msgstr ""
+"Filtrar por slug de categoria (por exemplo, funil-de-vendas, pagina-de-produto, geracao-de-leads, "
+"finalizacao-de-compra). Vazio retorna todas as categorias."
+
+#: abilities/class-cartflows-ability-config.php:3262
+msgid "Keyword to search in template titles."
+msgstr "Palavra-chave para buscar nos títulos dos modelos."
+
+#: abilities/class-cartflows-ability-config.php:3272
+msgid "Templates per page (max 100)."
+msgstr "Modelos por página (máx 100)."
+
+#: abilities/class-cartflows-ability-config.php:3281
+msgid "Flow templates."
+msgstr "Modelos de fluxo."
+
+#: abilities/class-cartflows-ability-config.php:3287
+msgid "Template ID."
+msgstr "ID do modelo."
+
+#: abilities/class-cartflows-ability-config.php:3291
+msgid "Template title."
+msgstr "Título do modelo."
+
+#: abilities/class-cartflows-ability-config.php:3295
+msgid "Template type: \"free\" or \"pro\"."
+msgstr "Tipo de modelo: \"free\" ou \"pro\"."
+
+#: abilities/class-cartflows-ability-config.php:3299
+msgid "Page builder slug."
+msgstr "Slug do construtor de páginas."
+
+#: abilities/class-cartflows-ability-config.php:3303
+msgid "Whether this template requires CartFlows Pro."
+msgstr "Se este modelo requer o CartFlows Pro."
+
+#: abilities/class-cartflows-ability-config.php:3307
+msgid "Category slugs for this template."
+msgstr "Slugs de categoria para este modelo."
+
+#: abilities/class-cartflows-ability-config.php:3314
+msgid "Number of steps in this template."
+msgstr "Número de etapas neste modelo."
+
+#: abilities/class-cartflows-ability-config.php:3318
+msgid "Step types present in this template."
+msgstr "Tipos de etapas presentes neste modelo."
+
+#: abilities/class-cartflows-ability-config.php:3326
+msgid "Template thumbnail URL."
+msgstr "URL da miniatura do modelo."
+
+#: abilities/class-cartflows-ability-config.php:3333
+msgid "Total matching templates."
+msgstr "Total de modelos correspondentes."
+
+#: abilities/class-cartflows-ability-config.php:3341
+msgid "Templates per page."
+msgstr "Modelos por página."
+
+#: abilities/class-cartflows-ability-config.php:3345
+msgid "Whether CartFlows Pro is active on this site. Pro templates can only be imported when this is true."
+msgstr "Se o CartFlows Pro está ativo neste site. Os modelos Pro só podem ser importados quando isso for verdade."
+
+#: abilities/class-cartflows-ability-config.php:3375
+msgid "Import flow template"
+msgstr "Importar modelo de fluxo"
+
+#: abilities/class-cartflows-ability-config.php:3376
+msgid ""
+"Imports a flow template from the CartFlows cloud library by template ID. Creates a new funnel with all steps from the "
+"template. Upsell/downsell steps are skipped if CartFlows Pro is not active. Use list-flow-templates first to browse "
+"available templates. Requires WooCommerce."
+msgstr ""
+"Importa um modelo de fluxo da biblioteca em nuvem do CartFlows pelo ID do modelo. Cria um novo funil com todas as "
+"etapas do modelo. Etapas de upsell/downsell são ignoradas se o CartFlows Pro não estiver ativo. Use list-flow-templates "
+"primeiro para navegar pelos modelos disponíveis. Requer WooCommerce."
+
+#: abilities/class-cartflows-ability-config.php:3390
+msgid "Template ID from the CartFlows cloud library (from list-flow-templates)."
+msgstr "ID do modelo da biblioteca em nuvem do CartFlows (da lista de modelos de fluxo)."
+
+#: abilities/class-cartflows-ability-config.php:3407
+msgid "Imported steps."
+msgstr "Etapas importadas."
+
+#: abilities/class-cartflows-ability-config.php:3428
+msgid "Steps that were skipped during import."
+msgstr "Etapas que foram puladas durante a importação."
+
+#: abilities/class-cartflows-ability-config.php:3434
+msgid "Skipped step title."
+msgstr "Título da etapa ignorada."
+
+#: abilities/class-cartflows-ability-config.php:3438
+msgid "Skipped step type."
+msgstr "Tipo de etapa ignorado."
+
+#: abilities/class-cartflows-ability-config.php:3442
+msgid "Reason for skipping."
+msgstr "Motivo para pular."
+
+#: abilities/class-cartflows-ability-runtime.php:50
+msgid "Abilities for CartFlows — funnel and step management."
+msgstr "Habilidades para CartFlows — gestão de funil e etapas."
+
+#: abilities/class-cartflows-ability-runtime.php:176
+#: abilities/class-cartflows-ability-runtime.php:290
+#: abilities/class-cartflows-ability-runtime.php:349
+#: abilities/class-cartflows-ability-runtime.php:384
+#: abilities/class-cartflows-ability-runtime.php:419
+#: abilities/class-cartflows-ability-runtime.php:577
+#: abilities/class-cartflows-ability-runtime.php:627
+#: abilities/class-cartflows-ability-runtime.php:677
+#: abilities/class-cartflows-ability-runtime.php:736
+#: abilities/class-cartflows-ability-runtime.php:2729
+msgid "Invalid funnel ID."
+msgstr "ID de funil inválido."
+
+#: abilities/class-cartflows-ability-runtime.php:180
+#: abilities/class-cartflows-ability-runtime.php:353
+#: abilities/class-cartflows-ability-runtime.php:388
+#: abilities/class-cartflows-ability-runtime.php:425
+#: abilities/class-cartflows-ability-runtime.php:581
+#: abilities/class-cartflows-ability-runtime.php:631
+#: abilities/class-cartflows-ability-runtime.php:681
+#: abilities/class-cartflows-ability-runtime.php:740
+#: abilities/class-cartflows-ability-runtime.php:867
+#: abilities/class-cartflows-ability-runtime.php:2733
+msgid "Funnel not found."
+msgstr "Funil não encontrado."
+
+#: abilities/class-cartflows-ability-runtime.php:233
+#: abilities/class-cartflows-ability-runtime.php:987
+#: abilities/class-cartflows-ability-runtime.php:1289
+#: abilities/class-cartflows-ability-runtime.php:1386
+#: abilities/class-cartflows-ability-runtime.php:1449
+#: abilities/class-cartflows-ability-runtime.php:1525
+#: abilities/class-cartflows-ability-runtime.php:1606
+#: abilities/class-cartflows-ability-runtime.php:1650
+#: abilities/class-cartflows-ability-runtime.php:1719
+#: abilities/class-cartflows-ability-runtime.php:1796
+#: abilities/class-cartflows-ability-runtime.php:1879
+#: abilities/class-cartflows-ability-runtime.php:1923
+#: abilities/class-cartflows-ability-runtime.php:1991
+#: abilities/class-cartflows-ability-runtime.php:2053
+#: abilities/class-cartflows-ability-runtime.php:2101
+#: abilities/class-cartflows-ability-runtime.php:2177
+#: abilities/class-cartflows-ability-runtime.php:2244
+#: abilities/class-cartflows-ability-runtime.php:2292
+#: abilities/class-cartflows-ability-runtime.php:2354
+#: admin-core/api/step-data.php:95
+msgid "Invalid step ID."
+msgstr "ID de etapa inválido."
+
+#: abilities/class-cartflows-ability-runtime.php:237
+#: abilities/class-cartflows-ability-runtime.php:871
+#: abilities/class-cartflows-ability-runtime.php:991
+#: abilities/class-cartflows-ability-runtime.php:1293
+#: abilities/class-cartflows-ability-runtime.php:1390
+#: abilities/class-cartflows-ability-runtime.php:1453
+#: abilities/class-cartflows-ability-runtime.php:1529
+#: abilities/class-cartflows-ability-runtime.php:1610
+#: abilities/class-cartflows-ability-runtime.php:1654
+#: abilities/class-cartflows-ability-runtime.php:1723
+#: abilities/class-cartflows-ability-runtime.php:1800
+#: abilities/class-cartflows-ability-runtime.php:1883
+#: abilities/class-cartflows-ability-runtime.php:1927
+#: abilities/class-cartflows-ability-runtime.php:1995
+#: abilities/class-cartflows-ability-runtime.php:2057
+#: abilities/class-cartflows-ability-runtime.php:2105
+#: abilities/class-cartflows-ability-runtime.php:2181
+#: abilities/class-cartflows-ability-runtime.php:2248
+#: abilities/class-cartflows-ability-runtime.php:2296
+msgid "Step not found."
+msgstr "Etapa não encontrada."
+
+#: abilities/class-cartflows-ability-runtime.php:280
+msgid "WooCommerce is required for analytics."
+msgstr "WooCommerce é necessário para análises."
+
+#: abilities/class-cartflows-ability-runtime.php:361
+msgid "Funnel published successfully."
+msgstr "Funil publicado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:396
+msgid "Funnel unpublished (set to draft)."
+msgstr "Funil não publicado (definido como rascunho)."
+
+#: abilities/class-cartflows-ability-runtime.php:453
+msgid "Failed to create funnel clone."
+msgstr "Falha ao criar clone do funil."
+
+#: abilities/class-cartflows-ability-runtime.php:554
+msgid "Funnel cloned successfully."
+msgstr "Funil clonado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:604
+msgid "Funnel moved to trash."
+msgstr "Funil movido para a lixeira."
+
+#: abilities/class-cartflows-ability-runtime.php:648
+msgid "Funnel restored from trash."
+msgstr "Funil restaurado da lixeira."
+
+#: abilities/class-cartflows-ability-runtime.php:685
+#: abilities/class-cartflows-ability-runtime.php:2682
+msgid "Funnel title cannot be empty."
+msgstr "O título do funil não pode estar vazio."
+
+#: abilities/class-cartflows-ability-runtime.php:700
+msgid "Failed to update funnel."
+msgstr "Falha ao atualizar o funil."
+
+#: abilities/class-cartflows-ability-runtime.php:708
+msgid "Funnel updated successfully."
+msgstr "Funil atualizado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:744
+msgid "Step IDs array is required."
+msgstr "É necessário um array de IDs de etapas."
+
+#: abilities/class-cartflows-ability-runtime.php:783
+msgid "Funnel steps reordered successfully."
+msgstr "Etapas do funil reordenadas com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:810
+msgid "At least one funnel ID is required."
+msgstr "É necessário pelo menos um ID de funil."
+
+#: abilities/class-cartflows-ability-runtime.php:829
+msgid "No valid funnel IDs provided for export."
+msgstr "Nenhum ID de funil válido fornecido para exportação."
+
+#: abilities/class-cartflows-ability-runtime.php:835
+msgid "Funnel data exported successfully."
+msgstr "Dados do funil exportados com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:863
+msgid "Invalid funnel or step ID."
+msgstr "ID de funil ou etapa inválido."
+
+#: abilities/class-cartflows-ability-runtime.php:900
+msgid "Failed to create step clone."
+msgstr "Falha ao criar clone do passo."
+
+#: abilities/class-cartflows-ability-runtime.php:959
+msgid "Step cloned successfully."
+msgstr "Etapa clonada com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:995
+#: abilities/class-cartflows-ability-runtime.php:2737
+msgid "Step title cannot be empty."
+msgstr "O título da etapa não pode estar vazio."
+
+#: abilities/class-cartflows-ability-runtime.php:1006
+msgid "Failed to update step title."
+msgstr "Falha ao atualizar o título da etapa."
+
+#: abilities/class-cartflows-ability-runtime.php:1012
+msgid "Step title updated successfully."
+msgstr "Título da etapa atualizado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:1143
+msgid "Invalid integration group."
+msgstr "Grupo de integração inválido."
+
+#: abilities/class-cartflows-ability-runtime.php:1187
+msgid "No settings provided to update."
+msgstr "Nenhuma configuração fornecida para atualizar."
+
+#: abilities/class-cartflows-ability-runtime.php:1195
+msgid "General settings updated successfully."
+msgstr "Configurações gerais atualizadas com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:1231
+msgid "No permalink settings provided to update."
+msgstr "Nenhuma configuração de link permanente fornecida para atualizar."
+
+#: abilities/class-cartflows-ability-runtime.php:1256
+msgid "Permalink settings updated successfully."
+msgstr "Configurações de permalink atualizadas com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:1283
+#: abilities/class-cartflows-ability-runtime.php:1380
+#: abilities/class-cartflows-ability-runtime.php:1442
+#: abilities/class-cartflows-ability-runtime.php:1518
+#: abilities/class-cartflows-ability-runtime.php:1599
+#: abilities/class-cartflows-ability-runtime.php:1644
+#: abilities/class-cartflows-ability-runtime.php:1713
+msgid "WooCommerce is required for checkout abilities."
+msgstr "WooCommerce é necessário para as funcionalidades de checkout."
+
+#: abilities/class-cartflows-ability-runtime.php:1298
+#: abilities/class-cartflows-ability-runtime.php:1395
+#: abilities/class-cartflows-ability-runtime.php:1458
+#: abilities/class-cartflows-ability-runtime.php:1534
+#: abilities/class-cartflows-ability-runtime.php:1615
+#: abilities/class-cartflows-ability-runtime.php:1659
+#: abilities/class-cartflows-ability-runtime.php:1728
+msgid "Step is not a checkout type."
+msgstr "Etapa não é um tipo de checkout."
+
+#: abilities/class-cartflows-ability-runtime.php:1538
+msgid "Products must be an array."
+msgstr "Os produtos devem ser um array."
+
+#: abilities/class-cartflows-ability-runtime.php:1555
+#. translators: %d: product ID
+#, php-format
+msgid "WooCommerce product %d not found."
+msgstr "Produto WooCommerce %d não encontrado."
+
+#: abilities/class-cartflows-ability-runtime.php:1578
+msgid "Checkout products updated successfully."
+msgstr "Produtos do carrinho atualizados com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:1623
+msgid "Checkout layout updated successfully."
+msgstr "Layout de checkout atualizado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:1684
+msgid "No button settings provided to update."
+msgstr "Nenhuma configuração de botão fornecida para atualizar."
+
+#: abilities/class-cartflows-ability-runtime.php:1692
+msgid "Place order button updated successfully."
+msgstr "Botão de fazer pedido atualizado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:1759
+msgid "No form settings provided to update."
+msgstr "Nenhuma configuração de formulário fornecida para atualizar."
+
+#: abilities/class-cartflows-ability-runtime.php:1765
+msgid "Checkout form settings updated successfully."
+msgstr "Configurações do formulário de checkout atualizadas com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:1790
+#: abilities/class-cartflows-ability-runtime.php:1872
+#: abilities/class-cartflows-ability-runtime.php:1917
+#: abilities/class-cartflows-ability-runtime.php:1985
+#: abilities/class-cartflows-ability-runtime.php:2046
+msgid "WooCommerce is required for thank you abilities."
+msgstr "O WooCommerce é necessário para as funcionalidades de agradecimento."
+
+#: abilities/class-cartflows-ability-runtime.php:1805
+#: abilities/class-cartflows-ability-runtime.php:1888
+#: abilities/class-cartflows-ability-runtime.php:1932
+#: abilities/class-cartflows-ability-runtime.php:2000
+#: abilities/class-cartflows-ability-runtime.php:2062
+msgid "Step is not a thank you type."
+msgstr "Etapa não é do tipo agradecimento."
+
+#: abilities/class-cartflows-ability-runtime.php:1896
+msgid "Thank you layout updated successfully."
+msgstr "Obrigado, layout atualizado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:1958
+msgid "No section settings provided to update."
+msgstr "Nenhuma configuração de seção fornecida para atualizar."
+
+#: abilities/class-cartflows-ability-runtime.php:1964
+msgid "Thank you sections updated successfully."
+msgstr "Seções de agradecimento atualizadas com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:2018
+msgid "No redirect settings provided to update."
+msgstr "Nenhuma configuração de redirecionamento fornecida para atualizar."
+
+#: abilities/class-cartflows-ability-runtime.php:2025
+msgid "Thank you redirect settings updated successfully."
+msgstr "Obrigado, as configurações de redirecionamento foram atualizadas com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:2070
+msgid "Thank you custom text updated successfully."
+msgstr "Obrigado, texto personalizado atualizado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:2095
+#: abilities/class-cartflows-ability-runtime.php:2170
+#: abilities/class-cartflows-ability-runtime.php:2237
+#: abilities/class-cartflows-ability-runtime.php:2286
+msgid "WooCommerce is required for optin abilities."
+msgstr "O WooCommerce é necessário para as capacidades de opt-in."
+
+#: abilities/class-cartflows-ability-runtime.php:2110
+#: abilities/class-cartflows-ability-runtime.php:2186
+#: abilities/class-cartflows-ability-runtime.php:2253
+#: abilities/class-cartflows-ability-runtime.php:2301
+msgid "Step is not an optin type."
+msgstr "Etapa não é um tipo de opção."
+
+#: abilities/class-cartflows-ability-runtime.php:2190
+#: abilities/class-cartflows-ability-runtime.php:2496
+#: abilities/class-cartflows-ability-runtime.php:2618
+msgid "Invalid product ID."
+msgstr "ID de produto inválido."
+
+#: abilities/class-cartflows-ability-runtime.php:2195
+msgid "WooCommerce product not found."
+msgstr "Produto WooCommerce não encontrado."
+
+#: abilities/class-cartflows-ability-runtime.php:2199
+msgid "Product must be a Simple product type."
+msgstr "O produto deve ser do tipo Simples."
+
+#: abilities/class-cartflows-ability-runtime.php:2203
+msgid "Product must be Virtual."
+msgstr "O produto deve ser virtual."
+
+#: abilities/class-cartflows-ability-runtime.php:2207
+msgid "Product price must be zero (free)."
+msgstr "O preço do produto deve ser zero (gratuito)."
+
+#: abilities/class-cartflows-ability-runtime.php:2216
+msgid "Optin product updated successfully."
+msgstr "Produto de opt-in atualizado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:2257
+msgid "Button text cannot be empty."
+msgstr "O texto do botão não pode estar vazio."
+
+#: abilities/class-cartflows-ability-runtime.php:2265
+msgid "Optin button text updated successfully."
+msgstr "Texto do botão de opt-in atualizado com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:2319
+msgid "No pass-fields settings provided to update."
+msgstr "Nenhuma configuração de campos de passagem fornecida para atualizar."
+
+#: abilities/class-cartflows-ability-runtime.php:2326
+msgid "Optin pass-fields settings updated successfully."
+msgstr "Configurações de campos de passe de opt-in atualizadas com sucesso."
+
+#: abilities/class-cartflows-ability-runtime.php:2360
+msgid "The provided step is not a landing step."
+msgstr "O degrau fornecido não é um degrau de pouso."
+
+#: abilities/class-cartflows-ability-runtime.php:2463
+msgid "Email report settings updated."
+msgstr "Configurações de relatório de e-mail atualizadas."
+
+#: abilities/class-cartflows-ability-runtime.php:2489
+#: abilities/class-cartflows-ability-runtime.php:2534
+#: abilities/class-cartflows-ability-runtime.php:2611
+msgid "WooCommerce is not active."
+msgstr "WooCommerce não está ativo."
+
+#: abilities/class-cartflows-ability-runtime.php:2629
+msgid "Invalid flow ID. Flow does not exist."
+msgstr "ID de fluxo inválido. O fluxo não existe."
+
+#: abilities/class-cartflows-ability-runtime.php:2654
+msgid "Product flow mapping updated."
+msgstr "Mapeamento do fluxo de produtos atualizado."
+
+#: abilities/class-cartflows-ability-runtime.php:2695
+msgid "Failed to create funnel."
+msgstr "Falha ao criar o funil."
+
+#: abilities/class-cartflows-ability-runtime.php:2742
+#: abilities/class-cartflows-ability-runtime.php:3048
+msgid "Upsell and Downsell steps require CartFlows Pro."
+msgstr "As etapas de Upsell e Downsell requerem o CartFlows Pro."
+
+#: abilities/class-cartflows-ability-runtime.php:2754
+msgid "Failed to create step."
+msgstr "Falha ao criar etapa."
+
+#: abilities/class-cartflows-ability-runtime.php:2922
+msgid "WooCommerce is required to import flow templates."
+msgstr "O WooCommerce é necessário para importar modelos de fluxo."
+
+#: abilities/class-cartflows-ability-runtime.php:2928
+msgid "Invalid template ID."
+msgstr "ID de modelo inválido."
+
+#: abilities/class-cartflows-ability-runtime.php:2935
+msgid "Failed to fetch template from CartFlows library."
+msgstr "Falha ao buscar o modelo da biblioteca CartFlows."
+
+#: abilities/class-cartflows-ability-runtime.php:2949
+msgid "This template requires CartFlows Pro. Please upgrade to import premium templates."
+msgstr "Este modelo requer o CartFlows Pro. Por favor, faça o upgrade para importar modelos premium."
+
+#: abilities/class-cartflows-ability-runtime.php:2953
+msgid "Imported Flow"
+msgstr "Fluxo Importado"
+
+#: abilities/class-cartflows-ability-runtime.php:2966
+msgid "Failed to create funnel from template."
+msgstr "Falha ao criar funil a partir do modelo."
+
+#: abilities/class-cartflows-ability-runtime.php:3275
+#. translators: %s: field name
+#, php-format
+msgid "Required field %s is missing."
+msgstr "O campo obrigatório %s está ausente."
+
+#: abilities/class-cartflows-ability-runtime.php:3351
+#. translators: %s: field name
+#, php-format
+msgid "Invalid value for %s."
+msgstr "Valor inválido para %s."
+
+#: abilities/class-cartflows-ability-runtime.php:3375
+msgid "Inputs not parsed."
+msgstr "Entradas não analisadas."
+
+#: abilities/class-cartflows-ability-runtime.php:3385
+#. translators: %s: property name
+#, php-format
+msgid "Property %s not found."
+msgstr "Propriedade %s não encontrada."
+
+#: admin-core/ajax/debugger.php:157
+msgid "Invalid log file."
+msgstr "Arquivo de log inválido."
+
+#: admin-core/ajax/debugger.php:178
+msgid "Log file deleted successfully."
+msgstr "Arquivo de log excluído com sucesso."
+
+#: admin-core/ajax/flows.php:283
+#: admin-core/ajax/flows.php:928
+msgid "Invalid post status."
+msgstr "Status de postagem inválido."
+
+#: admin-core/api/home-page.php:109
+msgid "Invalid box ID."
+msgstr "ID da caixa inválido."
+
+#: admin-core/inc/admin-menu.php:1000
+msgid "Power Coupons"
+msgstr "Cupons de Energia"
+
+#: admin-core/inc/admin-menu.php:1001
+msgid "Create powerful coupon rules with advanced conditions, discount types, and usage restrictions for WooCommerce."
+msgstr "Crie regras de cupom poderosas com condições avançadas, tipos de desconto e restrições de uso para WooCommerce."
+
+#: modules/email-report/class-cartflows-admin-report-emails.php:127
+msgid "Invalid unsubscribe link."
+msgstr "Link de cancelamento de inscrição inválido."
+
+#: admin-core/assets/build/settings-app.js:84
+msgid "Failed!"
+msgstr "Falhou!"
+
 #: modules/beaver-builder/cartflows-bb-next-step/cartflows-bb-next-step.php:266
 msgctxt "Width."
 msgid "Auto"
@@ -10174,12 +12261,12 @@ msgctxt "flow singular name"
 msgid "Flow"
 msgstr "Fluxo"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:170
+#: modules/flow/classes/class-cartflows-step-post-type.php:171
 msgctxt "flow step general name"
 msgid "Steps"
 msgstr "Passos"
 
-#: modules/flow/classes/class-cartflows-step-post-type.php:171
+#: modules/flow/classes/class-cartflows-step-post-type.php:172
 msgctxt "flow step singular name"
 msgid "Step"
 msgstr "Passo"

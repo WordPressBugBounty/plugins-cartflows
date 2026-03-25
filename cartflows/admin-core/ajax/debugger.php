@@ -118,7 +118,7 @@ class Debugger extends AjaxBase {
 
 		wp_send_json(
 			array(
-				'log_content' => $file_content,
+				'log_content' => esc_html( $file_content ),
 			)
 		);
 	}
@@ -128,24 +128,56 @@ class Debugger extends AjaxBase {
 	 */
 	public function delete_cf_log() {
 
-
+		// Ensure the current user has permission to manage CartFlows settings.
 		if ( ! current_user_can( 'cartflows_manage_settings' ) ) {
 			wp_die( esc_html__( 'You don\'t have permission to perform this action.', 'cartflows' ) );
 		}
 
+		// Verify the nonce to protect against CSRF attacks.
 		check_ajax_referer( 'cartflows_delete_cf_log', 'security' );
 
+		// Bail early if no log key was provided in the request.
 		if ( empty( $_REQUEST['log_key'] ) ) {
-			wp_die( esc_html__( 'Filename is empty. Please refresh the page and retry.', 'cartflows' ) );
+			$response_data = array(
+				'message'      => esc_html__( 'Filename is empty. Please refresh the page and retry.', 'cartflows' ),
+				'file_content' => '',
+			);
+			wp_send_json_error( $response_data );
 		}
 
-		$file_name = trim( sanitize_text_field( wp_unslash( $_REQUEST['log_key'] ) ) );
+		// Sanitize the log key from the request.
+		$log_key = sanitize_text_field( wp_unslash( $_REQUEST['log_key'] ) );
+
+		// Retrieve the list of available log files.
+		$logs = LogStatus::get_instance()->get_log_files();
+
+		// Bail if the provided key does not match any known log file.
+		if ( ! isset( $logs[ $log_key ] ) ) {
+			$response_data = array(
+				'message'      => esc_html__( 'Invalid log file.', 'cartflows' ),
+				'file_content' => '',
+			);
+			wp_send_json_error( $response_data );
+		}
+
+		// Resolve the full file path for the log file.
+		$file_name = $logs[ $log_key ];
 		$file_path = CARTFLOWS_LOG_DIR . $file_name;
 
-		if ( file_exists( $file_path ) ) {
-			wp_delete_file( $file_path );
+		// Security: Validate file path is within log directory to prevent path traversal.
+		$real_path    = realpath( $file_path );
+		$real_log_dir = realpath( CARTFLOWS_LOG_DIR );
+
+		if ( $real_path && $real_log_dir && 0 === strpos( $real_path, $real_log_dir ) && file_exists( $real_path ) ) {
+			wp_delete_file( $real_path );
 			self::$file_deleted = true;
 		}
+
+		// Return a success response to the client.
+		$response_data = array(
+			'message' => esc_html__( 'Log file deleted successfully.', 'cartflows' ),
+		);
+		wp_send_json_success( $response_data );
 	}
 
 	/**
@@ -153,16 +185,34 @@ class Debugger extends AjaxBase {
 	 */
 	public function download_cf_log() {
 
+		// Ensure the current user has permission to manage CartFlows settings.
 		if ( ! current_user_can( 'cartflows_manage_settings' ) ) {
 			wp_die( esc_html__( 'You don\'t have permission to perform this action.', 'cartflows' ) );
 		}
 
+		// Verify the nonce to protect against CSRF attacks.
 		check_ajax_referer( 'cartflows_download_cf_log', 'security' );
 
-		$file_name = isset( $_REQUEST['log_key'] ) ? trim( sanitize_text_field( wp_unslash( $_REQUEST['log_key'] ) ) ) : '';
+		// Sanitize the log key from the request, defaulting to empty string if not set.
+		$log_key = isset( $_REQUEST['log_key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['log_key'] ) ) : '';
+
+		// Retrieve the list of available log files.
+		$logs = LogStatus::get_instance()->get_log_files();
+
+		// Bail if the provided key does not match any known log file.
+		if ( ! isset( $logs[ $log_key ] ) ) {
+			return;
+		}
+
+		// Resolve the full file path for the log file.
+		$file_name = $logs[ $log_key ];
 		$file_path = CARTFLOWS_LOG_DIR . $file_name;
 
-		if ( ! file_exists( $file_path ) ) {
+		// Security: Validate file path is within log directory to prevent path traversal.
+		$real_path    = realpath( $file_path );
+		$real_log_dir = realpath( CARTFLOWS_LOG_DIR );
+
+		if ( ! $real_path || ! $real_log_dir || 0 !== strpos( $real_path, $real_log_dir ) || ! file_exists( $real_path ) ) {
 			return;
 		}
 
@@ -175,8 +225,9 @@ class Debugger extends AjaxBase {
 			return;
 		}
 
-		$file_content = file_get_contents( CARTFLOWS_LOG_DIR . $file_name );
+		$file_content = file_get_contents( $real_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
+		// Return the file contents along with a success message.
 		$response_data = array(
 			'message'      => __( 'Export logs successfully', 'cartflows' ),
 			'file_content' => $file_content,

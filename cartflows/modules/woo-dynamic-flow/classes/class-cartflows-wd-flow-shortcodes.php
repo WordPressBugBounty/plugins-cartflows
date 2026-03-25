@@ -91,6 +91,10 @@ class Cartflows_Wd_Flow_Shortcodes {
 			return '';
 		}
 
+		if ( 'publish' !== $product->get_status() && ! current_user_can( 'read_private_products' ) ) {
+			return '';
+		}
+
 		return $product->get_title();
 	}
 
@@ -108,7 +112,7 @@ class Cartflows_Wd_Flow_Shortcodes {
 		$args = array(
 			'posts_per_page'      => 1,
 			'post_type'           => 'product',
-			'post_status'         => ( ! empty( $atts['status'] ) ) ? $atts['status'] : 'publish',
+			'post_status'         => 'publish',
 			'ignore_sticky_posts' => 1,
 			'no_found_rows'       => 1,
 		);

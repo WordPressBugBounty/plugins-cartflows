@@ -163,7 +163,7 @@ class Cartflows_Elementor_Compatibility {
 			return $response; // Ensure `$data` is an array before accessing keys.
 		}
 
-		$referer_url = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$referer_url = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
 
 		$parsed_url = parse_url( $referer_url ); //phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
 		$post_id    = 0;

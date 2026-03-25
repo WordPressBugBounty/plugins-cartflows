@@ -263,7 +263,6 @@ if ( ! class_exists( 'CartFlows_API' ) ) :
 				'templates_count' => 0,
 				'data'            => $response,
 			);
-
 		}
 
 		/**
@@ -340,7 +339,7 @@ if ( ! class_exists( 'CartFlows_API' ) ) :
 		 * @return mixed            Return the API request result.
 		 */
 		public static function remote_get( $url = '', $args = array() ) {
-			$request = wp_remote_get( $url, $args );
+			$request = wp_safe_remote_get( $url, $args );
 			return self::request( $request );
 		}
 
@@ -430,7 +429,6 @@ if ( ! class_exists( 'CartFlows_API' ) ) :
 				'count'   => wp_remote_retrieve_header( $request, 'x-wp-total' ),
 			);
 		}
-
 	}
 
 	/**

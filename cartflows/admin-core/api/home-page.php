@@ -102,7 +102,14 @@ class HomePage extends ApiBase {
 	 */
 	public function get_home_page_settings( $request ) {
 
-		$boxes_settings = AdminHelper::get_admin_settings_option( $request['wcf_box_id'] );
+		$box_id = sanitize_text_field( $request['wcf_box_id'] );
+
+		// Allowlist: only permit CartFlows-specific option keys to prevent arbitrary option reads.
+		if ( empty( $box_id ) || ( 0 !== strpos( $box_id, '_cartflows_' ) && 0 !== strpos( $box_id, 'cartflows_' ) && 0 !== strpos( $box_id, 'wcf-' ) && 0 !== strpos( $box_id, 'wcf_' ) ) ) {
+			return new \WP_Error( 'cartflows_invalid_box_id', __( 'Invalid box ID.', 'cartflows' ), array( 'status' => 400 ) );
+		}
+
+		$boxes_settings = AdminHelper::get_admin_settings_option( $box_id );
 
 		$home_page_settings = array(
 			'is_hidden' => $boxes_settings,

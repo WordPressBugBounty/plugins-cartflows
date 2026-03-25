@@ -46,7 +46,6 @@ class Cartflows_Admin_Report_Emails {
 		add_action( 'cartflows_send_report_summary_email', array( $this, 'send_weekly_report_email' ) );
 
 		add_filter( 'admin_init', array( $this, 'unsubscribe_cartflows_weekly_emails' ), 10 );
-
 	}
 
 	/**
@@ -118,8 +117,15 @@ class Cartflows_Admin_Report_Emails {
 		$unsubscribe = filter_input( INPUT_GET, 'unsubscribe_weekly_email', FILTER_VALIDATE_BOOLEAN );
 		$page        = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$email       = filter_input( INPUT_GET, 'email', FILTER_SANITIZE_EMAIL );
+		$token       = isset( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( $unsubscribe && 'cartflows' === $page && ! empty( $email ) && is_user_logged_in() && current_user_can( 'cartflows_manage_settings' ) ) {
+
+			// Verify unsubscribe token to prevent CSRF.
+			$expected_token = wp_hash( 'cartflows_unsubscribe_' . $email );
+			if ( ! hash_equals( $expected_token, $token ) ) {
+				wp_die( esc_html__( 'Invalid unsubscribe link.', 'cartflows' ), esc_html__( 'Error', 'cartflows' ), array( 'response' => 403 ) );
+			}
 
 			$email_list = get_option( 'cartflows_stats_report_email_ids', false );
 
@@ -128,7 +134,7 @@ class Cartflows_Admin_Report_Emails {
 
 				$email_list = array_filter(
 					$email_list,
-					function( $e ) use ( $email ) {
+					function ( $e ) use ( $email ) {
 						return ( $e !== $email );
 					}
 				);
@@ -141,7 +147,6 @@ class Cartflows_Admin_Report_Emails {
 
 			wp_die( esc_html__( 'You have successfully unsubscribed from our weekly emails list.', 'cartflows' ), esc_html__( 'Unsubscribed', 'cartflows' ) );
 		}
-
 	}
 
 	/**
@@ -172,7 +177,6 @@ class Cartflows_Admin_Report_Emails {
 	public function get_email_subject() {
 
 		return esc_html__( 'Here’s how your store performed last week!', 'cartflows' );
-
 	}
 
 	/**
@@ -185,11 +189,13 @@ class Cartflows_Admin_Report_Emails {
 	public function get_email_content( $stats, $user_name, $email_id ) {
 
 		$cf_logo            = CARTFLOWS_URL . 'assets/images/cartflows-email-logo.png';
+		$unsubscribe_token  = wp_hash( 'cartflows_unsubscribe_' . $email_id );
 		$unsubscribe_link   = add_query_arg(
 			array(
 				'page'                     => 'cartflows',
 				'unsubscribe_weekly_email' => true,
 				'email'                    => $email_id,
+				'token'                    => $unsubscribe_token,
 			),
 			admin_url( 'admin.php' )
 		);

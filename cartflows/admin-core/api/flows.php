@@ -101,9 +101,11 @@ class Flows extends ApiBase {
 			$args['paged'] = absint( $request->get_param( 'paged' ) );
 		}
 
-		if ( isset( $_REQUEST['mode'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$mode = $request->get_param( 'mode' );
 
-			if ( 'sandbox' === $_REQUEST['mode'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( null !== $mode ) {
+
+			if ( 'sandbox' === $mode ) {
 				$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					array(
 						'key'   => 'wcf-testing',
@@ -136,24 +138,31 @@ class Flows extends ApiBase {
 
 				$status = $request->get_param( 'post_status' );
 
+				// Allowlist of valid post statuses for flows.
+				$allowed_statuses = array( 'active', 'inactive', 'publish', 'draft', 'pending' );
+
 				if ( 'active' === $status ) {
 					$args['post_status'] = 'publish';
 				} elseif ( 'inactive' === $status ) {
 					$args['post_status'] = 'draft';
-				} else {
-					$args['post_status'] = sanitize_text_field( wp_unslash( $status ) );
+				} elseif ( in_array( $status, $allowed_statuses, true ) ) {
+					$args['post_status'] = sanitize_text_field( $status );
 				}
+				// Invalid statuses are silently ignored, falling through to the default below.
 			}
 
-			if ( null === $request->get_param( 'post_status' ) ) {
+			if ( ! isset( $args['post_status'] ) || null === $request->get_param( 'post_status' ) ) {
 				$args['post_status'] = 'publish';
 			}
 
-			if ( isset( $_REQUEST['start_date'] ) & isset( $_REQUEST['end_date'] ) ) { //phpcs:ignore
+			$start_date = $request->get_param( 'start_date' );
+			$end_date   = $request->get_param( 'end_date' );
+
+			if ( ! empty( $start_date ) && ! empty( $end_date ) ) {
 				$args['date_query'] = array(
 					array(
-						'after'     => sanitize_text_field( wp_unslash( $_REQUEST['start_date'] . ' 00:00:00' ) ), //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-						'before'    => sanitize_text_field( wp_unslash( $_REQUEST['end_date'] . ' 23:59:59' ) ), //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						'after'     => sanitize_text_field( $start_date ) . ' 00:00:00',
+						'before'    => sanitize_text_field( $end_date ) . ' 23:59:59',
 						'inclusive' => true,
 						'column'    => 'post_date',
 					),

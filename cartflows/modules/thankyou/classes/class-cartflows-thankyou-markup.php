@@ -98,7 +98,6 @@ class Cartflows_Thankyou_Markup {
 			add_filter( 'cartflows_thankyou_template_data', array( $this, 'add_template_data' ), 10, 1 );
 			add_action( 'wp_head', array( $this, 'disable_oxygen_on_instant_checkout_style' ) );
 		}
-
 	}
 
 	/**
@@ -167,7 +166,8 @@ class Cartflows_Thankyou_Markup {
 			return;
 		}
 
-		if ( ! apply_filters( 'cartflows_thankyou_direct_access', wcf()->flow->is_flow_testmode(), $thank_you_id ) && _is_wcf_thankyou_type() && ( ! is_user_logged_in() || ! current_user_can( 'cartflows_manage_flows_steps' ) ) ) {
+		$is_admin = is_user_logged_in() && current_user_can( 'cartflows_manage_flows_steps' );
+		if ( _is_wcf_thankyou_type() && ! $is_admin && ! apply_filters( 'cartflows_thankyou_direct_access', false, $thank_you_id ) ) {
 			//phpcs:disable WordPress.Security.NonceVerification.Recommended
 			if ( isset( $_GET['wcf-key'] ) && isset( $_GET['wcf-order'] ) ) {
 
@@ -265,12 +265,10 @@ class Cartflows_Thankyou_Markup {
 					if ( ! $order ) {
 						$order = false;
 					}
-				} else {
-					if ( $is_instant_checkout ) {
+				} elseif ( $is_instant_checkout ) {
 						return $this->render_empty_cart_message_block( $thank_you_step_id );
-					} else {
-						return '<p class="woocommerce-notice">' . __( 'No completed or processing order found to show the order details form demo.', 'cartflows' ) . '</p>';
-					}
+				} else {
+					return '<p class="woocommerce-notice">' . __( 'No completed or processing order found to show the order details form demo.', 'cartflows' ) . '</p>';
 				}
 			} else {
 				if ( ! isset( $_GET[ $id_param ] ) ) {
@@ -596,7 +594,6 @@ class Cartflows_Thankyou_Markup {
 		}
 
 		return $output;
-
 	}
 
 	/**
@@ -629,10 +626,9 @@ class Cartflows_Thankyou_Markup {
 
 		if ( $post ) {
 			$thank_you_id = $post->ID;
-		} else {
-			if ( is_admin() && isset( $_POST['id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		} elseif ( is_admin() && isset( $_POST['id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$thank_you_id = intval( $_POST['id'] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
-			}
+
 		}
 
 		$new_text = wcf()->options->get_thankyou_meta_value( $thank_you_id, 'wcf-tq-text' );
@@ -679,7 +675,6 @@ class Cartflows_Thankyou_Markup {
 		$output                     .= '</div>';
 
 		return $output;
-
 	}
 
 	/**

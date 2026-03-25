@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 2.2.3
+Stable tag: 2.2.4
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ CartFlows is the #1 WordPress funnel builder and WooCommerce checkout plugin—t
 
 Your WooCommerce checkout should do more than just work—it should **convert**. CartFlows replaces the clunky default WooCommerce checkout with a sleek, distraction-free, conversion-optimized experience that helps you sell more and maximize average order value (AOV) with every transaction.
 
-[Try the live demo of CartFlows](https://zipwp.org/plugins/cartflows/)
+[Try the live demo of CartFlows](https://try.new/cartflows)
 
 ### The Affordable ClickFunnels Alternative Built for WordPress
 
@@ -403,6 +403,12 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 2.2.4 - Wednesday, 25th March 2026 =
+* New: Added Power Coupons to the Addons page for quick access and activation.
+* New: Introduced WordPress Abilities API integration to enable AI-powered automation for CartFlows.
+* Security Fix: Hardened the security of the plugin.
+* Fix: Fixed Store Checkout setting not persisting on WordPress Multisite subsites.
 
 = Version 2.2.3 - Tuesday, 10th March 2026 =
 * New: Added a new layout for the Thank You page.

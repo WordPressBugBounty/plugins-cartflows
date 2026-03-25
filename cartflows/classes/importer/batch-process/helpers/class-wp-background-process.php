@@ -296,7 +296,10 @@ if ( ! class_exists( 'WP_Background_Process' ) ) {
 
 			$batch       = new stdClass();
 			$batch->key  = $query->$column;
-			$batch->data = maybe_unserialize( $query->$value_column );
+			// Security: Using unserialize with allowed_classes=>false to prevent object injection.
+			$batch->data = is_serialized( $query->$value_column, true )
+				? unserialize( $query->$value_column, array( 'allowed_classes' => false ) ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, PHPCompatibility.FunctionUse.NewFunctionParameters.unserialize_optionsFound
+				: $query->$value_column;
 
 			return $batch;
 		}

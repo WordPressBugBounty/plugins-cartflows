@@ -116,7 +116,7 @@ class Cartflows_Flow_Post_Type {
 			'labels'              => $labels,
 			'show_in_menu'        => false,
 			'public'              => false,  // it's not public, not own permalink.
-			'publicly_queryable'  => true,  // you should be able to query it.
+			'publicly_queryable'  => false, // Prevent unauthenticated flow enumeration.
 			'show_ui'             => true,
 			'query_var'           => true,
 			'can_export'          => true,

@@ -88,7 +88,12 @@ class StepData extends ApiBase {
 	 */
 	public function get_item( $request ) {
 
-		$step_id = $request->get_param( 'id' );
+		$step_id = absint( $request->get_param( 'id' ) );
+
+		// Validate the post type to prevent accessing non-step posts.
+		if ( CARTFLOWS_STEP_POST_TYPE !== get_post_type( $step_id ) ) {
+			return new \WP_Error( 'cartflows_invalid_step', __( 'Invalid step ID.', 'cartflows' ), array( 'status' => 404 ) );
+		}
 
 		$meta_options = array();
 		$meta_options = AdminHelper::get_step_meta_options( $step_id );
@@ -146,6 +151,4 @@ class StepData extends ApiBase {
 
 		return true;
 	}
-
-
 }

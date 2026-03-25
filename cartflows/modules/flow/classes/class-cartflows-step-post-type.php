@@ -140,7 +140,8 @@ class Cartflows_Step_Post_Type {
 				}
 				return $template;
 			} else {
-				echo wp_kses_post( $file );
+				// File path intentionally not disclosed for security.
+				return $template;
 			}
 		}
 
@@ -190,7 +191,7 @@ class Cartflows_Step_Post_Type {
 			'show_ui'             => true,
 			'show_in_menu'        => false,
 			'show_in_admin_bar'   => true,
-			'show_in_rest'        => true,
+			'show_in_rest'        => current_user_can( 'edit_posts' ),
 			'supports'            => array( 'title', 'editor', 'elementor', 'revisions' ),
 			'capability_type'     => 'post',
 			'capabilities'        => array(

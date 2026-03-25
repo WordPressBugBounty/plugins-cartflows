@@ -98,6 +98,32 @@ class Cartflows_Tracking {
 	}
 
 	/**
+	 * Validate order access by checking wcf-key against order key.
+	 *
+	 * Prevents order data leakage via order ID enumeration by ensuring
+	 * the request includes a valid order key that matches the order.
+	 *
+	 * @param int $order_id The order ID to validate.
+	 * @return bool True if order access is valid, false otherwise.
+	 */
+	private function is_valid_order_access( $order_id ) {
+		//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['wcf-key'] ) ) {
+			return false;
+		}
+
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return false;
+		}
+
+		//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$order_key = sanitize_text_field( wp_unslash( $_GET['wcf-key'] ) );
+
+		return $order->get_order_key() === $order_key;
+	}
+
+	/**
 	 * Add the required nonce for tracking.
 	 *
 	 * @param array $vars localised vars.
@@ -241,14 +267,17 @@ class Cartflows_Tracking {
 
 		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$fb_pixel_settings['facebook_pixel_purchase_complete'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			$order_id         = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$purchase_details = $this->prepare_purchase_data_fb_response( $order_id );
-			if ( ! empty( $purchase_details ) ) {
-				$purchase_details = wp_json_encode( $purchase_details );
-				$event_script    .= "
-				<script type='text/javascript'>
-					fbq( 'track', 'Purchase', $purchase_details );
-				</script>";
+			$order_id = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			if ( $this->is_valid_order_access( $order_id ) ) {
+				$purchase_details = $this->prepare_purchase_data_fb_response( $order_id );
+				if ( ! empty( $purchase_details ) ) {
+					$purchase_details = wp_json_encode( $purchase_details );
+					$event_script    .= "
+					<script type='text/javascript'>
+						fbq( 'track', 'Purchase', $purchase_details );
+					</script>";
+				}
 			}
 		}
 
@@ -345,7 +374,6 @@ class Cartflows_Tracking {
 		$params['content_category'] = substr( $product_data['category_names'], 2 );
 		$params['contents']         = wp_json_encode( $product_data['cart_contents'] );
 		$params['currency']         = get_woocommerce_currency();
-		$params['user_roles']       = implode( ', ', wp_get_current_user()->roles );
 
 		if ( 'add_to_cart' !== $event ) {
 			$params['num_items'] = $cart_items_count;
@@ -510,16 +538,18 @@ class Cartflows_Tracking {
 
 			$order_id = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			$purchase_details = $this->get_ga_purchase_transactions_data( $order_id );
+			if ( $this->is_valid_order_access( $order_id ) ) {
+				$purchase_details = $this->get_ga_purchase_transactions_data( $order_id );
 
-			if ( ! empty( $purchase_details ) ) {
+				if ( ! empty( $purchase_details ) ) {
 
-				$purchase_data = wp_json_encode( $purchase_details );
+					$purchase_data = wp_json_encode( $purchase_details );
 
-				$event_script .= "
-					<script type='text/javascript'>
-					gtag( 'event', 'purchase', $purchase_data );
-			 		</script>";
+					$event_script .= "
+						<script type='text/javascript'>
+						gtag( 'event', 'purchase', $purchase_data );
+						</script>";
+				}
 			}
 		}
 
@@ -1034,14 +1064,17 @@ class Cartflows_Tracking {
 		}
 
 		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$tik_pixel_settings['enable_tiktok_purchase_event'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$order_id         = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$purchase_details = $this->prepare_purchase_data_tiktok_response( $order_id );
-			if ( ! empty( $purchase_details ) ) {
-				$purchase_details = wp_json_encode( $purchase_details );
-				$event_script    .= "
-				<script type='text/javascript'>
-					ttq.instance('" . esc_js( $tiktok_id ) . "').track( 'CompletePayment', $purchase_details );
-				</script>";
+			$order_id = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			if ( $this->is_valid_order_access( $order_id ) ) {
+				$purchase_details = $this->prepare_purchase_data_tiktok_response( $order_id );
+				if ( ! empty( $purchase_details ) ) {
+					$purchase_details = wp_json_encode( $purchase_details );
+					$event_script    .= "
+					<script type='text/javascript'>
+						ttq.instance('" . esc_js( $tiktok_id ) . "').track( 'CompletePayment', $purchase_details );
+					</script>";
+				}
 			}
 		}
 
@@ -1127,16 +1160,18 @@ class Cartflows_Tracking {
 
 			$order_id = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			$purchase_details = $this->get_gads_purchase_transactions_data( $order_id );
+			if ( $this->is_valid_order_access( $order_id ) ) {
+				$purchase_details = $this->get_gads_purchase_transactions_data( $order_id );
 
-			if ( ! empty( $purchase_details ) ) {
+				if ( ! empty( $purchase_details ) ) {
 
-				$purchase_data = wp_json_encode( $purchase_details );
+					$purchase_data = wp_json_encode( $purchase_details );
 
-				$event_script .= "
-					<script type='text/javascript'>
-					gtag( 'event', 'purchase', $purchase_data );
-			 		</script>";
+					$event_script .= "
+						<script type='text/javascript'>
+						gtag( 'event', 'purchase', $purchase_data );
+						</script>";
+				}
 			}
 		}
 
@@ -1153,7 +1188,8 @@ class Cartflows_Tracking {
 			$identify_data = $this->prepare_identity_data_for_pixel_events();
 
 			// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
-			$pinterest_consent_cookie = isset( $_COOKIE[ CARTFLOWS_PINTEREST_CONSENT ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ CARTFLOWS_PINTEREST_CONSENT ] ) ) : 'false';
+			$raw_consent              = isset( $_COOKIE[ CARTFLOWS_PINTEREST_CONSENT ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ CARTFLOWS_PINTEREST_CONSENT ] ) ) : 'false';
+			$pinterest_consent_cookie = ( 'true' === $raw_consent ) ? 'true' : 'false';
 			$pinterest_id             = isset( self::$pin_tag_settings['pinterest_tag_id'] ) ? trim( sanitize_text_field( self::$pin_tag_settings['pinterest_tag_id'] ) ) : '';
 			$pinterest_email          = isset( $identify_data['email'] ) ? $identify_data['email'] : '';
 
@@ -1248,16 +1284,19 @@ class Cartflows_Tracking {
 		}
 
 		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$pin_tag_settings['enable_pinterest_purchase_event'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$order_id         = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$purchase_details = $this->prepare_purchase_data_pinterest_response( $order_id );
-			if ( ! empty( $purchase_details ) ) {
-				$purchase_details = wp_json_encode( $purchase_details );
-				$event_script    .= "
-				<script type='text/javascript'>
-					if (typeof pintrk !== 'undefined') {
-						pintrk('track', 'Checkout', $purchase_details );
-					}
-				</script>";
+			$order_id = intval( $_GET['wcf-order'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			if ( $this->is_valid_order_access( $order_id ) ) {
+				$purchase_details = $this->prepare_purchase_data_pinterest_response( $order_id );
+				if ( ! empty( $purchase_details ) ) {
+					$purchase_details = wp_json_encode( $purchase_details );
+					$event_script    .= "
+					<script type='text/javascript'>
+						if (typeof pintrk !== 'undefined') {
+							pintrk('track', 'Checkout', $purchase_details );
+						}
+					</script>";
+				}
 			}
 		}
 
@@ -1360,7 +1399,6 @@ class Cartflows_Tracking {
 	public static function format_number( $price ) {
 
 		return number_format( floatval( $price ), wc_get_price_decimals(), '.', '' );
-
 	}
 
 	/**
@@ -1419,14 +1457,13 @@ class Cartflows_Tracking {
 	 * @return void
 	 */
 	public function trigger_gads_viewcontent_events() {
-		$gads_tracking_id      = sanitize_text_field( self::$gads_settings['google_ads_id'] );
-		$gads_conversion_label = sanitize_text_field( self::$gads_settings['google_ads_label'] );
+		$gads_tracking_id      = esc_js( sanitize_text_field( self::$gads_settings['google_ads_id'] ) );
+		$gads_conversion_label = esc_js( sanitize_text_field( self::$gads_settings['google_ads_label'] ) );
 		$script                = "<script type='text/javascript'>
-					gtag( 'event', 'page_view',{ 'send_to': '.$gads_tracking_id.'/'.$gads_conversion_label.'} );
+					gtag( 'event', 'page_view',{ 'send_to': '" . $gads_tracking_id . '/' . $gads_conversion_label . "'} );
 			 		</script>";
 
 		echo $script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
 	}
 
 	/**
@@ -1456,10 +1493,11 @@ class Cartflows_Tracking {
 			$common_data['user_hashed_phone_number'] = $identify_data['phone_number'];
 		}
 
-		// Add uuid_c1 value only if the Snapchat cookie '_scid' is available.
+		// Add uuid_c1 value only if the Snapchat cookie '_scid' is available and valid UUID.
 		if ( isset( $_COOKIE['_scid'] ) ) {
 			// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
-			$common_data['uuid_c1'] = sanitize_text_field( wp_unslash( $_COOKIE['_scid'] ) );
+			$scid_value             = sanitize_text_field( wp_unslash( $_COOKIE['_scid'] ) );
+			$common_data['uuid_c1'] = $scid_value;
 		}
 
 		// Add currency if available.
@@ -1573,7 +1611,7 @@ class Cartflows_Tracking {
 					$item_category = implode(
 						',',
 						array_map(
-							function( $item ) {
+							function ( $item ) {
 								return wp_strip_all_tags( wc_get_product_category_list( $item['product_id'] ) );
 							},
 							$items
@@ -1594,7 +1632,7 @@ class Cartflows_Tracking {
 				$item_category = implode(
 					',',
 					array_map(
-						function( $item ) {
+						function ( $item ) {
 							return wp_strip_all_tags( wc_get_product_category_list( $item['product_id'] ) );
 						},
 						$items
@@ -1638,7 +1676,7 @@ class Cartflows_Tracking {
 		$item_category = implode(
 			',',
 			array_map(
-				function( $item ) {
+				function ( $item ) {
 					return wp_strip_all_tags( wc_get_product_category_list( $item['product_id'] ) );
 				},
 				$items
@@ -1701,49 +1739,55 @@ class Cartflows_Tracking {
 
 		// Check if the order ID is present in the URL and if Snapchat purchase event is enabled.
 		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$snapchat_settings['enable_snapchat_purchase_event'] ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$order_id         = intval( $_GET['wcf-order'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$purchase_details = $this->prepare_purchase_data_snapchat_response( $order_id );
-			if ( ! empty( $purchase_details ) ) {
-				$purchase_details = wp_json_encode( $purchase_details );
-				$event_script    .= "
-				<script type='text/javascript'>
-					snaptr('track', 'PURCHASE', $purchase_details);
-				</script>";
+			$order_id = intval( $_GET['wcf-order'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			if ( $this->is_valid_order_access( $order_id ) ) {
+				$purchase_details = $this->prepare_purchase_data_snapchat_response( $order_id );
+				if ( ! empty( $purchase_details ) ) {
+					$purchase_details = wp_json_encode( $purchase_details );
+					$event_script    .= "
+					<script type='text/javascript'>
+						snaptr('track', 'PURCHASE', $purchase_details);
+					</script>";
+				}
 			}
 		}
 
 		// Check if the order ID is present in the URL and if Snapchat subscribe event is enabled.
 		if ( isset( $_GET['wcf-order'] ) && 'enable' === self::$snapchat_settings['enable_snapchat_subscribe_event'] ) {//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$order_id                = intval( $_GET['wcf-order'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$order                   = wc_get_order( $order_id );
-			$is_subscription_tracked = $order && $order->get_meta( '_wcf_snapchat_is_subscription_tracked' );
+			$order_id = intval( $_GET['wcf-order'] );//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			if ( ! $is_subscription_tracked && function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
-				// Get all subscriptions related to this order.
-				$subscriptions = function_exists( 'wcs_get_subscriptions_for_order' ) ? wcs_get_subscriptions_for_order( $order_id ) : null;
+			if ( $this->is_valid_order_access( $order_id ) ) {
+				$order                   = wc_get_order( $order_id );
+				$is_subscription_tracked = $order && $order->get_meta( '_wcf_snapchat_is_subscription_tracked' );
 
-				if ( ! empty( $subscriptions ) ) {
-					$subscription_data = $this->prepare_common_data_snapchat_response();
+				if ( ! $is_subscription_tracked && function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
+					// Get all subscriptions related to this order.
+					$subscriptions = function_exists( 'wcs_get_subscriptions_for_order' ) ? wcs_get_subscriptions_for_order( $order_id ) : null;
 
-					// Set customer ID if available.
-					if ( $order->get_customer_id() ) {
-						$subscription_data['uuid_c1'] = $order->get_customer_id();
+					if ( ! empty( $subscriptions ) ) {
+						$subscription_data = $this->prepare_common_data_snapchat_response();
+
+						// Set customer ID if available.
+						if ( $order->get_customer_id() ) {
+							$subscription_data['uuid_c1'] = $order->get_customer_id();
+						}
+
+						$subscription_data['price']          = $order->get_total();
+						$subscription_data['transaction_id'] = $order_id;
+						$subscription_data['currency']       = $order->get_currency();
+
+						$subscription_data = wp_json_encode( $subscription_data );
+
+						$event_script .= "
+						<script type='text/javascript'>
+							snaptr('track', 'SUBSCRIBE', $subscription_data);
+						</script>";
+
+						// Mark the order as tracked for this event.
+						$order->update_meta_data( '_wcf_snapchat_is_subscription_tracked', true );
+						$order->save();
 					}
-
-					$subscription_data['price']          = $order->get_total();
-					$subscription_data['transaction_id'] = $order_id;
-					$subscription_data['currency']       = $order->get_currency();
-
-					$subscription_data = wp_json_encode( $subscription_data );
-
-					$event_script .= "
-					<script type='text/javascript'>
-						snaptr('track', 'SUBSCRIBE', $subscription_data);
-					</script>";
-
-					// Mark the order as tracked for this event.
-					$order->update_meta_data( '_wcf_snapchat_is_subscription_tracked', true );
-					$order->save();
 				}
 			}
 		}
@@ -1752,7 +1796,6 @@ class Cartflows_Tracking {
 
 		echo $event_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
-
 }
 /**
  *  Kicking this off by calling 'get_instance()' method

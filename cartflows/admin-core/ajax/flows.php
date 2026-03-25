@@ -277,7 +277,11 @@ class Flows extends AjaxBase {
 
 		$flow_ids = isset( $_POST['flow_ids'] ) ? array_map( 'intval', explode( ',', sanitize_text_field( $_POST['flow_ids'] ) ) ) : array();
 
-		$new_status = isset( $_POST['new_status'] ) ? sanitize_text_field( wp_unslash( $_POST['new_status'] ) ) : '';
+		$new_status       = isset( $_POST['new_status'] ) ? sanitize_text_field( wp_unslash( $_POST['new_status'] ) ) : '';
+		$allowed_statuses = array( 'publish', 'draft', 'trash', 'pending' );
+		if ( ! in_array( $new_status, $allowed_statuses, true ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid post status.', 'cartflows' ) ) );
+		}
 
 		foreach ( $flow_ids as $key => $flow_id ) {
 
@@ -918,7 +922,11 @@ class Flows extends AjaxBase {
 			wp_send_json_error( $response_data );
 		}
 
-		$new_status = isset( $_POST['new_status'] ) ? sanitize_text_field( wp_unslash( $_POST['new_status'] ) ) : '';
+		$new_status       = isset( $_POST['new_status'] ) ? sanitize_text_field( wp_unslash( $_POST['new_status'] ) ) : '';
+		$allowed_statuses = array( 'publish', 'draft', 'trash', 'pending' );
+		if ( ! in_array( $new_status, $allowed_statuses, true ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid post status.', 'cartflows' ) ) );
+		}
 
 		/* Get Steps */
 		$steps = get_post_meta( $flow_id, 'wcf-steps', true );
@@ -1005,7 +1013,7 @@ class Flows extends AjaxBase {
 		$common_settings['global_checkout']          = $checkout_id;
 		$common_settings['override_global_checkout'] = $override_status;
 
-		update_option( '_cartflows_common', $common_settings );
+		AdminHelper::update_admin_settings_option( '_cartflows_common', $common_settings, false );
 
 		do_action( 'cartflows_after_save_store_checkout' );
 

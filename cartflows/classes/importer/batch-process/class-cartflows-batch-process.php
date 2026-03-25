@@ -183,7 +183,7 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 			$is_fresh_site = get_site_option( 'cartflows-fresh-site', '' );
 
 			// Process initially for the fresh user.
-			if ( isset( $_GET['reset'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['reset'] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'cartflows_batch_reset' ) ) {
 
 				// Process import.
 				$this->process_batch();
@@ -320,7 +320,10 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 		 */
 		public static function get_svg_dimensions( $svg ) {
 
-			$svg = simplexml_load_file( $svg );
+			// Security: Disable external entity loading to prevent XXE attacks.
+			$previous_value = libxml_disable_entity_loader( true ); // phpcs:ignore Generic.PHP.DeprecatedFunctions.Deprecated
+			$svg            = simplexml_load_file( $svg, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOENT );
+			libxml_disable_entity_loader( $previous_value ); // phpcs:ignore Generic.PHP.DeprecatedFunctions.Deprecated
 
 			if ( false === $svg ) {
 				$width  = '0';
@@ -527,7 +530,6 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 				set_transient( 'cartflows-cron-test-ok', 1, 3600 );
 				return true;
 			}
-
 		}
 
 		/**
@@ -661,7 +663,6 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 				// Dispatch Queue.
 				self::$process_site_importer->save()->dispatch();
 			}
-
 		}
 
 		/**
@@ -688,7 +689,6 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 				delete_transient( 'cartflows_is_wcf_template_import' ); // Delete the option if $bool is false.
 			}
 		}
-	
 	}
 
 	/**

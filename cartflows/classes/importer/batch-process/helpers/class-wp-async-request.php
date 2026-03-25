@@ -64,7 +64,6 @@ if ( ! class_exists( 'WP_Async_Request' ) ) {
 			$this->identifier = $this->prefix . '_' . $this->action;
 
 			add_action( 'wp_ajax_' . $this->identifier, array( $this, 'maybe_handle' ) );
-			add_action( 'wp_ajax_nopriv_' . $this->identifier, array( $this, 'maybe_handle' ) );
 		}
 
 		/**

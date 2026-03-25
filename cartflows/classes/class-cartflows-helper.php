@@ -393,7 +393,7 @@ class Cartflows_Helper {
 				)
 			);
 
-			$common = self::get_admin_settings_option( '_cartflows_common', false, true );
+			$common = self::get_admin_settings_option( '_cartflows_common', false, false );
 
 			$common = wp_parse_args( $common, $common_default );
 
@@ -1293,6 +1293,51 @@ class Cartflows_Helper {
 			'cartflows_admin_exclude_import_meta_keys',
 			$meta_keys
 		);
+	}
+
+	/**
+	 * Get allowed meta key prefixes for import.
+	 *
+	 * Security: Only meta keys matching these prefixes are permitted during template import.
+	 * This prevents supply-chain attacks from writing arbitrary meta keys.
+	 *
+	 * @since 2.2.2
+	 * @return array List of allowed meta key prefixes.
+	 */
+	public function get_allowed_import_meta_key_prefixes() {
+		$prefixes = array(
+			'wcf-',
+			'wcf_',
+			'cartflows_',
+			'_wcf-',
+			'_wcf_',
+			'_cartflows_',
+			'_elementor_',
+			'_fl_builder_',
+			'_wp_page_template',
+			'_thumbnail_id',
+		);
+
+		return apply_filters( 'cartflows_allowed_import_meta_key_prefixes', $prefixes );
+	}
+
+	/**
+	 * Check if a meta key is allowed for import.
+	 *
+	 * @since 2.2.2
+	 * @param string $meta_key The meta key to check.
+	 * @return bool True if the meta key is allowed.
+	 */
+	public function is_meta_key_allowed_for_import( $meta_key ) {
+		$allowed_prefixes = $this->get_allowed_import_meta_key_prefixes();
+
+		foreach ( $allowed_prefixes as $prefix ) {
+			if ( 0 === strpos( $meta_key, $prefix ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

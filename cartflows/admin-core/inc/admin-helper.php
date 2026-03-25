@@ -189,7 +189,7 @@ class AdminHelper {
 			)
 		);
 
-		$common = self::get_admin_settings_option( '_cartflows_common', false, true );
+		$common = self::get_admin_settings_option( '_cartflows_common', false, false );
 
 		$common = wp_parse_args( $common, $common_default );
 
@@ -1092,10 +1092,16 @@ class AdminHelper {
 		$where = self::get_items_query_where( $conditions );
 
 		if ( ! empty( $flow_id ) ) {
-			$where .= " AND tb2.meta_value = '" . $flow_id . "'";
+			$where .= $wpdb->prepare( ' AND tb2.meta_value = %s', $flow_id );
 		}
 
-		$where .= ' AND ( tb1.' . $order_date_key . " BETWEEN IF (tb2.meta_key='wcf-analytics-reset-date'>'" . $start_date . "', tb2.meta_key, '" . $start_date . "')  AND '" . $end_date . "' )";
+		// Security: Use $wpdb->prepare() for date parameters to prevent SQL injection.
+		$where .= $wpdb->prepare(
+			' AND ( tb1.' . $order_date_key . " BETWEEN IF (tb2.meta_key='wcf-analytics-reset-date'>%s, tb2.meta_key, %s)  AND %s )", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$start_date,
+			$start_date,
+			$end_date
+		);
 		$where .= " AND ( ( tb2.meta_key = '_wcf_flow_id' ) OR ( tb2.meta_key = '_cartflows_parent_flow_id' ) )";
 		$where .= ' AND tb1.' . $order_status_key . " IN ( 'wc-completed', 'wc-processing' )";
 
