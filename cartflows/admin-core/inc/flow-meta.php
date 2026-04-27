@@ -127,9 +127,8 @@ class FlowMeta {
 						'name'         => 'instant-layout-style',
 						'value'        => get_post_meta( $flow_id, 'instant-layout-style', true ),
 						'desc'         => sprintf(
-							/* translators: %1$s: Break line, %2$s: link html Start, %3$s: Link html end. */
-							__( 'This layout will replace the default page template for the Checkout, Upsell/Downsell and Thank You steps. You can customize %1$sthe design in the Checkout, Upsell/Downsell and Thank You step\'s settings, under the design tab. %2$sRead More.%3$s', 'cartflows' ),
-							'<br>',
+							/* translators: %1$s: link html Start, %2$s: Link html end. */
+							__( 'This layout will replace the default page template for the Checkout, Upsell/Downsell and Thank You steps. You can customize the design in the Checkout, Upsell/Downsell and Thank You step\'s settings, under the design tab. %1$sRead More.%2$s', 'cartflows' ),
 							'<a href="https://cartflows.com/docs/cartflows-instant-checkout-layout/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">',
 							'</a>'
 						),
@@ -176,7 +175,7 @@ class FlowMeta {
 						'name'          => 'wcf-instant-checkout-header-logo-width',
 						'placeholder'   => '130px',
 						'value'         => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-width' ),
-						'display_align' => 'vertical',
+						'display_align' => 'horizontal',
 						'conditions'    => array(
 							'fields' => array(
 								array(
@@ -193,7 +192,7 @@ class FlowMeta {
 						'name'          => 'wcf-instant-checkout-header-logo-height',
 						'placeholder'   => '40px',
 						'value'         => wcf()->options->get_flow_meta_value( $flow_id, 'wcf-instant-checkout-header-logo-height' ),
-						'display_align' => 'vertical',
+						'display_align' => 'horizontal',
 						'conditions'    => array(
 							'fields' => array(
 								array(

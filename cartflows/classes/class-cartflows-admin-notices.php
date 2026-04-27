@@ -82,6 +82,32 @@ class Cartflows_Admin_Notices {
 		add_action( 'wp_ajax_cartflows_disable_weekly_report_email_notice', array( $this, 'disable_weekly_report_email_notice' ) );
 		add_action( 'wp_ajax_cartflows_snooze_script_migration', array( $this, 'snooze_script_migration_notice' ) );
 		add_action( 'wp_ajax_cartflows_dismiss_script_migration_complete_notice', array( $this, 'dismiss_script_migration_complete_notice' ) );
+		add_action( 'wp_ajax_cartflows_dismiss_new_ui_notice', array( $this, 'dismiss_new_ui_notice' ) );
+	}
+
+	/**
+	 * Persist the "Switch to New UI" dismissal for the current user.
+	 *
+	 * Writes the same `notice-dismissed` user_meta key that Astra_Notices uses
+	 * so the WP admin_notices banner and the React-shell banner stay in sync —
+	 * dismissing either one hides both on the next load.
+	 *
+	 * @since 2.2.4
+	 * @return void
+	 */
+	public function dismiss_new_ui_notice() {
+
+		if ( ! current_user_can( 'cartflows_manage_settings' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'cartflows' ) ) );
+		}
+
+		if ( ! check_ajax_referer( 'cartflows_dismiss_new_ui_notice', 'security', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'cartflows' ) ) );
+		}
+
+		update_user_meta( get_current_user_id(), 'cartflows-switch-to-new-ui-notice', 'notice-dismissed' );
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -249,11 +275,11 @@ class Cartflows_Admin_Notices {
 			array(
 				'id'                   => 'cartflows-5-start-notice',
 				'type'                 => 'info',
-				'class'                => 'cartflows-5-star',
+				'class'                => 'cartflows-5-star cartflows-admin-notice',
 				'show_if'              => true,
 				/* translators: %1$s white label plugin name and %2$s deactivation link */
 				'message'              => sprintf(
-					'<div class="notice-image" style="display: flex;">
+					'<div class="notice-image" style="display: block;">
                         <img src="%1$s" class="custom-logo" alt="CartFlows Icon" itemprop="logo" style="max-width: 90px; border-radius: 50px;"></div>
                         <div class="notice-content">
                             <div class="notice-heading">
@@ -292,6 +318,48 @@ class Cartflows_Admin_Notices {
 				'display-notice-after' => ( 2 * WEEK_IN_SECONDS ), // Display notice after 2 weeks.
 			)
 		);
+
+		// CartFlows 3.0 — soft notice inviting legacy users to opt into the new admin UI.
+		// Registered through Astra_Notices so it inherits the standard notice
+		// design, dismiss handling and per-user storage the rest of CartFlows uses.
+		if ( $this->is_new_ui_notice_visible() ) {
+			$this->enqueue_new_ui_notice_assets();
+
+			Astra_Notices::add_notice(
+				array(
+					'id'             => 'cartflows-switch-to-new-ui-notice',
+					'type'           => 'info',
+					'class'          => 'cartflows-switch-ui-notice cartflows-admin-notice',
+					'show_if'        => true,
+					'is_dismissible' => true,
+					'priority'       => 5,
+					'capability'     => 'cartflows_manage_settings',
+					'message'        => sprintf(
+						'<div class="notice-image" style="display: block;">
+							<img src="%1$s" class="custom-logo" alt="CartFlows Icon" itemprop="logo" style="max-width: 90px; border-radius: 50px;"></div>
+							<div class="notice-content">
+								<div class="notice-heading">%2$s</div>
+								<div class="notice-description">%3$s</div>
+								<div class="astra-review-notice-container">
+									<button type="button" class="astra-review-notice button-primary" data-wcf-action="switch">
+										<span class="dashicons dashicons-yes"></span>
+										%4$s
+									</button>
+									<a href="#" class="astra-notice-close astra-review-notice">
+										<span class="dashicons dashicons-no-alt"></span>
+										%5$s
+									</a>
+								</div>
+							</div>',
+						esc_url( CARTFLOWS_URL . 'assets/images/cartflows-logo-small.jpg' ),
+						esc_html__( 'Your CartFlows got a fresh new look ✨', 'cartflows' ),
+						esc_html__( 'Enjoy a faster, cleaner dashboard designed to help you work smarter. Not ready? You can always switch back from Settings → Advanced.', 'cartflows' ),
+						esc_html__( 'Try the New Experience', 'cartflows' ),
+						esc_html__( 'Maybe Later', 'cartflows' )
+					),
+				)
+			);
+		}
 	}
 
 	/**
@@ -455,6 +523,72 @@ class Cartflows_Admin_Notices {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Whether the "Switch to New UI" promo should be shown to the current user.
+	 *
+	 * Centralises the gating logic so the WP `admin_notices` render and the
+	 * React-shell banner both honour the exact same conditions.
+	 *
+	 * @since 2.2.4
+	 * @return bool
+	 */
+	public function is_new_ui_notice_visible() {
+
+		if ( ! current_user_can( 'cartflows_manage_settings' ) ) {
+			return false;
+		}
+
+		// Only relevant when the legacy admin is the active UI. The constant is
+		// defined by the loader and accepts the 'enable'/'disable' string forms
+		// the toggle stores, so don't read the option directly here.
+		if ( ! defined( 'CARTFLOWS_LEGACY_ADMIN' ) || ! CARTFLOWS_LEGACY_ADMIN ) {
+			return false;
+		}
+
+		// Astra_Notices' own astra-notice-close JS writes 'notice-dismissed' to
+		// this user_meta key when the user dismisses the notice.
+		if ( 'notice-dismissed' === get_user_meta( get_current_user_id(), 'cartflows-switch-to-new-ui-notice', true ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Enqueue the vanilla JS that wires the Switch button of the "Switch to
+	 * New UI" notice. Called from `show_admin_notices()` so the asset only
+	 * loads on screens where the Astra notice actually renders.
+	 *
+	 * @since 2.2.4
+	 * @return void
+	 */
+	public function enqueue_new_ui_notice_assets() {
+
+		$handle = 'wcf-new-ui-notice';
+
+		if ( wp_script_is( $handle, 'enqueued' ) ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			$handle,
+			CARTFLOWS_URL . 'admin-legacy-core/assets/js/new-ui-notice.js',
+			array(),
+			CARTFLOWS_VER,
+			true
+		);
+
+		wp_localize_script(
+			$handle,
+			'wcfNewUiNotice',
+			array(
+				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+				'switchAction' => 'cartflows_switch_to_new_ui',
+				'switchNonce'  => wp_create_nonce( 'cartflows_switch_to_new_ui' ),
+			)
+		);
 	}
 
 	/**

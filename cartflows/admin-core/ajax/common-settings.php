@@ -30,6 +30,18 @@ class CommonSettings extends AjaxBase {
 	private static $instance;
 
 	/**
+	 * URL the client should hard-navigate to after a successful save.
+	 *
+	 * Set by save_other_settings() when the legacy-admin toggle is freshly
+	 * enabled so the dashboard reloads through the legacy loader. Read by
+	 * save_global_settings() and merged into the final response payload so
+	 * do_action() hooks and other side-effects still run before the redirect.
+	 *
+	 * @var string
+	 */
+	private $pending_redirect = '';
+
+	/**
 	 * Initiator
 	 *
 	 * @since 1.0.0
@@ -156,6 +168,14 @@ class CommonSettings extends AjaxBase {
 		$response_data = array(
 			'messsage' => __( 'Successfully saved data!', 'cartflows' ),
 		);
+
+		// If a tab handler queued a redirect (e.g. legacy-admin toggle was just
+		// enabled), pass it through so the client hard-navigates after save.
+		if ( ! empty( $this->pending_redirect ) ) {
+			$response_data['redirect_to'] = $this->pending_redirect;
+			$response_data['message']     = __( 'Switching to the legacy CartFlows UI…', 'cartflows' );
+		}
+
 		wp_send_json_success( $response_data );
 	}
 
@@ -226,6 +246,12 @@ class CommonSettings extends AjaxBase {
 		if ( ! check_ajax_referer( 'cartflows_save_global_settings', 'security', false ) ) {
 			$response_data = array( 'message' => __( 'Nonce validation failed', 'cartflows' ) );
 			wp_send_json_error( $response_data );
+		}
+
+		// Global CSS/JS are output raw on every CartFlows page. Restrict authoring to users
+		// with `unfiltered_html` so per-plugin caps cannot grant script write access to lower roles.
+		if ( ! current_user_can( 'unfiltered_html' ) ) {
+			return;
 		}
 
 		if ( isset( $_POST['_cartflows_global_scripts'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -305,6 +331,27 @@ class CommonSettings extends AjaxBase {
 		if ( isset( $_POST['cf_usage_optin'] ) ) {
 			$enable_non_sensative_data_tracking = sanitize_text_field( $_POST['cf_usage_optin'] );
 			AdminHelper::update_admin_settings_option( 'cf_usage_optin', $enable_non_sensative_data_tracking, false );
+		}
+
+		// Persist the legacy-admin toggle. When it transitions from any non-enabled
+		// value to 'enable', queue a redirect so the dashboard hard-reloads through
+		// the legacy loader on the next request. The redirect is merged into the
+		// final response by save_global_settings() AFTER do_action() and any other
+		// side-effects fire, so we don't bypass third-party hooks. The legacy value
+		// can be stored as boolean true (1.6.0 migration) — treat any truthy form as
+		// "previously enabled" so re-saving doesn't re-trigger the redirect.
+		if ( isset( $_POST['cartflows-legacy-admin'] ) ) {
+			$prev_raw         = get_option( 'cartflows-legacy-admin', '' );
+			$prev_was_enabled = in_array( $prev_raw, array( true, 1, '1', 'enable', 'yes' ), true );
+			$legacy_admin     = in_array( $_POST['cartflows-legacy-admin'], array( 'enable', 'disable' ), true )
+				? sanitize_text_field( wp_unslash( $_POST['cartflows-legacy-admin'] ) )
+				: 'disable';
+
+			update_option( 'cartflows-legacy-admin', $legacy_admin );
+
+			if ( 'enable' === $legacy_admin && ! $prev_was_enabled ) {
+				$this->pending_redirect = admin_url( 'admin.php?page=' . CARTFLOWS_SLUG );
+			}
 		}
 	}
 

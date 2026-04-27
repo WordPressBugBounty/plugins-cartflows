@@ -71,6 +71,12 @@ class CommonSettings extends ApiBase {
 		$options['cf_usage_optin']                   = get_option( 'cf_usage_optin', 'no' );
 		$options['cartflows_stats_report_email_ids'] = get_option( 'cartflows_stats_report_email_ids', get_option( 'admin_email' ) );
 
+		// The toggle field expects an 'enable'/'disable' string (backComp). Older code paths
+		// may have stored a boolean true (set by 3.0 migration); coerce to 'enable' so the
+		// switch reflects the correct on-state without changing what is persisted.
+		$legacy_admin_raw                  = get_option( 'cartflows-legacy-admin', 'disable' );
+		$options['cartflows-legacy-admin'] = in_array( $legacy_admin_raw, array( true, 1, '1', 'enable', 'yes' ), true ) ? 'enable' : 'disable';
+
 		return $options;
 	}
 

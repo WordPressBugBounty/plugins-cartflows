@@ -167,6 +167,15 @@ if ( ! class_exists( 'Cartflows_Update' ) ) :
 				$this->migrate_custom_scripts();
 			}
 
+			// 3.0 ships a redesigned admin UI. Existing users (saved_version < 3.0.0) keep the
+			// legacy admin until they opt into the new UI from the in-app notice or the
+			// Advanced-tab toggle. Saved as 'enable' to match the toggle's backComp format
+			// so the field round-trips correctly. Fresh installs short-circuit at the
+			// `! $saved_version` early return above and default to the new UI.
+			if ( is_string( $saved_version ) && version_compare( $saved_version, '3.0.0', '<' ) ) {
+				update_option( 'cartflows-legacy-admin', 'enable' );
+			}
+
 			// Update auto saved version number.
 			update_option( 'cartflows-version', CARTFLOWS_VER );
 

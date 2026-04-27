@@ -133,7 +133,7 @@ class Cartflows_Admin {
 	 */
 	public function status_widget() {
 
-		$admin_url = admin_url( 'index.php' ) . '?page=cartflow-setup&';
+		$admin_url = admin_url( 'index.php' ) . '?page=cartflows-onboarding&';
 
 		$steps = array(
 			'welcome'         => $admin_url . 'step=welcome',

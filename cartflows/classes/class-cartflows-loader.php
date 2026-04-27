@@ -141,15 +141,19 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '2.2.4' );
+			define( 'CARTFLOWS_VER', '3.0.0' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
 
-			define( 'CARTFLOWS_REQ_CF_PRO_VER', '2.2.0' );
+			define( 'CARTFLOWS_REQ_CF_PRO_VER', '3.0.0' );
 
-			// For backward compatibility we are setting CARTFLOWS_LEGACY_ADMIN to false, so pro-loader for new UI will be load.
-			define( 'CARTFLOWS_LEGACY_ADMIN', false );
+			// Resolves to true for users upgrading from <3.0.0 (set by Cartflows_Update on first 3.0+ admin_init)
+			// and stays true until the user opts out via the Advanced-tab toggle or the legacy in-app switch.
+			// Fresh installs never see this option set, so they default to the new UI. The toggle saves
+			// 'enable'/'disable' strings; older code paths may have stored a boolean true — accept both.
+			$cartflows_legacy_admin_saved = get_option( 'cartflows-legacy-admin', false );
+			define( 'CARTFLOWS_LEGACY_ADMIN', in_array( $cartflows_legacy_admin_saved, array( true, 1, '1', 'enable', 'yes' ), true ) );
 
 			define( 'CARTFLOWS_ASSETS_VERSION', get_option( 'cartflows-assets-version', time() ) );
 
@@ -162,8 +166,12 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			if ( ! defined( 'CARTFLOWS_SERVER_URL' ) ) {
 				define( 'CARTFLOWS_SERVER_URL', 'https://my.cartflows.com/' );
 			}
-			define( 'CARTFLOWS_DOMAIN_URL', 'https://cartflows.com/' );
-			define( 'CARTFLOWS_TEMPLATES_URL', 'https://templates.cartflows.com/' );
+			if ( ! defined( 'CARTFLOWS_DOMAIN_URL' ) ) {
+				define( 'CARTFLOWS_DOMAIN_URL', 'https://cartflows.com/' );
+			}
+			if ( ! defined( 'CARTFLOWS_TEMPLATES_URL' ) ) {
+				define( 'CARTFLOWS_TEMPLATES_URL', 'https://templates.cartflows.com/' );
+			}
 			define( 'CARTFLOWS_TAXONOMY_STEP_TYPE', 'cartflows_step_type' );
 			define( 'CARTFLOWS_TAXONOMY_STEP_FLOW', 'cartflows_step_flow' );
 
@@ -451,12 +459,20 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 
 			}
 
-			/* New admin loader with namespace */
-			include_once CARTFLOWS_DIR . 'admin-loader.php';
+			/* Admin loader — fork between legacy (admin-legacy-core/) and current (admin-core/) UI. */
+			if ( defined( 'CARTFLOWS_LEGACY_ADMIN' ) && CARTFLOWS_LEGACY_ADMIN ) {
+				include_once CARTFLOWS_DIR . 'admin-legacy-loader.php';
+			} else {
+				include_once CARTFLOWS_DIR . 'admin-loader.php';
+			}
 
 			if ( class_exists( 'WP_CLI' ) ) {
-				/* New admin wp-cli with namespace */
-				require_once CARTFLOWS_DIR . 'admin-core/inc/wp-cli.php';
+				/* WP-CLI registration follows the active UI tree. */
+				if ( defined( 'CARTFLOWS_LEGACY_ADMIN' ) && CARTFLOWS_LEGACY_ADMIN ) {
+					require_once CARTFLOWS_DIR . 'admin-legacy-core/inc/wp-cli.php';
+				} else {
+					require_once CARTFLOWS_DIR . 'admin-core/inc/wp-cli.php';
+				}
 			}
 
 			/* Logger */

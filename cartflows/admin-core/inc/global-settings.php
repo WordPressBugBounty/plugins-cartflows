@@ -63,8 +63,9 @@ class GlobalSettings {
 
 		$settings = array(
 			'general'                => array(
-				'title'  => '',
-				'fields' => array(
+				'title'       => '',
+				'description' => __( 'Configure global defaults that apply across every funnel and step.', 'cartflows' ),
+				'fields'      => array(
 					'page_builder'              => array(
 						'type'    => 'select_card',
 						'name'    => '_cartflows_common[default_page_builder]',
@@ -143,8 +144,9 @@ class GlobalSettings {
 				),
 			),
 			'permalink'              => array(
-				'title'  => '',
-				'fields' => array(
+				'title'       => '',
+				'description' => __( 'Define how CartFlows URLs are structured on the front end.', 'cartflows' ),
+				'fields'      => array(
 					'perma-structure' => array(
 						'type'    => 'select_card',
 						'layout'  => 'vertical',
@@ -1388,14 +1390,11 @@ class GlobalSettings {
 				),
 			),
 			'other'                  => array(
-				'title'  => '',
-				'fields' => array(
+				'title'       => '',
+				'description' => __( 'Advanced utilities for regenerating assets and resetting state.', 'cartflows' ),
+				'fields'      => array(
 					'weekly-report-separator'      => array(
 						'type' => 'separator',
-					),
-					'weekly-report-heading'        => array(
-						'type'  => 'heading',
-						'label' => __( 'Store Revenue Report Emails', 'cartflows' ),
 					),
 					'enable_weekly_emails'         => array(
 						'type'     => 'toggle',
@@ -1448,23 +1447,49 @@ class GlobalSettings {
 						/* translators: %1$1s: link html start, %2$12: link html end*/
 						'desc'     => sprintf( __( 'This option will delete all the CartFlows options data on plugin deletion. If you enable this and deletes the plugin, you can\'t restore your saved data. To learn more, %1$1s Click here %2$2s.', 'cartflows' ), '<a href="https://cartflows.com/docs/delete-plugin-data-while-uninstalling-plugin/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),
 					),
+					'legacy-admin-separator'       => array(
+						'type' => 'separator',
+					),
+					'cartflows-legacy-admin'       => array(
+						'type'     => 'toggle',
+						'name'     => 'cartflows-legacy-admin',
+						'label'    => __( 'Use Legacy CartFlows UI', 'cartflows' ),
+						'backComp' => true,
+						'notice'   => array(
+							'type'    => 'confirm',
+							'message' => __( 'Switch back to the legacy CartFlows admin? The page will reload into the legacy dashboard. You can return to the new UI anytime from the notice shown there.', 'cartflows' ),
+						),
+						'desc'     => __( 'Restore the pre-3.0 CartFlows admin interface. Save settings to apply — the dashboard will reload in the legacy UI.', 'cartflows' ),
+					),
 				),
 			),
 			'user_role_manager'      => array(
-				'title' => '',
-				'roles' => (
+				'title'       => '',
+				'description' => __( 'Choose which user roles can access and manage CartFlows.', 'cartflows' ),
+				'roles'       => (
 					$all_roles
 				),
 			),
 			'webhooks'               => array(
-				'title' => '',
+				'title'       => '',
+				'description' => __( 'Send funnel events to third-party services via HTTP callbacks.', 'cartflows' ),
 			),
 			'automations'            => array(
-				'title' => '',
+				'title'       => '',
+				'description' => __( 'Manage automation rules that run when events occur in your funnels.', 'cartflows' ),
+			),
+			'integrations'           => array(
+				'title'       => '',
+				'description' => __( 'Connect analytics and advertising pixels to track funnel performance.', 'cartflows' ),
+			),
+			'offer'                  => array(
+				'title'       => '',
+				'description' => __( 'Control how upsell and downsell offer orders are created alongside the main order.', 'cartflows' ),
 			),
 			'global_scripts'         => array(
-				'title'  => '',
-				'fields' => array(
+				'title'       => '',
+				'description' => __( 'Add custom CSS and JavaScript that loads on every CartFlows step.', 'cartflows' ),
+				'fields'      => array(
 					'global_js'           => array(
 						'type'          => 'code',
 						'display_align' => 'vertical',

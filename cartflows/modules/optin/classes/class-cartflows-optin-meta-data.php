@@ -568,7 +568,7 @@ class Cartflows_Optin_Meta_Data extends Cartflows_Step_Meta_Base {
 			),
 			'wcf-disable-step-toggle' => array(
 				'type'         => 'toggle',
-				'label'        => __( 'Disable step', 'cartflows' ),
+				'label'        => __( 'Disable Step', 'cartflows' ),
 				'name'         => 'wcf-disable-step',
 				'value'        => $options['wcf-disable-step'],
 				'tooltip'      => __( 'Turn this on to disable the step', 'cartflows' ),

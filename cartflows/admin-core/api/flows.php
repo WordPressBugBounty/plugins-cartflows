@@ -85,6 +85,10 @@ class Flows extends ApiBase {
 		$post_status = 'any';
 		$post_count  = 10;
 
+		if ( null !== $request->get_param( 'per_page' ) ) {
+			$post_count = min( absint( $request->get_param( 'per_page' ) ), 100 );
+		}
+
 		$args = array(
 			'post_type'   => CARTFLOWS_FLOW_POST_TYPE,
 			'post_status' => $post_status,
@@ -139,7 +143,7 @@ class Flows extends ApiBase {
 				$status = $request->get_param( 'post_status' );
 
 				// Allowlist of valid post statuses for flows.
-				$allowed_statuses = array( 'active', 'inactive', 'publish', 'draft', 'pending' );
+				$allowed_statuses = array( 'active', 'inactive', 'publish', 'draft', 'pending', 'trash' );
 
 				if ( 'active' === $status ) {
 					$args['post_status'] = 'publish';
@@ -199,6 +203,8 @@ class Flows extends ApiBase {
 				$clone                       = '#';
 				$export                      = '#';
 				$post_data['flow_test_mode'] = ( 'yes' === wcf()->options->get_flow_meta_value( $post->ID, 'wcf-testing' ) ) ? true : false;
+				$flow_steps                  = get_post_meta( $post->ID, 'wcf-steps', true );
+				$post_data['step_count']     = is_array( $flow_steps ) ? count( $flow_steps ) : 0;
 				$post_data['actions']        = array(
 					'view'      => array(
 						'action' => 'edit',

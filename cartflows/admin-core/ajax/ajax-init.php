@@ -75,6 +75,7 @@ class AjaxInit {
 			'CartflowsAdmin\AdminCore\Ajax\AbSteps',
 			'CartflowsAdmin\AdminCore\Ajax\Debugger',
 			'CartflowsAdmin\AdminCore\Ajax\Learn',
+			'CartflowsAdmin\AdminCore\Ajax\Onboarding',
 		);
 
 		foreach ( $controllers as $controller ) {

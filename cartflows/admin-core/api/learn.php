@@ -167,7 +167,7 @@ class Learn extends ApiBase {
 						'id'          => 'assign-products-to-checkout',
 						'title'       => __( 'Assign Products to Checkout', 'cartflows' ),
 						'description' => __( 'Attach products to your checkout step and control pricing & quantity.', 'cartflows' ),
-						'cta'         => __( 'Select Product/s', 'cartflows' ),
+						'cta'         => __( 'Select Products', 'cartflows' ),
 						'action'      => 'Redirects to Funnel > Checkout Step > Products',
 						'action_type' => 'redirect',
 						'action_data' => array(

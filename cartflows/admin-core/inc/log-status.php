@@ -180,11 +180,22 @@ class LogStatus {
 			wp_die( esc_html__( 'Filename is empty. Please refresh the page and retry.', 'cartflows' ) );
 		}
 
-		$file_name = trim( sanitize_text_field( wp_unslash( $_REQUEST['handle'] ) ) );
-		$file_path = CARTFLOWS_LOG_DIR . $file_name;
+		$file_name = basename( trim( sanitize_text_field( wp_unslash( $_REQUEST['handle'] ) ) ) );
 
-		if ( file_exists( $file_path ) ) {
-			wp_delete_file( $file_path );
+		if ( '' === $file_name || '.log' !== substr( $file_name, -4 ) ) {
+			wp_die( esc_html__( 'Invalid file.', 'cartflows' ) );
+		}
+
+		$log_dir   = CARTFLOWS_LOG_DIR;
+		$real_dir  = realpath( $log_dir );
+		$real_path = realpath( $log_dir . $file_name );
+
+		if ( false === $real_path || false === $real_dir || 0 !== strpos( $real_path, trailingslashit( $real_dir ) ) ) {
+			wp_die( esc_html__( 'Invalid file.', 'cartflows' ) );
+		}
+
+		if ( file_exists( $real_path ) ) {
+			wp_delete_file( $real_path );
 			self::$file_deleted = true;
 		}
 	}

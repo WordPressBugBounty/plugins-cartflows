@@ -10,8 +10,7 @@ namespace CartflowsAdmin;
 use CartflowsAdmin\AdminCore\Api\ApiInit;
 use CartflowsAdmin\AdminCore\Ajax\AjaxInit;
 use CartflowsAdmin\AdminCore\Inc\AdminMenu;
-use CartflowsAdmin\Wizard\Inc\WizardCore;
-use CartflowsAdmin\Wizard\Ajax\WizardAjaxInit;
+use CartflowsAdmin\AdminCore\Inc\OnboardingCore;
 use CartflowsAdmin\AdminCore\Inc\StoreCheckout;
 
 // Exit if accessed directly.
@@ -113,9 +112,7 @@ class Admin_Loader {
 			/* Ajax init */
 			AjaxInit::get_instance();
 
-			WizardAjaxInit::get_instance();
-
-			WizardCore::get_instance();
+			OnboardingCore::get_instance();
 		}
 	}
 }

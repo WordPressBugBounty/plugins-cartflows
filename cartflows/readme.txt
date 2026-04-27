@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 2.2.4
+Stable tag: 3.0.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,14 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.0.0 - Monday, 27th April 2026 =
+* New: Revamped admin experience across Dashboard, Funnels, Steps, Analytics, Settings, and more for faster navigation.
+* New: Redesigned onboarding wizard for a quicker, more intuitive setup.
+* New: Added toast notifications for instant action feedback.
+* New: Introduced Error Boundary UI for better error handling and quick recovery.
+* Improvement: Improved filters, bulk actions, pagination, and breadcrumbs for smoother funnel management.
+* Fix: Resolved various UI, UX, and functionality issues for a smoother experience.
 
 = Version 2.2.4 - Wednesday, 25th March 2026 =
 * New: Added Power Coupons to the Addons page for quick access and activation.

@@ -866,15 +866,15 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 				'options' => array(
 					array(
 						'value' => 'force-all',
-						'label' => __( 'Restrict user to purchase all products', 'cartflows' ),
+						'label' => __( 'Restrict User to Purchase All Products', 'cartflows' ),
 					),
 					array(
 						'value' => 'single-selection',
-						'label' => __( 'Let user select one product from all options', 'cartflows' ),
+						'label' => __( 'Let User Select One Product from All Options', 'cartflows' ),
 					),
 					array(
 						'value' => 'multiple-selection',
-						'label' => __( 'Let user select multiple products from all options', 'cartflows' ),
+						'label' => __( 'Let User Select Multiple Products from All Options', 'cartflows' ),
 					),
 				),
 			),
@@ -889,11 +889,11 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 				'options'     => array(
 					array(
 						'value' => 'inline',
-						'label' => __( 'Show variations inline', 'cartflows' ),
+						'label' => __( 'Show Variations Inline', 'cartflows' ),
 					),
 					array(
 						'value' => 'popup',
-						'label' => __( 'Show variations in popup', 'cartflows' ),
+						'label' => __( 'Show Variations in Popup', 'cartflows' ),
 					),
 				),
 			),
@@ -935,6 +935,8 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 		$settings = array(
 			'settings' => array(
 				'product'         => array(
+					'tab'      => 'products',
+					'slug'     => 'product',
 					'title'    => __( 'Products', 'cartflows' ),
 					'priority' => 20,
 					'fields'   => array(
@@ -953,6 +955,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						),
 						'checkout-product-doc'  => array(
 							'type'    => 'doc',
+							'icon'    => 'info',
 							/* translators: %1$1s: link html start, %2$12: link html end*/
 							'content' => sprintf( __( 'For more information about the checkout product settings please %1$1s Click here.%2$2s', 'cartflows' ), '<a href="https://cartflows.com/docs/set-product-quantity-and-discount/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">', '</a>' ),
 						),
@@ -960,6 +963,8 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 				),
 
 				'coupon'          => array(
+					'tab'      => 'products',
+					'slug'     => 'coupon',
 					'title'    => __( 'Auto Apply Coupon', 'cartflows' ),
 					'priority' => 30,
 					'fields'   => _is_cartflows_pro() && 'Activated' === _is_cartflows_pro_license_activated() ? '' : $this->get_dummy_settings_for_coupon(),
@@ -967,6 +972,8 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 				),
 				// Product Options.
 				'product-options' => array(
+					'tab'      => 'products',
+					'slug'     => 'product-options',
 					'title'    => __( 'Product Options', 'cartflows' ),
 					'priority' => 40,
 					'fields'   => _is_cartflows_pro() && 'Activated' === _is_cartflows_pro_license_activated() ? '' : $this->get_dummy_settings_for_product_options(),
@@ -974,6 +981,8 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 
 				// checkout offer.
 				'checkout-offer'  => array(
+					'tab'      => 'checkout_offer',
+					'slug'     => 'checkout-offer',
 					'title'    => __( 'Checkout Offer', 'cartflows' ),
 					'priority' => 60,
 					'fields'   => ! _is_cartflows_pro() ? array(
@@ -1015,7 +1024,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 			),
 			'wcf-disable-step-toggle' => array(
 				'type'         => 'toggle',
-				'label'        => __( 'Disable step', 'cartflows' ),
+				'label'        => __( 'Disable Step', 'cartflows' ),
 				'name'         => 'wcf-disable-step',
 				'value'        => $options['wcf-disable-step'],
 				'tooltip'      => __( 'Turn this on to disable the step', 'cartflows' ),
@@ -1070,7 +1079,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 					'fields'   => array(
 						'wcf-show-prod-img-order-review' => array(
 							'type'         => 'toggle',
-							'label'        => __( 'Display product images', 'cartflows' ),
+							'label'        => __( 'Display Product Images', 'cartflows' ),
 							'name'         => 'wcf-order-review-show-product-images',
 							'value'        => $options['wcf-order-review-show-product-images'],
 							'tooltip'      => __( 'Turn this ON to show your product images in the order review section.', 'cartflows' ),
@@ -1078,7 +1087,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						),
 						'wcf-edit-cart'                  => array(
 							'type'         => 'toggle',
-							'label'        => __( 'Enable cart editing on checkout', 'cartflows' ),
+							'label'        => __( 'Enable Cart Editing on Checkout', 'cartflows' ),
 							'name'         => 'wcf-remove-product-field',
 							'value'        => $options['wcf-remove-product-field'],
 							'tooltip'      => __( 'Users can easily remove products from the checkout page if they decide not to purchase them.', 'cartflows' ),
@@ -1336,7 +1345,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 					),
 					'wcf-enable-validation-text' => array(
 						'type'         => 'toggle',
-						'label'        => __( 'Enable Field validation error message', 'cartflows' ),
+						'label'        => __( 'Enable Field Validation Error Message', 'cartflows' ),
 						'name'         => 'wcf-enable-checkout-field-validation-text',
 						'value'        => $options['wcf-enable-checkout-field-validation-text'],
 						'tooltip'      => __( 'This message will appear next to the field name to show an error if something goes wrong.', 'cartflows' ),
@@ -1344,7 +1353,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 					),
 					'wcf-field-validation-text'  => array(
 						'type'          => 'text',
-						'label'         => __( 'Validation error message', 'cartflows' ),
+						'label'         => __( 'Validation Error Message', 'cartflows' ),
 						'name'          => 'wcf-checkout-field-validation-text',
 						'placeholder'   => __( 'is required', 'cartflows' ),
 						'display_align' => 'vertical',

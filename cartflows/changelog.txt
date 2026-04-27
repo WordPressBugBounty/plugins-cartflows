@@ -1,3 +1,11 @@
+Version 3.0.0 - Monday, 27th April 2026
+- New: Revamped admin experience across Dashboard, Funnels, Steps, Analytics, Settings, and more for faster navigation.
+- New: Redesigned onboarding wizard for a quicker, more intuitive setup.
+- New: Added toast notifications for instant action feedback.
+- New: Introduced Error Boundary UI for better error handling and quick recovery.
+- Improvement: Improved filters, bulk actions, pagination, and breadcrumbs for smoother funnel management.
+- Fix: Resolved various UI, UX, and functionality issues for a smoother experience.
+
 Version 2.2.4 - Wednesday, 25th March 2026
 - New: Added Power Coupons to the Addons page for quick access and activation.
 - New: Introduced WordPress Abilities API integration to enable AI-powered automation for CartFlows.

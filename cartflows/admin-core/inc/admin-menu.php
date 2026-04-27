@@ -223,8 +223,6 @@ class AdminMenu {
 		if ( isset( $_GET['page'] ) && ( 'cartflows' === sanitize_text_field( $_GET['page'] ) || false !== strpos( sanitize_text_field( $_GET['page'] ), 'cartflows_' ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'styles_scripts' ) );
-
-			add_filter( 'admin_footer_text', array( $this, 'add_footer_link' ), 99 );
 		}
 	}
 
@@ -280,33 +278,6 @@ class AdminMenu {
 			);
 
 			if ( current_user_can( 'cartflows_manage_settings' ) ) {
-				add_submenu_page(
-					$parent_slug,
-					__( 'Automations', 'cartflows' ),
-					// Here the inline CSS is added to make sure that the menu's tag css should display correctly on all pages.
-					__( 'Automations', 'cartflows' ) . '<span class="submenu-tag" style="margin-left: 4px; color: #f06434; vertical-align: super; font-size: 9px;">' . __( 'New', 'cartflows' ) . '</span>',
-					$capability,
-					'admin.php?page=' . $this->menu_slug . '&path=automations'
-				);
-
-				if ( 'active' !== $this->get_plugin_status( 'modern-cart/modern-cart.php' ) ) {
-					add_submenu_page(
-						$parent_slug,
-						__( 'Modern Cart', 'cartflows' ),
-						// Here the inline CSS is added to make sure that the menu's tag css should display correctly on all pages.
-						__( 'Modern Cart', 'cartflows' ) . '<span class="submenu-tag" style="margin-left: 4px; color: #f06434; vertical-align: super; font-size: 9px;">' . __( 'New', 'cartflows' ) . '</span>',
-						$capability,
-						'admin.php?page=' . $this->menu_slug . '&path=modern-cart'
-					);
-				}
-
-				add_submenu_page(
-					$parent_slug,
-					__( 'Add-ons', 'cartflows' ),
-					__( 'Add-ons', 'cartflows' ),
-					! wcf_file_mod_disabled() ? $capability : 'do_not_allow',
-					'admin.php?page=' . $this->menu_slug . '&path=addons'
-				);
 
 				add_submenu_page(
 					$parent_slug,
@@ -404,7 +375,7 @@ class AdminMenu {
 		$admin_slug = 'cartflows-admin';
 
 		// Load the custom font for admin area.
-		wp_enqueue_style( $admin_slug . '-font', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap', array(), CARTFLOWS_VER );
+		wp_enqueue_style( $admin_slug . '-font', 'https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap', array(), CARTFLOWS_VER );
 
 		// Styles.
 		wp_enqueue_style( $admin_slug . '-common', CARTFLOWS_ADMIN_CORE_URL . 'assets/css/common.css', array(), CARTFLOWS_VER );
@@ -450,7 +421,7 @@ class AdminMenu {
 			}
 
 			$plugin               = get_plugins();
-			$cf_pro_type_inactive = $plugin['cartflows-pro/cartflows-pro.php']['Name'];
+			$cf_pro_type_inactive = isset( $plugin['cartflows-pro/cartflows-pro.php']['Name'] ) ? $plugin['cartflows-pro/cartflows-pro.php']['Name'] : '';
 		}
 
 		$order_url = '#';
@@ -494,7 +465,7 @@ class AdminMenu {
 				'currentFlowSteps'                  => $current_flow_steps,
 				// Delete this code after 3 major update. Added in 1.10.4.
 				'license_status'                    => \_is_cartflows_pro_license_activated(),
-				'license_popup_url'                 => admin_url( 'admin.php?page=cartflows&settings=1&tab=license' ),
+				'license_popup_url'                 => admin_url( 'admin.php?page=cartflows&path=settings&tab=license' ),
 				'store_checkout_show_product_tab'   => \Cartflows_Helper::display_product_tab_in_store_checkout(),
 				'cf_domain_url'                     => CARTFLOWS_DOMAIN_URL,
 				'cf_upgrade_to_pro_url'             => \Cartflows_Helper::get_upgrade_to_pro_link(),
@@ -958,22 +929,6 @@ class AdminMenu {
 	}
 
 	/**
-	 *  Add footer link.
-	 */
-	public function add_footer_link() {
-
-		$logs_page_url = add_query_arg(
-			array(
-				'page' => CARTFLOWS_SLUG,
-				'path' => 'wcf-log',
-			),
-			admin_url( '/admin.php' )
-		);
-
-		return '<span id="footer-thankyou"> Thank you for using <a href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=footer-link">CartFlows</a></span> | <a href="' . $logs_page_url . '">Logs</a>';
-	}
-
-	/**
 	 * Get CartFlows recommended integrations.
 	 *
 	 * @return array
@@ -1003,7 +958,7 @@ class AdminMenu {
 						'status'      => $this->get_plugin_status( 'power-coupons/power-coupons.php' ),
 						'slug'        => 'power-coupons',
 						'path'        => 'power-coupons/power-coupons.php',
-						'redirection' => admin_url( 'admin.php?page=power_coupons_settings' ),
+						'redirection' => admin_url( 'admin.php?page=power-coupons' ),
 						'logoPath'    => array(
 							'icon_path' => CARTFLOWS_ADMIN_CORE_URL . 'assets/images/plugins/power-coupons.svg',
 						),
