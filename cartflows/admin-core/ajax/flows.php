@@ -169,6 +169,7 @@ class Flows extends AjaxBase {
 			if ( 'yes' === $instant_layout_style ) {
 				update_post_meta( $flow_id, 'wcf-instant-checkout-notice-skipped', 'yes' );
 				update_option( 'wcf-instant-checkout-notice-skipped', 'yes' );
+				\Cartflows_Helper::set_analytics_flag( 'first_instant_layout_enabled' );
 			}
 
 			$new_flow_data = array(
@@ -320,11 +321,48 @@ class Flows extends AjaxBase {
 			wp_update_post( $flow_post );
 		}
 
-		/**
-		 * Redirect to the new flow edit screen
-		 */
+		$flow_count = count( $flow_ids );
+
+		switch ( $new_status ) {
+			case 'publish':
+				$success_message = _n(
+					'Successfully published the Funnel!',
+					'Successfully published the Funnels!',
+					$flow_count,
+					'cartflows'
+				);
+				break;
+			case 'draft':
+				$success_message = _n(
+					'Successfully moved the Funnel to draft!',
+					'Successfully moved the Funnels to draft!',
+					$flow_count,
+					'cartflows'
+				);
+				break;
+			case 'trash':
+				$success_message = _n(
+					'Successfully trashed the Funnel!',
+					'Successfully trashed the Funnels!',
+					$flow_count,
+					'cartflows'
+				);
+				break;
+			case 'pending':
+				$success_message = _n(
+					'Successfully marked the Funnel as pending!',
+					'Successfully marked the Funnels as pending!',
+					$flow_count,
+					'cartflows'
+				);
+				break;
+			default:
+				$success_message = __( 'Successfully updated the Funnel status!', 'cartflows' );
+				break;
+		}
+
 		$response_data = array(
-			'message' => __( 'Successfully trashed the Funnels!', 'cartflows' ),
+			'message' => $success_message,
 		);
 		wp_send_json_success( $response_data );
 	}

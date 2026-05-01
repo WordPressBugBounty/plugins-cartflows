@@ -552,12 +552,19 @@ class Importer extends AjaxBase {
 			wp_send_json_error( $response_data );
 		}
 
+		// Capture creation method before insert so the meta is in place
+		// when transition_post_status fires on publish.
+		$creation_method = isset( $_POST['creation_method'] ) ? sanitize_text_field( wp_unslash( $_POST['creation_method'] ) ) : 'scratch';
+
 		// Create post object.
 		$new_flow_post = array(
 			'post_title'   => isset( $_POST['flow_name'] ) ? sanitize_text_field( wp_unslash( $_POST['flow_name'] ) ) : '',
 			'post_content' => '',
 			'post_status'  => 'publish',
 			'post_type'    => CARTFLOWS_FLOW_POST_TYPE,
+			'meta_input'   => array(
+				'wcf-flow-creation-method' => $creation_method,
+			),
 		);
 
 		// Insert the post into the database.
@@ -668,9 +675,10 @@ class Importer extends AjaxBase {
 
 		// Enable the Instant Layout for the flow for all page builders if the funnel is created from scratch.
 		update_post_meta( $flow_id, 'instant-layout-style', 'yes' );
-		
+		\Cartflows_Helper::set_analytics_flag( 'first_instant_layout_enabled' );
+
 		// Track funnel creation method for analytics.
-		$creation_method = isset( $_POST['creation_method'] ) ? sanitize_text_field( wp_unslash( $_POST['creation_method'] ) ) : 'scratch';
+		// $creation_method was captured and persisted as post meta before wp_insert_post above.
 		AdminHelper::track_funnel_creation_method( $creation_method );
 
 		/**
@@ -764,6 +772,10 @@ class Importer extends AjaxBase {
 			wp_send_json_error( $response_data );
 		}
 
+		// Capture creation method before insert so the meta is in place
+		// when transition_post_status fires on publish.
+		$creation_method = isset( $_POST['creation_method'] ) ? sanitize_text_field( wp_unslash( $_POST['creation_method'] ) ) : 'ready_made_template';
+
 		/**
 		 * Create Flow
 		 */
@@ -772,6 +784,9 @@ class Importer extends AjaxBase {
 			'post_content' => '',
 			'post_status'  => 'publish',
 			'post_type'    => CARTFLOWS_FLOW_POST_TYPE,
+			'meta_input'   => array(
+				'wcf-flow-creation-method' => $creation_method,
+			),
 		);
 
 		// Insert the post into the database.
@@ -855,9 +870,12 @@ class Importer extends AjaxBase {
 		if ( ! $first_flow_imported ) {
 			update_option( 'wcf_first_flow_imported', true );
 		}
-		
+
+		// Track first template imported event.
+		\Cartflows_Helper::set_analytics_flag( 'first_template_imported' );
+
 		// Track funnel creation method for analytics.
-		$creation_method = isset( $_POST['creation_method'] ) ? sanitize_text_field( wp_unslash( $_POST['creation_method'] ) ) : 'ready_made_template';
+		// $creation_method was captured and persisted as post meta before wp_insert_post above.
 		AdminHelper::track_funnel_creation_method( $creation_method );
 
 		wcf()->logger->import_log( 'COMPLETE! Importing Flow' );
@@ -992,6 +1010,9 @@ class Importer extends AjaxBase {
 
 		// Set the flag as false once the template import is complete.
 		\CartFlows_Batch_Process::set_is_wcf_template_import( false );
+
+		// Track first template imported event.
+		\Cartflows_Helper::set_analytics_flag( 'first_template_imported' );
 
 		wcf()->logger->import_log( 'COMPLETE! Importing Step' );
 

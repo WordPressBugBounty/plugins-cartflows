@@ -725,6 +725,13 @@ class AdminHelper {
 
 				$steps[ $in ]['page_builder_edit'] = \Cartflows_Helper::get_page_builder_edit_link( $step_id );
 
+				if ( 'checkout' === $step['type'] ) {
+					$order_bumps                      = get_post_meta( $step_id, 'wcf-order-bumps', true );
+					$order_bumps                      = is_array( $order_bumps ) ? array_values( $order_bumps ) : array();
+					$steps[ $in ]['order_bumps']      = $order_bumps;
+					$steps[ $in ]['order_bump_count'] = count( $order_bumps );
+				}
+
 				/* Add variation data */
 				if ( ! empty( $steps[ $in ]['ab-test-variations'] ) ) {
 

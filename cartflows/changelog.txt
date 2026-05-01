@@ -1,3 +1,11 @@
+Version 3.0.1 - Friday, 1st May 2026
+- Improvement: Refined admin UI for a more polished experience.
+- Security Fix: Hardened the security of the plugin.
+- Fix: Fixed Checkout Offer settings showing a blank page when selecting a product.
+- Fix: Fixed Store Checkout floating labels not visible after filling fields.
+- Fix: Fixed BSF Analytics loader and Learn tab completed modules tracking.
+- Fix: Fixed THWCFE custom checkbox and radio fields not displaying correctly on Store Checkout.
+
 Version 3.0.0 - Monday, 27th April 2026
 - New: Revamped admin experience across Dashboard, Funnels, Steps, Analytics, Settings, and more for faster navigation.
 - New: Redesigned onboarding wizard for a quicker, more intuitive setup.

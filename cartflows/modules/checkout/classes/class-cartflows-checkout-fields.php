@@ -103,7 +103,7 @@ class Cartflows_Checkout_Fields {
 					'is_optimized' => ( $is_enabled && ! $is_required && $is_optimized ),
 
 					/* Translators: %1$s & %2$s is replaced with Field Name */
-					'field_label'  => sprintf( __( '%1$s Add %2$s', 'cartflows' ), '<div class="dashicons dashicons-arrow-right"></div>', $order_checkout_field['label'] ),
+					'field_label'  => sprintf( __( '%1$s Add %2$s', 'cartflows' ), '<div class="dashicons dashicons-arrow-right"></div>', esc_html( $order_checkout_field['label'] ) ),
 				);
 			}
 		}

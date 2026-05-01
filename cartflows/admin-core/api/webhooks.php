@@ -180,6 +180,8 @@ class Webhooks extends ApiBase {
 			);
 		}
 
+		\Cartflows_Helper::set_analytics_flag( 'first_webhook_configured' );
+
 		return new \WP_REST_Response(
 			array(
 				'success' => true,

@@ -127,7 +127,9 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			add_action( 'plugins_loaded', array( $this, 'load_plugin' ), 99 );
 			add_action( 'init', array( $this, 'load_cf_textdomain' ) );
 
-			add_action( 'init', array( $this, 'deactivation_survey_data_handler' ) );
+			// Priority 5 mirrors Astra's init_bsf_analytics() pattern: set_entity() must
+			// run before BSF_Analytics_Loader::load_analytics() fires at priority 10.
+			add_action( 'init', array( $this, 'deactivation_survey_data_handler' ), 5 );
 		}
 
 		/**
@@ -141,7 +143,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '3.0.0' );
+			define( 'CARTFLOWS_VER', '3.0.1' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -452,6 +454,10 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			/* Admin Meta Fields*/
 			include_once CARTFLOWS_DIR . 'classes/fields/typography/class-cartflows-font-families.php';
 
+			// Analytics — BSF Analytics Events integration. Loaded on every request so the
+			// bsf_core_stats filter is registered for both frontend and admin transmissions.
+			include_once CARTFLOWS_DIR . 'classes/class-cartflows-analytics.php';
+
 			if ( is_admin() ) {
 
 				/* Admin helper */
@@ -696,6 +702,9 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			update_option( 'cartflows-assets-version', time() );
 
 			update_option( 'wcf_start_onboarding', true );
+
+			// Record install time for time-to-value analytics (only on fresh install).
+			Cartflows_Helper::set_analytics_flag( 'usage_installed_time', time() );
 		}
 
 		/**

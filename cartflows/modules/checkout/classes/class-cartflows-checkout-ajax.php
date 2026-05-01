@@ -144,7 +144,7 @@ class Cartflows_Checkout_Ajax {
 		$coupon = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : false;
 
 		if ( empty( $coupon ) ) {
-			echo "<div class='woocommerce-error'>" . esc_html__( 'Sorry there was a problem removing this coupon.', 'cartflows' );
+			echo "<div class='woocommerce-error'>" . esc_html__( 'Sorry there was a problem removing this coupon.', 'cartflows' ) . '</div>';
 		} else {
 			WC()->cart->remove_coupon( $coupon );
 			echo "<div class='woocommerce-error'>" . esc_html__( 'Coupon has been removed.', 'cartflows' ) . '</div>';
@@ -208,11 +208,15 @@ class Cartflows_Checkout_Ajax {
 
 		$email_address = isset( $_POST['email_address'] ) ? sanitize_email( wp_unslash( $_POST['email_address'] ) ) : false;
 
-		$is_exist = email_exists( $email_address );
+		$is_login_allowed = 'yes' === get_option( 'woocommerce_enable_checkout_login_reminder' );
+
+		// Security: Only check email existence when the checkout login UX needs it.
+		// Otherwise the boolean would leak registered emails for no UX benefit.
+		$is_exist = $is_login_allowed && email_exists( $email_address );
 
 		$response = array(
 			'success'          => boolval( $is_exist ),
-			'is_login_allowed' => 'yes' === get_option( 'woocommerce_enable_checkout_login_reminder' ),
+			'is_login_allowed' => $is_login_allowed,
 			'msg'              => $is_exist ? __( 'Email Exist.', 'cartflows' ) : __( 'Email not exist', 'cartflows' ),
 		);
 
@@ -273,12 +277,14 @@ class Cartflows_Checkout_Ajax {
 		$user = wp_signon( $creds, false );
 
 		if ( ! is_wp_error( $user ) ) {
-
 			$response = array(
 				'success' => true,
 			);
 		} else {
-			$response['error'] = wp_kses_post( $user->get_error_message() );
+			// Mirror WC's process_login() so security plugins see the failure.
+			do_action( 'woocommerce_login_failed' );
+			// Generic error to prevent user enumeration.
+			$response['error'] = __( 'Invalid email address or password.', 'cartflows' );
 		}
 
 		wp_send_json_success( $response );

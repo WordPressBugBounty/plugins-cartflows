@@ -247,7 +247,8 @@ class Cartflows_Thankyou_Markup {
 				$key_param = 'wcf-opt-key';
 			}
 
-			if ( ! isset( $_GET[ $id_param ] ) && ( wcf()->flow->is_flow_testmode() || $show_demo_order ) ) {
+			// Security: Only show test mode order data to authenticated admin users to prevent PII exposure.
+			if ( ! isset( $_GET[ $id_param ] ) && ( wcf()->flow->is_flow_testmode() || $show_demo_order ) && current_user_can( 'cartflows_manage_flows_steps' ) ) {
 				$args = array(
 					'limit'     => 1,
 					'order'     => 'DESC',
@@ -325,12 +326,21 @@ class Cartflows_Thankyou_Markup {
 
 			$template_data = apply_filters( 'cartflows_thankyou_template_data', $default_data );
 
-			if ( ! $template_data['load_custom'] ) {
+			$use_custom_template = false;
+
+			if ( $template_data['load_custom'] ) {
+				// Security: Confine filtered template to wp-content; prevents path traversal via cartflows_thankyou_template_data.
+				$custom_template     = $template_data['template_path'] . $template_data['template'];
+				$real_path           = is_string( $custom_template ) && file_exists( $custom_template ) ? realpath( $custom_template ) : false;
+				$use_custom_template = $real_path && 0 === strpos( $real_path, WP_CONTENT_DIR . DIRECTORY_SEPARATOR );
+			}
+
+			if ( $use_custom_template ) {
+				include $custom_template;
+			} else {
 				echo "<div class='wcf-thankyou-wrap' id='wcf-thankyou-wrap'>";
 				wc_get_template( $template_data['template'], $template_data['order'], $template_data['template_path'] );
 				echo '</div>';
-			} else {
-				include $template_data['template_path'] . $template_data['template'];
 			}
 
 			$output = ob_get_clean();

@@ -1754,7 +1754,7 @@ class Cartflows_Helper {
 	 * @param string $custom_url The Another URL if wish to send.
 	 * @return string $url The modified URL.
 	 */
-	public static function get_upgrade_to_pro_link( $page = 'pricing', $custom_url = '' ) {
+	public static function get_upgrade_to_pro_link( $page = 'cartflows-pricing-plans', $custom_url = '' ) {
 
 		$base_url = CARTFLOWS_DOMAIN_URL . $page . '/';
 		$url      = empty( $custom_url ) ? $base_url : esc_url( $custom_url );
@@ -1972,5 +1972,46 @@ class Cartflows_Helper {
 	 */
 	public static function get_script_migration_status() {
 		return get_option( 'cartflows_script_migration_status', 'pending' );
+	}
+
+	/**
+	 * Set an analytics flag in the consolidated cf_analytics_flags option.
+	 *
+	 * Stores all analytics milestone flags in a single wp_options row.
+	 * Skips the update if the flag is already set (one-time events).
+	 *
+	 * @since 2.2.4
+	 * @param string $key   Flag key (e.g. 'first_checkout_configured').
+	 * @param mixed  $value Flag value. Default true.
+	 * @param bool   $force Whether to overwrite an existing value. Default false.
+	 * @return bool True if the flag was set, false if it already existed.
+	 */
+	public static function set_analytics_flag( $key, $value = true, $force = false ) {
+		$flags = get_option( 'cf_analytics_flags', array() );
+		if ( ! is_array( $flags ) ) {
+			$flags = array();
+		}
+		if ( ! $force && ! empty( $flags[ $key ] ) ) {
+			return false;
+		}
+		$flags[ $key ] = $value;
+		update_option( 'cf_analytics_flags', $flags, false );
+		return true;
+	}
+
+	/**
+	 * Get an analytics flag from the consolidated cf_analytics_flags option.
+	 *
+	 * @since 2.2.4
+	 * @param string $key     Flag key (e.g. 'first_checkout_configured').
+	 * @param mixed  $default Default value if key not found. Default false.
+	 * @return mixed
+	 */
+	public static function get_analytics_flag( $key, $default = false ) {
+		$flags = get_option( 'cf_analytics_flags', array() );
+		if ( ! is_array( $flags ) ) {
+			return $default;
+		}
+		return isset( $flags[ $key ] ) ? $flags[ $key ] : $default;
 	}
 }

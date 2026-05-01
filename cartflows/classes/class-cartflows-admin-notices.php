@@ -150,6 +150,8 @@ class Cartflows_Admin_Notices {
 
 		check_ajax_referer( 'cartflows-disable-weekly-report-email-notice', 'security' );
 		delete_option( 'cartflows_show_weekly_report_email_notice' );
+		// Track weekly report notice dismissed event.
+		Cartflows_Helper::set_analytics_flag( 'weekly_report_notice_dismissed' );
 		wp_send_json_success();
 	}
 

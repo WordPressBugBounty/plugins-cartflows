@@ -695,7 +695,10 @@ class Cartflows_Optin_Markup {
 
 			$optin_id = intval( $_POST['_wcf_optin_id'] );
 
-			$redirect = get_permalink( $optin_id );
+			// Security: Validate that the post ID is a CartFlows step to prevent open redirect.
+			if ( $optin_id > 0 && wcf()->utils->is_step_post_type( get_post_type( $optin_id ) ) ) {
+				$redirect = get_permalink( $optin_id );
+			}
 		}
 		//phpcs:enable WordPress.Security.NonceVerification.Missing
 

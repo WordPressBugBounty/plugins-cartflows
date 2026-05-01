@@ -69,7 +69,7 @@ class Learn extends AjaxBase {
 			? json_decode( sanitize_text_field( wp_unslash( $_POST['module_ids'] ) ), true )
 			: array();
 
-		if ( ! is_array( $module_ids ) || empty( $module_ids ) ) {
+		if ( ! is_array( $module_ids ) ) {
 			wp_send_json_error();
 		}
 

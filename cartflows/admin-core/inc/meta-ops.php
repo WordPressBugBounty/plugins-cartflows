@@ -269,6 +269,10 @@ class MetaOps {
 
 			if ( false !== $meta_value ) {
 				update_post_meta( $post_id, $key, $meta_value );
+				// Track first checkout configured event.
+				if ( 'wcf-checkout-products' === $key ) {
+					\Cartflows_Helper::set_analytics_flag( 'first_checkout_configured', $post_id );
+				}
 			} else {
 				// To delete the wcf-checkout-products if empty.
 				delete_post_meta( $post_id, $key );

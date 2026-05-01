@@ -529,7 +529,11 @@ class Cartflows_Checkout_Markup {
 
 		$template_layout = apply_filters( 'cartflows_checkout_layout_template', $checkout_layout );
 
-		if ( file_exists( $template_layout ) ) {
+		// Security: Only include the filtered template when it resolves to a real file inside wp-content
+		// (themes/plugins/mu-plugins). Prevents path traversal via the cartflows_checkout_layout_template filter.
+		$real_path = is_string( $template_layout ) && file_exists( $template_layout ) ? realpath( $template_layout ) : false;
+
+		if ( $real_path && 0 === strpos( $real_path, WP_CONTENT_DIR . DIRECTORY_SEPARATOR ) ) {
 			include $template_layout;
 		} else {
 			include $template_default;
@@ -1644,7 +1648,7 @@ class Cartflows_Checkout_Markup {
 
 		if ( isset( $header_logo_image ) && ! empty( $header_logo_image ) ) {
 			$add_image_markup  = '<div class="wcf-checkout-header-image">';
-			$add_image_markup .= '<img src="' . $header_logo_image . '" />';
+			$add_image_markup .= '<img src="' . esc_url( $header_logo_image ) . '" />';
 			$add_image_markup .= '</div>';
 		}
 

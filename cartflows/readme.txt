@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,14 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.0.1 - Friday, 1st May 2026 =
+* Improvement: Refined admin UI for a more polished experience.
+* Security Fix: Hardened the security of the plugin.
+* Fix: Fixed Checkout Offer settings showing a blank page when selecting a product.
+* Fix: Fixed Store Checkout floating labels not visible after filling fields.
+* Fix: Fixed BSF Analytics loader and Learn tab completed modules tracking.
+* Fix: Fixed THWCFE custom checkbox and radio fields not displaying correctly on Store Checkout.
 
 = Version 3.0.0 - Monday, 27th April 2026 =
 * New: Revamped admin experience across Dashboard, Funnels, Steps, Analytics, Settings, and more for faster navigation.

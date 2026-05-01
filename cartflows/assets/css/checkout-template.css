@@ -267,7 +267,8 @@
 	padding: 0;
 }
 
-.wcf-embed-checkout-form .woocommerce .wcf-input-radio-field-wrapper .woocommerce-input-wrapper {
+.wcf-embed-checkout-form .woocommerce .wcf-input-radio-field-wrapper .woocommerce-input-wrapper,
+.wcf-embed-checkout-form .woocommerce .thwcfe-input-field-wrapper .woocommerce-input-wrapper {
 	display: block;
 }
 
@@ -2676,7 +2677,7 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 
 /* Modern Floating Style */
 .wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row:not( .wcf-anim-hidden-label ).wcf-anim-label:has( .select2 .select2-selection__placeholder ) > label,
-.wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row:not( .wcf-anim-hidden-label ) label:not( .woocommerce-form__label-for-checkbox, .woocommerce-form__label-for-file .checkbox, .input-radio ) {
+.wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row:not( .wcf-anim-hidden-label ):not( :has( input[type="checkbox"], input[type="radio"] ) ) label:not( .woocommerce-form__label-for-checkbox, .checkbox, .radio, .input-radio ) {
 	-webkit-user-select: none;
 	user-select: none;
 	pointer-events: none;
@@ -2707,9 +2708,20 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 	transition-timing-function: ease-out, ease;
 }
 
-.wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row.wcf-anim-label label:not( .woocommerce-form__label-for-checkbox, .woocommerce-form__label-for-file ) {
+.wcf-embed-checkout-form.wcf-field-modern-label .woocommerce #customer_details .form-row.wcf-anim-label:not( :has( input[type="checkbox"], input[type="radio"] ) ) label:not( .woocommerce-form__label-for-checkbox, .woocommerce-form__label-for-file, .radio ) {
 	opacity: 1;
 	z-index: 1000;
+}
+
+/* THWCFE radio option labels — inline layout (Bug #2275) */
+.wcf-embed-checkout-form .woocommerce label.radio:not( .input-radio ) {
+	display: inline;
+	margin-right: 16px;
+}
+
+.wcf-embed-checkout-form .woocommerce input[type="radio"].input-radio.thwcfe-input-field {
+	margin-right: 4px;
+	vertical-align: middle;
 }
 
 .wcf-embed-checkout-form.wcf-field-modern-label .woocommerce .form-row.wcf-anim-label input.input-text,
