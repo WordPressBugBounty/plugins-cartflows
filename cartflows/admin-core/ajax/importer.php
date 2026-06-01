@@ -423,6 +423,10 @@ class Importer extends AjaxBase {
 			wp_send_json_error( sprintf( __( 'Invalid step id %1$s.', 'cartflows' ), $new_step_id ) );
 		}
 
+		// Insert the new step at the clicked edge position when invoked from a canvas connector.
+		$this->handle_edge_insertion_reorder( $flow_id, $new_step_id );
+		$this->update_offer_step_source_redirects( $flow_id, $new_step_id );
+
 		/**
 		 * Redirect to the new flow edit screen
 		 */
@@ -575,6 +579,7 @@ class Importer extends AjaxBase {
 		}
 
 		$store_checkout = isset( $_POST['store_checkout'] ) ? sanitize_text_field( wp_unslash( $_POST['store_checkout'] ) ) : '';
+		$instant_layout = isset( $_POST['instant_layout'] ) ? sanitize_text_field( wp_unslash( $_POST['instant_layout'] ) ) : '';
 
 		// If is store checkout update store_checkout options.
 		if ( 'true' === $store_checkout ) {
@@ -1222,7 +1227,7 @@ class Importer extends AjaxBase {
 		$step_id           = isset( $args['step']['id'] ) ? absint( $args['step']['id'] ) : 0;
 		$step_title        = isset( $args['step']['title'] ) ? $args['step']['title'] : '';
 		$step_type         = isset( $args['step']['type'] ) ? $args['step']['type'] : '';
-		$flow_id           = isset( $args['flow']['id'] ) ? absint( $args['flow']['id'] ) : '';
+		$flow_id           = isset( $args['flow']['id'] ) ? absint( $args['flow']['id'] ) : 0;
 		$is_store_checkout = isset( $args['is_store_checkout'] ) ? $args['is_store_checkout'] : '';
 
 		// create steps only for checkout and thankyou if store checkout.
@@ -1238,6 +1243,12 @@ class Importer extends AjaxBase {
 			/* translators: %s: step ID */
 			wp_send_json_error( sprintf( __( 'Invalid step id %1$s or post id %2$s.', 'cartflows' ), $step_id, $new_step_id ) );
 		}
+
+		// Handle edge insertion - reorder flow steps when inserting on an edge.
+		$this->handle_edge_insertion_reorder( $flow_id, $new_step_id );
+
+		// Handle offer edge source update - update source offer step's redirect to point to new step.
+		$this->update_offer_step_source_redirects( $flow_id, $new_step_id );
 
 		wcf()->logger->import_log( 'Remote Step ' . $step_id . ' for local flow "' . get_the_title( $new_step_id ) . '" [' . $new_step_id . ']' );
 
@@ -1290,6 +1301,9 @@ class Importer extends AjaxBase {
 		// Import Post Meta.
 		$this->import_post_meta( $new_step_id, $response );
 
+		// Handle user-selected offer redirect settings for upsell/downsell steps.
+		$this->update_user_selected_offer_redirects( $flow_id, $new_step_id, $step_type );
+
 		if ( 'checkout' === $step_type ) {
 
 			$posted_data = array(
@@ -1341,7 +1355,18 @@ class Importer extends AjaxBase {
 
 			if ( $meta_value ) {
 
-				if ( is_serialized( $meta_value, true ) ) {
+				// Beaver Builder layout keys are handled separately from the generic security
+				// path below. BB stores rows/columns/modules as serialized arrays of stdClass
+				// objects. We allow only stdClass — no other classes are expected or permitted.
+				// Passing the raw serialized string directly to update_post_meta would cause
+				// WordPress to double-serialize it, breaking BB's get_post_meta readback.
+				$bb_meta_keys = array( '_fl_builder_data', '_fl_builder_draft', '_fl_builder_data_settings' );
+				if ( in_array( $meta_key, $bb_meta_keys, true ) ) {
+					$raw_data = $this->unserialize_bb_meta( $meta_key, $meta_value );
+					if ( false === $raw_data ) {
+						continue;
+					}
+				} elseif ( is_serialized( $meta_value, true ) ) {
 					// Security: Using unserialize with allowed_classes=>false to prevent object injection.
 					$raw_data = unserialize( stripslashes( $meta_value ), array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, PHPCompatibility.FunctionUse.NewFunctionParameters.unserialize_optionsFound
 					// Drop malicious payloads completely to prevent fatal errors.
@@ -1643,6 +1668,38 @@ class Importer extends AjaxBase {
 	}
 
 	/**
+	 * Deserialize a Beaver Builder layout meta value.
+	 *
+	 * BB layout keys (_fl_builder_data, _fl_builder_draft, _fl_builder_data_settings)
+	 * store arrays of stdClass nodes. Only stdClass is allowed during unserialize —
+	 * no other classes are expected in BB layout data and none should be permitted.
+	 *
+	 * Returns false if the value is serialized but cannot be unserialized, so the
+	 * caller can skip the key rather than storing corrupt data silently.
+	 *
+	 * @since 3.0.2
+	 *
+	 * @param string $meta_key   The meta key being processed (used for error logging).
+	 * @param mixed  $meta_value The raw meta value from the template API response.
+	 * @return mixed Unserialized value, original value if not serialized, or false on failure.
+	 */
+	private function unserialize_bb_meta( $meta_key, $meta_value ) {
+		if ( ! is_serialized( $meta_value ) ) {
+			return $meta_value;
+		}
+
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, PHPCompatibility.FunctionUse.NewFunctionParameters.unserialize_optionsFound -- BB layout data uses only stdClass; no arbitrary classes are permitted.
+		$result = unserialize( $meta_value, array( 'allowed_classes' => array( 'stdClass' ) ) );
+
+		if ( false === $result ) {
+			wcf()->logger->import_log( 'Failed to unserialize BB meta key: ' . $meta_key );
+			return false;
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Detect whether the given value contains objects at any depth.
 	 *
 	 * This is used as a hard security guard to prevent storing
@@ -1671,5 +1728,290 @@ class Importer extends AjaxBase {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Handle edge insertion reorder.
+	 *
+	 * Reorders flow steps when a new step is inserted on an edge between two existing steps.
+	 * Handles both START node edges and regular step edges.
+	 *
+	 * @since 3.1.0
+	 * @param int $flow_id     The flow ID.
+	 * @param int $new_step_id The newly created step ID.
+	 * @return void
+	 */
+	private function handle_edge_insertion_reorder( $flow_id, $new_step_id ) {
+
+		// Per-call IDOR guard — re-verify the current user can edit this flow.
+		if ( ! $this->user_can_edit_flow( $flow_id ) ) {
+			return;
+		}
+
+		$is_start_edge       = isset( $_POST['is_start_edge'] ) && 'true' === $_POST['is_start_edge']; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$edge_source_step_id = isset( $_POST['edge_source_step_id'] ) ? absint( $_POST['edge_source_step_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$edge_target_step_id = isset( $_POST['edge_target_step_id'] ) ? absint( $_POST['edge_target_step_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		// Handle edge insertion if we have a target step ID (either from START node or regular step).
+		if ( ! $edge_target_step_id || ( ! $is_start_edge && ! $edge_source_step_id ) ) {
+			return;
+		}
+
+		// IDOR guard — both edge endpoints must belong to this flow.
+		// The START node is virtual and has no step ID, so skip its check.
+		if ( ! $is_start_edge && ! $this->is_step_in_flow( $edge_source_step_id, $flow_id ) ) {
+			return;
+		}
+		if ( ! $this->is_step_in_flow( $edge_target_step_id, $flow_id ) ) {
+			return;
+		}
+
+		// Get current flow steps.
+		$flow_steps = get_post_meta( (int) $flow_id, 'wcf-steps', true );
+
+		if ( ! is_array( $flow_steps ) || empty( $flow_steps ) ) {
+			return;
+		}
+
+		// Find indices of source and target steps.
+		$source_index   = -1; // -1 for START node means insert at position 0.
+		$target_index   = -1;
+		$new_step_index = -1;
+
+		foreach ( $flow_steps as $index => $step_data ) {
+			if ( isset( $step_data['id'] ) ) {
+				if ( ! $is_start_edge && $step_data['id'] === $edge_source_step_id ) {
+					$source_index = $index;
+				}
+				if ( $step_data['id'] === $edge_target_step_id ) {
+					$target_index = $index;
+				}
+				if ( $step_data['id'] === $new_step_id ) {
+					$new_step_index = $index;
+				}
+			}
+		}
+
+		// Determine if we can proceed with reordering.
+		$can_reorder = -1 !== $target_index && -1 !== $new_step_index;
+		if ( ! $is_start_edge ) {
+			$can_reorder = $can_reorder && -1 !== $source_index;
+		}
+
+		if ( ! $can_reorder ) {
+			return;
+		}
+
+		// Remove the new step from its current position (at the end).
+		$new_step_data = $flow_steps[ $new_step_index ];
+		array_splice( $flow_steps, $new_step_index, 1 );
+
+		// Recalculate indices after removal (if new step was before them).
+		if ( ! $is_start_edge && $new_step_index < $source_index ) {
+			--$source_index;
+		}
+		if ( $new_step_index < $target_index ) {
+			--$target_index;
+		}
+
+		// Insert the new step at the correct position.
+		if ( $is_start_edge ) {
+			// START node: insert at position 0 (beginning of flow).
+			$insert_position = 0;
+		} else {
+			// Regular step: insert right after the source step.
+			$insert_position = $source_index + 1;
+		}
+
+		array_splice( $flow_steps, (int) $insert_position, 0, array( $new_step_data ) );
+
+		// Update the flow steps meta.
+		update_post_meta( (int) $flow_id, 'wcf-steps', $flow_steps );
+	}
+
+	/**
+	 * Update offer step source redirects.
+	 *
+	 * When inserting on an Accept/Reject edge, updates the source offer step's
+	 * redirect to point to the new step.
+	 *
+	 * @since 3.1.0
+	 * @param int $flow_id     The flow ID.
+	 * @param int $new_step_id The newly created step ID.
+	 * @return void
+	 */
+	private function update_offer_step_source_redirects( $flow_id, $new_step_id ) {
+
+		// Per-call IDOR guard — re-verify the current user can edit this flow.
+		if ( ! $this->user_can_edit_flow( $flow_id ) ) {
+			return;
+		}
+
+		$edge_source_step_id = isset( $_POST['edge_source_step_id'] ) ? absint( $_POST['edge_source_step_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$edge_source_handle  = isset( $_POST['edge_source_handle'] ) ? sanitize_text_field( wp_unslash( $_POST['edge_source_handle'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		if ( $edge_source_step_id <= 0 || empty( $edge_source_handle ) ) {
+			return;
+		}
+
+		// IDOR guard — both source and target steps must belong to this flow.
+		if ( ! $this->is_step_in_flow( $edge_source_step_id, $flow_id ) ) {
+			return;
+		}
+		if ( ! $this->is_step_in_flow( $new_step_id, $flow_id ) ) {
+			return;
+		}
+
+		$source_step_type = get_post_meta( $edge_source_step_id, 'wcf-step-type', true );
+
+		// Only update if source is an offer step (upsell/downsell).
+		if ( ! in_array( $source_step_type, array( 'upsell', 'downsell' ), true ) ) {
+			return;
+		}
+
+		$source_meta_updated = false;
+
+		// Update the appropriate post meta based on handle.
+		if ( 'a' === $edge_source_handle ) {
+			// Accept edge - update wcf-yes-next-step.
+			update_post_meta( $edge_source_step_id, 'wcf-yes-next-step', $new_step_id );
+			$source_meta_updated = true;
+		} elseif ( 'b' === $edge_source_handle ) {
+			// Reject edge - update wcf-no-next-step.
+			update_post_meta( $edge_source_step_id, 'wcf-no-next-step', $new_step_id );
+			$source_meta_updated = true;
+		}
+
+		// Also update the flow_steps array to keep it in sync.
+		if ( $source_meta_updated ) {
+			$this->sync_offer_redirects_in_flow_steps( $flow_id, $edge_source_step_id, $edge_source_handle, $new_step_id );
+		}
+	}
+
+	/**
+	 * Sync offer redirects in flow_steps array.
+	 *
+	 * Updates the flow_steps array to keep it in sync with post meta.
+	 * Handles both control steps and A/B test variations.
+	 *
+	 * @since 3.1.0
+	 * @param int    $flow_id        The flow ID.
+	 * @param int    $source_step_id The source offer step ID.
+	 * @param string $handle         The edge handle ('a' for accept, 'b' for reject).
+	 * @param int    $target_step_id The target step ID to redirect to.
+	 * @return void
+	 */
+	private function sync_offer_redirects_in_flow_steps( $flow_id, $source_step_id, $handle, $target_step_id ) {
+		$updated_flow_steps = get_post_meta( (int) $flow_id, 'wcf-steps', true );
+
+		if ( ! is_array( $updated_flow_steps ) ) {
+			return;
+		}
+
+		$flow_steps_updated = false;
+
+		foreach ( $updated_flow_steps as $idx => $step_data ) {
+			// Check if this is the control step (direct match).
+			if ( isset( $step_data['id'] ) && (int) $step_data['id'] === (int) $source_step_id ) {
+				if ( 'a' === $handle ) {
+					$updated_flow_steps[ $idx ]['offer_yes_step_id'] = $target_step_id;
+				} elseif ( 'b' === $handle ) {
+					$updated_flow_steps[ $idx ]['offer_no_step_id'] = $target_step_id;
+				}
+				$flow_steps_updated = true;
+				break;
+			}
+
+			// Check if the source is an A/B test variation within this step.
+			if ( isset( $step_data['ab-test-variations'] ) && is_array( $step_data['ab-test-variations'] ) ) {
+				foreach ( $step_data['ab-test-variations'] as $var_idx => $variation ) {
+					if ( isset( $variation['id'] ) && (int) $variation['id'] === (int) $source_step_id ) {
+						if ( 'a' === $handle ) {
+							$updated_flow_steps[ $idx ]['ab-test-variations'][ $var_idx ]['offer_yes_step_id'] = $target_step_id;
+						} elseif ( 'b' === $handle ) {
+							$updated_flow_steps[ $idx ]['ab-test-variations'][ $var_idx ]['offer_no_step_id'] = $target_step_id;
+						}
+						$flow_steps_updated = true;
+						break 2; // Break out of both loops.
+					}
+				}
+			}
+		}
+
+		if ( $flow_steps_updated ) {
+			update_post_meta( (int) $flow_id, 'wcf-steps', $updated_flow_steps );
+		}
+	}
+
+	/**
+	 * Update user-selected offer redirects.
+	 *
+	 * Handles user-selected offer redirect settings for upsell/downsell steps
+	 * when the user explicitly selects Accept/Reject targets via the UI.
+	 *
+	 * @since 3.1.0
+	 * @param int    $flow_id     The flow ID.
+	 * @param int    $new_step_id The newly created step ID.
+	 * @param string $step_type   The step type.
+	 * @return void
+	 */
+	private function update_user_selected_offer_redirects( $flow_id, $new_step_id, $step_type ) {
+
+		// Per-call IDOR guard — re-verify the current user can edit this flow.
+		if ( ! $this->user_can_edit_flow( $flow_id ) ) {
+			return;
+		}
+
+		// Only process for offer steps.
+		if ( ! in_array( $step_type, array( 'upsell', 'downsell' ), true ) ) {
+			return;
+		}
+
+		// IDOR guard — the new step itself must belong to this flow.
+		if ( ! $this->is_step_in_flow( $new_step_id, $flow_id ) ) {
+			return;
+		}
+
+		$user_offer_yes_step_id = isset( $_POST['offer_yes_step_id'] ) ? absint( $_POST['offer_yes_step_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$user_offer_no_step_id  = isset( $_POST['offer_no_step_id'] ) ? absint( $_POST['offer_no_step_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		// IDOR guard — redirect targets must belong to this flow if provided.
+		if ( $user_offer_yes_step_id && ! $this->is_step_in_flow( $user_offer_yes_step_id, $flow_id ) ) {
+			$user_offer_yes_step_id = 0;
+		}
+		if ( $user_offer_no_step_id && ! $this->is_step_in_flow( $user_offer_no_step_id, $flow_id ) ) {
+			$user_offer_no_step_id = 0;
+		}
+
+		// Return if user didn't select any custom redirects.
+		if ( ! $user_offer_yes_step_id && ! $user_offer_no_step_id ) {
+			return;
+		}
+
+		$current_flow_steps = get_post_meta( (int) $flow_id, 'wcf-steps', true );
+
+		if ( ! is_array( $current_flow_steps ) ) {
+			return;
+		}
+
+		foreach ( $current_flow_steps as $idx => $step_data ) {
+			if ( isset( $step_data['id'] ) && $step_data['id'] === $new_step_id ) {
+				// Update offer_yes_step_id if user selected one.
+				if ( $user_offer_yes_step_id ) {
+					$current_flow_steps[ $idx ]['offer_yes_step_id'] = $user_offer_yes_step_id;
+					update_post_meta( $new_step_id, 'wcf-yes-next-step', $user_offer_yes_step_id );
+				}
+
+				// Update offer_no_step_id if user selected one.
+				if ( $user_offer_no_step_id ) {
+					$current_flow_steps[ $idx ]['offer_no_step_id'] = $user_offer_no_step_id;
+					update_post_meta( $new_step_id, 'wcf-no-next-step', $user_offer_no_step_id );
+				}
+				break;
+			}
+		}
+
+		// Save the updated flow steps.
+		update_post_meta( (int) $flow_id, 'wcf-steps', $current_flow_steps );
 	}
 }

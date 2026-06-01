@@ -40,6 +40,12 @@ class Cartflows_Checkout_Markup {
 	 */
 	public function __construct() {
 
+		// Register early so get_value() returns URL-param values inside
+		// WC_Checkout::initialize_checkout_fields(), which bakes the active
+		// country into the state field definition on first call — potentially
+		// before the wp action fires.
+		add_filter( 'woocommerce_checkout_get_value', array( $this, 'prefill_checkout_get_value' ), 10, 2 );
+
 		/* Set is checkout flag */
 		add_filter( 'woocommerce_is_checkout', array( $this, 'woo_checkout_flag' ), 9999 );
 
@@ -715,7 +721,7 @@ class Cartflows_Checkout_Markup {
 
 											$_var_product = wc_get_product( $v_id );
 
-											if ( $_var_product->is_in_stock() && 'publish' === $_var_product->get_status() ) {
+											if ( $_var_product && $_var_product->is_in_stock() && 'publish' === $_var_product->get_status() ) {
 												$variation_product_id = $v_id;
 												$variation_product    = $_var_product;
 												break;
@@ -832,6 +838,10 @@ class Cartflows_Checkout_Markup {
 		add_filter( 'woocommerce_order_button_text', array( $this, 'place_order_button_text' ), 99, 1 );
 
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'checkout_fields_actions' ), 10, 1 );
+
+		// Auto-check "Ship to a different address?" when shipping URL params are present,
+		// so the pre-filled shipping fields are visible on page load.
+		add_filter( 'woocommerce_ship_to_different_address_checked', array( $this, 'maybe_check_ship_to_different_address' ) );
 
 		// Add file field type support.
 		add_filter( 'woocommerce_form_field_file', array( $this, 'render_file_field' ), 10, 4 );
@@ -1109,10 +1119,72 @@ class Cartflows_Checkout_Markup {
 					$checkout_fields['shipping'][ $key ]['default'] = $field_value;
 				}
 			}
+
+			// WC bakes the country into the state field definition during
+			// initialize_checkout_fields(). If that ran before our early-registered
+			// woocommerce_checkout_get_value filter could return the URL param country,
+			// the wrong country's states would be used. Override it here.
+			$billing_country = isset( $_GET['billing_country'] ) && ! empty( $_GET['billing_country'] )
+				? sanitize_text_field( wp_unslash( $_GET['billing_country'] ) ) : '';
+
+			$shipping_country = isset( $_GET['shipping_country'] ) && ! empty( $_GET['shipping_country'] )
+				? sanitize_text_field( wp_unslash( $_GET['shipping_country'] ) ) : '';
+
+			if ( $billing_country && isset( $checkout_fields['billing']['billing_state'] ) ) {
+				$checkout_fields['billing']['billing_state']['country'] = $billing_country;
+			}
+
+			if ( $shipping_country && isset( $checkout_fields['shipping']['shipping_state'] ) ) {
+				$checkout_fields['shipping']['shipping_state']['country'] = $shipping_country;
+			}
 		}
 
 		return $checkout_fields;
 		//phpcs:enable WordPress.Security.NonceVerification.Recommended
+	}
+
+	/**
+	 * Return URL param value for a checkout field so that it takes priority
+	 * over saved customer/session data.
+	 *
+	 * WC_Checkout::get_value() checks this filter before falling back to the
+	 * logged-in customer's saved address, so hooking here is the only reliable
+	 * way to pre-fill fields for logged-in users via checkout links.
+	 *
+	 * @since x.x.x
+	 * @param mixed  $value The current value (null = not yet set).
+	 * @param string $input The field key (e.g. 'billing_first_name').
+	 * @return mixed URL param value when present, original $value otherwise.
+	 */
+	public function prefill_checkout_get_value( $value, $input ) {
+		//phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( is_auto_prefill_checkout_fields_enabled() && ! empty( $_GET[ $input ] ) ) {
+			return sanitize_text_field( wp_unslash( $_GET[ $input ] ) );
+		}
+		//phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return $value;
+	}
+
+	/**
+	 * Pre-check the "Ship to a different address?" checkbox when any shipping_*
+	 * URL parameter is present, so the pre-filled shipping fields are visible
+	 * on page load instead of hidden inside the collapsed section.
+	 *
+	 * @since x.x.x
+	 * @param int $checked 1 if the checkbox should be pre-checked, 0 otherwise.
+	 * @return int
+	 */
+	public function maybe_check_ship_to_different_address( $checked ) {
+		//phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( is_auto_prefill_checkout_fields_enabled() ) {
+			foreach ( array_keys( $_GET ) as $key ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( 0 === strpos( $key, 'shipping_' ) && ! empty( $_GET[ $key ] ) ) {
+					return 1;
+				}
+			}
+		}
+		//phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return $checked;
 	}
 
 	/**

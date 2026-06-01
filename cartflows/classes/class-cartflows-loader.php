@@ -143,12 +143,12 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '3.0.1' );
+			define( 'CARTFLOWS_VER', '3.1.0' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
 
-			define( 'CARTFLOWS_REQ_CF_PRO_VER', '3.0.0' );
+			define( 'CARTFLOWS_REQ_CF_PRO_VER', '3.1.0' );
 
 			// Resolves to true for users upgrading from <3.0.0 (set by Cartflows_Update on first 3.0+ admin_init)
 			// and stays true until the user opts out via the Advanced-tab toggle or the legacy in-app switch.
@@ -463,6 +463,8 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 				/* Admin helper */
 				include_once CARTFLOWS_DIR . 'classes/class-cartflows-admin.php';
 
+				/* Dashboard widget — funnel performance summary on wp-admin/index.php. */
+				include_once CARTFLOWS_DIR . 'classes/class-cartflows-dashboard-widget.php';
 			}
 
 			/* Admin loader — fork between legacy (admin-legacy-core/) and current (admin-core/) UI. */

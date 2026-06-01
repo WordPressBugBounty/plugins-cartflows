@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use CartflowsAdmin\Wizard\Ajax\AjaxBase;
 use CartflowsAdmin\AdminCore\Ajax\Importer;
+use CartflowsAdmin\AdminCore\Inc\AdminHelper;
 use CartflowsAdmin\Wizard\Inc\WizardCore;
 
 /**
@@ -198,7 +199,7 @@ class Wizard extends AjaxBase {
 
 		$email          = isset( $_POST['user_email'] ) ? sanitize_email( wp_unslash( $_POST['user_email'] ) ) : '';
 		$user_name      = isset( $_POST['user_fname'] ) ? sanitize_text_field( wp_unslash( $_POST['user_fname'] ) ) : '';
-		$usage_tracking = isset( $_POST['usage_tracking'] ) ? sanitize_text_field( wp_unslash( $_POST['usage_tracking'] ) ) : '';
+		$usage_tracking = isset( $_POST['usage_tracking'] ) ? sanitize_text_field( wp_unslash( $_POST['usage_tracking'] ) ) : 'no';
 
 		if ( empty( $email ) ) {
 			wp_send_json_error(
@@ -210,7 +211,7 @@ class Wizard extends AjaxBase {
 		}
 
 		// Enable the usage tracking for BSF Analytics.
-		update_option( 'cf_usage_optin', $usage_tracking );
+		AdminHelper::update_admin_settings_option( 'cf_usage_optin', $usage_tracking, true );
 
 		$api_args = array(
 			'timeout' => 90, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout

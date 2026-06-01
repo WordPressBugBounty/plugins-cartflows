@@ -104,6 +104,11 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 						$checkout_products[ $index ]['name']          = $product_obj->get_name();
 						$checkout_products[ $index ]['img_url']       = get_the_post_thumbnail_url( $product['product'] );
 						$checkout_products[ $index ]['regular_price'] = Cartflows_Helper::get_product_original_price( $product_obj );
+					} else {
+						// Product or variation no longer exists — provide safe defaults so the editor doesn't crash.
+						$checkout_products[ $index ]['name']          = '';
+						$checkout_products[ $index ]['img_url']       = '';
+						$checkout_products[ $index ]['regular_price'] = '';
 					}
 				}
 			} else {
@@ -1163,7 +1168,7 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 
 		$formatted_name = '';
 
-		if ( is_object( $formatted_name ) ) {
+		if ( is_object( $product_object ) ) {
 			$formatted_name = rawurldecode( $product_object->get_formatted_name() );
 		}
 		return $formatted_name;

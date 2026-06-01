@@ -265,11 +265,12 @@ class Cartflows_Checkout_Ajax {
 			'success' => false,
 		);
 
-		$email_address = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : false;
-		$password      = isset( $_POST['password'] ) ? wp_unslash( $_POST['password'] ) : false; // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// wp_signon() accepts username or email via user_login; sanitize_email() would drop usernames.
+		$user_login = isset( $_POST['email'] ) ? sanitize_text_field( wp_unslash( $_POST['email'] ) ) : '';
+		$password   = isset( $_POST['password'] ) ? wp_unslash( $_POST['password'] ) : ''; // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		$creds = array(
-			'user_login'    => $email_address,
+			'user_login'    => $user_login,
 			'user_password' => $password,
 			'remember'      => false,
 		);
@@ -284,7 +285,7 @@ class Cartflows_Checkout_Ajax {
 			// Mirror WC's process_login() so security plugins see the failure.
 			do_action( 'woocommerce_login_failed' );
 			// Generic error to prevent user enumeration.
-			$response['error'] = __( 'Invalid email address or password.', 'cartflows' );
+			$response['error'] = __( 'Invalid username or password.', 'cartflows' );
 		}
 
 		wp_send_json_success( $response );

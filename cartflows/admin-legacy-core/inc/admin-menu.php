@@ -881,6 +881,15 @@ class AdminMenu {
 			CARTFLOWS_VER
 		);
 
+		wp_register_style(
+			'wcf-canvas-base-style',
+			$build_url . 'style-editor-app.css',
+			array(),
+			CARTFLOWS_VER
+		);
+		// Enqueue the registered style.
+		wp_enqueue_style( 'wcf-canvas-base-style' );
+
 		wp_enqueue_script( $handle );
 
 		wp_set_script_translations( $handle, 'cartflows' );

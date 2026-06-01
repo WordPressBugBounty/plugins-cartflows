@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 3.0.1
+Stable tag: 3.1.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,19 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.1.0 - Monday, 1st June 2026 =
+* New: Introduced a redesigned Funnel Canvas for a cleaner and more intuitive funnel-building experience.
+* New: Added a Funnel Performance widget to the WordPress Dashboard with a quick 30-day summary of orders and revenue.
+* New: Introduced a new filter to optionally restrict adding the same product more than once on a checkout step.
+* Improvement: Improved the Funnels page load performance by preventing duplicate data fetch requests.
+* Improvement: Refined the usage data consent label on the setup wizard and onboarding to clearly highlight its benefits.
+* Fix: Fixed the View Funnel button opening the site home page instead of the first step of the funnel.
+* Fix: Fixed the Checkout step editor crashing when a selected product variation was deleted from WooCommerce.
+* Fix: Fixed Beaver Builder step templates importing as blank pages.
+* Fix: Fixed the Razorpay 'Something went wrong' popup appearing on the Instant Layout thank you page.
+* Fix: Fixed the thank you page access restriction blocking funnel preview when test mode was enabled.
+* Fix: Resolved PHP deprecation notices shown on the setup wizard with WordPress 6.4 and above.
 
 = Version 3.0.1 - Friday, 1st May 2026 =
 * Improvement: Refined admin UI for a more polished experience.

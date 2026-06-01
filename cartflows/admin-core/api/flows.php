@@ -198,7 +198,7 @@ class Flows extends ApiBase {
 				$post_data['post_status']   = ucwords( $post_data['post_status'] );
 
 				$first_step_url              = \Cartflows_Flow_Post_Type::get_instance()->get_first_step_url( $post );
-				$view                        = $first_step_url ? $first_step_url : get_permalink( $post->ID );
+				$view                        = $first_step_url ? $first_step_url : '#';
 				$edit                        = admin_url( 'admin.php?page=cartflows&path=flows&action=wcf-edit-flow&flow_id=' . $post->ID );
 				$delete                      = '#';
 				$clone                       = '#';
