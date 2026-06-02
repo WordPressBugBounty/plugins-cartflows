@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,10 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.1.1 - Tuesday, 2nd June 2026 =
+* Improvement: Smoother step card interactions on the funnel canvas — uniform sizing and clearer hover feedback.
+* Fix: Resolved a PHP deprecation notice triggered when saving checkout step products on PHP 8.1 and above.
 
 = Version 3.1.0 - Monday, 1st June 2026 =
 * New: Introduced a redesigned Funnel Canvas for a cleaner and more intuitive funnel-building experience.

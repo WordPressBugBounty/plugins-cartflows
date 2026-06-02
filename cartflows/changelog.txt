@@ -1,3 +1,7 @@
+Version 3.1.1 - Tuesday, 2nd June 2026
+- Improvement: Smoother step card interactions on the funnel canvas — uniform sizing and clearer hover feedback.
+- Fix: Resolved a PHP deprecation notice triggered when saving checkout step products on PHP 8.1 and above.
+
 Version 3.1.0 - Monday, 1st June 2026
 - New: Introduced a redesigned Funnel Canvas for a cleaner and more intuitive funnel-building experience.
 - New: Added a Funnel Performance widget to the WordPress Dashboard with a quick 30-day summary of orders and revenue.
