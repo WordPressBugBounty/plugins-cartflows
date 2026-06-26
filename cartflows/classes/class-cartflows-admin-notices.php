@@ -114,7 +114,7 @@ class Cartflows_Admin_Notices {
 	/**
 	 * Persist the "Switch to New UI" dismissal for the current user.
 	 *
-	 * Writes the same `notice-dismissed` user_meta key that Astra_Notices uses
+	 * Writes the same `notice-dismissed` user_meta key that BSF_Admin_Notices uses
 	 * so the WP admin_notices banner and the React-shell banner stay in sync —
 	 * dismissing either one hides both on the next load.
 	 *
@@ -348,7 +348,7 @@ class Cartflows_Admin_Notices {
 		);
 
 		// CartFlows 3.0 — soft notice inviting legacy users to opt into the new admin UI.
-		// Registered through Astra_Notices so it inherits the standard notice
+		// Registered through BSF_Admin_Notices so it inherits the standard notice
 		// design, dismiss handling and per-user storage the rest of CartFlows uses.
 		if ( $this->is_new_ui_notice_visible() ) {
 			$this->enqueue_new_ui_notice_assets();
@@ -619,7 +619,7 @@ class Cartflows_Admin_Notices {
 			return false;
 		}
 
-		// Astra_Notices' own astra-notice-close JS writes 'notice-dismissed' to
+		// BSF_Admin_Notices' own astra-notice-close JS writes 'notice-dismissed' to
 		// this user_meta key when the user dismisses the notice.
 		if ( 'notice-dismissed' === get_user_meta( get_current_user_id(), 'cartflows-switch-to-new-ui-notice', true ) ) {
 			return false;

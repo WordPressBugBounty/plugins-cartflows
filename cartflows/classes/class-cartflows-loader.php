@@ -143,7 +143,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '3.1.1' );
+			define( 'CARTFLOWS_VER', '3.1.2' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -353,7 +353,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			require_once CARTFLOWS_DIR . 'classes/class-cartflows-rollback.php';
 
 			if ( is_admin() ) {
-				require_once CARTFLOWS_DIR . 'libraries/astra-notices/class-astra-notices.php';
+				require_once CARTFLOWS_DIR . 'libraries/astra-notices/class-bsf-admin-notices.php';
 			}
 
 			if ( ! class_exists( 'BSF_Analytics_Loader' ) ) {

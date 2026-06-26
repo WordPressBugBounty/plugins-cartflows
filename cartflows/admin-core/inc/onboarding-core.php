@@ -407,6 +407,17 @@ class OnboardingCore {
 		$vars = apply_filters( 'cartflows_onboarding_localized_vars', $vars );
 
 		wp_localize_script( 'wcf-onboarding-app', 'cartflows_onboarding', $vars );
+
+		// Satisfies the @Styles/common contract — UTM helpers read from cartflows_admin.
+		wp_localize_script(
+			'wcf-onboarding-app',
+			'cartflows_admin',
+			array(
+				'utm_defaults'          => \Cartflows_Helper::get_utm_defaults(),
+				'cf_domain_url'         => CARTFLOWS_DOMAIN_URL,
+				'cf_upgrade_to_pro_url' => \Cartflows_Helper::get_upgrade_to_pro_link(),
+			)
+		);
 	}
 
 	/**

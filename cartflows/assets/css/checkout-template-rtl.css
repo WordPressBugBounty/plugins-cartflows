@@ -498,7 +498,7 @@
 	line-height: 21px;
 	min-height: 20px;
 	overflow: visible;
-	padding: 0;
+	padding: 0 !important;
 	-js-display: flex;
 	display: flex;
 	align-items: center;
@@ -1625,6 +1625,12 @@ a.et_pb_more_button::after {
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce-checkout #wc-stripe-express-checkout-element,
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce-checkout #wc-stripe-express-checkout-button-separator {
 	flex: 1 0 100%;
+}
+
+/* Official Stripe plugin Express Checkout — full width on Instant Checkout (left column is a grid container). */
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce-checkout #wc-stripe-express-checkout-element,
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce-checkout #wc-stripe-express-checkout-button-separator {
+	width: 100%;
 }
 
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .wcf-customer-info-main-wrapper {

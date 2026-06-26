@@ -511,7 +511,7 @@ class AdminMenu {
 				'cartflows_current_version'            => CARTFLOWS_VER,
 				'cartflows_previous_versions'          => \Cartflows_Helper::get_rollback_versions_options(),
 				'rollback_url'                         => esc_url( add_query_arg( 'version', 'VERSION', wp_nonce_url( admin_url( 'admin-post.php?action=cartflows_rollback' ), 'cartflows_rollback' ) ) ),
-				'utm_param_pro_plans'                  => 'utm_source=carflows-dashboard&utm_medium=free-cartflows&utm_campaign=go-pro',
+				'utm_defaults'                         => \Cartflows_Helper::get_utm_defaults(),
 				/**
 				 * Filters whether to hide already-added products from the checkout product search dropdown.
 				 *

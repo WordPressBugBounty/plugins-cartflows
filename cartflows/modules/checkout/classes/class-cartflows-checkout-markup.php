@@ -511,7 +511,7 @@ class Cartflows_Checkout_Markup {
 				$error_html .= '<p>' . sprintf(
 					/* translators: %1$1s, %2$2s Link to article */
 					__( 'It seems that this is not the CartFlows Checkout page where you have added this shortcode. Please refer to this %1$1sarticle%2$2s to know more.', 'cartflows' ),
-					'<a href="https://cartflows.com/docs/resolve-checkout-id-not-found-error/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs" target="_blank">',
+					'<a href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/resolve-checkout-id-not-found-error/' ) ) . '" target="_blank">',
 					'</a>'
 				) . '</p>';
 

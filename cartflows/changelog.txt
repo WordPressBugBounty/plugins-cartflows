@@ -1,3 +1,14 @@
+Version 3.1.2 - Friday, 26th June 2026
+- Improvement: Redesigned the weekly performance report email with a cleaner layout and new sections for weekly tips, top wins, and quick action links.
+- Improvement: Enhanced Instant Checkout integration so the layout wrapper renders correctly before third-party payment buttons such as Stripe Express Checkout.
+- Improvement: Steps Analytics now displays A/B test variations and archived step rows so historical performance stays visible at a glance.
+- Improvement: Refined Analytics chart Y-axis with compact number and currency formatting.
+- Fix: Fixed the Funnel filter dropdown truncating long funnel names on the Analytics screen.
+- Fix: Fixed dropdown field overlap on product rows inside the Checkout product settings.
+- Fix: Fixed the trend line rendering outside the chart area on Analytics graphs.
+- Fix: Fixed Select2 dropdown height mismatch on the Checkout page with WooCommerce 9.7.1 and above.
+- Fix: Fixed a PHP notice for the Pre-Checkout Offer setting on CartFlows Free with PHP 8 and above.
+
 Version 3.1.1 - Tuesday, 2nd June 2026
 - Improvement: Smoother step card interactions on the funnel canvas — uniform sizing and clearer hover feedback.
 - Fix: Resolved a PHP deprecation notice triggered when saving checkout step products on PHP 8.1 and above.

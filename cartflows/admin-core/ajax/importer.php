@@ -748,9 +748,9 @@ class Importer extends AjaxBase {
 			$btn = '';
 			if ( 'not-installed' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
-				$btn = sprintf( __( 'CartFlows Pro Required! %1$sUpgrade to CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
+				$btn = sprintf( __( 'CartFlows Pro Required! %1$sUpgrade to CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="' . esc_url( \Cartflows_Helper::get_upgrade_to_pro_link( '', 'https://cartflows.com/' ) ) . '">', '</a>' );
 				/* translators: %1$s: link html start, %2$s: link html end*/
-				$cta = sprintf( __( 'To import the premium flow %1$supgrade to CartFlows Pro%2$s.', 'cartflows' ), '<a target="_blank" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
+				$cta = sprintf( __( 'To import the premium flow %1$supgrade to CartFlows Pro%2$s.', 'cartflows' ), '<a target="_blank" href="' . esc_url( \Cartflows_Helper::get_upgrade_to_pro_link( '', 'https://cartflows.com/' ) ) . '">', '</a>' );
 			} elseif ( 'inactive' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
 				$btn = sprintf( __( 'Activate the CartFlows Pro to import the flow! %1$sActivate CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="' . admin_url( 'plugins.php?plugin_status=search&paged=1&s=CartFlows+Pro' ) . '">', '</a>' );
@@ -936,7 +936,7 @@ class Importer extends AjaxBase {
 
 		if ( is_wp_error( $response['data'] ) ) {
 			/* translators: %1$s: html tag, %2$s: link html start %3$s: link html end */
-			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$sTo resolve this issue, please check this %2$sarticle%3$s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs">', '</a>' );
+			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$sTo resolve this issue, please check this %2$sarticle%3$s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/' ) ) . '">', '</a>' );
 
 			wp_send_json_error(
 				array(
@@ -958,7 +958,7 @@ class Importer extends AjaxBase {
 			$cta = '';
 			if ( 'not-installed' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
-				$cta = sprintf( __( '%1$sUpgrade to CartFlows Pro.%2$s', 'cartflows' ), '<a target="_blanks" class="wcf-button wcf-primary-button" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
+				$cta = sprintf( __( '%1$sUpgrade to CartFlows Pro.%2$s', 'cartflows' ), '<a target="_blanks" class="wcf-button wcf-primary-button" href="' . esc_url( \Cartflows_Helper::get_upgrade_to_pro_link( '', 'https://cartflows.com/' ) ) . '">', '</a>' );
 				$msg = __( 'To import the premium step, please upgrade to CartFlows Pro', 'cartflows' );
 			} elseif ( 'inactive' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
@@ -1062,7 +1062,7 @@ class Importer extends AjaxBase {
 		$response = \CartFlows_API::get_instance()->get_flow( $remote_flow_id );
 		if ( is_wp_error( $response['data'] ) ) {
 			/* translators: %1$s: html tag, %2$s: link html start %3$s: link html end */
-			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$sTo resolve this issue, please check this %2$s article%3$s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=docs">', '</a>' );
+			$btn = sprintf( __( 'Request timeout error. Please check if the firewall or any security plugin is blocking the outgoing HTTP/HTTPS requests to templates.cartflows.com or not. %1$sTo resolve this issue, please check this %2$s article%3$s.', 'cartflows' ), '<br><br>', '<a target="_blank" href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/request-timeout-error-while-importing-the-flow-step-templates/' ) ) . '">', '</a>' );
 
 			wp_send_json_error(
 				array(
@@ -1083,7 +1083,7 @@ class Importer extends AjaxBase {
 			$cta = '';
 			if ( 'not-installed' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
-				$cta = sprintf( __( 'Upgrade to %1$sCartFlows Pro.%2$s', 'cartflows' ), '<a target="_blanks" href="https://cartflows.com/?utm_source=dashboard&utm_medium=free-cartflows&utm_campaign=go-pro">', '</a>' );
+				$cta = sprintf( __( 'Upgrade to %1$sCartFlows Pro.%2$s', 'cartflows' ), '<a target="_blanks" href="' . esc_url( \Cartflows_Helper::get_upgrade_to_pro_link( '', 'https://cartflows.com/' ) ) . '">', '</a>' );
 			} elseif ( 'inactive' === $cf_pro_status ) {
 				/* translators: %1$s: link html start, %2$s: link html end*/
 				$cta = sprintf( __( '%1$sActivate CartFlows Pro%2$s', 'cartflows' ), '<a target="_blank" href="' . admin_url( 'plugins.php?plugin_status=search&paged=1&s=CartFlows+Pro' ) . '">', '</a>' );

@@ -101,7 +101,14 @@ class Cartflows_Dashboard_Widget {
 		}
 
 		$report_url  = admin_url( 'admin.php?page=cartflows&path=home' );
-		$upgrade_url = $this->get_utm_url( 'https://cartflows.com/pricing/', 'dashboard-widget-card' );
+		$upgrade_url = \Cartflows_Helper::get_upgrade_to_pro_link(
+			'pricing',
+			'',
+			array(
+				'utm_source'   => 'plugin-page',
+				'utm_campaign' => 'dashboard-widget-card',
+			)
+		);
 		?>
 		<div class="wcf-dash-widget">
 			<div class="wcf-dash-header">
@@ -136,10 +143,35 @@ class Cartflows_Dashboard_Widget {
 
 			<div class="wcf-dash-footer">
 				<?php if ( $locked ) : ?>
-					<a href="<?php echo esc_url( $this->get_utm_url( 'https://cartflows.com/pricing/', 'dashboard-widget-upgrade' ) ); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary"><?php esc_html_e( 'Upgrade to Pro', 'cartflows' ); ?></a>
+					<a href="
+					<?php
+					echo esc_url(
+						\Cartflows_Helper::get_upgrade_to_pro_link(
+							'pricing',
+							'',
+							array(
+								'utm_source'   => 'plugin-page',
+								'utm_campaign' => 'dashboard-widget-upgrade',
+							) 
+						) 
+					);
+					?>
+								" target="_blank" rel="noopener noreferrer" class="button button-primary"><?php esc_html_e( 'Upgrade to Pro', 'cartflows' ); ?></a>
 				<?php endif; ?>
 				<div class="wcf-dash-footer-links">
-					<a href="<?php echo esc_url( $this->get_utm_url( 'https://cartflows.com/docs/', 'dashboard-widget-help' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Help & Tutorials', 'cartflows' ); ?></a>
+					<a href="
+					<?php
+					echo esc_url(
+						\Cartflows_Helper::get_kb_doc_link(
+							'https://cartflows.com/docs/',
+							array(
+								'utm_source'   => 'plugin-page',
+								'utm_campaign' => 'dashboard-widget-help',
+							) 
+						) 
+					);
+					?>
+								" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Help & Tutorials', 'cartflows' ); ?></a>
 				</div>
 			</div>
 
@@ -209,25 +241,6 @@ class Cartflows_Dashboard_Widget {
 	 */
 	private function show_locked_cards() {
 		return ! ( _is_cartflows_pro() && is_wcf_pro_plan() );
-	}
-
-	/**
-	 * Build a CartFlows.com URL with UTM parameters appended.
-	 *
-	 * @since 2.2.3
-	 * @param string $base     Destination base URL.
-	 * @param string $campaign UTM campaign slug.
-	 * @return string Full URL with UTM query parameters.
-	 */
-	private function get_utm_url( $base, $campaign ) {
-		return add_query_arg(
-			array(
-				'utm_source'   => 'plugin-page',
-				'utm_medium'   => 'free-cartflows',
-				'utm_campaign' => $campaign,
-			),
-			$base
-		);
 	}
 
 	/**

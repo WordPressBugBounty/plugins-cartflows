@@ -353,7 +353,7 @@ class Cartflows_Analytics {
 			'paypal-reference-transactions' => ! empty( $common_settings['paypal_reference_transactions'] ) && 'enable' === $common_settings['paypal_reference_transactions'],
 			'cartflows-stats-report-emails' => 'enable' === get_option( 'cartflows_stats_report_emails', 'enable' ),
 			'cartflows-delete-plugin-data'  => 'enable' === get_option( 'cartflows_delete_plugin_data' ),
-			'pre-checkout-offer'            => 'enable' === $common_settings['pre_checkout_offer'],
+			'pre-checkout-offer'            => isset( $common_settings['pre_checkout_offer'] ) && 'enable' === $common_settings['pre_checkout_offer'],
 			'store-checkout-set'            => ! empty( intval( Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' ) ) ),
 			'is-child-theme'                => $theme_data['child_theme'],
 			'suretriggers_active'           => is_plugin_active( 'suretriggers/suretriggers.php' ),
