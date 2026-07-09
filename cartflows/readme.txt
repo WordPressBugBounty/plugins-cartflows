@@ -2,8 +2,8 @@
 Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
-Tested up to: 6.9
-Stable tag: 3.1.2
+Tested up to: 7.0
+Stable tag: 3.1.3
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,12 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.1.3 - Thursday, 9th July 2026 =
+* Improvement: Improved the Funnels page load speed on stores with a large number of funnels.
+* Fix: Fixed funnel and step titles converting dashes into HTML entities in the editor and saving the corrupted title on reload.
+* Fix: Fixed the redundant price range text leaking into the product search dropdown on Checkout and Order Bump settings.
+* Fix: Fixed the Delete and Download buttons not working on Settings > Logs.
 
 = Version 3.1.2 - Friday, 26th June 2026 =
 * Improvement: Redesigned the weekly performance report email with a cleaner layout and new sections for weekly tips, top wins, and quick action links.

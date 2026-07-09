@@ -727,6 +727,8 @@ class Importer extends AjaxBase {
 
 		if ( $is_error['error'] ) {
 
+			do_action( 'cartflows_generate_analytics_lead', $flow, false );
+
 			wp_send_json_error(
 				array(
 					'error_code'     => $is_error['error_code'],
@@ -798,6 +800,7 @@ class Importer extends AjaxBase {
 		$new_flow_id = wp_insert_post( $new_flow_post );
 
 		if ( is_wp_error( $new_flow_id ) ) {
+			do_action( 'cartflows_generate_analytics_lead', $flow, false );
 			wp_send_json_error( $new_flow_id->get_error_message() );
 		}
 
@@ -827,6 +830,7 @@ class Importer extends AjaxBase {
 
 		// Return of no steps are found in the imported flow.
 		if ( empty( $steps ) ) {
+			do_action( 'cartflows_generate_analytics_lead', $flow, false );
 			$response_data = array( 'message' => __( 'Steps not found.', 'cartflows' ) );
 			wp_send_json_error( $response_data );
 		}
@@ -884,6 +888,9 @@ class Importer extends AjaxBase {
 		AdminHelper::track_funnel_creation_method( $creation_method );
 
 		wcf()->logger->import_log( 'COMPLETE! Importing Flow' );
+
+		// Report the completed template import to the CartFlows server.
+		do_action( 'cartflows_generate_analytics_lead', $flow, true );
 
 		wp_send_json_success( $response_data );
 	}

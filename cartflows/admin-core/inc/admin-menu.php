@@ -444,6 +444,7 @@ class AdminMenu {
 				'is_any_required_plugins_missing'      => $this->get_any_required_plugins_status(),
 				'admin_base_slug'                      => $this->menu_slug,
 				'admin_base_url'                       => admin_url(),
+				'is_onboarding_completed'              => '1' === get_option( 'wcf_setup_complete', false ),
 				'title_length'                         => apply_filters(
 					'cartflows_flows_steps_title_length',
 					array(

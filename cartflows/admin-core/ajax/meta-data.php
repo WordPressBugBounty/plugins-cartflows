@@ -308,12 +308,13 @@ class MetaData extends AjaxBase {
 			$max_reg_price = isset( $variation_price_range['regular_price'] ) ? end( $variation_price_range['regular_price'] ) : null;
 
 			if ( $min_price !== $max_price && ! is_null( $min_price ) && ! is_null( $max_price ) ) {
-				$original_price = html_entity_decode( wp_strip_all_tags( wc_format_price_range( $min_price, $max_price ) ) );
+				// Build the range from each bound directly so WooCommerce's screen-reader "Price range: ... through ..." text is not appended.
+				$original_price = html_entity_decode( wp_strip_all_tags( wc_price( $min_price ) ) ) . ' – ' . html_entity_decode( wp_strip_all_tags( wc_price( $max_price ) ) );
 			}
 
 			if ( $min_reg_price !== $max_reg_price && ! is_null( $min_reg_price ) && ! is_null( $max_reg_price ) ) {
 				if ( ! empty( $original_price ) ) {
-					$original_price = html_entity_decode( wp_strip_all_tags( wc_format_price_range( $min_reg_price, $max_reg_price ) ) );
+					$original_price = html_entity_decode( wp_strip_all_tags( wc_price( $min_reg_price ) ) ) . ' – ' . html_entity_decode( wp_strip_all_tags( wc_price( $max_reg_price ) ) );
 				}
 			}
 		} else {

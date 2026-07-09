@@ -1432,6 +1432,20 @@ class GlobalSettings {
 						/* translators: %1$1s: link html start, %2$12: link html end*/
 						'desc'  => sprintf( __( 'Collect non-sensitive information from your website, such as the PHP version and features used, to help us fix bugs faster, make smarter decisions, and build features that actually matter to you. %1$1s Learn More%2$2s.', 'cartflows' ), '<a href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://my.cartflows.com/usage-tracking/' ) ) . '" target="_blank">', '</a>' ),
 					),
+					'switch-to-new-ui-separator'   => array(
+						'type' => 'separator',
+					),
+					'switch-to-new-ui'             => array(
+						'type'     => 'toggle',
+						'name'     => 'cartflows-switch-to-new-ui',
+						'label'    => __( 'Switch to New UI', 'cartflows' ),
+						'backComp' => true,
+						'notice'   => array(
+							'type'    => 'confirm',
+							'message' => __( 'Switch to the new CartFlows admin? The page will reload into the new dashboard. You can return to the legacy UI anytime from the new UI’s Advanced settings.', 'cartflows' ),
+						),
+						'desc'     => __( 'Try the redesigned CartFlows admin — faster, cleaner, and easier to navigate. Save settings to apply — the dashboard will reload in the new UI.', 'cartflows' ),
+					),
 					'delete-data-separator'        => array(
 						'type' => 'separator',
 					),

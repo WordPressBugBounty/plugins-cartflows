@@ -100,7 +100,7 @@ class Cartflows_Dashboard_Widget {
 			$message = sprintf( __( "You've earned %s with CartFlows in the last 30 days.", 'cartflows' ), wp_strip_all_tags( str_replace( '&nbsp;', ' ', wc_price( (float) $stats['total_revenue_raw'] ) ) ) );
 		}
 
-		$report_url  = admin_url( 'admin.php?page=cartflows&path=home' );
+		$report_url  = admin_url( 'admin.php?page=cartflows&path=analytics' );
 		$upgrade_url = \Cartflows_Helper::get_upgrade_to_pro_link(
 			'pricing',
 			'',

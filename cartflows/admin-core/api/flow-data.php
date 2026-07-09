@@ -117,7 +117,8 @@ class FlowData extends ApiBase {
 			'cartflows_admin_flow_data',
 			array(
 				'id'            => $flow_id,
-				'title'         => get_the_title( $flow_id ),
+				// Use the raw stored title to avoid the_title filters (wptexturize) turning dashes into HTML entities.
+				'title'         => get_post_field( 'post_title', $flow_id, 'raw' ),
 				'slug'          => get_post_field( 'post_name', $flow_id, 'edit' ),
 				'link'          => $first_step_url ? $first_step_url : '#',
 				'status'        => get_post_status( $flow_id ),

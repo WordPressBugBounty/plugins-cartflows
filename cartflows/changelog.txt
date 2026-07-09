@@ -1,3 +1,9 @@
+Version 3.1.3 - Thursday, 9th July 2026
+- Improvement: Improved the Funnels page load speed on stores with a large number of funnels.
+- Fix: Fixed funnel and step titles converting dashes into HTML entities in the editor and saving the corrupted title on reload.
+- Fix: Fixed the redundant price range text leaking into the product search dropdown on Checkout and Order Bump settings.
+- Fix: Fixed the Delete and Download buttons not working on Settings > Logs.
+
 Version 3.1.2 - Friday, 26th June 2026
 - Improvement: Redesigned the weekly performance report email with a cleaner layout and new sections for weekly tips, top wins, and quick action links.
 - Improvement: Enhanced Instant Checkout integration so the layout wrapper renders correctly before third-party payment buttons such as Stripe Express Checkout.

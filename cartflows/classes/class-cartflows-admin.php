@@ -242,13 +242,17 @@ class Cartflows_Admin {
 
 		if ( current_user_can( 'cartflows_manage_settings' ) ) {
 
-			$default_url = add_query_arg(
-				array(
-					'page'     => CARTFLOWS_SLUG,
-					'settings' => true,
-				),
-				admin_url( 'admin.php' )
-			);
+			$is_legacy_admin = defined( 'CARTFLOWS_LEGACY_ADMIN' ) && CARTFLOWS_LEGACY_ADMIN;
+
+			$settings_args = array( 'page' => CARTFLOWS_SLUG );
+
+			if ( $is_legacy_admin ) {
+				$settings_args['settings'] = true;
+			} else {
+				$settings_args['path'] = 'settings';
+			}
+
+			$default_url = add_query_arg( $settings_args, admin_url( 'admin.php' ) );
 
 			array_unshift( $mylinks, '<a href="' . esc_url( $default_url ) . '">' . __( 'Settings', 'cartflows' ) . '</a>' );
 		}
