@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the CartFlows plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: CartFlows 3.1.3\n"
+"Project-Id-Version: CartFlows 3.1.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/cartflows\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-08T17:38:18+00:00\n"
+"POT-Creation-Date: 2026-08-05T09:29:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: cartflows\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: classes/class-cartflows-admin-notices.php:413
 #: modules/bricks/class-cartflows-bricks-dynamic-data.php:62
 #: modules/email-report/templates/email-header.php:31
-#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:71
+#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:72
 msgid "CartFlows"
 msgstr ""
 
@@ -2292,9 +2292,11 @@ msgstr ""
 #: modules/flow/classes/class-cartflows-step-post-type.php:263
 #: wizard/ajax/wizard.php:718
 #: admin-core/assets/build/editor-app.js:47
+#: admin-core/assets/build/editor-app.js:62
 #: admin-core/assets/build/settings-app.js:43
 #: admin-core/assets/build/settings-app.js:44
 #: admin-core/assets/build/settings-app.js:80
+#: admin-core/assets/build/settings-app.js:94
 msgid "Checkout"
 msgstr ""
 
@@ -2315,6 +2317,7 @@ msgstr ""
 #: admin-core/assets/build/editor-app.js:46
 #: admin-core/assets/build/editor-app.js:47
 #: admin-core/assets/build/editor-app.js:60
+#: admin-core/assets/build/editor-app.js:62
 #: admin-core/assets/build/settings-app.js:43
 #: admin-core/assets/build/settings-app.js:44
 #: admin-core/assets/build/settings-app.js:51
@@ -2322,6 +2325,7 @@ msgstr ""
 #: admin-core/assets/build/settings-app.js:79
 #: admin-core/assets/build/settings-app.js:80
 #: admin-core/assets/build/settings-app.js:93
+#: admin-core/assets/build/settings-app.js:94
 #: admin-legacy-core/assets/build/editor-app.js:23
 #: admin-legacy-core/assets/build/editor-app.js:33
 #: admin-legacy-core/assets/build/editor-app.js:36
@@ -2525,6 +2529,7 @@ msgstr ""
 #: admin-legacy-core/ajax/importer.php:1199
 #: admin-legacy-core/inc/admin-menu.php:1206
 #: admin-legacy-core/inc/store-checkout.php:110
+#: modules/content-generation/class-cartflows-ai-auth.php:128
 msgid "Nonce verification failed."
 msgstr ""
 
@@ -2542,19 +2547,23 @@ msgstr ""
 msgid "Stock: %d"
 msgstr ""
 
-#: admin-core/ajax/meta-data.php:270
+#: admin-core/ajax/meta-data.php:271
 #: admin-legacy-core/ajax/meta-data.php:270
 msgid "On backorder"
 msgstr ""
 
-#: admin-core/ajax/meta-data.php:273
+#: admin-core/ajax/meta-data.php:274
 #: admin-legacy-core/ajax/meta-data.php:273
 msgid "In stock"
 msgstr ""
 
-#: admin-core/ajax/meta-data.php:276
+#: admin-core/ajax/meta-data.php:277
 #: admin-legacy-core/ajax/meta-data.php:276
 msgid "Out of stock"
+msgstr ""
+
+#: admin-core/ajax/meta-data.php:307
+msgid "Bundle"
 msgstr ""
 
 #: admin-core/ajax/onboarding.php:218
@@ -2668,6 +2677,21 @@ msgstr ""
 #: admin-legacy-core/ajax/steps.php:455
 #, php-format
 msgid "Data saved successfully for step id %s"
+msgstr ""
+
+#: admin-core/api/api-base.php:63
+msgid "Nonce is missing."
+msgstr ""
+
+#: admin-core/api/api-base.php:72
+msgid "Nonce is invalid."
+msgstr ""
+
+#: admin-core/api/api-base.php:116
+#: classes/class-cartflows-admin-notices.php:127
+#: classes/class-cartflows-admin-notices.php:238
+#: classes/class-cartflows-admin-notices.php:517
+msgid "You do not have permission to perform this action."
 msgstr ""
 
 #: admin-core/api/common-settings.php:136
@@ -2796,7 +2820,7 @@ msgstr ""
 
 #: admin-core/api/learn.php:96
 #: admin-legacy-core/api/learn.php:96
-#: classes/class-cartflows-loader.php:673
+#: classes/class-cartflows-loader.php:675
 #: admin-core/assets/build/editor-app.js:63
 #: admin-core/assets/build/settings-app.js:2
 #: admin-core/assets/build/settings-app.js:42
@@ -3075,8 +3099,8 @@ msgstr ""
 #: admin-core/inc/flow-meta.php:72
 #: admin-legacy-core/inc/admin-helper.php:603
 #: admin-legacy-core/inc/flow-meta.php:72
-#: classes/class-cartflows-helper.php:1436
-#: classes/class-cartflows-helper.php:1453
+#: classes/class-cartflows-helper.php:1447
+#: classes/class-cartflows-helper.php:1464
 #: modules/beaver-builder/cartflows-bb-checkout-form/cartflows-bb-checkout-form.php:166
 #: modules/beaver-builder/cartflows-bb-next-step/cartflows-bb-next-step.php:194
 #: modules/beaver-builder/cartflows-bb-optin-form/cartflows-bb-optin-form.php:96
@@ -3499,7 +3523,7 @@ msgstr ""
 #: modules/gutenberg/classes/class-cartflows-init-blocks.php:146
 #: modules/gutenberg/classes/class-cartflows-init-blocks.php:201
 #: modules/gutenberg/classes/class-cartflows-init-blocks.php:311
-#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:86
+#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:87
 msgid "Permission denied."
 msgstr ""
 
@@ -4375,12 +4399,12 @@ msgstr ""
 msgid "Skip Setup"
 msgstr ""
 
-#: admin-core/inc/onboarding-core.php:398
+#: admin-core/inc/onboarding-core.php:403
 #: wizard/inc/wizard-core.php:397
 msgid "Oops!! Unexpected error occoured"
 msgstr ""
 
-#: admin-core/inc/onboarding-core.php:399
+#: admin-core/inc/onboarding-core.php:404
 #: wizard/inc/wizard-core.php:398
 msgid "Import template API call failed. Please reload the page and try again!"
 msgstr ""
@@ -4475,12 +4499,6 @@ msgstr ""
 
 #: admin-legacy-core/inc/global-settings.php:1447
 msgid "Try the redesigned CartFlows admin — faster, cleaner, and easier to navigate. Save settings to apply — the dashboard will reload in the new UI."
-msgstr ""
-
-#: classes/class-cartflows-admin-notices.php:127
-#: classes/class-cartflows-admin-notices.php:238
-#: classes/class-cartflows-admin-notices.php:517
-msgid "You do not have permission to perform this action."
 msgstr ""
 
 #: classes/class-cartflows-admin-notices.php:131
@@ -4733,10 +4751,11 @@ msgstr ""
 #: classes/class-cartflows-dashboard-widget.php:159
 #: admin-core/assets/build/editor-app.js:1
 #: admin-core/assets/build/editor-app.js:2
-#: admin-core/assets/build/editor-app.js:61
+#: admin-core/assets/build/editor-app.js:30
 #: admin-core/assets/build/editor-app.js:62
 #: admin-core/assets/build/settings-app.js:1
 #: admin-core/assets/build/settings-app.js:2
+#: admin-core/assets/build/settings-app.js:4
 #: admin-core/assets/build/settings-app.js:94
 #: admin-core/assets/build/settings-app.js:120
 #: admin-legacy-core/assets/build/editor-app.js:22
@@ -4831,15 +4850,15 @@ msgstr ""
 msgid "Email address"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1394
+#: classes/class-cartflows-helper.php:1405
 msgid "Enable Field"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1400
+#: classes/class-cartflows-helper.php:1411
 msgid "Field Width"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1406
+#: classes/class-cartflows-helper.php:1417
 #: admin-core/assets/build/editor-app.js:36
 #: admin-core/assets/build/settings-app.js:69
 #: admin-legacy-core/assets/build/editor-app.js:39
@@ -4847,7 +4866,7 @@ msgstr ""
 msgid "33%"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1410
+#: classes/class-cartflows-helper.php:1421
 #: admin-core/assets/build/editor-app.js:36
 #: admin-core/assets/build/settings-app.js:69
 #: admin-legacy-core/assets/build/editor-app.js:39
@@ -4855,7 +4874,7 @@ msgstr ""
 msgid "50%"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1414
+#: classes/class-cartflows-helper.php:1425
 #: admin-core/assets/build/editor-app.js:36
 #: admin-core/assets/build/settings-app.js:69
 #: admin-legacy-core/assets/build/editor-app.js:39
@@ -4863,11 +4882,11 @@ msgstr ""
 msgid "100%"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1421
+#: classes/class-cartflows-helper.php:1432
 msgid "Field Label"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1426
+#: classes/class-cartflows-helper.php:1437
 #: admin-core/assets/build/editor-app.js:37
 #: admin-core/assets/build/settings-app.js:70
 #: admin-legacy-core/assets/build/editor-app.js:40
@@ -4875,11 +4894,11 @@ msgstr ""
 msgid "Field ID"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1430
+#: classes/class-cartflows-helper.php:1441
 msgid "Copy this field id to use in Order Custom Field rule of dynamic offers."
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1442
+#: classes/class-cartflows-helper.php:1453
 #: admin-core/assets/build/editor-app.js:37
 #: admin-core/assets/build/settings-app.js:70
 #: admin-legacy-core/assets/build/editor-app.js:41
@@ -4887,11 +4906,11 @@ msgstr ""
 msgid "Checked"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1446
+#: classes/class-cartflows-helper.php:1457
 msgid "Un-Checked"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1463
+#: classes/class-cartflows-helper.php:1474
 #: modules/thankyou/classes/class-cartflows-thankyou-meta-data.php:451
 #: admin-core/assets/build/editor-app.js:37
 #: admin-core/assets/build/settings-app.js:70
@@ -4900,15 +4919,15 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1487
+#: classes/class-cartflows-helper.php:1498
 msgid "Min Date"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1494
+#: classes/class-cartflows-helper.php:1505
 msgid "Max Date"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1506
+#: classes/class-cartflows-helper.php:1517
 #: admin-core/assets/build/editor-app.js:37
 #: admin-core/assets/build/settings-app.js:70
 #: admin-legacy-core/assets/build/editor-app.js:41
@@ -4916,15 +4935,15 @@ msgstr ""
 msgid "Placeholder"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1515
+#: classes/class-cartflows-helper.php:1526
 msgid "Min Number"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1521
+#: classes/class-cartflows-helper.php:1532
 msgid "Max Number"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1533
+#: classes/class-cartflows-helper.php:1544
 #: admin-core/assets/build/editor-app.js:37
 #: admin-core/assets/build/settings-app.js:70
 #: admin-legacy-core/assets/build/editor-app.js:41
@@ -4932,11 +4951,11 @@ msgstr ""
 msgid "File Size (MB)"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1537
+#: classes/class-cartflows-helper.php:1548
 msgid "Enter maximum file size allowed. Default is 5MB."
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1549
+#: classes/class-cartflows-helper.php:1560
 #: admin-core/assets/build/editor-app.js:37
 #: admin-core/assets/build/settings-app.js:70
 #: admin-legacy-core/assets/build/editor-app.js:41
@@ -4944,15 +4963,15 @@ msgstr ""
 msgid "Accepted File Types"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1552
+#: classes/class-cartflows-helper.php:1563
 msgid "Enter comma-separated file extensions (e.g. jpg, png, pdf)."
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1559
+#: classes/class-cartflows-helper.php:1570
 msgid "Show In Email"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1566
+#: classes/class-cartflows-helper.php:1577
 #: admin-core/assets/build/editor-app.js:36
 #: admin-core/assets/build/editor-app.js:37
 #: admin-core/assets/build/settings-app.js:69
@@ -4964,7 +4983,7 @@ msgstr ""
 msgid "Required"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1574
+#: classes/class-cartflows-helper.php:1585
 #: admin-core/assets/build/editor-app.js:37
 #: admin-core/assets/build/settings-app.js:70
 #: admin-legacy-core/assets/build/editor-app.js:41
@@ -4972,19 +4991,19 @@ msgstr ""
 msgid "Collapsible"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1624
+#: classes/class-cartflows-helper.php:1635
 msgid "CartFlows Primary Color"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1625
+#: classes/class-cartflows-helper.php:1636
 msgid "CartFlows Secondary Color"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1626
+#: classes/class-cartflows-helper.php:1637
 msgid "CartFlows Text Color"
 msgstr ""
 
-#: classes/class-cartflows-helper.php:1627
+#: classes/class-cartflows-helper.php:1638
 msgid "CartFlows Heading/Accent Color"
 msgstr ""
 
@@ -5009,12 +5028,12 @@ msgid "If you have a moment, please share why you are deactivating CartFlows:"
 msgstr ""
 
 #. translators: %s: html tags
-#: classes/class-cartflows-loader.php:656
+#: classes/class-cartflows-loader.php:658
 #, php-format
 msgid "This %1$sCartFlows%2$s page requires %1$sWooCommerce%2$s plugin installed & activated."
 msgstr ""
 
-#: classes/class-cartflows-loader.php:666
+#: classes/class-cartflows-loader.php:668
 #: admin-core/assets/build/editor-app.js:39
 #: admin-core/assets/build/editor-app.js:63
 #: admin-core/assets/build/settings-app.js:2
@@ -6422,8 +6441,10 @@ msgid "Products"
 msgstr ""
 
 #: modules/checkout/classes/class-cartflows-checkout-meta-data.php:149
+#: admin-core/assets/build/editor-app.js:30
 #: admin-core/assets/build/editor-app.js:33
 #: admin-core/assets/build/editor-app.js:47
+#: admin-core/assets/build/settings-app.js:4
 #: admin-core/assets/build/settings-app.js:26
 #: admin-core/assets/build/settings-app.js:66
 #: admin-core/assets/build/settings-app.js:80
@@ -6696,8 +6717,6 @@ msgid "Enable Quantity"
 msgstr ""
 
 #: modules/checkout/classes/class-cartflows-checkout-meta-data.php:920
-#: admin-core/assets/build/editor-app.js:16
-#: admin-core/assets/build/settings-app.js:12
 msgid "Select Coupon"
 msgstr ""
 
@@ -7238,6 +7257,64 @@ msgstr ""
 
 #: modules/checkout/templates/wcf-template.php:56
 msgid "All Rights Reserved"
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-api.php:95
+msgid "No access key provided."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-api.php:105
+msgid "Failed to save authentication data."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-api.php:108
+msgid "Authentication data saved."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-api.php:120
+msgid "Authentication is already completed."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-auth.php:72
+msgid "Failed to encode the token data."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-auth.php:105
+msgid "Failed to decode the access key."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-auth.php:116
+msgid "Failed to decrypt the access key."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-auth.php:123
+msgid "Failed to json decode the decrypted data."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-auth.php:133
+msgid "No user email found in the decrypted data."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-utils.php:49
+#: modules/content-generation/class-cartflows-ai-utils.php:71
+#: modules/content-generation/class-cartflows-ai-utils.php:111
+msgid "No authentication token found. Please connect your account."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-utils.php:53
+msgid "Invalid authentication token format."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-utils.php:119
+msgid "Failed to encode request data to JSON."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-utils.php:149
+msgid "No authentication data found."
+msgstr ""
+
+#: modules/content-generation/class-cartflows-ai-utils.php:153
+msgid "No data found for the provided key."
 msgstr ""
 
 #: modules/elementor/class-cartflows-el-widgets-loader.php:177
@@ -8113,24 +8190,24 @@ msgstr ""
 msgid "Order Failed"
 msgstr ""
 
-#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:137
+#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:138
 msgid "Select the Flow"
 msgstr ""
 
-#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:139
+#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:140
 msgid "Type to search a funnel..."
 msgstr ""
 
-#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:147
+#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:148
 msgid "Add to Cart text"
 msgstr ""
 
-#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:149
+#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:150
 msgid "Add to cart"
 msgstr ""
 
 #. translators: %1$s,%2$s HTML content
-#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:154
+#: modules/woo-dynamic-flow/classes/class-cartflows-wd-flow-product-meta.php:155
 #, php-format
 msgid "If you want to start the flow from the product page, select the appropriate flow & button text field if required. Refer %1$sthis article%2$s for more information."
 msgstr ""
@@ -8346,8 +8423,10 @@ msgid "(Pro)"
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:2
+#: admin-core/assets/build/editor-app.js:15
 #: admin-core/assets/build/editor-app.js:47
 #: admin-core/assets/build/editor-app.js:54
+#: admin-core/assets/build/settings-app.js:11
 #: admin-core/assets/build/settings-app.js:44
 #: admin-core/assets/build/settings-app.js:80
 #: admin-core/assets/build/settings-app.js:87
@@ -8503,7 +8582,9 @@ msgid "Open Settings"
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:6
+#: admin-core/assets/build/editor-app.js:30
 #: admin-core/assets/build/editor-app.js:47
+#: admin-core/assets/build/settings-app.js:4
 #: admin-core/assets/build/settings-app.js:48
 #: admin-core/assets/build/settings-app.js:80
 #: admin-legacy-core/assets/build/editor-app.js:30
@@ -8958,6 +9039,16 @@ msgstr ""
 
 #: admin-core/assets/build/editor-app.js:9
 #: admin-core/assets/build/settings-app.js:5
+msgid "Search…"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:9
+#: admin-core/assets/build/settings-app.js:5
+msgid "No options found."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:9
+#: admin-core/assets/build/settings-app.js:5
 msgid "Original"
 msgstr ""
 
@@ -9237,6 +9328,29 @@ msgstr ""
 msgid "No coupons found."
 msgstr ""
 
+#: admin-core/assets/build/editor-app.js:15
+#: admin-core/assets/build/settings-app.js:11
+msgid "Search for an Order Bump"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:15
+#: admin-core/assets/build/settings-app.js:11
+#: admin-core/assets/build/settings-app.js:30
+#: admin-legacy-core/assets/build/editor-app.js:11
+#: admin-legacy-core/assets/build/settings-app.js:11
+msgid "Enabled"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:15
+#: admin-core/assets/build/settings-app.js:11
+msgid "ID:"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:15
+#: admin-core/assets/build/settings-app.js:11
+msgid "No order bumps found."
+msgstr ""
+
 #. translators: %s is replaced with feature name
 #: admin-core/assets/build/editor-app.js:16
 #: admin-core/assets/build/settings-app.js:12
@@ -9269,6 +9383,16 @@ msgstr ""
 
 #: admin-core/assets/build/editor-app.js:16
 #: admin-core/assets/build/settings-app.js:12
+msgid "Type to search…"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:16
+#: admin-core/assets/build/settings-app.js:12
+msgid "No results found"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:16
+#: admin-core/assets/build/settings-app.js:12
 #: admin-legacy-core/assets/build/editor-app.js:7
 #: admin-legacy-core/assets/build/settings-app.js:7
 msgid "Checkout Step"
@@ -9293,6 +9417,21 @@ msgstr ""
 #: admin-legacy-core/assets/build/editor-app.js:7
 #: admin-legacy-core/assets/build/settings-app.js:7
 msgid "Select Fields"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:16
+#: admin-core/assets/build/settings-app.js:12
+msgid "Refresh field list"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:16
+#: admin-core/assets/build/settings-app.js:12
+msgid "Refresh field list (picks up newly added custom checkout fields)."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:16
+#: admin-core/assets/build/settings-app.js:12
+msgid "Synced"
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:16
@@ -9323,6 +9462,11 @@ msgstr ""
 
 #: admin-core/assets/build/editor-app.js:16
 #: admin-core/assets/build/settings-app.js:12
+msgid "Enter State / County"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:16
+#: admin-core/assets/build/settings-app.js:12
 msgid "Select State"
 msgstr ""
 
@@ -9340,42 +9484,17 @@ msgstr ""
 
 #: admin-core/assets/build/editor-app.js:16
 #: admin-core/assets/build/settings-app.js:12
-msgid "Select a coupon to apply at checkout."
+msgid "Search a coupon to apply at checkout."
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:16
 #: admin-core/assets/build/settings-app.js:12
-msgid "Coupon Details"
+msgid "Type at least 3 characters to search…"
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:16
 #: admin-core/assets/build/settings-app.js:12
-msgid "Type:"
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:16
-#: admin-core/assets/build/settings-app.js:12
-msgid "Amount:"
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:16
-#: admin-core/assets/build/settings-app.js:12
-msgid "Expires:"
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:16
-#: admin-core/assets/build/settings-app.js:12
-msgid "Description:"
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:16
-#: admin-core/assets/build/settings-app.js:12
-msgid "Choose products to add to the cart when this checkout link is visited. Selected products will be added to the cart automatically when the link is opened."
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:16
-#: admin-core/assets/build/settings-app.js:12
-msgid "Select products…"
+msgid "Search products to add to the cart when this checkout link is visited. Selected products will be added to the cart automatically when the link is opened."
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:16
@@ -9932,13 +10051,140 @@ msgid "Activate the License"
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Offer a perfectly matched add-on right on your checkout page. Customers add it to their order in a single click, before they pay."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Increase your average order value on every checkout"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "One-click add-ons — no extra pages and no coding"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Show a relevant offer that complements the main product"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "One-Click Upsells"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Present a one-time offer right after customers pay. They accept in a single click — no need to re-enter their payment details."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Add revenue from customers who already bought"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Frictionless one-click accept — no re-entering card details"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Create upsell and downsell offers for any funnel"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+#: admin-legacy-core/assets/build/editor-app.js:47
+#: admin-legacy-core/assets/build/settings-app.js:59
+msgid "A/B Testing"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Test product pricing, page layouts, messaging, and design against each other. CartFlows splits the traffic so you can keep the higher-converting version."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Test headlines, layouts, offers, and buttons — no code"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Split traffic automatically and compare performance"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Keep the winning variation and grow what works"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Clone any funnel step in a single click — keep its settings, layout, and content, then tweak only what you need."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Duplicate any step without rebuilding it from scratch"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Reuse your best-performing layouts across funnels"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Save time setting up new steps and variations"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+#: admin-core/assets/build/settings-app.js:42
+msgid "Funnel Analytics"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "See exactly what is driving your funnel revenue — views, conversions, average order value, and revenue per visit for every funnel and step."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Track views, conversions, and revenue per step"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Spot where buyers drop off and fix it"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "Make decisions with real data, not guesses"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/settings-app.js:4
+msgid "14-day money-back guarantee"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/editor-app.js:33
 #: admin-core/assets/build/settings-app.js:63
+#: admin-core/assets/build/settings-app.js:66
 msgid "Add Extra Revenue to Every Checkout Effortlessly"
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:30
+#: admin-core/assets/build/editor-app.js:33
 #: admin-core/assets/build/settings-app.js:63
-msgid "Show a perfectly timed add-on offer at checkout. Customers buy more in one click — zero extra steps, zero coding needed."
+#: admin-core/assets/build/settings-app.js:66
+msgid "Increase the value of every order by offering relevant add-ons customers can buy at checkout in a single click."
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:30
@@ -11395,20 +11641,6 @@ msgid "Automation for"
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:61
-#: admin-core/assets/build/settings-app.js:94
-#: admin-legacy-core/assets/build/editor-app.js:47
-#: admin-legacy-core/assets/build/settings-app.js:59
-msgid "A/B Testing"
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:61
-#: admin-core/assets/build/settings-app.js:94
-#: admin-legacy-core/assets/build/editor-app.js:47
-#: admin-legacy-core/assets/build/settings-app.js:59
-msgid "Optimize your sales with A/B testing in CartFlows! Experiment with product pricing, page layouts, messaging, and design. Create variants, analyze results, and discover new ways to boost revenue."
-msgstr ""
-
-#: admin-core/assets/build/editor-app.js:61
 #: admin-core/assets/build/editor-app.js:63
 #: admin-core/assets/build/settings-app.js:94
 #: admin-core/assets/build/settings-app.js:95
@@ -11592,6 +11824,33 @@ msgstr ""
 #: admin-legacy-core/assets/build/editor-app.js:47
 #: admin-legacy-core/assets/build/settings-app.js:59
 msgid "Reset Analytics"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:62
+#: admin-core/assets/build/settings-app.js:5
+#: admin-legacy-core/assets/build/settings-app.js:24
+msgid "Upgrade your plan anytime and get more detailed analytics data."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:62
+#: admin-core/assets/build/settings-app.js:5
+#: admin-legacy-core/assets/build/settings-app.js:24
+msgid "Upgrade to PRO"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:62
+#: admin-core/assets/build/settings-app.js:94
+msgid "Landing Page"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:62
+#: admin-core/assets/build/settings-app.js:94
+msgid "Track Every Step's Performance"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:62
+#: admin-core/assets/build/settings-app.js:94
+msgid "Know exactly which steps convert and which lose customers. Upgrade to CartFlows Pro for views, conversions, and revenue per step."
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:62
@@ -12285,6 +12544,7 @@ msgstr ""
 
 #: admin-core/assets/build/editor-app.js:77
 #: admin-core/assets/build/editor-app.js:86
+#: admin-core/assets/build/settings-app.js:4
 #: admin-core/assets/build/settings-app.js:109
 #: admin-core/assets/build/settings-app.js:117
 msgid "Upgrade Required"
@@ -12383,6 +12643,31 @@ msgstr ""
 #: admin-legacy-core/assets/build/settings-app.js:73
 #: admin-legacy-core/assets/build/settings-app.js:83
 msgid "Import"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:77
+#: admin-core/assets/build/editor-app.js:88
+#: admin-core/assets/build/settings-app.js:44
+#: admin-core/assets/build/settings-app.js:109
+#: admin-core/assets/build/settings-app.js:119
+#: admin-legacy-core/assets/build/settings-app.js:35
+msgid "No Results Found."
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:77
+#: admin-core/assets/build/editor-app.js:88
+#: admin-core/assets/build/settings-app.js:109
+#: admin-core/assets/build/settings-app.js:119
+msgid "Don't see a step that you would like to import?"
+msgstr ""
+
+#: admin-core/assets/build/editor-app.js:77
+#: admin-core/assets/build/editor-app.js:88
+#: admin-core/assets/build/settings-app.js:44
+#: admin-core/assets/build/settings-app.js:109
+#: admin-core/assets/build/settings-app.js:119
+#: admin-legacy-core/assets/build/settings-app.js:35
+msgid "Please suggest us "
 msgstr ""
 
 #: admin-core/assets/build/editor-app.js:77
@@ -13067,15 +13352,15 @@ msgid "Failed to Create Flow!"
 msgstr ""
 
 #: admin-core/assets/build/settings-app.js:4
+#: admin-legacy-core/assets/build/settings-app.js:23
+msgid "Name Your Funnel"
+msgstr ""
+
+#: admin-core/assets/build/settings-app.js:4
 #: admin-core/assets/build/settings-app.js:42
 #: admin-legacy-core/assets/build/settings-app.js:23
 #: admin-legacy-core/assets/build/settings-app.js:34
 msgid "Upgrade To CartFlows Pro"
-msgstr ""
-
-#: admin-core/assets/build/settings-app.js:4
-#: admin-legacy-core/assets/build/settings-app.js:23
-msgid "Name Your Funnel"
 msgstr ""
 
 #: admin-core/assets/build/settings-app.js:4
@@ -13170,16 +13455,6 @@ msgstr ""
 #: admin-legacy-core/assets/build/settings-app.js:24
 #: admin-legacy-core/assets/build/settings-app.js:25
 msgid "Create New Funnel"
-msgstr ""
-
-#: admin-core/assets/build/settings-app.js:5
-#: admin-legacy-core/assets/build/settings-app.js:24
-msgid "Upgrade your plan anytime and get more detailed analytics data."
-msgstr ""
-
-#: admin-core/assets/build/settings-app.js:5
-#: admin-legacy-core/assets/build/settings-app.js:24
-msgid "Upgrade to PRO"
 msgstr ""
 
 #: admin-core/assets/build/settings-app.js:5
@@ -13952,12 +14227,6 @@ msgstr ""
 #: admin-core/assets/build/settings-app.js:30
 #: admin-legacy-core/assets/build/editor-app.js:11
 #: admin-legacy-core/assets/build/settings-app.js:11
-msgid "Enabled"
-msgstr ""
-
-#: admin-core/assets/build/settings-app.js:30
-#: admin-legacy-core/assets/build/editor-app.js:11
-#: admin-legacy-core/assets/build/settings-app.js:11
 msgid "Max Retries"
 msgstr ""
 
@@ -14563,10 +14832,6 @@ msgid "Bump Revenue"
 msgstr ""
 
 #: admin-core/assets/build/settings-app.js:42
-msgid "Funnel Analytics"
-msgstr ""
-
-#: admin-core/assets/build/settings-app.js:42
 msgid "Discover What’s Actually Driving Your Funnel Revenue"
 msgstr ""
 
@@ -14859,17 +15124,7 @@ msgstr ""
 
 #: admin-core/assets/build/settings-app.js:44
 #: admin-legacy-core/assets/build/settings-app.js:35
-msgid "No Results Found."
-msgstr ""
-
-#: admin-core/assets/build/settings-app.js:44
-#: admin-legacy-core/assets/build/settings-app.js:35
 msgid "Don't see a funnel that you would like to import?"
-msgstr ""
-
-#: admin-core/assets/build/settings-app.js:44
-#: admin-legacy-core/assets/build/settings-app.js:35
-msgid "Please suggest us "
 msgstr ""
 
 #: admin-core/assets/build/settings-app.js:44
@@ -15545,6 +15800,11 @@ msgstr ""
 #: admin-legacy-core/assets/build/settings-app.js:73
 #: admin-legacy-core/assets/build/settings-app.js:81
 msgid "Close the window"
+msgstr ""
+
+#: admin-legacy-core/assets/build/editor-app.js:47
+#: admin-legacy-core/assets/build/settings-app.js:59
+msgid "Optimize your sales with A/B testing in CartFlows! Experiment with product pricing, page layouts, messaging, and design. Create variants, analyze results, and discover new ways to boost revenue."
 msgstr ""
 
 #: admin-legacy-core/assets/build/editor-app.js:47

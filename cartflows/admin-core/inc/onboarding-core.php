@@ -326,6 +326,11 @@ class OnboardingCore {
 				'status' => $this->get_plugin_status( 'modern-cart/modern-cart.php' ),
 			),
 			array(
+				'name'   => 'Power Coupons',
+				'slug'   => 'power-coupons',
+				'status' => $this->get_plugin_status( 'power-coupons/power-coupons.php' ),
+			),
+			array(
 				'name'   => 'WooCommerce Payments',
 				'slug'   => 'woocommerce-payments',
 				'status' => $this->get_plugin_status( 'woocommerce-payments/woocommerce-payments.php' ),

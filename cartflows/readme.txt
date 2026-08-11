@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 7.0
-Stable tag: 3.1.3
+Stable tag: 3.1.4
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,13 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.1.4 - Monday, 10th August 2026 =
+* Improvement: Bundle products now show their product type and correct price range in the funnel product selector and step product rows.
+* Fix: Fixed the rule fields in the Dynamic Offer rule builder not retaining the saved selection, and the dropdown getting clipped by the surrounding section.
+* Fix: Fixed a custom product name in Checkout step product settings reverting to the previously saved value on every re-save.
+* Fix: Fixed the pre-checkout offer product being cleared on save, and the offer title and description going stale after changing the product.
+* Fix: Fixed the pre-checkout offer preview image overflowing its column, and corrected the offer product picker and Discount Value field widths.
 
 = Version 3.1.3 - Thursday, 9th July 2026 =
 * Improvement: Improved the Funnels page load speed on stores with a large number of funnels.

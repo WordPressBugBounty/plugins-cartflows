@@ -57,6 +57,7 @@ class Cartflows_Wd_Flow_Product_Meta {
 		if ( ! empty( $current_screen ) && 'product' === $current_screen->id ) {
 
 			wp_enqueue_script( 'wcf-product-page-setting', CARTFLOWS_URL . 'admin/assets/js/product-page.js', array( 'jquery' ), CARTFLOWS_VER, true );
+			wp_enqueue_style( 'wcf-product-page-setting', CARTFLOWS_URL . 'admin/assets/css/product-page.css', array(), CARTFLOWS_VER );
 		}
 	}
 

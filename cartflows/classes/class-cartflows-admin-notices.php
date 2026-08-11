@@ -329,7 +329,7 @@ class Cartflows_Admin_Notices {
 
                                 <a href="#" class="astra-notice-close astra-review-notice">
 								    <span class="dashicons dashicons-smiley"></span>
-                                	<u>%8$s</u>
+                                	%8$s
                                 </a>
                             </div>
                         </div>',

@@ -1,3 +1,6 @@
+v1.1.29 - 30-June-2026
+- Improvement: Added `spectra-blocks` slug to UTM analytics.
+
 v1.1.28 - 22-June-2026
 - Fix: Deactivation survey loaded a non-existent RTL stylesheet (`feedback.min-rtl.css`) producing a 404 in RTL locales. Registered the file suffix so the correct `feedback-rtl.min.css` is requested.
 

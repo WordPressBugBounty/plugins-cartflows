@@ -1224,6 +1224,17 @@ class Cartflows_Helper {
 			$product = wc_get_product( $product_id );
 		}
 
+		if ( $product && $product->is_type( 'bundle' ) && method_exists( $product, 'get_bundle_price' ) ) {
+			/*
+			 * A bundle's own price is only its container base price, which is 0 or empty as soon
+			 * as the bundled items are priced individually — leaving the step showing just a
+			 * currency symbol. Use the bundle's minimum price instead: the "from" price the
+			 * customer would pay, mirroring how a variable product resolves to a variation price
+			 * above. Kept scalar because callers run discount maths on this value.
+			 */
+			return $product->get_bundle_price( 'min', false );
+		}
+
 		if ( $product ) {
 			$custom_price = $product->get_price( 'edit' );
 		}
