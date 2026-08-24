@@ -1115,7 +1115,37 @@ class Cartflows_Checkout_Meta_Data extends Cartflows_Step_Meta_Base {
 			);
 		}
 
-		return apply_filters( 'cartflows_admin_checkout_settings_fields', $settings );
+		// Pro-only sections: register them here so their upgrade nudge shows; Pro replaces them with the real fields.
+		if ( ! _is_cartflows_pro() ) {
+			$settings['settings']['checkout-link'] = array(
+				'title'    => __( 'Checkout Link', 'cartflows' ),
+				'slug'     => 'checkout-link',
+				'priority' => 30,
+				'fields'   => array(
+					'checkout-link' => array(
+						'type'    => 'pro-notice',
+						'feature' => 'Checkout Link',
+					),
+				),
+			);
+			// Checkout Expiry does not apply to the Store Checkout, so skip its nudge there.
+			$flow_id = absint( get_post_meta( $step_id, 'wcf-flow-id', true ) );
+			if ( ! ( $flow_id && absint( Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' ) ) === $flow_id ) ) {
+				$settings['settings']['checkout-expiry'] = array(
+					'title'    => __( 'Checkout Expiry', 'cartflows' ),
+					'slug'     => 'checkout-expiry',
+					'priority' => 40,
+					'fields'   => array(
+						'checkout-expiry' => array(
+							'type'    => 'pro-notice',
+							'feature' => 'Checkout Expiry',
+						),
+					),
+				);
+			}
+		}
+
+		return apply_filters( 'cartflows_admin_checkout_settings_fields', $settings, $step_id );
 	}
 
 	/**

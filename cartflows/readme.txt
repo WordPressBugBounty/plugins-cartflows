@@ -2,8 +2,8 @@
 Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
-Tested up to: 7.0
-Stable tag: 3.1.4
+Tested up to: 7.1
+Stable tag: 3.2.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,11 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.2.0 - Monday, 24th August 2026 =
+* New: Added compatibility for the Frequently Bought Together feature of CartFlows Pro to suggest companion products on the product page.
+* Fix: Fixed Apple Pay and Google Pay express payments skipping the upsell step on Store Checkout.
+* Fix: Fixed the funnel URL with ?cartflows_flow=<slug> opening the site home page instead of the first step of the funnel.
 
 = Version 3.1.4 - Monday, 10th August 2026 =
 * Improvement: Bundle products now show their product type and correct price range in the funnel product selector and step product rows.

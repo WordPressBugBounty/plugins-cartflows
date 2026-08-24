@@ -52,15 +52,21 @@ class Cartflows_Ai_Auth {
 	 * Get Auth URL.
 	 *
 	 * @since x.x.x
+	 * @param string $redirect_back Absolute URL the auth flow should return to. Falls back to the CartFlows dashboard.
 	 * @return string|WP_Error
 	 */
-	public function get_auth_url() {
+	public function get_auth_url( $redirect_back = '' ) {
 		// Generate a random key of 16 characters.
 		$this->key = wp_generate_password( 16, false );
 
+		$default_redirect = admin_url( 'admin.php?page=cartflows' );
+
+		// Only allow same-site URLs — the portal appends the access key here, so an external URL would leak it.
+		$redirect_back = ! empty( $redirect_back ) ? wp_validate_redirect( $redirect_back, $default_redirect ) : $default_redirect;
+
 		// Prepare the token data.
 		$token_data = array(
-			'redirect-back' => admin_url( 'admin.php?page=cartflows' ),
+			'redirect-back' => $this->sanitize_redirect_back( $redirect_back ),
 			'key'           => $this->key,
 			'site-url'      => site_url(),
 			'nonce'         => wp_create_nonce( 'cartflows_ai_auth_nonce' ),
@@ -123,8 +129,8 @@ class Cartflows_Ai_Auth {
 			return new WP_Error( 'failed_to_json_decode', __( 'Failed to json decode the decrypted data.', 'cartflows' ) );
 		}
 
-		// verify the nonce that comes in $encrypted_email_array.
-		if ( ! empty( $decrypted_data_array['nonce'] ) && ! wp_verify_nonce( $decrypted_data_array['nonce'], 'cartflows_ai_auth_nonce' ) ) {
+		// The nonce is mandatory — the key travels in the payload, so it is the only proof this site started the flow.
+		if ( empty( $decrypted_data_array['nonce'] ) || ! wp_verify_nonce( $decrypted_data_array['nonce'], 'cartflows_ai_auth_nonce' ) ) {
 			return new WP_Error( 'nonce_verification_failed', __( 'Nonce verification failed.', 'cartflows' ) );
 		}
 
@@ -158,7 +164,36 @@ class Cartflows_Ai_Auth {
 		// save the user email to the options.
 		update_option( 'cartflows_auth', $decrypted_data_array );
 
+		// One-shot transient so the next admin page load can show a success banner.
+		set_transient( 'cartflows_auth_connected_notice', 1, MINUTE_IN_SECONDS );
+
 		return true;
+	}
+
+	/**
+	 * Restrict the redirect-back URL to the current admin host so a hijacked
+	 * request can't bounce users to an arbitrary site after auth completes.
+	 *
+	 * @since x.x.x
+	 * @param string $url Candidate redirect URL.
+	 * @return string
+	 */
+	private function sanitize_redirect_back( $url ) {
+		$default = admin_url( 'admin.php?page=cartflows' );
+
+		if ( empty( $url ) || ! is_string( $url ) ) {
+			return $default;
+		}
+
+		$candidate  = esc_url_raw( $url );
+		$admin_host = wp_parse_url( admin_url(), PHP_URL_HOST );
+		$url_host   = wp_parse_url( $candidate, PHP_URL_HOST );
+
+		if ( '' === $candidate || $admin_host !== $url_host ) {
+			return $default;
+		}
+
+		return $candidate;
 	}
 
 }

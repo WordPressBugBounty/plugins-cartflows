@@ -1,3 +1,8 @@
+Version 3.2.0 - Monday, 24th August 2026
+- New: Added compatibility for the Frequently Bought Together feature of CartFlows Pro to suggest companion products on the product page.
+- Fix: Fixed Apple Pay and Google Pay express payments skipping the upsell step on Store Checkout.
+- Fix: Fixed the funnel URL with ?cartflows_flow=<slug> opening the site home page instead of the first step of the funnel.
+
 Version 3.1.4 - Monday, 10th August 2026
 - Improvement: Bundle products now show their product type and correct price range in the funnel product selector and step product rows.
 - Fix: Fixed the rule fields in the Dynamic Offer rule builder not retaining the saved selection, and the dropdown getting clipped by the surrounding section.

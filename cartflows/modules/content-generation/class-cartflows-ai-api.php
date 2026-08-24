@@ -77,6 +77,13 @@ class Cartflows_Ai_API extends ApiBase {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_auth_url' ),
 				'permission_callback' => array( $this, 'validate_permission' ),
+				'args'                => array(
+					'redirect_back' => array(
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'esc_url_raw',
+					),
+				),
 			)
 		);
 	}
@@ -120,7 +127,9 @@ class Cartflows_Ai_API extends ApiBase {
 			wp_send_json_success( array( 'message' => __( 'Authentication is already completed.', 'cartflows' ) ) );
 		}
 
-		$auth = Cartflows_Ai_Auth::get_instance()->get_auth_url();
+		$redirect_back = $request->get_param( 'redirect_back' );
+		$redirect_back = is_string( $redirect_back ) ? $redirect_back : '';
+		$auth          = Cartflows_Ai_Auth::get_instance()->get_auth_url( $redirect_back );
 
 		if ( is_wp_error( $auth ) && $auth instanceof WP_Error ) {
 			wp_send_json_error( array( 'message' => $auth->get_error_message() ) );

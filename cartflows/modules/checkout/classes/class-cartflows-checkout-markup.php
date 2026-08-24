@@ -1616,12 +1616,49 @@ class Cartflows_Checkout_Markup {
 		$flow_id     = '';
 		$meta_data   = $this->get_cartflows_checkout_id_and_flow_id_from_cart();
 
+		if ( empty( $meta_data ) ) {
+			// Store Checkout products carry no cart item meta and express checkout sends no POST data.
+			$meta_data = $this->get_store_checkout_id_and_flow_id();
+		}
+
 		if ( ! empty( $meta_data ) && is_array( $meta_data ) ) {
 			$checkout_id = $meta_data['checkout_id'];
 			$flow_id     = $meta_data['flow_id'];
 		}
 
 		$this->store_flow_metadata_on_order( $checkout_id, $flow_id, $order );
+	}
+
+	/**
+	 * Retrieve the checkout ID and flow ID of the configured Store Checkout.
+	 * Returns null when no Store Checkout is set or it has no checkout step.
+	 *
+	 * @return array{checkout_id: string, flow_id: string}|null
+	 */
+	private function get_store_checkout_id_and_flow_id() {
+		$store_checkout = Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' );
+		$flow_id        = is_scalar( $store_checkout ) ? intval( $store_checkout ) : 0;
+
+		if ( empty( $flow_id ) ) {
+			return null;
+		}
+
+		$steps = get_post_meta( $flow_id, 'wcf-steps', true );
+
+		if ( ! is_array( $steps ) ) {
+			return null;
+		}
+
+		foreach ( $steps as $step ) {
+			if ( isset( $step['id'], $step['type'] ) && 'checkout' === $step['type'] ) {
+				return array(
+					'checkout_id' => (string) $step['id'],
+					'flow_id'     => (string) $flow_id,
+				);
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -17,6 +17,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 class CartFlows_Ai_Utils {
 
 	/**
+	 * Singleton instance.
+	 *
+	 * @var self|null
+	 */
+	private static $instance;
+
+	/**
+	 *  Initiator
+	 */
+	public static function get_instance() {
+		if ( ! isset( self::$instance ) ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
 	 * Get Credit System API URL.
 	 *
 	 * @return string API URL.

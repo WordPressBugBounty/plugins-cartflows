@@ -478,6 +478,8 @@ class AdminMenu {
 				'woo_currency'                         => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '',
 				'template_library_url'                 => wcf()->get_site_url(),
 				'image_placeholder'                    => esc_url_raw( CARTFLOWS_URL . 'admin-core/assets/images/image-placeholder.png' ),
+				'ai_connected'                         => class_exists( '\Cartflows_Ai_Auth' ) ? \Cartflows_Ai_Auth::get_instance()->get_auth_status() : false,
+				'can_manage_ai_auth'                   => current_user_can( 'manage_options' ),
 				'google_fonts'                         => \CartFlows_Font_Families::get_google_fonts(),
 				'system_fonts'                         => \CartFlows_Font_Families::get_system_fonts(),
 				'font_weights'                         => array(
