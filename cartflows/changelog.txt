@@ -1,3 +1,7 @@
+Version 3.2.1 - Wednesday, 23rd September 2026
+- Security Fix: Hardened the security of the plugin reported by PatchStack.
+- Improvement: Checkout file uploads are now stored in a dedicated, protected directory and processed more strictly.
+
 Version 3.2.0 - Monday, 24th August 2026
 - New: Added compatibility for the Frequently Bought Together feature of CartFlows Pro to suggest companion products on the product page.
 - Fix: Fixed Apple Pay and Google Pay express payments skipping the upsell step on Store Checkout.

@@ -1997,7 +1997,7 @@ class Cartflows_Helper {
 	 * @return array<string> Allowed file extensions.
 	 */
 	public static function get_allowed_file_extensions() {
-		return array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'ico', 'pdf', 'mp3', 'm4a', 'wav', 'mp4', 'm4v', 'mov' );
+		return array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'mp3', 'm4a', 'wav', 'mp4', 'm4v', 'mov' );
 	}
 
 	/**

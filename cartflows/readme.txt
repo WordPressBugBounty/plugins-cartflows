@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,10 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.2.1 - Wednesday, 23rd September 2026 =
+* Security Fix: Hardened the security of the plugin reported by PatchStack.
+* Improvement: Checkout file uploads are now stored in a dedicated, protected directory and processed more strictly.
 
 = Version 3.2.0 - Monday, 24th August 2026 =
 * New: Added compatibility for the Frequently Bought Together feature of CartFlows Pro to suggest companion products on the product page.
