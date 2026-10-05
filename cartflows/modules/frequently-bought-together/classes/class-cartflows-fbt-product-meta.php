@@ -58,11 +58,18 @@ class Cartflows_Fbt_Product_Meta {
 	 */
 	public function add_tab( $tabs ) {
 
+		$classes = array( 'show_if_simple', 'show_if_variable' );
+
+		// WC escapes the tab label, so the NEW badge is appended by JS off this class.
+		if ( Cartflows_Fbt_Nudges::get_instance()->is_badge_active() ) {
+			$classes[] = 'wcf-fbt-tab-new';
+		}
+
 		// Tab visibility follows WC's own show_if_* helpers — simple + variable products only.
 		$tabs['cartflows_fbt'] = array(
 			'label'    => __( 'Frequently Bought Together', 'cartflows' ),
 			'target'   => 'cartflows_fbt_data',
-			'class'    => array( 'show_if_simple', 'show_if_variable' ),
+			'class'    => $classes,
 			'priority' => 80,
 		);
 
@@ -91,7 +98,8 @@ class Cartflows_Fbt_Product_Meta {
 		wp_enqueue_script(
 			'wcf-fbt-admin',
 			CARTFLOWS_FBT_URL . 'assets/js/fbt-admin.js',
-			array( 'jquery', 'jquery-ui-sortable', 'wc-enhanced-select', 'wp-api-fetch' ),
+			// wc-admin-meta-boxes binds the product tab clicks the focus deep-link triggers.
+			array( 'jquery', 'jquery-ui-sortable', 'wc-enhanced-select', 'wp-api-fetch', 'wc-admin-meta-boxes' ),
 			CARTFLOWS_VER,
 			true
 		);
@@ -108,6 +116,8 @@ class Cartflows_Fbt_Product_Meta {
 				'max_products'      => Cartflows_Fbt::max_products( $product_id ),
 				'placeholder_thumb' => (string) wc_placeholder_img_src( 'thumbnail' ),
 				'auth_connected'    => Cartflows_Ai_Auth::get_instance()->get_auth_status(),
+				'tab_badge'         => Cartflows_Fbt_Nudges::get_instance()->is_badge_active() ? __( 'New', 'cartflows' ) : '',
+				'focus_arg'         => Cartflows_Fbt_Nudges::FOCUS_QUERY_ARG,
 				'select_ids'        => array(
 					'upsell'    => 'upsell_ids',
 					'crosssell' => 'crosssell_ids',

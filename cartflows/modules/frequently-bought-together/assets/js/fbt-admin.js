@@ -11,6 +11,9 @@
 ( function ( $ ) {
 	'use strict';
 
+	// Same wait as Pro's fbt-tour.js, for the same unsettled metabox.
+	const FOCUS_SETTLE_DELAY = 400;
+
 	let $panel;
 	let $chooser;
 	let $values;
@@ -33,6 +36,9 @@
 
 	function init() {
 		maybeCaptureAccessKey();
+		renderTabBadge();
+		bindCalloutDismiss();
+		maybeFocusPanel();
 
 		$panel = $( '#cartflows_fbt_data' );
 
@@ -52,6 +58,7 @@
 
 			bindEnable();
 			bindCustomQty();
+			bindPosition();
 			bindTabs();
 			bindChooser();
 			bindCards();
@@ -72,6 +79,99 @@
 				if ( res && res.success && res.data && res.data.auth_url ) {
 					window.location = res.data.auth_url;
 				}
+			} );
+		} );
+	}
+
+	function renderTabBadge() {
+		if ( ! wcf_fbt.tab_badge ) {
+			return;
+		}
+
+		const $link = $( 'li.cartflows_fbt_tab.wcf-fbt-tab-new' ).find( 'a' );
+		if ( ! $link.length || $link.find( '.wcf-fbt-tab-badge' ).length ) {
+			return;
+		}
+
+		$link.append(
+			$( '<span/>', {
+				class: 'wcf-fbt-tab-badge',
+				text: wcf_fbt.tab_badge,
+			} )
+		);
+	}
+
+	function scrollWhenSettled( $box ) {
+		const run = function () {
+			// scrollIntoView on .panel-wrap blanks the panel, so move the window instead.
+			window.scrollTo( {
+				top: Math.max( 0, $box.offset().top - 60 ),
+				// Not 'smooth': post-load plugin init scrolls abort the animation mid-flight.
+				behavior: 'instant',
+			} );
+		};
+
+		if ( 'complete' === document.readyState ) {
+			setTimeout( run, FOCUS_SETTLE_DELAY );
+			return;
+		}
+
+		$( window ).one( 'load', function () {
+			setTimeout( run, FOCUS_SETTLE_DELAY );
+		} );
+	}
+
+	function maybeFocusPanel() {
+		if ( ! wcf_fbt.focus_arg ) {
+			return;
+		}
+
+		const params = new URLSearchParams( window.location.search );
+		if ( ! params.get( wcf_fbt.focus_arg ) ) {
+			return;
+		}
+
+		const $tab = $( 'li.cartflows_fbt_tab' );
+		const $box = $( '#woocommerce-product-data' );
+		if ( ! $tab.length || ! $box.length ) {
+			return;
+		}
+
+		// WC hides the tab for types outside its show_if_* classes, so do not force it open.
+		const productType = $( '#product-type' ).val();
+		if ( productType && ! $tab.hasClass( 'show_if_' + productType ) ) {
+			return;
+		}
+
+		// WC collapses the metabox by class, so open it without POSTing closed-postboxes.
+		$box.removeClass( 'closed' );
+		$tab.find( 'a' ).trigger( 'click' );
+
+		// TinyMCE and metabox init move the panel after DOM ready, so measure once the page settles.
+		scrollWhenSettled( $box );
+
+		// Drop the arg so a refresh does not re-trigger the jump.
+		params.delete( wcf_fbt.focus_arg );
+		const query = params.toString();
+		window.history.replaceState(
+			{},
+			document.title,
+			window.location.pathname +
+				( query ? '?' + query : '' ) +
+				window.location.hash
+		);
+	}
+
+	function bindCalloutDismiss() {
+		$( document ).on( 'click', '.wcf-fbt-callout-dismiss', function () {
+			const $callout = $( this ).closest( '.wcf-fbt-callout' );
+			const nonce = $callout.data( 'nonce' );
+
+			$callout.remove();
+
+			$.post( wcf_fbt.ajax_url, {
+				action: 'cartflows_fbt_dismiss_callout',
+				nonce,
 			} );
 		} );
 	}
@@ -112,6 +212,17 @@
 		}
 		$toggle.on( 'change', function () {
 			$shell.toggleClass( 'has-qty', $toggle.is( ':checked' ) );
+		} );
+	}
+
+	function bindPosition() {
+		const $position = $panel.find( '#_cartflows_fbt_position' );
+		const $hint = $panel.find( '.wcf-fbt-shortcode-hint' );
+		if ( ! $position.length || ! $hint.length ) {
+			return;
+		}
+		$position.on( 'change', function () {
+			$hint.toggleClass( 'is-visible', 'shortcode' === $position.val() );
 		} );
 	}
 

@@ -998,3 +998,81 @@
 	align-items: center;
 	gap: 4px;
 }
+
+/* Shortcode hint under the placement select — revealed only for the 'shortcode' placement. */
+#cartflows_fbt_data .wcf-fbt-settings .wcf-fbt-shortcode-hint {
+	display: none;
+	clear: both;
+	margin-left: 22px;
+	padding-top: 6px;
+	color: #50575e;
+	font-style: italic;
+}
+
+#cartflows_fbt_data .wcf-fbt-settings .wcf-fbt-shortcode-hint.is-visible {
+	display: block;
+}
+
+#cartflows_fbt_data .wcf-fbt-settings .wcf-fbt-shortcode-hint code {
+	font-style: normal;
+	user-select: all;
+}
+
+/* NEW tab badge appended by fbt-admin.js; scoped under .wc-tabs to beat WC's own anchor rules. */
+#woocommerce-product-data .wc-tabs li.cartflows_fbt_tab a .wcf-fbt-tab-badge {
+	display: inline-block;
+	margin-left: 5px;
+	padding: 0 5px;
+	font-size: 9px;
+	font-weight: 600;
+	line-height: 14px;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: #1d4ed8;
+	background: #eff6ff;
+	border: 1px solid #bfdbfe;
+	border-radius: 999px;
+	vertical-align: middle;
+}
+
+#cartflows_fbt_data .wcf-fbt-callout {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 14px 20px;
+	background: #f8fafc;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+#cartflows_fbt_data .wcf-fbt-callout-body {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+#cartflows_fbt_data .wcf-fbt-callout-text strong {
+	display: block;
+	font-size: 13px;
+	font-weight: 600;
+	color: #111827;
+}
+
+#cartflows_fbt_data .wcf-fbt-callout-text p {
+	margin: 2px 0 0;
+	padding: 0;
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: #6b7280;
+}
+
+#cartflows_fbt_data .wcf-fbt-callout-dismiss {
+	flex: none;
+	color: #6b7280;
+	text-decoration: none;
+	font-size: 12.5px;
+}
+
+#cartflows_fbt_data .wcf-fbt-callout-dismiss:hover {
+	color: #111827;
+}

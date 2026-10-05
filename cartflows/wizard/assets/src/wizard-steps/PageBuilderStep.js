@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from '@wordpress/element';
 import { useHistory } from 'react-router-dom';
 import { RadioGroup } from '@headlessui/react';
 import { __ } from '@wordpress/i18n';
@@ -71,37 +71,41 @@ function PageBuilderStep() {
 			},
 		} );
 
-		const installPbPluginsProcess = document.addEventListener(
-			'wcf-page-builder-plugins-install-processing',
-			function () {
-				dispatch( {
-					status: 'SET_NEXT_STEP',
-					action_button: {
-						button_text: __( 'Saving', 'cartflows' ),
-						button_class: 'install-page-builder-plugins is-loading',
-					},
-				} );
+		const installPbPluginsProcess = function () {
+			dispatch( {
+				status: 'SET_NEXT_STEP',
+				action_button: {
+					button_text: __( 'Saving', 'cartflows' ),
+					button_class: 'install-page-builder-plugins is-loading',
+				},
+			} );
 
-				dispatch( {
-					status: 'PROCESSING',
-				} );
-			},
+			dispatch( {
+				status: 'PROCESSING',
+			} );
+		};
+
+		document.addEventListener(
+			'wcf-page-builder-plugins-install-processing',
+			installPbPluginsProcess,
 			false
 		);
 
-		const installPbPluginsSuccess = document.addEventListener(
-			'wcf-page-builder-plugins-install-success',
-			function () {
-				// Stop the processing.
-				dispatch( {
-					status: 'RESET',
-				} );
+		const installPbPluginsSuccess = function () {
+			// Stop the processing.
+			dispatch( {
+				status: 'RESET',
+			} );
 
-				history.push( {
-					pathname: 'index.php',
-					search: `?page=cartflow-setup&step=plugin-install`,
-				} );
-			},
+			history.push( {
+				pathname: 'index.php',
+				search: `?page=cartflow-setup&step=plugin-install`,
+			} );
+		};
+
+		document.addEventListener(
+			'wcf-page-builder-plugins-install-success',
+			installPbPluginsSuccess,
 			false
 		);
 

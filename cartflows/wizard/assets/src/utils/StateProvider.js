@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useReducer } from '@wordpress/element';
 
 // Prepare a dataLayer
 export const StateContext = createContext();

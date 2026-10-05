@@ -30,6 +30,31 @@ class MetaData extends AjaxBase {
 	private static $instance;
 
 	/**
+	 * Rows the pickers display, before `cartflows_product_search_result_limit`
+	 * adjusts it for the product endpoint.
+	 *
+	 * @since x.x.x
+	 * @var int
+	 */
+	const SEARCH_RESULT_LIMIT = 20;
+
+	/**
+	 * Floor for the rows read before the supported-product-type filter narrows them.
+	 *
+	 * @since x.x.x
+	 * @var int
+	 */
+	const SEARCH_CANDIDATE_LIMIT = 100;
+
+	/**
+	 * Ceiling for `cartflows_product_search_result_limit`.
+	 *
+	 * @since x.x.x
+	 * @var int
+	 */
+	const SEARCH_RESULT_LIMIT_MAX = 200;
+
+	/**
 	 * Initiator
 	 *
 	 * @since 1.0.0
@@ -59,7 +84,14 @@ class MetaData extends AjaxBase {
 	}
 
 	/**
-	 * Clone step with its meta.
+	 * AJAX handler to search products for the admin pickers.
+	 *
+	 * Searches titles, SKUs and GTINs only, ranked exact match first. It
+	 * deliberately does not search descriptions.
+	 *
+	 * @see \Cartflows_Product_Search::search_product_ids()
+	 *
+	 * @return void
 	 */
 	public function json_search_products() {
 
@@ -69,13 +101,16 @@ class MetaData extends AjaxBase {
 
 		check_ajax_referer( 'cartflows_json_search_products', 'security' );
 
-		global $wpdb;
-
 		if ( ! isset( $_POST['term'] ) ) {
 			return;
 		}
 
 		$term = ! empty( $_POST['term'] ) ? sanitize_text_field( wp_unslash( $_POST['term'] ) ) : '';
+
+		// sanitize_text_field() trims, so a whitespace-only term arrives empty here and would otherwise match every product.
+		if ( '' === trim( $term ) ) {
+			wp_send_json( array() );
+		}
 
 		// CartFlows supported product types.
 		$supported_product_types = apply_filters( 'cartflows_supported_product_types_for_search', array( 'simple', 'variable', 'variation', 'subscription', 'variable-subscription', 'subscription_variation', 'course' ) );
@@ -110,20 +145,26 @@ class MetaData extends AjaxBase {
 			$supported_product_types = array_diff( $supported_product_types, $excluded_product_types );
 		}
 
-		// Get all products data.
-		$data = \WC_Data_Store::load( 'product' );
-		$ids  = $data->search_products( $term, '', true, false, 11 );
+		// Resolved before the search so raising the filter actually widens the candidate set it is sliced from.
+		$result_limit = (int) apply_filters( 'cartflows_product_search_result_limit', self::SEARCH_RESULT_LIMIT );
 
-		// Get all product objects.
-		$product_objects = array_filter( array_map( 'wc_get_product', $ids ), 'wc_products_array_filter_readable' );
+		// Clamped at both ends: the candidate set is a multiple of this, and an unbounded filter value would exhaust memory here.
+		$result_limit    = min( self::SEARCH_RESULT_LIMIT_MAX, max( 1, $result_limit ) );
+		$candidate_limit = max( self::SEARCH_CANDIDATE_LIMIT, $result_limit * 5 );
 
-		// Remove the product objects whose product type are not in supported array.
-		$product_objects = array_filter(
-			$product_objects,
-			function ( $arr ) use ( $supported_product_types ) {
-				return $arr && is_a( $arr, 'WC_Product' ) && in_array( $arr->get_type(), $supported_product_types, true );
-			}
-		);
+		// Excluded here rather than in the browser: filtering after the cap hides products that were never sent.
+		$excluded_product_ids = isset( $_POST['exclude_product_ids'] ) ? $this->sanitize_id_list( sanitize_text_field( wp_unslash( $_POST['exclude_product_ids'] ) ) ) : array();
+
+		// Read a wide candidate set: the supported-type filter below would otherwise shrink an already capped list.
+		$ids = \Cartflows_Product_Search::search_product_ids( $term, $candidate_limit );
+
+		// One prime beats the post and meta reads wc_get_product() and get_type() would each make per candidate.
+		if ( ! empty( $ids ) ) {
+			_prime_post_caches( $ids, true, true );
+		}
+
+		// Hydrated lazily and capped pair-aware: the candidate set is far wider than the rows that get rendered.
+		$product_objects = \Cartflows_Product_Search::collect_supported_products( $ids, $supported_product_types, $result_limit, $excluded_product_ids );
 
 		$products_found = array();
 
@@ -165,7 +206,11 @@ class MetaData extends AjaxBase {
 	}
 
 	/**
-	 * Function to search coupons
+	 * AJAX handler to search coupons for the admin pickers.
+	 *
+	 * Matches anywhere in the coupon code, ranked exact then prefix then the rest.
+	 *
+	 * @return void
 	 */
 	public function json_search_coupons() {
 
@@ -175,56 +220,39 @@ class MetaData extends AjaxBase {
 
 		check_ajax_referer( 'cartflows_json_search_coupons', 'security' );
 
-		global $wpdb;
-
 		if ( ! isset( $_POST['term'] ) ) {
 			return;
 		}
 
 		$term = ! empty( $_POST['term'] ) ? sanitize_text_field( wp_unslash( $_POST['term'] ) ) : '';
-		if ( empty( $term ) ) {
+
+		if ( '' === trim( $term ) ) {
 			die();
 		}
 
-		$posts = wp_cache_get( 'wcf_search_coupons', 'wcf_funnel_Cart' );
-
-		if ( false === $posts ) {
-			$posts = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT *
-								FROM {$wpdb->prefix}posts
-								WHERE post_type = %s
-								AND post_title LIKE %s
-								AND post_status = %s",
-					'shop_coupon',
-					$wpdb->esc_like( $term ) . '%',
-					'publish'
-				)
-			); // db call ok.
-			wp_cache_set( 'wcf_search_coupons', $posts, 'wcf_funnel_Cart' );
-		}
-
-		$coupons_found      = array();
-		$all_discount_types = wc_get_coupon_types();
-
-		if ( $posts ) {
-			foreach ( $posts as $post ) {
-
-				$discount_type = get_post_meta( $post->ID, 'discount_type', true );
-
-				if ( ! empty( $all_discount_types[ $discount_type ] ) ) {
-					array_push(
-						$coupons_found,
-						array(
-							'value' => get_the_title( $post->ID ),
-							'label' => get_the_title( $post->ID ) . ' (Type: ' . $all_discount_types[ $discount_type ] . ')',
-						)
-					);
-				}
-			}
-		}
+		$ids           = \Cartflows_Coupon_Search::search_coupon_ids( $term, self::SEARCH_CANDIDATE_LIMIT );
+		$coupons_found = \Cartflows_Coupon_Search::format_for_picker( $ids, self::SEARCH_RESULT_LIMIT );
 
 		wp_send_json( $coupons_found );
+	}
+
+	/**
+	 * Sanitize a comma separated list of product IDs.
+	 *
+	 * @param mixed $raw Raw request value.
+	 * @return array<int, int> Positive integer IDs.
+	 */
+	public function sanitize_id_list( $raw ) {
+
+		if ( is_string( $raw ) ) {
+			$raw = explode( ',', $raw );
+		}
+
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+
+		return array_values( array_filter( array_map( 'absint', $raw ) ) );
 	}
 
 	/**

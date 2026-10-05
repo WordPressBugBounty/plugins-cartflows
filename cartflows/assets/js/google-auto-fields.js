@@ -28,6 +28,13 @@
 	}
 
 	function init_google_billing_address( country ) {
+		const address_field = document.getElementById( 'billing_address_1' );
+
+		// Bail if the field is not present in the checkout form.
+		if ( ! address_field ) {
+			return;
+		}
+
 		// Create the autocomplete object, restricting the search to geographical
 		// location types.
 
@@ -45,7 +52,7 @@
 		}
 
 		autocompleteBilling = new google.maps.places.Autocomplete(
-			document.getElementById( 'billing_address_1' ),
+			address_field,
 			options
 		);
 
@@ -58,6 +65,13 @@
 	}
 
 	function init_google_shipping_address( country ) {
+		const address_field = document.getElementById( 'shipping_address_1' );
+
+		// Bail if the field is not present in the checkout form.
+		if ( ! address_field ) {
+			return;
+		}
+
 		// Create the autocomplete object, restricting the search to geographical
 		// location types.
 		if ( country === undefined || country === null ) {
@@ -74,7 +88,7 @@
 		}
 
 		autocompleteShipping = new google.maps.places.Autocomplete(
-			document.getElementById( 'shipping_address_1' ),
+			address_field,
 			options
 		);
 
@@ -260,7 +274,10 @@
 							);
 						}
 
-						if ( addressType === 'locality' ) {
+						if (
+							addressType === 'locality' ||
+							addressType === 'postal_town'
+						) {
 							city = fieldVal;
 						}
 
@@ -337,7 +354,7 @@
 		}
 	}
 
-	$( document ).on( 'ready', function () {
+	$( function () {
 		init_google_billing_address();
 		init_google_shipping_address();
 	} );

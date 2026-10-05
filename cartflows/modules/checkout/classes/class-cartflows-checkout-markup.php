@@ -2320,6 +2320,110 @@ class Cartflows_Checkout_Markup {
 	}
 
 	/**
+	 * Render the order review shipping totals as a row that is collapsed by default.
+	 * The cost stays visible so the order total reconciles without duplicating the shipping selector.
+	 *
+	 * @since 3.3.0
+	 * @return void
+	 */
+	public static function collapsible_shipping_totals_html() {
+
+		$packages      = WC()->shipping()->get_packages();
+		$package_label = apply_filters( 'wcf_woocommerce_shipping_package_name', esc_html__( 'Shipping', 'cartflows' ) );
+		$package_title = wp_strip_all_tags( $package_label );
+		$has_rates     = false;
+
+		foreach ( $packages as $package ) {
+			if ( ! empty( $package['rates'] ) ) {
+				$has_rates = true;
+				break;
+			}
+		}
+
+		if ( ! $has_rates ) {
+			?>
+			<tr class="woocommerce-shipping-totals shipping">
+				<th><?php echo wp_kses_post( $package_label ); ?></th>
+				<td data-title="<?php echo esc_attr( $package_title ); ?>">
+					<?php echo wp_kses_post( self::get_shipping_unavailable_message() ); ?>
+				</td>
+			</tr>
+			<?php
+			return;
+		}
+
+		$chosen_methods    = WC()->session->get( 'chosen_shipping_methods' );
+		$chosen_methods    = is_array( $chosen_methods ) ? $chosen_methods : array();
+		$show_package_name = count( $packages ) > 1;
+		?>
+		<tr class="woocommerce-shipping-totals shipping wcf-shipping-totals-summary">
+			<th>
+				<button type="button" class="wcf-shipping-toggle" aria-expanded="false">
+					<span class="wcf-shipping-toggle-label"><?php echo wp_kses_post( $package_label ); ?></span>
+					<span class="wcf-shipping-toggle-icon cartflows-icon cartflows-cheveron-down" aria-hidden="true"></span>
+				</button>
+			</th>
+			<td data-title="<?php echo esc_attr( $package_title ); ?>">
+				<?php echo wp_kses_post( WC()->cart->get_cart_shipping_total() ); ?>
+			</td>
+		</tr>
+		<tr class="wcf-shipping-totals-details" style="display: none;">
+			<td colspan="2">
+				<?php foreach ( $packages as $index => $package ) : ?>
+					<?php
+					$chosen_method = isset( $chosen_methods[ $index ] ) ? $chosen_methods[ $index ] : '';
+					$destination   = WC()->countries->get_formatted_address( $package['destination'], ', ' );
+					?>
+					<div class="wcf-shipping-package">
+						<?php if ( $show_package_name ) : ?>
+							<?php /* translators: %d: shipping package number */ ?>
+							<span class="wcf-shipping-package-name"><?php echo esc_html( sprintf( _x( 'Shipping %d', 'shipping packages', 'cartflows' ), $index + 1 ) ); ?></span>
+						<?php endif; ?>
+						<ul class="wcf-shipping-package-methods">
+							<?php foreach ( $package['rates'] as $method ) : ?>
+								<li class="<?php echo esc_attr( $method->id === $chosen_method ? 'wcf-shipping-method-chosen' : '' ); ?>">
+									<?php echo wp_kses_post( wc_cart_totals_shipping_method_label( $method ) ); ?>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+						<?php if ( $destination ) : ?>
+							<p class="woocommerce-shipping-destination">
+								<?php
+								// Translators: %s shipping destination.
+								printf( esc_html__( 'Shipping to %s.', 'cartflows' ), '<strong>' . esc_html( $destination ) . '</strong>' );
+								?>
+							</p>
+						<?php endif; ?>
+					</div>
+				<?php endforeach; ?>
+			</td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Get the message shown when no shipping rate is available for the cart.
+	 *
+	 * @since 3.3.0
+	 * @return string
+	 */
+	public static function get_shipping_unavailable_message() {
+
+		$destination = '';
+
+		foreach ( WC()->shipping()->get_packages() as $package ) {
+			$destination = WC()->countries->get_formatted_address( $package['destination'], ', ' );
+			break;
+		}
+
+		if ( ! WC()->customer->has_calculated_shipping() || ! $destination ) {
+			return apply_filters( 'woocommerce_shipping_may_be_available_html', __( 'Enter your address to view shipping options.', 'cartflows' ) );
+		}
+
+		return apply_filters( 'woocommerce_no_shipping_available_html', __( 'There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help.', 'cartflows' ) );
+	}
+
+	/**
 	 * Show Selected Shipping Method in the order review table.
 	 *
 	 * @since 2.1.0

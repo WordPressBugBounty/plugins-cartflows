@@ -14,7 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use CartflowsAdmin\AdminLegacyCore\Ajax\AjaxBase;
 use CartflowsAdmin\AdminLegacyCore\Inc\LogStatus;
-use CartflowsAdmin\AdminLegacyCore\Inc\AdminHelper;
 
 /**
  * Class Steps.
@@ -85,7 +84,9 @@ class Debugger extends AjaxBase {
 		check_ajax_referer( 'cartflows_sync_kb_docs', 'security' );
 
 		$docs_json = json_decode( wp_remote_retrieve_body( wp_remote_get( 'https://cartflows.com//wp-json/powerful-docs/v1/get-docs' ) ) );
-		AdminHelper::update_admin_settings_option( 'cartflows_docs_data', $docs_json );
+
+		// Never autoload — this payload runs to hundreds of KB and only the Knowledge Base screen reads it.
+		update_option( 'cartflows_docs_data', $docs_json, false );
 
 		$response_data = array(
 			'message' => __( 'Sync Success.', 'cartflows' ),

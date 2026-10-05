@@ -746,20 +746,17 @@ class Cartflows_Admin_Notices {
 
 		$is_store_checkout_imported = (bool) get_option( '_cartflows_wizard_store_checkout_set', false );
 		$onboarding_completed       = (bool) get_option( 'wcf_setup_complete', false );
-		$is_first_funnel_imported   = (bool) get_option( 'wcf_first_flow_imported', false );
 		$total_funnels              = $this->get_published_flow_count();
 
 		/**
-		 * Show the notice in any of these conditions:
+		 * Show the notice in either of these conditions:
 		 * 1. User finished the onboarding wizard AND imported the store checkout funnel.
-		 * 2. User imported their first funnel AND has at least one published funnel.
-		 * 3. User has at least one published funnel (built manually).
-		 *
-		 * Note: condition 3 intentionally has NO upper bound on funnel count,
-		 * so power users with many funnels still see the survey.
+		 * 2. User has at least one published funnel — imported or built by hand. This has
+		 *    NO upper bound on funnel count, so power users still see the survey, and it
+		 *    subsumes the old "imported their first funnel" branch.
 		 */
 		return ( true === $is_store_checkout_imported && true === $onboarding_completed )
-			|| ( true === $is_first_funnel_imported && ! empty( $total_funnels ) && 1 >= $total_funnels );
+			|| ! empty( $total_funnels );
 	}
 }
 

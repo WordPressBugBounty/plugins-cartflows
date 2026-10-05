@@ -76,12 +76,83 @@ const CartFlowsAjaxQueue = ( function () {
 } )();
 
 ( function ( $ ) {
+	function plugin_status_event( slug, status ) {
+		if ( ! slug ) {
+			return;
+		}
+		document.dispatchEvent(
+			new CustomEvent( 'wcf-plugin-status-change', {
+				detail: { slug, status },
+			} )
+		);
+	}
+
 	const CartFlowsOnboarding = {
 		remaining_install_plugins: 0,
 		remaining_active_plugins: 0,
 
 		init() {
 			this._bind();
+			document.addEventListener(
+				'wcf-plugin-retry',
+				CartFlowsOnboarding._retryPlugin,
+				false
+			);
+		},
+
+		/**
+		 * Retry a failed plugin: activate first, fall back to install.
+		 *
+		 * @param {Object} e custom event with the plugin slug.
+		 */
+		_retryPlugin( e ) {
+			const slug = e.detail?.slug;
+
+			if ( ! slug ) {
+				return;
+			}
+
+			plugin_status_event( slug, 'activating' );
+
+			$.ajax( {
+				url: ajaxurl,
+				type: 'POST',
+				data: {
+					action: 'cartflows_wizard_activate_plugin',
+					plugin_slug: slug,
+					plugin_init: slug + '/' + slug + '.php',
+					security: cartflows_onboarding.wizard_activate_plugin_nonce,
+				},
+			} )
+				.done( function ( response ) {
+					if ( response.success ) {
+						plugin_status_event( slug, 'active' );
+						CartFlowsOnboarding._maybe_finish();
+					} else {
+						plugin_status_event( slug, 'installing' );
+						CartFlowsOnboarding._installPlugin( slug );
+					}
+				} )
+				.fail( function () {
+					plugin_status_event( slug, 'installing' );
+					CartFlowsOnboarding._installPlugin( slug );
+				} );
+		},
+
+		/**
+		 * Settle counters after a successful retry and finish when nothing is pending.
+		 */
+		_maybe_finish() {
+			if ( CartFlowsOnboarding.remaining_active_plugins > 0 ) {
+				CartFlowsOnboarding.remaining_active_plugins--;
+			}
+
+			if (
+				! CartFlowsOnboarding.remaining_active_plugins &&
+				! CartFlowsOnboarding.remaining_install_plugins
+			) {
+				trigger_event();
+			}
 		},
 
 		/**
@@ -263,15 +334,20 @@ const CartFlowsAjaxQueue = ( function () {
 			} )
 				.done( function ( response ) {
 					if ( response.success ) {
+						plugin_status_event( plugin_slug, 'active' );
 						if (
 							jQuery.inArray( plugin_slug, page_builder_slugs ) >
 							-1
 						) {
 							save_page_builder_option( plugin_slug );
 						}
+					} else {
+						plugin_status_event( plugin_slug, 'failed' );
 					}
 				} )
-				.fail( function () {} );
+				.fail( function () {
+					plugin_status_event( plugin_slug, 'failed' );
+				} );
 		},
 
 		/**
@@ -283,10 +359,16 @@ const CartFlowsAjaxQueue = ( function () {
 			event.preventDefault();
 			// Selected Template's ID.
 			const store_template_flow =
-					$( '#wcf-selected-store-checkout-template' ).attr(
-						'data-selected-flow-info'
-					) || '',
-				primary_color = $( 'input[name=primary_color]' ).val(),
+				$( '#wcf-selected-store-checkout-template' ).attr(
+					'data-selected-flow-info'
+				) || '';
+
+			// Never import when no template is selected.
+			if ( '' === store_template_flow ) {
+				return;
+			}
+
+			const primary_color = $( 'input[name=primary_color]' ).val(),
 				selected_site_logo = $( '.wcf-selected-image' ).data(
 					'logo-data'
 				);
@@ -346,21 +428,27 @@ const CartFlowsAjaxQueue = ( function () {
 		 * Installing Plugin
 		 *
 		 * @param {Object} event event data.
+		 * @param {Object} args  plugin data with slug.
 		 */
-		_pluginInstalling( event ) {
+		_pluginInstalling( event, args ) {
 			event.preventDefault();
+			plugin_status_event( args?.slug, 'installing' );
 		},
 
 		/**
 		 * Install Error
 		 *
-		 * @param {Object} event event data.
+		 * @param {Object} event    event data.
+		 * @param {Object} response error response with slug.
 		 */
-		_installError( event ) {
+		_installError( event, response ) {
 			event.preventDefault();
 
+			plugin_status_event( response?.slug, 'failed' );
+
+			// Stay on the step so Retry can render — attr() is undefined when the element is absent.
 			const redirect_link = $( '.wcf-redirect-link' ).attr( 'value' );
-			if ( '' !== redirect_link ) {
+			if ( redirect_link && '' !== redirect_link ) {
 				trigger_event();
 			}
 		},
@@ -375,6 +463,8 @@ const CartFlowsAjaxQueue = ( function () {
 			event.preventDefault();
 			const plugin_init = args.slug + '/' + args.slug + '.php';
 			const plugin_slug = args.slug;
+
+			plugin_status_event( plugin_slug, 'activating' );
 
 			// WordPress adds "Activate" button after waiting for 1000ms. So we will run our activation after that.
 			setTimeout( function () {
@@ -439,7 +529,14 @@ const CartFlowsAjaxQueue = ( function () {
 							security:
 								cartflows_onboarding.wizard_activate_plugin_nonce,
 						},
+						beforeSend() {
+							plugin_status_event( pluginSlug, 'activating' );
+						},
+						error() {
+							plugin_status_event( pluginSlug, 'failed' );
+						},
 						success() {
+							plugin_status_event( pluginSlug, 'active' );
 							CartFlowsOnboarding.remaining_active_plugins--;
 
 							if (

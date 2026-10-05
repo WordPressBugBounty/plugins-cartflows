@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useHistory } from 'react-router-dom';
 import { useStateValue } from '../utils/StateProvider';
@@ -59,35 +59,39 @@ function PluginsInstallStep() {
 			button_class: '',
 		} );
 
-		const installPluginsSuccess = document.addEventListener(
-			'wcf-plugins-install-success',
-			function () {
-				setProcessing( false );
+		const installPluginsSuccess = function () {
+			setProcessing( false );
 
-				if ( 'bricks-builder' === selected_page_builder ) {
-					history.push( {
-						pathname: 'index.php',
-						search: `?page=cartflow-setup&step=optin`,
-					} );
-				} else {
-					history.push( {
-						pathname: 'index.php',
-						search: `?page=cartflow-setup&step=store-checkout`,
-					} );
-				}
-
-				dispatch( {
-					status: 'RESET',
+			if ( 'bricks-builder' === selected_page_builder ) {
+				history.push( {
+					pathname: 'index.php',
+					search: `?page=cartflow-setup&step=optin`,
 				} );
-			},
+			} else {
+				history.push( {
+					pathname: 'index.php',
+					search: `?page=cartflow-setup&step=store-checkout`,
+				} );
+			}
+
+			dispatch( {
+				status: 'RESET',
+			} );
+		};
+
+		document.addEventListener(
+			'wcf-plugins-install-success',
+			installPluginsSuccess,
 			false
 		);
 
-		const installPluginsProcess = document.addEventListener(
+		const installPluginsProcess = function () {
+			handleOnClickProcessing();
+		};
+
+		document.addEventListener(
 			'wcf-install-require-plugins-processing',
-			function () {
-				handleOnClickProcessing();
-			},
+			installPluginsProcess,
 			false
 		);
 

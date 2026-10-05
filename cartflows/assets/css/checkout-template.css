@@ -658,7 +658,7 @@
 }
 
 .wcf-embed-checkout-form .wcf-custom-coupon-field button.wcf-submit-coupon,
-.wcf-embed-checkout-form .woocommerce #order_review button:not( .js-woopayments-copy-test-number ),
+.wcf-embed-checkout-form .woocommerce #order_review button:not( .js-woopayments-copy-test-number ):not( .wcf-shipping-toggle ),
 .wcf-embed-checkout-form .woocommerce #payment button:not( .js-woopayments-copy-test-number ),
 .wcf-embed-checkout-form .woocommerce .wcf-customer-login-section__login-button {
 	border: 1px solid;
@@ -2857,9 +2857,80 @@ body .pac-placeholder {
 }
 /* Official - Stripe for WooCommerce Smart Button box CSS */
 
-.shop_table tr.woocommerce-shipping-totals.shipping {
-	display: none;
-	visibility: hidden;
+/* Collapsible shipping row in the order review table. */
+.wcf-embed-checkout-form table.shop_table button.wcf-shipping-toggle {
+	-js-display: inline-flex;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	color: inherit;
+	font: inherit;
+	letter-spacing: inherit;
+	text-align: inherit;
+	text-transform: inherit;
+	cursor: pointer;
+}
+
+.wcf-embed-checkout-form table.shop_table button.wcf-shipping-toggle:hover,
+.wcf-embed-checkout-form table.shop_table button.wcf-shipping-toggle:focus,
+.wcf-embed-checkout-form table.shop_table button.wcf-shipping-toggle:active {
+	background: none;
+	box-shadow: none;
+	color: inherit;
+}
+
+.wcf-embed-checkout-form table.shop_table .wcf-shipping-toggle-icon {
+	font-size: 0.75em;
+	line-height: 1;
+	transition: transform 0.2s ease-in-out;
+}
+
+.wcf-embed-checkout-form table.shop_table .wcf-shipping-toggle[aria-expanded="true"] .wcf-shipping-toggle-icon {
+	transform: rotate( 180deg );
+}
+
+.wcf-embed-checkout-form table.shop_table tr.wcf-shipping-totals-details > td {
+	padding-top: 0;
+}
+
+.wcf-embed-checkout-form table.shop_table .wcf-shipping-package + .wcf-shipping-package {
+	margin-top: 10px;
+}
+
+.wcf-embed-checkout-form table.shop_table .wcf-shipping-package-name {
+	display: block;
+	font-size: 0.9em;
+	opacity: 0.7;
+}
+
+.wcf-embed-checkout-form table.shop_table ul.wcf-shipping-package-methods {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.wcf-embed-checkout-form table.shop_table ul.wcf-shipping-package-methods li {
+	margin: 0;
+	padding: 0;
+	font-size: 0.9em;
+	opacity: 0.7;
+}
+
+.wcf-embed-checkout-form table.shop_table ul.wcf-shipping-package-methods li.wcf-shipping-method-chosen {
+	font-weight: 500;
+	opacity: 1;
+}
+
+.wcf-embed-checkout-form table.shop_table .wcf-shipping-totals-details .woocommerce-shipping-destination {
+	margin: 4px 0 0 0;
+	font-size: 0.9em;
+	opacity: 0.7;
 }
 
 .wcf-embed-checkout-form table.shop_table .wc_shipping_dpd_terminals {

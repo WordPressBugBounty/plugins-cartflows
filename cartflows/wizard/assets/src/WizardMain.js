@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from '@wordpress/element';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 /* Component */

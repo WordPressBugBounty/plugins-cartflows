@@ -25,6 +25,8 @@ class CartFlows_Ai_Utils {
 
 	/**
 	 *  Initiator
+	 *
+	 * @return self
 	 */
 	public static function get_instance() {
 		if ( ! isset( self::$instance ) ) {
@@ -162,12 +164,15 @@ class CartFlows_Ai_Utils {
 	protected function get_auth_data( $key = '' ) {
 		$auth_data = get_option( 'cartflows_auth', false );
 
-		if ( empty( $auth_data ) ) {
+		if ( empty( $auth_data ) || ! is_array( $auth_data ) ) {
 			return new WP_Error( 'no_auth_data', __( 'No authentication data found.', 'cartflows' ) );
 		}
 
 		if ( ! empty( $key ) && is_string( $key ) ) {
-			return $auth_data[ $key ] ?? new WP_Error( 'no_key_found', __( 'No data found for the provided key.', 'cartflows' ) );
+			$value = $auth_data[ $key ] ?? null;
+			return is_string( $value )
+				? $value
+				: new WP_Error( 'no_key_found', __( 'No data found for the provided key.', 'cartflows' ) );
 		}
 
 		return $auth_data;

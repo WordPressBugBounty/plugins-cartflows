@@ -147,8 +147,21 @@ class Cartflows_Elementor_Editor {
 				add_action( 'cartflows_elementor_before_checkout_shortcode', array( $this, 'before_checkout_shortcode_actions' ) );
 				add_action( 'cartflows_elementor_before_optin_shortcode', array( $this, 'before_optin_shortcode_actions' ) );
 
-				/* Thank you filters */
-				add_filter( 'cartflows_show_demo_order_details', '__return_true' );
+				/*
+				 * Thank you filters.
+				 *
+				 * This makes the order-details shortcode fall back to the store's most recent
+				 * real order, so it is kept to users who can actually edit steps rather than to
+				 * any admin-side request that merely carries an Elementor action.
+				 *
+				 * The post-type half of the gate is already enforced upstream: this class is
+				 * only loaded by Cartflows_El_Widgets_Loader::include_widgets_files(), which
+				 * runs from register_widgets() after confirming the global post is a
+				 * cartflows_step. The check here is the capability half.
+				 */
+				if ( current_user_can( 'cartflows_manage_flows_steps' ) ) {
+					add_filter( 'cartflows_show_demo_order_details', '__return_true' );
+				}
 			}
 		//phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}

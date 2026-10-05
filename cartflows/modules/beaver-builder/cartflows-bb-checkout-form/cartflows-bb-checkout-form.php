@@ -82,6 +82,10 @@ class Cartflows_BB_Checkout_Form extends FLBuilderModule {
 
 		$settings = $this->settings;
 
+		// Only these two layouts are PRO — the rest of the select is available on the free
+		// tier, the same as in the Elementor, Bricks and Gutenberg checkout modules.
+		$pro_only_layouts = array( 'two-step', 'multistep-checkout' );
+
 		$checkout_fields = array(
 			// Input Fields.
 			array(
@@ -100,6 +104,17 @@ class Cartflows_BB_Checkout_Form extends FLBuilderModule {
 
 				$setting_name  = $field['setting_name'];
 				$setting_value = $settings->$setting_name;
+
+				// The non-Pro filter registered above is on this same hook at this same
+				// priority, so it loses to whatever this loop registers afterwards. Clamp
+				// the value here instead, or a free user who picks a "( PRO )" layout from
+				// the select actually gets it.
+				if ( ! _is_cartflows_pro()
+					&& 'wcf-checkout-layout' === $field['filter_slug']
+					&& in_array( $setting_value, $pro_only_layouts, true )
+				) {
+					$setting_value = 'modern-checkout';
+				}
 
 				if ( '' !== $setting_value ) {
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useHistory } from 'react-router-dom';
 import apiFetch from '@wordpress/api-fetch';
@@ -134,7 +134,7 @@ function GlobalCheckout() {
 				method: 'POST',
 				body: formData,
 			} ).then( ( response ) => {
-				if ( response?.data?.flows.length > 0 ) {
+				if ( response?.data?.flows?.length > 0 ) {
 					const all_flows = Object.values( response.data.flows );
 					const parsedFlows = [];
 					all_flows.map(
@@ -187,49 +187,55 @@ function GlobalCheckout() {
 			}
 		};
 
-		const importStoreCheckoutSuccessEvent = document.addEventListener(
+		const importStoreCheckoutSuccessEvent = function () {
+			changeButtonText( {
+				button_text: __( 'Processing..', 'cartflows' ),
+			} );
+
+			dispatch( {
+				status: 'SET_STORE_CHECKOUT_IMPORTED',
+				storeCheckoutImported: true,
+			} );
+			console.log( 'Store Checkout Imported' );
+			// Redirect to next step once the import is success.
+			setTimeout( function () {
+				redirectNextStep();
+			}, 1000 );
+		};
+
+		document.addEventListener(
 			'wcf-store-checkout-import-success',
-			function () {
-				changeButtonText( {
-					button_text: __( 'Processing..', 'cartflows' ),
-				} );
-
-				dispatch( {
-					status: 'SET_STORE_CHECKOUT_IMPORTED',
-					storeCheckoutImported: true,
-				} );
-				console.log( 'Store Checkout Imported' );
-				// Redirect to next step once the import is success.
-				setTimeout( function () {
-					redirectNextStep();
-				}, 1000 );
-			},
+			importStoreCheckoutSuccessEvent,
 			false
 		);
 
-		const importStoreCheckoutProcessEvent = document.addEventListener(
+		const importStoreCheckoutProcessEvent = function () {
+			changeButtonText( {
+				button_text: __( 'Importing..', 'cartflows' ),
+			} );
+		};
+
+		document.addEventListener(
 			'wcf-store-checkout-import-text-processing',
-			function () {
-				changeButtonText( {
-					button_text: __( 'Importing..', 'cartflows' ),
-				} );
-			},
+			importStoreCheckoutProcessEvent,
 			false
 		);
 
-		const importStoreCheckoutErrorEvent = document.addEventListener(
-			'wcf-store-checkout-import-error',
-			function ( e ) {
-				setImportErrors( {
-					hasError: e.detail.is_error,
-					errorMessage: e.detail.errorMsg,
-					callToAction: e.detail.callToAction,
-				} );
+		const importStoreCheckoutErrorEvent = function ( e ) {
+			setImportErrors( {
+				hasError: e.detail.is_error,
+				errorMessage: e.detail.errorMsg,
+				callToAction: e.detail.callToAction,
+			} );
 
-				changeButtonText( {
-					button_text: __( 'Importing Failed..', 'cartflows' ),
-				} );
-			},
+			changeButtonText( {
+				button_text: __( 'Importing Failed..', 'cartflows' ),
+			} );
+		};
+
+		document.addEventListener(
+			'wcf-store-checkout-import-error',
+			importStoreCheckoutErrorEvent,
 			false
 		);
 

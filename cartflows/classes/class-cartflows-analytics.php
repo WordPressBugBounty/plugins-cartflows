@@ -24,7 +24,7 @@ class Cartflows_Analytics {
 	 * Instance
 	 *
 	 * @access private
-	 * @var object Class object.
+	 * @var Cartflows_Analytics|null Class object.
 	 * @since 2.2.4
 	 */
 	private static $instance;
@@ -40,7 +40,7 @@ class Cartflows_Analytics {
 	 * Initiator
 	 *
 	 * @since 2.2.4
-	 * @return object initialized object of class.
+	 * @return Cartflows_Analytics initialized object of class.
 	 */
 	public static function get_instance() {
 		if ( ! isset( self::$instance ) ) {
@@ -89,6 +89,45 @@ class Cartflows_Analytics {
 		return self::$events;
 	}
 
+	/**
+	 * Whether non-sensitive usage tracking is opted in.
+	 *
+	 * Reads the site option so multisite network opt-in resolves the same way BSF Analytics does.
+	 *
+	 * @since x.x.x
+	 * @return bool
+	 */
+	public static function is_tracking_opted_in() {
+		// Honour the BSF-wide kill switch and white-label first — BSF_Analytics::is_tracking_enabled() checks both.
+		if ( ! apply_filters( 'bsf_usage_tracking_enabled', true ) ) {
+			return false;
+		}
+
+		$white_label = apply_filters( 'cf_white_label_options', array() );
+		if ( is_array( $white_label ) && in_array( true, $white_label, true ) ) {
+			return false;
+		}
+
+		// BSF stores the literal string 'no' on opt-out, which a bare bool cast would treat as opted in.
+		return (bool) apply_filters( 'cartflows_enable_non_sensitive_data_tracking', 'yes' === get_site_option( 'cf_usage_optin', false ) );
+	}
+
+	/**
+	 * Whole days elapsed since the plugin was installed, 0 when unknown.
+	 *
+	 * @since x.x.x
+	 * @return int
+	 */
+	private function get_days_since_install() {
+		$install_time = Cartflows_Helper::get_analytics_flag( 'usage_installed_time', 0 );
+
+		if ( ! is_numeric( $install_time ) || (int) $install_time <= 0 ) {
+			return 0;
+		}
+
+		return (int) floor( ( time() - (int) $install_time ) / DAY_IN_SECONDS );
+	}
+
 	// -------------------------------------------------------------------------
 	// BSF Analytics stats payload
 	// -------------------------------------------------------------------------
@@ -104,9 +143,7 @@ class Cartflows_Analytics {
 	 * @return array
 	 */
 	public function get_stats( $stats_data ) {
-		// Use get_site_option so multisite network opt-in flows correctly — matches
-		// BSF_Analytics::is_tracking_enabled() which also reads the site option.
-		if ( ! apply_filters( 'cartflows_enable_non_sensitive_data_tracking', get_site_option( 'cf_usage_optin', false ) ) ) {
+		if ( ! self::is_tracking_opted_in() ) {
 			return $stats_data;
 		}
 
@@ -177,8 +214,8 @@ class Cartflows_Analytics {
 			// Simplified: boolean flag only — no raw feedback object.
 			'nps_survey_submitted'       => ! empty( get_option( 'nps-survey-cartflows', array() ) ),
 			'pro_license_key_exists'     => $this->check_pro_license_key_exists() ? true : false,
-			// Simplified: count only — no module ID list.
-			'learn_modules_completed'    => count( (array) get_option( 'wcf_learn_data', array() ) ),
+			// Resolved count — includes auto-completed modules the option never stores.
+			'learn_modules_completed'    => Cartflows_Learn_Progress::get_instance()->get_completed_count(),
 		);
 	}
 
@@ -911,6 +948,153 @@ class Cartflows_Analytics {
 
 		// Value is the step ID, not a boolean — get_stats reads it back to resolve the layout.
 		Cartflows_Helper::set_analytics_flag( 'first_checkout_configured', $post_id );
+	}
+
+	// -------------------------------------------------------------------------
+	// Learn section events
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Learn event names the browser is allowed to record.
+	 *
+	 * @since x.x.x
+	 * @return array<int, string>
+	 */
+	public static function get_trackable_learn_events() {
+		return array( 'learn_page_viewed', 'learn_module_action', 'learn_action_failed', 'learn_video_opened' );
+	}
+
+	/**
+	 * Learn CTA action types accepted from the browser.
+	 *
+	 * @since x.x.x
+	 * @return array<int, string>
+	 */
+	public static function get_learn_action_types() {
+		return array( 'install_plugin', 'redirect', 'learn_how', 'upgrade', 'activate_pro' );
+	}
+
+	/**
+	 * Learn failure reasons accepted from the browser.
+	 *
+	 * @since x.x.x
+	 * @return array<int, string>
+	 */
+	public static function get_learn_failure_reasons() {
+		return array( 'install_failed', 'activate_failed', 'progress_save_failed' );
+	}
+
+	/**
+	 * Plugin slugs the Learn checklist can install.
+	 *
+	 * @since x.x.x
+	 * @return array<int, string>
+	 */
+	public static function get_learn_plugin_slugs() {
+		return array( 'woocommerce', 'woo-cart-abandonment-recovery', 'modern-cart' );
+	}
+
+	/**
+	 * Track the first Learn page view as a milestone and refresh the per-module progress snapshot.
+	 *
+	 * Fired from the AJAX recorder, not the REST route, so a GET never writes options.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function track_learn_page_view() {
+
+		$events = self::events();
+		if ( null === $events || ! self::is_tracking_opted_in() ) {
+			return;
+		}
+
+		$progress = Cartflows_Learn_Progress::get_instance();
+		$states   = $progress->get_module_states();
+
+		// Unforced on purpose: a one-time milestone keyed on time-to-value, like first_flow_published.
+		$events->track(
+			'learn_page_viewed',
+			(string) $this->get_days_since_install(),
+			array(
+				'total'     => (string) $progress->get_total_count(),
+				'completed' => (string) $progress->get_completed_count(),
+			)
+		);
+
+		// Forced so the server always holds the latest snapshot — one row per site.
+		$events->track( 'learn_progress', $progress->get_progress_value(), $states, true );
+	}
+
+	/**
+	 * Track a Learn module CTA click.
+	 *
+	 * @since x.x.x
+	 * @param string $module_id   Whitelisted module identifier.
+	 * @param string $action_type Whitelisted action type.
+	 * @param bool   $is_pro      Whether the module is a Pro feature.
+	 * @return void
+	 */
+	public function track_learn_module_action( $module_id, $action_type, $is_pro ) {
+
+		$events = self::events();
+		if ( null === $events || ! self::is_tracking_opted_in() ) {
+			return;
+		}
+
+		// Forced events overwrite by name, so the module is folded in or clicks on two modules collapse to one.
+		$events->track(
+			'learn_module_action_' . $module_id,
+			$module_id,
+			array(
+				'action_type' => $action_type,
+				'is_pro'      => $is_pro ? 'yes' : 'no',
+			),
+			true
+		);
+	}
+
+	/**
+	 * Track a failed Learn module action.
+	 *
+	 * @since x.x.x
+	 * @param string $module_id   Whitelisted module identifier.
+	 * @param string $reason      Whitelisted failure reason.
+	 * @param string $plugin_slug Whitelisted plugin slug, empty when not plugin related.
+	 * @return void
+	 */
+	public function track_learn_action_failed( $module_id, $reason, $plugin_slug = '' ) {
+
+		$events = self::events();
+		if ( null === $events || ! self::is_tracking_opted_in() ) {
+			return;
+		}
+
+		$events->track(
+			'learn_action_failed_' . $module_id,
+			$module_id,
+			array(
+				'reason'      => $reason,
+				'plugin_slug' => $plugin_slug,
+			),
+			true
+		);
+	}
+
+	/**
+	 * Track the Learn getting-started video being opened.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function track_learn_video_opened() {
+
+		$events = self::events();
+		if ( null === $events || ! self::is_tracking_opted_in() ) {
+			return;
+		}
+
+		$events->track( 'learn_video_opened', CARTFLOWS_VER );
 	}
 }
 

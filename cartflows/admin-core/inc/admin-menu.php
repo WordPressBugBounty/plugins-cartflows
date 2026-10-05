@@ -223,6 +223,10 @@ class AdminMenu {
 		if ( isset( $_GET['page'] ) && ( 'cartflows' === sanitize_text_field( $_GET['page'] ) || false !== strpos( sanitize_text_field( $_GET['page'] ), 'cartflows_' ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'styles_scripts' ) );
+
+			// Twemoji rewrites emoji text nodes inside our React tree, detaching nodes React still tracks and crashing the editor.
+			remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+			remove_action( 'admin_print_styles', 'print_emoji_styles' );
 		}
 	}
 
@@ -276,6 +280,20 @@ class AdminMenu {
 				$capability,
 				'admin.php?page=' . $this->menu_slug . '&path=analytics'
 			);
+
+			// Persistent re-entry point until the guided setup is finished.
+			if ( current_user_can( 'manage_options' ) && '1' !== get_option( 'wcf_setup_complete', false ) ) {
+				$exit_step   = get_option( 'wcf_exit_setup_step', '' );
+				$resume_link = 'index.php?page=cartflows-onboarding' . ( ! empty( $exit_step ) && is_string( $exit_step ) ? '&step=' . sanitize_key( $exit_step ) : '' );
+
+				add_submenu_page(
+					$parent_slug,
+					__( 'Resume Setup', 'cartflows' ),
+					__( 'Resume Setup', 'cartflows' ),
+					$capability,
+					$resume_link
+				);
+			}
 
 			if ( current_user_can( 'cartflows_manage_settings' ) ) {
 
@@ -355,8 +373,6 @@ class AdminMenu {
 				include_once CARTFLOWS_ADMIN_CORE_DIR . 'views/settings-app.php';
 			} elseif ( $this->is_current_page( 'cartflows', array( 'wcf-edit-flow' ) ) ) {
 				include_once CARTFLOWS_ADMIN_CORE_DIR . 'views/editor-app.php';
-			} elseif ( $this->is_current_page( 'cartflows', array( 'wcf-log' ) ) ) {
-				include_once CARTFLOWS_ADMIN_CORE_DIR . 'views/debugger.php';
 			} elseif ( $this->is_current_page( 'cartflows', array( 'wcf-license' ) ) && _is_cartflows_pro() ) {
 				do_action( 'cartflows_admin_log', 'wcf-license' );
 			} else {
@@ -476,6 +492,10 @@ class AdminMenu {
 				'flows_and_steps'                      => ! empty( $flows_and_steps ) ? $flows_and_steps : '',
 				'store_checkout_flows_and_steps'       => \Cartflows_Helper::get_instance()->get_flows_and_steps( '', 'store-checkout' ),
 				'woo_currency'                         => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '',
+				'woo_currency_pos'                     => function_exists( 'wc' ) ? get_option( 'woocommerce_currency_pos', 'left' ) : 'left',
+				'woo_decimal_sep'                      => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '.',
+				'woo_thousand_sep'                     => function_exists( 'wc_get_price_thousand_separator' ) ? wc_get_price_thousand_separator() : ',',
+				'woo_decimals'                         => function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2,
 				'template_library_url'                 => wcf()->get_site_url(),
 				'image_placeholder'                    => esc_url_raw( CARTFLOWS_URL . 'admin-core/assets/images/image-placeholder.png' ),
 				'ai_connected'                         => class_exists( '\Cartflows_Ai_Auth' ) ? \Cartflows_Ai_Auth::get_instance()->get_auth_status() : false,
@@ -504,7 +524,6 @@ class AdminMenu {
 				'cpsw_connection_status'               => 'success' === get_option( 'cpsw_test_con_status', false ) || 'success' === get_option( 'cpsw_con_status', false ),
 				'current_user_can_manage_cartflows'    => current_user_can( 'cartflows_manage_settings' ),
 				'is_set_report_email_ids'              => get_option( 'cartflows_stats_report_email_ids', false ),
-				'cf_docs_data'                         => get_option( 'cartflows_docs_data', false ),
 				'woo_order_url'                        => $order_url,
 				'integrations'                         => $this->get_recommendation_integrations(),
 				'plugin_installer_nonce'               => wp_create_nonce( 'updates' ),
@@ -810,6 +829,15 @@ class AdminMenu {
 			array(),
 			CARTFLOWS_VER
 		);
+
+		// Store Checkout renders the canvas inside this app too, so it needs the React Flow base styles.
+		wp_register_style(
+			'wcf-canvas-base-style',
+			$build_url . 'style-editor-app.css',
+			array(),
+			CARTFLOWS_VER
+		);
+		wp_enqueue_style( 'wcf-canvas-base-style' );
 
 		wp_enqueue_script( $handle );
 
@@ -1177,8 +1205,17 @@ class AdminMenu {
 		// Fetch the RSS feed from the URL. This saves us from the CORS issue.
 		$feed = wp_remote_retrieve_body( wp_safe_remote_get( 'https://cartflows.com/product/cartflows/feed/' ) ); // phpcs:ignore -- This is a valid use case cannot use VIP rules here.
 
-		// Security: Set proper content type header and strip script tags to prevent XSS.
-		echo $feed; // phpcs:ignore -- RSS feed content sanitized via wp_kses_post.
+		/*
+		 * This is an RSS document, parsed as XML by the What's New client. It must not be
+		 * run through wp_kses_post() — that strips the feed's own elements and leaves the
+		 * client nothing to parse. Declaring the type is what stops a browser sniffing the
+		 * response as HTML; the body itself is fetched over HTTPS from our own domain and
+		 * this endpoint is behind a nonce and a capability check.
+		 */
+		header( 'Content-Type: application/rss+xml; charset=' . get_option( 'blog_charset' ) );
+		header( 'X-Content-Type-Options: nosniff' );
+
+		echo $feed; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- RSS/XML body, see above.
 		exit;
 	}
 }

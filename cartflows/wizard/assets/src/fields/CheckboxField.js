@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from '@wordpress/element';
 import parse from 'html-react-parser';
 import { Tooltip } from '@WizardFields';
 import classnames from 'classnames';

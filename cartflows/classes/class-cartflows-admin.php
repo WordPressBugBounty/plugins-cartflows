@@ -96,7 +96,17 @@ class Cartflows_Admin {
 	 * @return void
 	 */
 	public function run_scheduled_docs_job() {
-		if ( false === as_next_scheduled_action( 'cartflows_update_knowledge_base_data' ) && ! wp_installing() ) {
+
+		if ( wp_installing() ) {
+			return;
+		}
+
+		// Only the legacy admin renders the Knowledge Base screen that consumes this data.
+		if ( ! defined( 'CARTFLOWS_LEGACY_ADMIN' ) || ! CARTFLOWS_LEGACY_ADMIN ) {
+			return;
+		}
+
+		if ( false === as_next_scheduled_action( 'cartflows_update_knowledge_base_data' ) ) {
 			as_schedule_recurring_action( time(), WEEK_IN_SECONDS, 'cartflows_update_knowledge_base_data' );
 		}
 	}
@@ -109,7 +119,9 @@ class Cartflows_Admin {
 	 */
 	public static function cartflows_update_knowledge_base_data() {
 		$docs_json = json_decode( wp_remote_retrieve_body( wp_remote_get( 'https://cartflows.com//wp-json/powerful-docs/v1/get-docs' ) ) );
-		Cartflows_Helper::update_admin_settings_option( 'cartflows_docs_data', $docs_json );
+
+		// Never autoload — this payload runs to hundreds of KB and only the Knowledge Base screen reads it.
+		update_option( 'cartflows_docs_data', $docs_json, false );
 	}
 
 	/**
@@ -303,7 +315,7 @@ class Cartflows_Admin {
 
 		$classes .= ' cartflows-' . CARTFLOWS_VER;
 
-		if ( isset( $_GET['action'] ) && in_array( sanitize_text_field( wp_unslash( $_GET['action'] ) ), array( 'wcf-log', 'wcf-license' ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( isset( $_GET['action'] ) && 'wcf-license' === sanitize_text_field( wp_unslash( $_GET['action'] ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$classes .= ' wcf-debug-page ';
 		}
 

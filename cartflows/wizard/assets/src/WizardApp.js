@@ -1,5 +1,4 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { render, StrictMode } from '@wordpress/element';
 import './WizardApp.scss';
 import './tailwind-styles.scss';
 
@@ -15,8 +14,8 @@ import settingsEvents, {
 import WizardMain from './WizardMain';
 
 window.addEventListener( 'DOMContentLoaded', function () {
-	ReactDOM.render(
-		<React.StrictMode>
+	render(
+		<StrictMode>
 			<StateProvider
 				initialState={ settingsInitialState }
 				reducer={ settingsEvents }
@@ -28,7 +27,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 					<WizardMain />
 				</SettingsProvider>
 			</StateProvider>
-		</React.StrictMode>,
+		</StrictMode>,
 		document.getElementById( 'wcf-setup-wizard-page' )
 	);
 } );

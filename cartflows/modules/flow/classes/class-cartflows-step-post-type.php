@@ -84,7 +84,7 @@ class Cartflows_Step_Post_Type {
 			 */
 
 			/* Remove Next / Previous Rel Link */
-			remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0 );
+			remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head', 10 );
 			add_filter( 'next_post_rel_link', '__return_empty_string' );
 			add_filter( 'previous_post_rel_link', '__return_empty_string' );
 
@@ -353,9 +353,28 @@ class Cartflows_Step_Post_Type {
 			$next_step_url = '';
 			if ( is_array( $steps ) && ! empty( $steps ) ) {
 
-				// Find the next enabled step.
-				foreach ( $steps as $step ) {
-					if ( isset( $step['id'] ) && $post->ID !== $step['id'] && ! wcf()->utils->is_step_disabled( $step['id'] ) ) {
+				// Locate the current step first. Scanning the list from the top always
+				// returned step 1, so disabling step 3 of 5 sent the visitor backwards.
+				$current_index = -1;
+
+				foreach ( $steps as $index => $step ) {
+					if ( isset( $step['id'] ) && intval( $post->ID ) === intval( $step['id'] ) ) {
+						$current_index = $index;
+						break;
+					}
+				}
+
+				// Prefer the next enabled step after the current one. If every later step
+				// is disabled too, wrap around so the visitor is never left on a disabled
+				// page. An unknown current step leaves $current_index at -1, which scans
+				// the whole flow from the start.
+				$search_order = array_merge(
+					array_slice( $steps, $current_index + 1 ),
+					array_slice( $steps, 0, $current_index + 1 )
+				);
+
+				foreach ( $search_order as $step ) {
+					if ( isset( $step['id'] ) && intval( $post->ID ) !== intval( $step['id'] ) && ! wcf()->utils->is_step_disabled( $step['id'] ) ) {
 						$next_step_url = get_permalink( $step['id'] );
 						break;
 					}

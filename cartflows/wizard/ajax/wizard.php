@@ -355,7 +355,9 @@ class Wizard extends AjaxBase {
 			wp_send_json_error( $response_data );
 		}
 
-		$page_builder = isset( $_POST['page_builder'] ) ? sanitize_text_field( wp_unslash( $_POST['page_builder'] ) ) : '';
+		// sanitize_key() here as well as sanitize_text_field(): import_templates() writes the
+		// cache under the sanitized slug, so reading with the raw one missed it permanently.
+		$page_builder = isset( $_POST['page_builder'] ) ? sanitize_key( wp_unslash( $_POST['page_builder'] ) ) : '';
 
 		$page       = 1;
 		$flows_list = array();
@@ -408,7 +410,9 @@ class Wizard extends AjaxBase {
 			'timeout' => 30, //phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 		);
 
-		$sites_and_pages = array();
+		// Always shaped like a successful response so the error paths below cannot return
+		// null for 'flows' — the client reads .flows.length off it.
+		$sites_and_pages = array( 'flows' => array() );
 		$site_url        = wcf()->get_site_url();
 
 		$query_args = array(
@@ -423,25 +427,33 @@ class Wizard extends AjaxBase {
 
 		$response = wp_remote_get( $api_url, $api_args );
 
-		if ( ! is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) === 200 ) {
+		if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
 
-			$sites_and_pages = json_decode( wp_remote_retrieve_body( $response ), true );
+			// Decode into its own variable — assigning over $sites_and_pages let the error
+			// branches below return a response with no 'flows' key at all.
+			$decoded = json_decode( wp_remote_retrieve_body( $response ), true );
 
-			if ( isset( $sites_and_pages['code'] ) ) {
-				$message = isset( $sites_and_pages['message'] ) ? $sites_and_pages['message'] : '';
+			if ( is_array( $decoded ) && isset( $decoded['code'] ) ) {
+				$message = isset( $decoded['message'] ) ? $decoded['message'] : '';
 				if ( ! empty( $message ) ) {
 					wcf()->logger->sync_log( 'HTTP Request Error: ' . $message );
 				} else {
 					wcf()->logger->sync_log( 'HTTP Request Error!' );
 				}
-			} elseif ( is_array( $sites_and_pages ) && isset( $sites_and_pages['flows'] ) && ! empty( $sites_and_pages['flows'] ) ) {
-				$option_name = 'cartflows-store-checkout-' . sanitize_key( $page_builder ) . '-flows-and-steps-' . $page;
-				update_site_option( $option_name, $sites_and_pages['flows'] );
-			} else {
-				$sites_and_pages['flows'] = array();
+			} elseif ( is_array( $decoded ) && ! empty( $decoded['flows'] ) ) {
+				$sites_and_pages['flows'] = $decoded['flows'];
+
+				$option_name = 'cartflows-store-checkout-' . $page_builder . '-flows-and-steps-' . $page;
+				update_site_option( $option_name, $decoded['flows'] );
 			}
 		} else {
-			wcf()->logger->sync_log( 'API Error: ' . $response->get_error_message() );
+			// A non-200 response is not necessarily a WP_Error, and get_error_message()
+			// only exists on one — the previous `||` sent those into the branch above.
+			$error_message = is_wp_error( $response )
+				? $response->get_error_message()
+				: sprintf( 'HTTP %s', wp_remote_retrieve_response_code( $response ) );
+
+			wcf()->logger->sync_log( 'API Error: ' . $error_message );
 		}
 
 		return $sites_and_pages['flows'];

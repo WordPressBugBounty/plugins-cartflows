@@ -1,9 +1,9 @@
-import React from 'react';
+import { useState } from '@wordpress/element';
 
 function InputField( props ) {
 	const { attr } = props;
 
-	const [ inputvalue, setInputvalue ] = React.useState( props.value );
+	const [ inputvalue, setInputvalue ] = useState( props.value );
 
 	function handleChange( e ) {
 		setInputvalue( e.target.value );

@@ -1,0 +1,50 @@
+/**
+ * Frequently Bought Together — activation nudge styling.
+ *
+ * Scoped overrides on top of admin/assets/css/notices.css. Everything here is
+ * keyed to .cartflows-fbt-notice so the shared notice component keeps rendering
+ * the 5-star and new-UI notices exactly as it does today.
+ */
+
+/* The shared sheet tints and stretches .notice-image into a column; the mark is already a filled tile. */
+.cartflows-fbt-notice .notice-image {
+	align-self: flex-start;
+	background-color: transparent;
+	padding: 18px 0 18px 18px;
+}
+
+.cartflows-fbt-notice img.custom-logo {
+	display: block;
+	width: 40px;
+	height: 40px;
+	border-radius: 8px;
+}
+
+/* The shared sheet colours only the border; label and icon must take the accent too. */
+.cartflows-fbt-notice .astra-review-notice:not( .button-primary ) {
+	color: var( --cf-notice-accent );
+	border: 1px solid var( --cf-notice-accent );
+	background-color: transparent;
+	transition: background-color 0.15s ease-in-out;
+}
+
+.cartflows-fbt-notice .astra-review-notice:not( .button-primary ):hover,
+.cartflows-fbt-notice .astra-review-notice:not( .button-primary ):focus {
+	color: var( --cf-notice-accent );
+	background-color: var( --cf-notice-accent-bg );
+}
+
+.cartflows-fbt-notice .astra-review-notice:not( .button-primary ) .dashicons {
+	color: inherit;
+}
+
+.cartflows-fbt-notice .notice-description a {
+	color: var( --cf-notice-accent );
+	text-underline-offset: 2px;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.cartflows-fbt-notice .astra-review-notice:not( .button-primary ) {
+		transition: none;
+	}
+}

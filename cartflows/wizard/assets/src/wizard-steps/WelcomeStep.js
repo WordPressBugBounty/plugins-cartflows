@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from '@wordpress/element';
 import { useHistory } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
 import { useStateValue } from '../utils/StateProvider';
@@ -25,11 +25,13 @@ function WelcomeStep() {
 			},
 		} );
 
-		const startOnboardingEvent = document.addEventListener(
+		const startOnboardingEvent = function () {
+			redirectNextStep();
+		};
+
+		document.addEventListener(
 			'wcf-redirect-page-builder-step',
-			function () {
-				redirectNextStep();
-			},
+			startOnboardingEvent,
 			false
 		);
 

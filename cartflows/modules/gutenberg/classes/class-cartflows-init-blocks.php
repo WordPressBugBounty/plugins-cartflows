@@ -65,12 +65,11 @@ class Cartflows_Init_Blocks {
 		add_action( 'wp_ajax_wpcf_order_checkout_form_shortcode', array( $this, 'order_checkout_form_shortcode' ) );
 		add_action( 'wp_ajax_wpcf_optin_form_shortcode', array( $this, 'optin_form_shortcode' ) );
 
-		add_filter(
-			'cartflows_show_demo_order_details',
-			function() {
-				return true;
-			}
-		);
+		// Demo order details are scoped to the editor preview request in
+		// order_detail_form_shortcode(), which is nonce- and capability-checked. Registering
+		// the filter here as well applied it to every request, front end included, so an
+		// administrator opening a live thank-you page without an order parameter was shown
+		// the store's most recent real order.
 
 		add_action( 'enqueue_block_editor_assets', array( $this, 'add_gcp_vars_to_block_editor' ), 12 );
 

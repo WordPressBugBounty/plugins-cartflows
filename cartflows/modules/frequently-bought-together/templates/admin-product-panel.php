@@ -62,6 +62,7 @@ $position_labels = array(
 	'below_title'      => __( 'Below title', 'cartflows' ),
 	'below_price'      => __( 'Below price', 'cartflows' ),
 	'below_summary'    => __( 'Below summary', 'cartflows' ),
+	'shortcode'        => __( 'Shortcode', 'cartflows' ),
 );
 ?>
 <div id="cartflows_fbt_data" class="panel woocommerce_options_panel hidden wcf-fbt-panel<?php echo esc_attr( $enabled_class ); ?>">
@@ -79,6 +80,11 @@ $position_labels = array(
 		</label>
 		<p class="wcf-fbt-header-desc"><?php esc_html_e( 'Show suggested companion products on the product page.', 'cartflows' ); ?></p>
 	</div>
+
+	<?php
+	// Sits outside .wcf-fbt-body, which is hidden until the widget is enabled.
+	Cartflows_Fbt_Nudges::get_instance()->render_panel_callout();
+	?>
 
 	<div class="wcf-fbt-body">
 
@@ -193,6 +199,10 @@ $position_labels = array(
 							<option value="<?php echo esc_attr( $position_value ); ?>" <?php selected( $settings['position'], $position_value ); ?>><?php echo esc_html( $position_label ); ?></option>
 						<?php endforeach; ?>
 					</select>
+					<span class="wcf-fbt-shortcode-hint<?php echo 'shortcode' === $settings['position'] ? ' is-visible' : ''; ?>">
+						<?php esc_html_e( 'Place this shortcode anywhere in your product template:', 'cartflows' ); ?>
+						<code>[wcf_frequently_bought_together]</code>
+					</span>
 				</p>
 			</div>
 		</div>

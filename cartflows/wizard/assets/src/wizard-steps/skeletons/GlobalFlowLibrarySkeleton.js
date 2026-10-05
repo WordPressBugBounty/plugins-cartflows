@@ -1,4 +1,3 @@
-import React from 'react';
 import './GlobalFlowLibrarySkeleton.scss';
 
 function GlobalFlowLibrarySkeleton() {

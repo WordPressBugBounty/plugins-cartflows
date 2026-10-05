@@ -41,7 +41,7 @@ if ( $fbt_row['is_extra'] && ! $fbt_is_variable ) {
 	<?php else : ?>
 		<input type="checkbox" class="wcf-fbt-widget-input" value="<?php echo esc_attr( (string) $fbt_row['id'] ); ?>" data-price="<?php echo esc_attr( (string) $fbt_row['price'] ); ?>" <?php disabled( ! $fbt_row['available'] ); ?> />
 	<?php endif; ?>
-	<span class="wcf-fbt-widget-thumb"><img src="<?php echo esc_url( $fbt_row['image'] ); ?>" alt="" loading="lazy" /></span>
+	<span class="wcf-fbt-widget-thumb"><img src="<?php echo esc_url( $fbt_row['image'] ); ?>" alt="<?php echo esc_attr( $fbt_row['name'] ); ?>" loading="lazy" /></span>
 	<span class="wcf-fbt-widget-name"><?php echo esc_html( $fbt_row['name'] ); ?>
 	<?php
 	if ( $fbt_row['is_main'] ) :

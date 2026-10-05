@@ -434,7 +434,7 @@ class Steps extends AjaxBase {
 
 		$post_meta = AdminHelper::get_step_default_meta( $step_type, $step_id );
 
-		MetaOps::save_meta_fields( $step_id, $post_meta, 'cartflows_save_meta_settings' );
+		$skipped_fields = MetaOps::save_meta_fields( $step_id, $post_meta, 'cartflows_save_meta_settings' );
 
 		// We are storing the step dynamic css in the post meta and deleting when any setting changes. Once deleted it will be regenerated with first page load.
 		delete_post_meta( $step_id, 'wcf-dynamic-css' );
@@ -454,6 +454,12 @@ class Steps extends AjaxBase {
 			/* translators: %s flow id */
 			'text'          => sprintf( __( 'Data saved successfully for step id %s', 'cartflows' ), $step_id ),
 		);
+
+		// Name anything the save dropped rather than reporting a clean save the user did not get.
+		if ( ! empty( $skipped_fields ) ) {
+			$result['skipped_fields'] = $skipped_fields;
+			$result['text']           = __( 'Saved, but the custom script fields were not updated because your account cannot edit scripts.', 'cartflows' );
+		}
 
 		wp_send_json( $result );
 	}

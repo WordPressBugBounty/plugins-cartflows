@@ -88,7 +88,13 @@ class Cartflows_Flow_Post_Type {
 		$post_type = $screen->id;
 		if ( ! empty( $post_type ) && CARTFLOWS_FLOW_POST_TYPE === $post_type ) {
 			$pos = array_search( 'slugdiv', $hidden, true );
-			unset( $hidden[ $pos ] );
+
+			// array_search() returns false when slugdiv is not hidden, and unset( $hidden[ false ] )
+			// resolves to index 0 — which would un-hide an unrelated metabox.
+			if ( false !== $pos ) {
+				unset( $hidden[ $pos ] );
+				$hidden = array_values( $hidden );
+			}
 		}
 
 		return $hidden;

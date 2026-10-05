@@ -645,11 +645,12 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 					if ( defined( 'WP_CLI' ) ) {
 						Cartflows_Batch_Processing_Sync_Library::get_instance()->import_sites( $page, $templates );
 					} else {
+						// Queue only scalar data. The queue is the body of the async dispatch request,
+						// and an object in it trips a PHP 8.4+ ArrayIterator deprecation in Requests.
 						self::$process_site_importer->push_to_queue(
 							array(
 								'page'     => $page,
 								'template' => $templates,
-								'instance' => Cartflows_Batch_Processing_Sync_Library::get_instance(),
 								'method'   => 'import_sites',
 							)
 						);
@@ -684,10 +685,38 @@ if ( ! class_exists( 'CartFlows_Batch_Process' ) ) :
 		 */
 		public static function set_is_wcf_template_import( $bool = false ) {
 			if ( $bool ) {
-				set_transient( 'cartflows_is_wcf_template_import', $bool, HOUR_IN_SECONDS );
+				/*
+				 * The flag is only meant to cover the request doing the import. It used to be
+				 * stored for an hour, so an import that died between the true and the false
+				 * left SVG/XML uploads enabled long after the import was over. Clear it on
+				 * shutdown — which still runs after a fatal — and keep the TTL only as the
+				 * backstop for a request the server kills outright.
+				 *
+				 * The TTL still has to outlast the import request itself: a large funnel
+				 * sideloading many images on a slow host can run for several minutes, and an
+				 * expiry reached mid-import would start rejecting SVG/XML while the import is
+				 * still going. Shutdown is the real guard, so this is set clear of that.
+				 */
+				set_transient( 'cartflows_is_wcf_template_import', $bool, 15 * MINUTE_IN_SECONDS );
+
+				if ( ! has_action( 'shutdown', array( __CLASS__, 'clear_is_wcf_template_import' ) ) ) {
+					add_action( 'shutdown', array( __CLASS__, 'clear_is_wcf_template_import' ) );
+				}
 			} else {
 				delete_transient( 'cartflows_is_wcf_template_import' ); // Delete the option if $bool is false.
 			}
+		}
+
+		/**
+		 * Clear the import flag at the end of the request.
+		 *
+		 * Registered on 'shutdown' by set_is_wcf_template_import() so an aborted import
+		 * cannot leave the extra upload mime types enabled for later requests.
+		 *
+		 * @return void
+		 */
+		public static function clear_is_wcf_template_import() {
+			delete_transient( 'cartflows_is_wcf_template_import' );
 		}
 	}
 

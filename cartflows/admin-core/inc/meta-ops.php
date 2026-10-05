@@ -24,9 +24,11 @@ class MetaOps {
 	 * @param array  $post_meta options to store.
 	 * @param string $action action to check nonce.
 	 *
-	 * @return void
+	 * @return array<int, string> Meta keys skipped because the user cannot author scripts.
 	 */
 	public static function save_meta_fields( $post_id, $post_meta, $action = '' ) {
+
+		$skipped_fields = array();
 
 		if ( ! check_ajax_referer( $action, 'security', false ) ) {
 			$response_data = array( 'message' => __( 'Nonce validation failed', 'cartflows' ) );
@@ -34,7 +36,7 @@ class MetaOps {
 		}
 
 		if ( ! ( $post_id && is_array( $post_meta ) ) ) {
-			return;
+			return $skipped_fields;
 		}
 
 		$allowed_html = array(
@@ -53,7 +55,12 @@ class MetaOps {
 				continue;
 			}
 
-			$meta_value = false;
+			/*
+			 * null leaves the stored meta alone; false deletes it. Starting at null means a
+			 * sanitize case that forgets to assign can no longer silently destroy saved data
+			 * — every branch that genuinely wants a delete now says so explicitly.
+			 */
+			$meta_value = null;
 
 			// Sanitize values.
 			$sanitize_filter = ( isset( $data['sanitize'] ) ) ? $data['sanitize'] : 'FILTER_DEFAULT';
@@ -74,6 +81,9 @@ class MetaOps {
 				case 'FILTER_CARTFLOWS_ARRAY':
 					if ( isset( $_POST[ $key ] ) && is_array( $_POST[ $key ] ) ) {
 						$meta_value = array_map( 'sanitize_text_field', wp_unslash( $_POST[ $key ] ) );
+					} else {
+						// A posted-but-not-array value has always cleared this meta; keep it.
+						$meta_value = false;
 					}
 					break;
 
@@ -97,6 +107,8 @@ class MetaOps {
 					// users with `unfiltered_html` so per-plugin caps cannot grant script write
 					// access to lower roles (e.g. Editors via the role manager).
 					if ( ! current_user_can( 'unfiltered_html' ) ) {
+						// Record it — skipping silently let the caller report a clean save.
+						$skipped_fields[] = $key;
 						continue 2;
 					}
 					// Reason for ignoring phpcs rule: Here we are saving the custom JS/CSS script. Encoding it before saving to db. No escaping function working here.
@@ -137,10 +149,16 @@ class MetaOps {
 							$i++;
 						}
 
-						// Preserve original delete-on-empty semantics (line ~270): only override $meta_value when products were collected.
 						if ( ! empty( $checkout_products ) ) {
 							$meta_value = $checkout_products;
 						}
+					}
+
+					if ( null === $meta_value ) {
+						// Delete-on-empty is deliberate here: clearing every product removes the
+						// meta. The repeater posts an empty scalar, not an array, once the last
+						// product is removed, so this has to sit outside the is_array() guard.
+						$meta_value = false;
 					}
 					break;
 
@@ -155,7 +173,9 @@ class MetaOps {
 
 						if ( 'wcf_field_order_billing' == $key || 'wcf_field_order_shipping' == $key ) {
 
-							$type_of_fields          = ltrim( $key, 'wcf_field_order_' );
+							// ltrim() takes a character set, not a prefix — it only produced the
+							// right answer here because 'b' and 's' happen to be absent from it.
+							$type_of_fields          = str_replace( 'wcf_field_order_', '', $key );
 							$billing_shipping_fields = \Cartflows_Helper::get_checkout_fields( $type_of_fields, $post_id );
 
 							foreach ( $post_data as $field_key_name => $value ) {
@@ -201,6 +221,14 @@ class MetaOps {
 						}
 					}
 
+					/*
+					 * Deliberately no `null === $meta_value` normalisation here. Unlike the
+					 * checkout products and FILTER_CARTFLOWS_ARRAY cases, no shipped field posts
+					 * a scalar or an unhandled key to this filter — the only keys that use it are
+					 * handled above, and the field-order editor always posts per-field arrays. If
+					 * that ever changes, leaving the saved ordering alone is the safe outcome;
+					 * deleting it would be the silent data loss this sentinel exists to prevent.
+					 */
 					break;
 
 				case 'FILTER_CARTFLOWS_OPTIN_FIELDS':
@@ -257,13 +285,25 @@ class MetaOps {
 							$meta_value = $ordered_fields;
 						}
 					}
+
+					/*
+					 * Deliberately no `null === $meta_value` normalisation here either — same
+					 * reasoning as FILTER_CARTFLOWS_CHECKOUT_FIELDS above. `wcf-optin-fields-billing`
+					 * is the only key that uses this filter and it is handled.
+					 */
 					break;
 
 				default:
 					if ( 'FILTER_DEFAULT' === $sanitize_filter ) {
 						$meta_value = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';
 					} else {
-						$meta_value = apply_filters( 'cartflows_admin_save_meta_field_values', $meta_value, $post_id, $key, $sanitize_filter, $action );
+						/*
+						 * CartFlows Pro hooks this filter and several of its cases leave the
+						 * incoming value untouched when the field was not posted, relying on
+						 * it being false so the meta is deleted. Pass false rather than the
+						 * new null sentinel so that contract is unchanged.
+						 */
+						$meta_value = apply_filters( 'cartflows_admin_save_meta_field_values', false, $post_id, $key, $sanitize_filter, $action );
 					}
 
 					break;
@@ -284,5 +324,7 @@ class MetaOps {
 				delete_post_meta( $post_id, $key );
 			}
 		}
+
+		return $skipped_fields;
 	}
 }

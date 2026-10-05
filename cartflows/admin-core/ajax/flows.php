@@ -142,6 +142,8 @@ class Flows extends AjaxBase {
 			'text'   => __( 'Can\'t update the flow data', 'cartflows' ),
 		);
 
+		$skipped_fields = array();
+
 		if ( isset( $_POST['flow_id'] ) ) {
 			$flow_id = intval( $_POST['flow_id'] );
 
@@ -161,8 +163,8 @@ class Flows extends AjaxBase {
 
 			$new_flow_slug = isset( $_POST['post_name'] ) ? sanitize_text_field( wp_unslash( $_POST['post_name'] ) ) : '';
 
-			$post_meta = wcf()->options->get_flow_fields( $flow_id );
-			MetaOps::save_meta_fields( $flow_id, $post_meta, 'cartflows_save_flow_meta_settings' );
+			$post_meta      = wcf()->options->get_flow_fields( $flow_id );
+			$skipped_fields = MetaOps::save_meta_fields( $flow_id, $post_meta, 'cartflows_save_flow_meta_settings' );
 
 			$instant_layout_style = isset( $_POST['instant-layout-style'] ) ? sanitize_text_field( wp_unslash( $_POST['instant-layout-style'] ) ) : null;
 		
@@ -184,6 +186,13 @@ class Flows extends AjaxBase {
 		$response_data = array(
 			'message' => __( 'Successfully saved the flow data!', 'cartflows' ),
 		);
+
+		// Name anything the save dropped rather than reporting a clean save the user did not get.
+		if ( ! empty( $skipped_fields ) ) {
+			$response_data['skipped_fields'] = $skipped_fields;
+			$response_data['message']        = __( 'Saved, but the custom script fields were not updated because your account cannot edit scripts.', 'cartflows' );
+		}
+
 		wp_send_json_success( $response_data );
 	}
 

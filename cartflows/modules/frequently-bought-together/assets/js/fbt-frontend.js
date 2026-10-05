@@ -19,6 +19,34 @@
 	}
 
 	/**
+	 * Whether this widget is rendering on its own source product's page. WooCommerce
+	 * only renders that product's form and price element there, so anything else on
+	 * the page belongs to a different product and must not be read.
+	 *
+	 * @param {jQuery} $widget The widget root.
+	 * @return {boolean} True when the page's product is this widget's source.
+	 */
+	function wcf_fbt_is_own_page( $widget ) {
+		const source = parseInt( $widget.attr( 'data-source-id' ), 10 ) || 0;
+		const current =
+			parseInt( ( window.wcf_fbt_frontend || {} ).current_product, 10 ) ||
+			0;
+
+		return !! source && current === source;
+	}
+
+	/**
+	 * The product form, when it belongs to this widget's source product.
+	 *
+	 * @param {jQuery} $widget  The widget root.
+	 * @param {string} selector Form selector to look up.
+	 * @return {jQuery} The matching forms, or an empty set.
+	 */
+	function wcf_fbt_source_form( $widget, selector ) {
+		return wcf_fbt_is_own_page( $widget ) ? $( selector ) : $();
+	}
+
+	/**
 	 * Wire event handlers on a single widget and run an initial recalc.
 	 *
 	 * @param {jQuery} $widget The widget root.
@@ -45,7 +73,7 @@
 		} );
 
 		// The main row's qty lives in WC's own form — keep the total in sync with it.
-		$( 'form.cart' ).on(
+		wcf_fbt_source_form( $widget, 'form.cart' ).on(
 			'change input',
 			'input[name="quantity"]',
 			function () {
@@ -59,7 +87,7 @@
 		);
 		const main_base_price =
 			parseFloat( $main_box.attr( 'data-price' ) ) || 0;
-		$( 'form.variations_form' ).on(
+		wcf_fbt_source_form( $widget, 'form.variations_form' ).on(
 			'found_variation reset_data hide_variation',
 			function ( event, variation ) {
 				$main_box.attr(
@@ -73,7 +101,7 @@
 
 		// Gift cards and name-your-price products fire no found_variation, so follow WC's
 		// price element. Watching the element ignores when each add-on binds its handlers.
-		const price_el = wcf_fbt_get_price_element();
+		const price_el = wcf_fbt_get_price_element( $widget );
 		if ( price_el ) {
 			new window.MutationObserver( function () {
 				wcf_fbt_sync_main_price( $widget );
@@ -137,7 +165,12 @@
 			state.qty = Math.max(
 				1,
 				parseInt(
-					$( 'form.cart' ).find( 'input[name="quantity"]' ).val(),
+					wcf_fbt_source_form(
+						$row.closest( '.wcf-fbt-widget' ),
+						'form.cart'
+					)
+						.find( 'input[name="quantity"]' )
+						.val(),
 					10
 				) || 1
 			);
@@ -158,9 +191,16 @@
 	 * The source product's own price element, on block and classic themes alike.
 	 * Block themes render `.wp-block-woocommerce-product-price` with no `.price` class.
 	 *
+	 * @param {jQuery} $widget The widget root.
 	 * @return {HTMLElement|null} The price element, or null when none matches.
 	 */
-	function wcf_fbt_get_price_element() {
+	function wcf_fbt_get_price_element( $widget ) {
+		// Same rule as wcf_fbt_source_form(): only the page's own product owns the
+		// price element WooCommerce rendered here.
+		if ( ! wcf_fbt_is_own_page( $widget ) ) {
+			return null;
+		}
+
 		// Mini-cart lines, product grids, and this widget carry price nodes of their own.
 		const excluded = [
 			'.wp-block-woocommerce-mini-cart-contents',
@@ -199,7 +239,7 @@
 	 * @return {void}
 	 */
 	function wcf_fbt_sync_main_price( $widget ) {
-		const $amount = $( wcf_fbt_get_price_element() ).find(
+		const $amount = $( wcf_fbt_get_price_element( $widget ) ).find(
 			'.woocommerce-Price-amount'
 		);
 
@@ -234,7 +274,10 @@
 	 */
 	function wcf_fbt_sync_variation_rows( $widget ) {
 		const $main_row = $widget.find( '.wcf-fbt-widget-row.is-main' );
-		if ( $main_row.length && $( 'form.variations_form' ).length ) {
+		if (
+			$main_row.length &&
+			wcf_fbt_source_form( $widget, 'form.variations_form' ).length
+		) {
 			$main_row
 				.find( '.wcf-fbt-widget-price' )
 				.text(
@@ -276,7 +319,10 @@
 		let unresolved = 0;
 
 		// A variable main product without a chosen variation blocks the bundle the same way an unresolved companion does.
-		const $variations_form = $( 'form.variations_form' );
+		const $variations_form = wcf_fbt_source_form(
+			$widget,
+			'form.variations_form'
+		);
 		if (
 			$variations_form.length &&
 			! (
@@ -340,12 +386,17 @@
 	}
 
 	/**
-	 * Collect selected companions and submit the bundle to admin-ajax.
+	 * Read a widget's current selection.
+	 *
+	 * The row inputs carry no name attribute, so a selection is invisible to anything that serialises
+	 * the product form. This is the only way to read one, and it is what window.wcfFbt exposes.
 	 *
 	 * @param {jQuery} $widget The widget root.
+	 * @return {Object} { sourceId, items: [ { id, qty } ], unresolved }
 	 */
-	function wcf_fbt_submit( $widget ) {
+	function wcf_fbt_read_selection( $widget ) {
 		const items = [];
+		let unresolved = 0;
 
 		$widget
 			.find( '.wcf-fbt-widget-input:checked:not(:disabled)' )
@@ -354,10 +405,31 @@
 				const row = wcf_fbt_row_state(
 					$( this ).closest( '.wcf-fbt-widget-row' )
 				);
+
 				if ( row.id && ! row.unresolved ) {
 					items.push( { id: row.id, qty: row.qty } );
+
+					return;
 				}
+
+				// Ticked, but no variation chosen yet — the caller decides whether that blocks.
+				unresolved++;
 			} );
+
+		return {
+			sourceId: parseInt( $widget.attr( 'data-source-id' ), 10 ) || 0,
+			items,
+			unresolved,
+		};
+	}
+
+	/**
+	 * Collect selected companions and submit the bundle to admin-ajax.
+	 *
+	 * @param {jQuery} $widget The widget root.
+	 */
+	function wcf_fbt_submit( $widget ) {
+		const items = wcf_fbt_read_selection( $widget ).items;
 
 		if ( ! items.length ) {
 			return;
@@ -369,7 +441,7 @@
 
 		// Chosen form attributes resolve "Any …" attributes the variation itself leaves empty.
 		const source_attributes = {};
-		$( 'form.variations_form' )
+		wcf_fbt_source_form( $widget, 'form.variations_form' )
 			.find( '[name^="attribute_"]' )
 			.each( function () {
 				source_attributes[ this.name ] = this.value;
@@ -380,7 +452,7 @@
 		// Post the product form's own fields (gift card amount, product options…) as real fields,
 		// so add-to-cart hooks that read $_POST see exactly what a normal form submission sends.
 		// 'add-to-cart' is dropped because WC's form handler runs on every request and would add the product twice.
-		const source_fields = $( 'form.cart' )
+		const source_fields = wcf_fbt_source_form( $widget, 'form.cart' )
 			.first()
 			.find( ':input' )
 			.filter( function () {
@@ -393,13 +465,16 @@
 			action: 'wcf_fbt_add_to_cart',
 			security: wcf_fbt_frontend.nonce,
 			source_id: parseInt( $widget.attr( 'data-source-id' ), 10 ) || 0,
+			// admin-ajax has no main query, so the server cannot tell whether the
+			// widget rendered on its source product's own page.
+			source_own_page: wcf_fbt_is_own_page( $widget ) ? '1' : '0',
 			source_qty: wcf_fbt_row_state(
 				$widget.find( '.wcf-fbt-widget-row.is-main' )
 			).qty,
 			// Variable source products carry the variation chosen in WC's own form.
 			source_variation_id:
 				parseInt(
-					$( 'form.variations_form' )
+					wcf_fbt_source_form( $widget, 'form.variations_form' )
 						.find( 'input[name="variation_id"]' )
 						.val(),
 					10
@@ -514,6 +589,30 @@
 
 		return parseFloat( plain.replace( /[^0-9.-]/g, '' ) ) || 0;
 	}
+
+	/**
+	 * Read-only view of the widget's selection, for code that submits the product form itself rather
+	 * than through this widget's own button — the Instant Checkout popup being the reason it exists.
+	 *
+	 * Returns a fresh object every call and never touches the DOM it reads.
+	 *
+	 * @param {number} sourceId Source product ID; omit to read the first widget on the page.
+	 * @return {Object} { sourceId, items: [ { id, qty } ], unresolved }
+	 */
+	window.wcfFbt = window.wcfFbt || {};
+
+	window.wcfFbt.getSelection = function ( sourceId ) {
+		const id = parseInt( sourceId, 10 ) || 0;
+		const $widget = id
+			? $( '.wcf-fbt-widget[data-source-id="' + id + '"]' ).first()
+			: $( '.wcf-fbt-widget' ).first();
+
+		if ( ! $widget.length ) {
+			return { sourceId: 0, items: [], unresolved: 0 };
+		}
+
+		return wcf_fbt_read_selection( $widget );
+	};
 
 	$( wcf_fbt_init );
 } )( jQuery );

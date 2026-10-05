@@ -1,0 +1,5 @@
+{
+  "mode": "auto",
+  "moduleRoots": ["."],
+  "ignore": ["node_modules",".git","vendor","dist","build","out","coverage","assets","languages","bin","docs","tests",".github",".claude",".vscode",".wordpress-org",".abilities-audit","cypress","webpack","libraries","scripts","admin"]
+}

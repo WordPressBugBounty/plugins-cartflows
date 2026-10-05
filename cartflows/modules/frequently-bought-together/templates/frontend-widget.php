@@ -9,6 +9,7 @@
  * @package cartflows
  * @var array<int, WC_Product>                                                                                                                                              $products     Companion products, stock-filtered by the caller.
  * @var array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>} $fbt_settings Full FBT settings blob.
+ * @var int                                                                                                                                                                                                                  $fbt_product_id Source product ID supplied by the renderer.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,7 +21,7 @@ if ( empty( $products ) ) {
 }
 
 $fbt_frontend     = Cartflows_Fbt_Frontend::get_instance();
-$fbt_source       = wc_get_product( get_the_ID() );
+$fbt_source       = wc_get_product( ! empty( $fbt_product_id ) ? (int) $fbt_product_id : (int) get_the_ID() );
 $fbt_source_id    = $fbt_source ? (int) $fbt_source->get_id() : 0;
 $fbt_source_price = $fbt_source ? (float) wc_get_price_to_display( $fbt_source ) : 0.0;
 $fbt_show_qty     = 'yes' === $fbt_settings['custom_qty'];

@@ -42,6 +42,13 @@ class CommonSettings extends AjaxBase {
 	private $pending_redirect = '';
 
 	/**
+	 * Fields the save skipped because the user lacks `unfiltered_html`.
+	 *
+	 * @var array<int, string>
+	 */
+	private $skipped_fields = array();
+
+	/**
 	 * Initiator
 	 *
 	 * @since 1.0.0
@@ -169,6 +176,17 @@ class CommonSettings extends AjaxBase {
 			'messsage' => __( 'Successfully saved data!', 'cartflows' ),
 		);
 
+		// Name the fields that were dropped so the UI can say so rather than
+		// reporting a clean save the user did not get.
+		if ( ! empty( $this->skipped_fields ) ) {
+			$response_data['skipped_fields'] = $this->skipped_fields;
+			$response_data['messsage']       = sprintf(
+				/* translators: %s: comma separated list of setting names. */
+				__( 'Saved, but these were not updated because your account cannot edit scripts: %s', 'cartflows' ),
+				implode( ', ', $this->skipped_fields )
+			);
+		}
+
 		// If a tab handler queued a redirect (e.g. legacy-admin toggle was just
 		// enabled), pass it through so the client hard-navigates after save.
 		if ( ! empty( $this->pending_redirect ) ) {
@@ -250,7 +268,17 @@ class CommonSettings extends AjaxBase {
 
 		// Global CSS/JS are output raw on every CartFlows page. Restrict authoring to users
 		// with `unfiltered_html` so per-plugin caps cannot grant script write access to lower roles.
+		// Record what was dropped — returning silently here let save_global_settings() go on
+		// to report a success the user did not get.
 		if ( ! current_user_can( 'unfiltered_html' ) ) {
+			if ( isset( $_POST['_cartflows_global_scripts']['global_css'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$this->skipped_fields[] = __( 'Global CSS', 'cartflows' );
+			}
+
+			if ( isset( $_POST['_cartflows_global_scripts']['global_js'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$this->skipped_fields[] = __( 'Global JS', 'cartflows' );
+			}
+
 			return;
 		}
 

@@ -1,3 +1,9 @@
+Version 3.3.0 - Monday, 5th October 2026
+- New: Added the [wcf_frequently_bought_together] shortcode to place the Frequently Bought Together widget on page-builder product templates.
+- New: Added a "Redirect Add to Cart" option to the product's CartFlows tab to choose whether Add to Cart redirects to the selected funnel.
+- Improvement: Order Bump product search now ranks exact title matches first and also matches product descriptions on large catalogs.
+- Fix: Fixed Google Address Autocomplete not starting on sites without jQuery Migrate.
+
 Version 3.2.1 - Wednesday, 23rd September 2026
 - Security Fix: Hardened the security of the plugin reported by PatchStack.
 - Improvement: Checkout file uploads are now stored in a dedicated, protected directory and processed more strictly.

@@ -143,7 +143,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '3.2.1' );
+			define( 'CARTFLOWS_VER', '3.3.0' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -343,6 +343,10 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			/* Admin Helper */
 			include_once CARTFLOWS_DIR . 'classes/class-cartflows-helper.php';
 
+			/* Title and SKU scoped search behind the admin product pickers */
+			include_once CARTFLOWS_DIR . 'classes/class-cartflows-product-search.php';
+			include_once CARTFLOWS_DIR . 'classes/class-cartflows-coupon-search.php';
+
 			/* Factory objects */
 			include_once CARTFLOWS_DIR . 'classes/class-cartflows-step-factory.php';
 
@@ -453,6 +457,9 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 
 			/* Admin Meta Fields*/
 			include_once CARTFLOWS_DIR . 'classes/fields/typography/class-cartflows-font-families.php';
+
+			// Learn progress — shared by the Learn REST route and the analytics payload.
+			include_once CARTFLOWS_DIR . 'classes/class-cartflows-learn-progress.php';
 
 			// Analytics — BSF Analytics Events integration. Loaded on every request so the
 			// bsf_core_stats filter is registered for both frontend and admin transmissions.

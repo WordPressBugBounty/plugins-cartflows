@@ -384,8 +384,6 @@ class AdminMenu {
 				include_once CARTFLOWS_ADMIN_CORE_DIR . 'views/settings-app.php';
 			} elseif ( $this->is_current_page( 'cartflows', array( 'wcf-edit-flow' ) ) ) {
 				include_once CARTFLOWS_ADMIN_CORE_DIR . 'views/editor-app.php';
-			} elseif ( $this->is_current_page( 'cartflows', array( 'wcf-log' ) ) ) {
-				include_once CARTFLOWS_ADMIN_CORE_DIR . 'views/debugger.php';
 			} elseif ( $this->is_current_page( 'cartflows', array( 'wcf-license' ) ) && _is_cartflows_pro() ) {
 				do_action( 'cartflows_admin_log', 'wcf-license' );
 			} else {
@@ -1214,8 +1212,17 @@ class AdminMenu {
 		// Fetch the RSS feed from the URL. This saves us from the CORS issue.
 		$feed = wp_remote_retrieve_body( wp_safe_remote_get( 'https://cartflows.com/product/cartflows/feed/' ) ); // phpcs:ignore -- This is a valid use case cannot use VIP rules here.
 
-		// Security: Set proper content type header and strip script tags to prevent XSS.
-		echo $feed; // phpcs:ignore -- RSS feed content sanitized via wp_kses_post.
+		/*
+		 * This is an RSS document, parsed as XML by the What's New client. It must not be
+		 * run through wp_kses_post() — that strips the feed's own elements and leaves the
+		 * client nothing to parse. Declaring the type is what stops a browser sniffing the
+		 * response as HTML; the body itself is fetched over HTTPS from our own domain and
+		 * this endpoint is behind a nonce and a capability check.
+		 */
+		header( 'Content-Type: application/rss+xml; charset=' . get_option( 'blog_charset' ) );
+		header( 'X-Content-Type-Options: nosniff' );
+
+		echo $feed; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- RSS/XML body, see above.
 		exit;
 	}
 }

@@ -178,6 +178,11 @@ if ( ! class_exists( 'Cartflows_Update' ) ) :
 				update_option( 'cartflows-legacy-admin', 'enable' );
 			}
 
+			// Knowledge Base docs were stored autoloaded, adding hundreds of KB to every request.
+			if ( is_string( $saved_version ) && version_compare( $saved_version, '3.2.1', '<' ) ) {
+				$this->migrate_knowledge_base_docs_storage();
+			}
+
 			// Update auto saved version number.
 			update_option( 'cartflows-version', CARTFLOWS_VER );
 
@@ -417,6 +422,45 @@ if ( ! class_exists( 'Cartflows_Update' ) ) :
 			}
 
 			return $migrated;
+		}
+
+		/**
+		 * Stop the Knowledge Base docs option from being autoloaded on every request.
+		 * Only the legacy admin renders the screen that reads it, so the new UI drops it entirely.
+		 *
+		 * @since x.x.x
+		 * @return void
+		 */
+		public function migrate_knowledge_base_docs_storage() {
+
+			// Earlier blocks in init() rewrite this option, so CARTFLOWS_LEGACY_ADMIN is stale here — see class-cartflows-loader.php:158 for the allowlist.
+			$legacy_admin_saved = get_option( 'cartflows-legacy-admin', false );
+			$is_legacy_admin    = in_array( $legacy_admin_saved, array( true, 1, '1', 'enable', 'yes' ), true );
+
+			if ( ! $is_legacy_admin ) {
+				delete_option( 'cartflows_docs_data' );
+
+				if ( function_exists( 'as_unschedule_all_actions' ) ) {
+					as_unschedule_all_actions( 'cartflows_update_knowledge_base_data' );
+				}
+
+				return;
+			}
+
+			if ( false === get_option( 'cartflows_docs_data', false ) ) {
+				return;
+			}
+
+			// wp_set_option_autoload() landed in WP 6.4 and we still support 5.8.
+			if ( function_exists( 'wp_set_option_autoload' ) ) {
+				wp_set_option_autoload( 'cartflows_docs_data', false );
+				return;
+			}
+
+			$docs_data = get_option( 'cartflows_docs_data' );
+
+			delete_option( 'cartflows_docs_data' );
+			add_option( 'cartflows_docs_data', $docs_data, '', false );
 		}
 
 		/**

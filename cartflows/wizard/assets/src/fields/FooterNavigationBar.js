@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useStateValue } from '../utils/StateProvider';
 import { useHistory, useLocation } from 'react-router-dom';

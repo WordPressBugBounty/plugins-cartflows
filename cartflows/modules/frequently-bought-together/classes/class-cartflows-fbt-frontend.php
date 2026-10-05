@@ -29,6 +29,27 @@ class Cartflows_Fbt_Frontend {
 	private static $instance;
 
 	/**
+	 * Product IDs already rendered by a position hook this request, keyed by ID.
+	 *
+	 * @var array<int, bool>
+	 */
+	private static $rendered_by_hook = array();
+
+	/**
+	 * Product IDs already rendered by the shortcode this request, keyed by ID.
+	 *
+	 * @var array<int, bool>
+	 */
+	private static $rendered_by_shortcode = array();
+
+	/**
+	 * Product IDs whose assets have been enqueued this request, keyed by ID.
+	 *
+	 * @var array<int, bool>
+	 */
+	private static $assets_enqueued = array();
+
+	/**
 	 * Initiator.
 	 *
 	 * @return self
@@ -69,6 +90,7 @@ class Cartflows_Fbt_Frontend {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		add_action( 'wp_ajax_wcf_fbt_add_to_cart', array( $this, 'ajax_add_to_cart' ) );
 		add_action( 'wp_ajax_nopriv_wcf_fbt_add_to_cart', array( $this, 'ajax_add_to_cart' ) );
+		add_shortcode( 'wcf_frequently_bought_together', array( $this, 'shortcode_markup' ) );
 		add_filter( 'woocommerce_get_item_data', array( $this, 'filter_cart_item_data' ), 10, 2 );
 		add_action( 'woocommerce_cart_item_removed', array( $this, 'remove_bundle_companions' ), 10, 2 );
 		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'add_order_item_attribution' ), 10, 4 );
@@ -95,7 +117,9 @@ class Cartflows_Fbt_Frontend {
 	}
 
 	/**
-	 * Fires from every position hook; renders only when the current product's setting matches.
+	 * Fires from every position hook. Renders only when the resolved placement
+	 * matches this hook, and only when the shortcode has not already claimed
+	 * this product — either by sitting in the post content or by having rendered.
 	 *
 	 * @param string $position The position slug this callback was registered for.
 	 * @return void
@@ -123,18 +147,37 @@ class Cartflows_Fbt_Frontend {
 			return;
 		}
 		$settings = Cartflows_Fbt::get_settings( $product_id );
-		if ( $settings['position'] !== $position ) {
+
+		// Render-time placement override. Filtering this to 'shortcode' stops every
+		// hook rendering site-wide, leaving [wcf_frequently_bought_together] as the only renderer.
+		$placement = (string) apply_filters( 'cartflows_fbt_position', $settings['position'], $product_id );
+		if ( $placement !== $position ) {
 			return;
 		}
+		// The shortcode owns the placement when this post already contains it, or
+		// when it has already rendered this product from a builder template.
+		if ( $this->content_has_shortcode( $product_id ) || isset( self::$rendered_by_shortcode[ $product_id ] ) ) {
+			return;
+		}
+
+		self::$rendered_by_hook[ $product_id ] = true;
 		$this->render_widget();
 	}
 
 	/**
-	 * Enqueues the frontend CSS + JS only when the widget will render.
+	 * Enqueues the frontend CSS + JS only when the widget will render on this product page.
 	 *
 	 * @return void
 	 */
 	public function enqueue_frontend_assets() {
+
+		// Builders render a shortcode over AJAX and inject the markup, so an enqueue from
+		// inside the callback is thrown away. Ship the style with the preview frame instead.
+		// Not a return — a product page under a builder still wants the full enqueue below.
+		if ( Cartflows_Compatibility::get_instance()->is_page_builder_preview() ) {
+			$this->register_frontend_assets();
+			wp_enqueue_style( 'wcf-fbt-frontend' );
+		}
 
 		if ( ! is_singular( 'product' ) ) {
 			return;
@@ -148,7 +191,29 @@ class Cartflows_Fbt_Frontend {
 			return;
 		}
 
-		wp_enqueue_style(
+		// No hook renders for the shortcode placement, so preloading here would ship
+		// assets for a widget that may never appear. The shortcode enqueues its own.
+		$settings  = Cartflows_Fbt::get_settings( (int) $product_id );
+		$placement = (string) apply_filters( 'cartflows_fbt_position', $settings['position'], (int) $product_id );
+		if ( 'shortcode' === $placement ) {
+			return;
+		}
+
+		$this->enqueue_assets_for( (int) $product_id );
+	}
+
+	/**
+	 * Registers the frontend handles and their localized data. Safe to call repeatedly.
+	 *
+	 * @return void
+	 */
+	public function register_frontend_assets() {
+
+		if ( wp_script_is( 'wcf-fbt-frontend', 'registered' ) ) {
+			return;
+		}
+
+		wp_register_style(
 			'wcf-fbt-frontend',
 			CARTFLOWS_FBT_URL . 'assets/css/fbt-frontend.css',
 			array(),
@@ -157,7 +222,7 @@ class Cartflows_Fbt_Frontend {
 
 		$script_deps = (array) apply_filters( 'cartflows_fbt_frontend_script_deps', array( 'jquery' ) );
 
-		wp_enqueue_script(
+		wp_register_script(
 			'wcf-fbt-frontend',
 			CARTFLOWS_FBT_URL . 'assets/js/fbt-frontend.js',
 			$script_deps,
@@ -170,6 +235,9 @@ class Cartflows_Fbt_Frontend {
 			'wcf_fbt_frontend',
 			array(
 				'ajax_url'        => admin_url( 'admin-ajax.php' ),
+				// Lets the script tell whether a widget's source is this page's product;
+				// only then may it read the product form WooCommerce rendered here.
+				'current_product' => is_singular( 'product' ) ? (int) get_the_ID() : 0,
 				'nonce'           => wp_create_nonce( 'wcf_fbt_frontend' ),
 				'currency_symbol' => html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) ),
 				'decimal_sep'     => wc_get_price_decimal_separator(),
@@ -194,22 +262,48 @@ class Cartflows_Fbt_Frontend {
 				),
 			)
 		);
-
-		// Extension point — Pro hooks here to enqueue its own frontend CSS/JS on the single product page only.
-		do_action( 'cartflows_fbt_frontend_assets_enqueued', (int) $product_id );
 	}
 
 	/**
-	 * Renders the FBT widget block on the single product page.
+	 * Enqueues the registered frontend handles for one product.
 	 *
+	 * @param int $product_id The product the widget is rendering for.
 	 * @return void
 	 */
-	public function render_widget() {
+	public function enqueue_assets_for( $product_id ) {
 
-		if ( ! is_singular( 'product' ) ) {
+		$product_id = (int) $product_id;
+
+		$this->register_frontend_assets();
+
+		wp_enqueue_style( 'wcf-fbt-frontend' );
+		wp_enqueue_script( 'wcf-fbt-frontend' );
+
+		// Both render paths can reach this; the extension point fires once per product.
+		if ( isset( self::$assets_enqueued[ $product_id ] ) ) {
 			return;
 		}
-		$product_id = (int) get_the_ID();
+		self::$assets_enqueued[ $product_id ] = true;
+
+		// Extension point — Pro hooks here to enqueue its own frontend CSS/JS alongside the widget.
+		do_action( 'cartflows_fbt_frontend_assets_enqueued', $product_id );
+	}
+
+	/**
+	 * Renders the FBT widget block. Falls back to the current product when no ID is given.
+	 *
+	 * @param int $product_id Product to render for; 0 resolves from the loop.
+	 * @return void
+	 */
+	public function render_widget( $product_id = 0 ) {
+
+		$product_id = absint( $product_id );
+		if ( 0 === $product_id ) {
+			if ( ! is_singular( 'product' ) ) {
+				return;
+			}
+			$product_id = (int) get_the_ID();
+		}
 		if ( $product_id <= 0 || ! Cartflows_Fbt::is_enabled( $product_id ) ) {
 			return;
 		}
@@ -231,7 +325,202 @@ class Cartflows_Fbt_Frontend {
 			return;
 		}
 
+		$fbt_product_id = $product_id;
+
 		include $template;
+	}
+
+	/**
+	 * Whether this post's content places a shortcode that renders the given product.
+	 * An instance targeting a different product via product_id must not make the
+	 * hook yield, or the post's own bundle would never render.
+	 *
+	 * @param int $product_id Product the hook is about to render.
+	 * @return bool
+	 */
+	private function content_has_shortcode( $product_id ) {
+
+		$post = get_post();
+		if ( ! $post instanceof WP_Post ) {
+			return false;
+		}
+
+		foreach ( $this->shortcode_sources( $post ) as $content ) {
+			if ( $this->string_places_shortcode( (string) $content, $product_id ) ) {
+				return true;
+			}
+		}
+
+		// Builders that store markup elsewhere can declare a placement here rather
+		// than relying on a render having already happened.
+		return (bool) apply_filters( 'cartflows_fbt_page_places_shortcode', false, $product_id );
+	}
+
+	/**
+	 * Every place this post could carry the tag. Page builders keep their markup in
+	 * post meta rather than post_content, so scanning only the latter would miss it.
+	 *
+	 * @param WP_Post $post The post being rendered.
+	 * @return array<int, string>
+	 */
+	private function shortcode_sources( $post ) {
+
+		$sources = array( (string) $post->post_content );
+
+		// Elementor and Bricks both store their layout as post meta on this post.
+		foreach ( array( '_elementor_data', '_bricks_page_content_2' ) as $key ) {
+			$data = get_post_meta( $post->ID, $key, true );
+			if ( ! empty( $data ) ) {
+				$json = is_scalar( $data ) ? (string) $data : (string) wp_json_encode( $data );
+
+				// Those layouts are JSON, so a tag's quoted attributes arrive escaped
+				// as product_id=\"12\" — which shortcode_parse_atts cannot read.
+				$sources[] = str_replace( '\\"', '"', $json );
+			}
+		}
+
+		return $sources;
+	}
+
+	/**
+	 * Whether a string carries a tag instance that renders the given product.
+	 *
+	 * @param string $content    Content to scan.
+	 * @param int    $product_id Product the hook is about to render.
+	 * @return bool
+	 */
+	private function string_places_shortcode( $content, $product_id ) {
+
+		if ( ! has_shortcode( $content, 'wcf_frequently_bought_together' ) ) {
+			return false;
+		}
+
+		// Match the tag and read each instance's attributes.
+		$pattern = get_shortcode_regex( array( 'wcf_frequently_bought_together' ) );
+		if ( ! preg_match_all( '/' . $pattern . '/', $content, $matches, PREG_SET_ORDER ) ) {
+			return false;
+		}
+
+		foreach ( $matches as $match ) {
+			// [[tag]] is an escaped literal, not a rendered instance.
+			if ( '[' === $match[1] ) {
+				continue;
+			}
+
+			$atts   = shortcode_parse_atts( $match[3] );
+			$target = is_array( $atts ) && isset( $atts['product_id'] ) ? absint( $atts['product_id'] ) : 0;
+
+			// No product_id means it auto-detects this product; an explicit one only
+			// counts when it resolves to the same product.
+			if ( 0 === $target || $target === (int) $product_id ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the widget markup for one product as a string.
+	 *
+	 * @param int $product_id Product to render for.
+	 * @return string
+	 */
+	public function get_widget_html( $product_id ) {
+
+		ob_start();
+		$this->render_widget( absint( $product_id ) );
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Renders the widget from [wcf_frequently_bought_together]; empty string whenever there is nothing to show.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function shortcode_markup( $atts ) {
+
+		$parsed     = shortcode_atts( array( 'product_id' => 0 ), (array) $atts, 'wcf_frequently_bought_together' );
+		$product_id = absint( $parsed['product_id'] );
+
+		if ( 0 === $product_id && is_singular( 'product' ) ) {
+			$product_id = (int) get_the_ID();
+		}
+
+		// No product to work with — hint inside a builder, stay silent on the front end.
+		if ( $product_id <= 0 ) {
+			return $this->builder_placeholder();
+		}
+
+		$product = wc_get_product( $product_id );
+		if ( ! $product instanceof WC_Product ) {
+			return '';
+		}
+
+		// FBT settings live on the parent, so a variation ID resolves to its parent.
+		$parent = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : null;
+		if ( $parent instanceof WC_Product ) {
+			$product_id = $parent->get_id();
+			$product    = $parent;
+		}
+
+		if ( 'publish' !== $product->get_status() ) {
+			return '';
+		}
+
+		// The product's own page gates behind the password form, so it cannot be
+		// bought there. product_id must not become a way around that.
+		if ( post_password_required( $product_id ) ) {
+			return '';
+		}
+
+		if ( ! Cartflows_Fbt::is_enabled( $product_id ) || empty( Cartflows_Fbt::get_product_ids( $product_id ) ) ) {
+			return '';
+		}
+
+		// Defer only to the hook path. The shortcode never consults its own flag, so
+		// a discarded do_shortcode() pass cannot suppress the render that matters.
+		if ( isset( self::$rendered_by_hook[ $product_id ] ) ) {
+			return '';
+		}
+
+		$html = $this->get_widget_html( $product_id );
+		if ( '' === $html ) {
+			return '';
+		}
+
+		self::$rendered_by_shortcode[ $product_id ] = true;
+
+		// Enqueue after rendering, not before: load_products() can still filter every
+		// companion out, and assets must not load for a widget that never appears.
+		// Note this fires cartflows_fbt_frontend_assets_enqueued later than the hook
+		// path does, which enqueues during wp_enqueue_scripts.
+		$this->enqueue_assets_for( $product_id );
+
+		return $html;
+	}
+
+	/**
+	 * Editor-only hint shown when the shortcode has no product to resolve.
+	 *
+	 * @return string
+	 */
+	private function builder_placeholder() {
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return '';
+		}
+
+		// REST_REQUEST alone is too broad — it covers ordinary authenticated reads
+		// such as GET /wp/v2/pages, which would bake the hint into content.rendered.
+		$is_rest         = defined( 'REST_REQUEST' ) && REST_REQUEST;
+		$is_edit_context = $is_rest && isset( $_GET['context'] ) && 'edit' === $_GET['context']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only render-context check.
+		if ( ! Cartflows_Compatibility::get_instance()->is_page_builder_preview() && ! $is_edit_context ) {
+			return '';
+		}
+
+		return '<p class="wcf-fbt-shortcode-notice">' . esc_html__( 'Frequently Bought Together: no product found. Use this shortcode on a product template, or pass a product_id attribute.', 'cartflows' ) . '</p>';
 	}
 
 	/**
@@ -292,15 +581,28 @@ class Cartflows_Fbt_Frontend {
 	 * Whether a companion can only be added from its own product page.
 	 * Variable rows resolve in-widget via the flat select, so they are never affected.
 	 *
-	 * @param WC_Product                                              $product    Candidate product.
-	 * @param bool                                                    $is_main    Whether this is the "this item" row.
-	 * @param array<int, array{id: int, price: float, label: string}> $variations Resolvable variation choices.
+	 * @param WC_Product                                              $product     Candidate product.
+	 * @param bool                                                    $is_main     Whether this is the "this item" row.
+	 * @param array<int, array{id: int, price: float, label: string}> $variations  Resolvable variation choices.
+	 * @param bool|null                                               $on_own_page Whether this renders on the product's own page; null resolves it from the query.
 	 * @return bool
 	 */
-	private function requires_own_page( $product, $is_main, $variations ) {
+	private function requires_own_page( $product, $is_main, $variations, $on_own_page = null ) {
 
-		// The main row's own fields are already on the page, so it always stays addable.
-		if ( $is_main || ! empty( $variations ) ) {
+		if ( $is_main ) {
+			// The main row's own fields are on the page only when this really is that
+			// product's page. Rendered elsewhere via product_id, a product that needs
+			// options cannot be added and must send the shopper to its own page.
+			// Callers outside a page render (admin-ajax has no main query) must pass
+			// this in, or every such product would look unaddable.
+			if ( null === $on_own_page ) {
+				$on_own_page = is_singular( 'product' ) && (int) get_the_ID() === (int) $product->get_id();
+			}
+
+			return ! $on_own_page && ! $product->supports( 'ajax_add_to_cart' );
+		}
+
+		if ( ! empty( $variations ) ) {
 			return false;
 		}
 
@@ -406,10 +708,32 @@ class Cartflows_Fbt_Frontend {
 
 		$source_qty = isset( $_POST['source_qty'] ) ? max( 1, absint( wp_unslash( $_POST['source_qty'] ) ) ) : 1;
 
+		// The widget knows whether it rendered on the source product's own page; the
+		// AJAX request cannot work that out for itself.
+		$on_own_page = isset( $_POST['source_own_page'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['source_own_page'] ) );
+
+		// The widget can be switched off, or its list emptied, while a shopper has the page open. That
+		// selection is stale rather than crafted, so drop it and still sell them the main product.
+		if ( $source_id > 0 && ( 'yes' !== $settings['enabled'] || empty( $settings['product_ids'] ) ) ) {
+			$raw_items = array();
+			wc_add_notice( __( 'The additional products are no longer available with this product.', 'cartflows' ), 'notice' );
+		}
+
 		// Captured before the main product is prepended so the milestone always means companions.
 		$companion_count = count( $raw_items );
 
 		// Prepend the main product ("this item" row in the widget) so the cart matches the shown total.
+		// The widget omits the main row's checkbox when that product needs its own page
+		// — a variable source rendered elsewhere via product_id. Queuing it anyway
+		// would fail the whole request with "please choose product options".
+		// is_singular() is always false here, so the browser reports whether the
+		// widget rendered on the source product's own page.
+		$main_product = $main_id > 0 ? wc_get_product( $main_id ) : null;
+		if ( $main_product instanceof WC_Product
+			&& $this->requires_own_page( $main_product, true, $this->get_variation_choices( $main_product ), $on_own_page ) ) {
+			$main_id = 0;
+		}
+
 		if ( $main_id > 0 ) {
 			array_unshift(
 				$raw_items,
@@ -421,71 +745,18 @@ class Cartflows_Fbt_Frontend {
 		}
 
 		// The product form posts its own fields with this request, so add-on hooks read a genuine $_POST.
-		$queue   = array();
-		$blocked = false;
-
-		foreach ( $raw_items as $item ) {
-			$id  = isset( $item['id'] ) ? absint( $item['id'] ) : 0;
-			$qty = isset( $item['qty'] ) ? max( 1, absint( $item['qty'] ) ) : 1;
-			if ( $id <= 0 ) {
-				continue;
-			}
-			$product = wc_get_product( $id );
-			if ( ! $product instanceof WC_Product ) {
-				continue;
-			}
-
-			// Backstop for crafted requests — the widget renders these rows as a link, not a checkbox.
-			if ( $id !== $main_id && $this->requires_own_page( $product, false, $this->get_variation_choices( $product ) ) ) {
-				/* translators: %s: product name. */
-				wc_add_notice( sprintf( __( '“%s” has options to choose. Please add it from its product page.', 'cartflows' ), $product->get_name() ), 'error' );
-				$blocked = true;
-				break;
-			}
-
-			$cart_item_data = $this->build_cart_item_data( $id, $main_id, $source_id, $bundle_key );
-
-			$entry = array(
-				'product_id'     => $id,
-				'quantity'       => $qty,
-				'variation_id'   => 0,
-				'attributes'     => array(),
-				'cart_item_data' => $cart_item_data,
-			);
-
-			if ( $product instanceof WC_Product_Variation ) {
-				// WC's contract: this argument is the shopper's CHOSEN attributes, not the variation's stored set.
-				$entry['attributes']   = $id === $main_id && ! empty( $source_attributes )
-					? $source_attributes
-					: $product->get_variation_attributes();
-				$entry['variation_id'] = $id;
-				$entry['product_id']   = (int) $product->get_parent_id();
-			}
-
-			$queue[] = $entry;
-		}
-
-		// WC_Cart::add_to_cart() does not run this filter — its callers do, so FBT must too.
-		if ( ! $blocked ) {
-			foreach ( $queue as $entry ) {
-				$passed = apply_filters(
-					'woocommerce_add_to_cart_validation',
-					true,
-					$entry['product_id'],
-					$entry['quantity'],
-					$entry['variation_id'],
-					$entry['attributes'],
-					$entry['cart_item_data']
-				);
-				if ( ! $passed ) {
-					$blocked = true;
-					break;
-				}
-			}
-		}
+		$resolved = $this->build_add_queue( $raw_items, $main_id, $source_id, $bundle_key, $source_attributes, true );
+		$queue    = $resolved['queue'];
 
 		// All-or-nothing: a rejected companion must never leave a half-built bundle behind.
-		if ( $blocked ) {
+		if ( ! empty( $resolved['rejected'] ) ) {
+			$first = $resolved['rejected'][0];
+
+			// Validators queue their own notice; only our own rejections carry a reason to add.
+			if ( '' !== $first['reason'] ) {
+				wc_add_notice( $first['reason'], 'error' );
+			}
+
 			wp_send_json_error(
 				array(
 					'message'      => __( 'Could not add product.', 'cartflows' ),
@@ -552,6 +823,214 @@ class Cartflows_Fbt_Frontend {
 				'cart_hash'    => WC()->cart->get_cart_hash(),
 				'notices_html' => $notices_html,
 			)
+		);
+	}
+
+	/**
+	 * Resolves a posted item list into an add-to-cart queue.
+	 *
+	 * Every rule about which companion may be added lives here, so a caller outside this plugin cannot
+	 * answer that question differently. Rejections are returned rather than refused, because each caller
+	 * decides whether one bad item fails the batch or is simply dropped.
+	 *
+	 * Not side-effect free: the validation pass runs woocommerce_add_to_cart_validation, whose third-party
+	 * callbacks queue their own notices. A rejection with an empty reason is one of those — its explanation
+	 * is in wc_get_notices( 'error' ), and a caller that does not render them must drain the queue.
+	 *
+	 * @param array<int, array<string, mixed>> $items               Posted items, each with id and qty.
+	 * @param int                              $main_id             The source product's own line ID.
+	 * @param int                              $source_id           Source product ID.
+	 * @param string                           $bundle_key          Bundle key; empty to keep lines separate.
+	 * @param array<string, string>            $main_attributes     Chosen attributes for the main row, if variable.
+	 * @param bool                             $abort_on_rejection  Stop at the first rejection, for all-or-nothing callers.
+	 * @return array{queue: array<int, array{product_id: int, quantity: int, variation_id: int, attributes: array<string, string>, cart_item_data: array<string, mixed>}>, rejected: array<int, array{id: int, name: string, reason: string}>}
+	 */
+	public function build_add_queue( $items, $main_id, $source_id, $bundle_key, $main_attributes = array(), $abort_on_rejection = false ) {
+
+		$queue      = array();
+		$rejected   = array();
+		$seen       = array();
+		$companions = 0;
+
+		// Sanitised here, not left to the caller: this is the gate, and a caller outside this plugin
+		// may hand these straight from its own request.
+		$chosen = array();
+		foreach ( (array) $main_attributes as $attr_key => $attr_value ) {
+			$attr_key = sanitize_text_field( (string) $attr_key );
+			if ( 0 === strpos( $attr_key, 'attribute_' ) && is_scalar( $attr_value ) ) {
+				$chosen[ $attr_key ] = sanitize_text_field( (string) $attr_value );
+			}
+		}
+		$main_attributes = $chosen;
+
+		$settings = $source_id > 0 ? Cartflows_Fbt::get_settings( $source_id ) : Cartflows_Fbt::get_defaults();
+		$single   = 'single' === $settings['selection'];
+
+		// No qty box means the widget can only ever have posted 1, so a larger number is a crafted request.
+		$fixed_qty = 'yes' !== $settings['custom_qty'];
+
+		/**
+		 * Filters whether single-select is enforced for this source product.
+		 *
+		 * The companion list has cartflows_fbt_allowed_companion_ids; this is the same escape hatch for a
+		 * template override that renders more rows than the stored selection mode allows.
+		 *
+		 * @since x.x.x
+		 * @param bool $single    Whether only one companion may be added.
+		 * @param int  $source_id Source product ID.
+		 */
+		$single = (bool) apply_filters( 'cartflows_fbt_enforce_single_selection', $single, $source_id );
+
+		// A switched-off widget cannot have produced a selection, so it allows nothing.
+		$allowed = ( $source_id > 0 && Cartflows_Fbt::is_enabled( $source_id ) ) ? $settings['product_ids'] : array();
+
+		/**
+		 * Filters the products a companion may be drawn from.
+		 *
+		 * Only needed by a cartflows_fbt_frontend_template override that renders rows outside the
+		 * configured list; the default list is what the widget itself renders.
+		 *
+		 * @since x.x.x
+		 * @param array<int, int> $allowed   Configured companion product IDs.
+		 * @param int             $source_id Source product ID.
+		 */
+		$allowed = array_map( 'absint', (array) apply_filters( 'cartflows_fbt_allowed_companion_ids', $allowed, $source_id ) );
+
+		foreach ( $items as $item ) {
+
+			// An all-or-nothing caller is already going to abort, so stop before resolving another product.
+			if ( $abort_on_rejection && ! empty( $rejected ) ) {
+				break;
+			}
+
+			// Posted data: a non-scalar here is a crafted request, not a selection.
+			$raw_id  = isset( $item['id'] ) && is_scalar( $item['id'] ) ? $item['id'] : 0;
+			$raw_qty = isset( $item['qty'] ) && is_scalar( $item['qty'] ) ? $item['qty'] : 1;
+
+			$id  = absint( $raw_id );
+			$qty = max( 1, absint( $raw_qty ) );
+
+			if ( $id <= 0 || isset( $seen[ $id ] ) ) {
+				continue;
+			}
+
+			// First occurrence wins. For the widget's own caller that is the prepended main row, so posting
+			// the source product again cannot double its line; a repeated companion cannot multiply past
+			// the quantity clamp either.
+			$seen[ $id ] = true;
+
+			$product = wc_get_product( $id );
+
+			if ( ! $product instanceof WC_Product ) {
+				continue;
+			}
+
+			if ( $id !== $main_id ) {
+
+				$qty = $fixed_qty ? 1 : $qty;
+
+				// Variations are stored either directly or as their parent, so both forms count as configured.
+				$parent_id = $product instanceof WC_Product_Variation ? (int) $product->get_parent_id() : $id;
+
+				// Without this the endpoint would stamp FBT attribution onto any product a request names.
+				if ( ! in_array( $id, $allowed, true ) && ! in_array( $parent_id, $allowed, true ) ) {
+					// Unnamed on purpose: the widget never offered this product, so a request naming it is
+					// crafted, and echoing the name back enumerates the catalogue — drafts included.
+					$rejected[] = array(
+						'id'     => $id,
+						'name'   => '',
+						'reason' => __( 'One of the selected products is not available with this product.', 'cartflows' ),
+					);
+					continue;
+				}
+
+				// The widget enforces single-select in the browser only.
+				if ( $single && $companions > 0 ) {
+					$rejected[] = array(
+						'id'     => $id,
+						'name'   => $product->get_name(),
+						'reason' => __( 'Only one additional product can be added.', 'cartflows' ),
+					);
+					continue;
+				}
+
+				// Backstop for crafted requests — the widget renders these rows as a link, not a checkbox.
+				if ( $this->requires_own_page( $product, false, $this->get_variation_choices( $product ) ) ) {
+					$rejected[] = array(
+						'id'     => $id,
+						'name'   => $product->get_name(),
+						/* translators: %s: product name. */
+						'reason' => sprintf( __( '“%s” has options to choose. Please add it from its product page.', 'cartflows' ), $product->get_name() ),
+					);
+					continue;
+				}
+
+				$companions++;
+			}
+
+			$entry = array(
+				'product_id'     => $id,
+				'quantity'       => $qty,
+				'variation_id'   => 0,
+				'attributes'     => array(),
+				'cart_item_data' => $this->build_cart_item_data( $id, $main_id, $source_id, $bundle_key ),
+			);
+
+			if ( $product instanceof WC_Product_Variation ) {
+				// WC's contract: this argument is the shopper's CHOSEN attributes, not the variation's stored set.
+				$entry['attributes']   = $id === $main_id && ! empty( $main_attributes )
+					? $main_attributes
+					: $product->get_variation_attributes();
+				$entry['variation_id'] = $id;
+				$entry['product_id']   = (int) $product->get_parent_id();
+			}
+
+			$queue[] = $entry;
+		}
+
+		// WC_Cart::add_to_cart() does not run this filter — its callers do, so FBT must too. Skipped
+		// entirely when an all-or-nothing caller already has a rejection: these callbacks are third-party
+		// code with their own notices, and the pre-shared version never reached them on a doomed request.
+		if ( $abort_on_rejection && ! empty( $rejected ) ) {
+			return array(
+				'queue'    => array_values( $queue ),
+				'rejected' => $rejected,
+			);
+		}
+
+		foreach ( $queue as $index => $entry ) {
+			$passed = apply_filters(
+				'woocommerce_add_to_cart_validation',
+				true,
+				$entry['product_id'],
+				$entry['quantity'],
+				$entry['variation_id'],
+				$entry['attributes'],
+				$entry['cart_item_data']
+			);
+
+			if ( ! $passed ) {
+				$failed_id  = $entry['variation_id'] > 0 ? $entry['variation_id'] : $entry['product_id'];
+				$failed     = wc_get_product( $failed_id );
+				$rejected[] = array(
+					'id'     => $failed_id,
+					'name'   => $failed instanceof WC_Product ? $failed->get_name() : '',
+					// The validator queues its own notice explaining why.
+					'reason' => '',
+				);
+
+				unset( $queue[ $index ] );
+
+				// The pre-shared version stopped at the first failure; only a per-item caller needs the rest.
+				if ( $abort_on_rejection ) {
+					break;
+				}
+			}
+		}
+
+		return array(
+			'queue'    => array_values( $queue ),
+			'rejected' => $rejected,
 		);
 	}
 

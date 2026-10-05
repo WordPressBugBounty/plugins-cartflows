@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import CfIcon from '@WizardImages/cartflows-icon.svg';
 import { getExitSetupWizard } from '@Utils/Helpers';

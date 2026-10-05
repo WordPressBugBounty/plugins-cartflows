@@ -80,7 +80,7 @@ class Cartflows_Fbt {
 	const SELECTION_VALUES = array( 'multiple', 'single' );
 
 	/**
-	 * Whitelist for the 'position' field — 10 WC single-product page positions.
+	 * Whitelist for the 'position' field. 'shortcode' has no hook — it renders only via [wcf_frequently_bought_together].
 	 *
 	 * @var array<int, string>
 	 */
@@ -89,6 +89,7 @@ class Cartflows_Fbt {
 		'below_title',
 		'below_price',
 		'below_summary',
+		'shortcode',
 	);
 
 	/**
@@ -153,6 +154,9 @@ class Cartflows_Fbt {
 
 		// BSF Analytics stat builders for the FBT payload.
 		require_once CARTFLOWS_FBT_DIR . 'classes/class-cartflows-fbt-analytics.php';
+
+		// Products-list notice, NEW tab badge and the Free-tier panel callout.
+		require_once CARTFLOWS_FBT_DIR . 'classes/class-cartflows-fbt-nudges.php';
 	}
 
 	/**

@@ -2505,11 +2505,12 @@ class Cartflows_Ability_Runtime {
 			}
 
 			return array(
-				'product_id'       => intval( $product_id ),
-				'product_title'    => esc_html( $product->get_name() ),
-				'flow_id'          => $flow_id,
-				'flow_title'       => esc_html( $flow_title ),
-				'add_to_cart_text' => esc_html( wp_unslash( $add_to_cart_text ) ),
+				'product_id'           => intval( $product_id ),
+				'product_title'        => esc_html( $product->get_name() ),
+				'flow_id'              => $flow_id,
+				'flow_title'           => esc_html( $flow_title ),
+				'add_to_cart_text'     => esc_html( wp_unslash( $add_to_cart_text ) ),
+				'redirect_add_to_cart' => $this->product_redirects_to_flow( $product, $flow_id ),
 			);
 
 		} catch ( \Exception $e ) {
@@ -2570,11 +2571,12 @@ class Cartflows_Ability_Runtime {
 					}
 
 					$mappings[] = array(
-						'product_id'       => intval( $pid ),
-						'product_title'    => esc_html( $product->get_name() ),
-						'flow_id'          => $flow_id,
-						'flow_title'       => esc_html( $flow_title ),
-						'add_to_cart_text' => esc_html( wp_unslash( $product->get_meta( 'cartflows_add_to_cart_text' ) ) ),
+						'product_id'           => intval( $pid ),
+						'product_title'        => esc_html( $product->get_name() ),
+						'flow_id'              => $flow_id,
+						'flow_title'           => esc_html( $flow_title ),
+						'add_to_cart_text'     => esc_html( wp_unslash( $product->get_meta( 'cartflows_add_to_cart_text' ) ) ),
+						'redirect_add_to_cart' => $this->product_redirects_to_flow( $product, $flow_id ),
 					);
 				}
 			}
@@ -2592,6 +2594,27 @@ class Cartflows_Ability_Runtime {
 		} catch ( \Exception $e ) {
 			return $this->error( $e );
 		}
+	}
+
+	/**
+	 * Whether Add to Cart on this product will redirect into its mapped flow.
+	 *
+	 * Mirrors the conditions in Cartflows_Wd_Flow_Product_Actions::redirect_to_next_flow_step().
+	 *
+	 * @since x.x.x
+	 * @param \WC_Product $product Product.
+	 * @param int         $flow_id Mapped flow ID.
+	 * @return bool
+	 */
+	private function product_redirects_to_flow( $product, $flow_id ) {
+
+		if ( empty( $flow_id ) || 'publish' !== get_post_status( $flow_id ) || 'no' === $product->get_meta( 'cartflows_redirect_add_to_cart' ) ) {
+			return false;
+		}
+
+		$steps = get_post_meta( $flow_id, 'wcf-steps', true );
+
+		return is_array( $steps ) && ! empty( $steps[0]['id'] );
 	}
 
 	/**

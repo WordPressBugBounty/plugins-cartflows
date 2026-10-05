@@ -295,6 +295,14 @@ class FlowMeta {
 				),
 				'priority' => 20,
 			),
+			// Locked placeholder: licensed CartFlows Pro replaces this key with the real section. No fields, or a save would overwrite wcf-icp meta.
+			'instant-checkout'        => array(
+				'title'     => __( 'Instant Checkout', 'cartflows' ),
+				'slug'      => 'instant_checkout',
+				'fields'    => array(),
+				'priority'  => 15,
+				'is_locked' => true,
+			),
 			'general'                 => array(
 				'title'    => __( 'General ', 'cartflows' ),
 				'slug'     => 'general',

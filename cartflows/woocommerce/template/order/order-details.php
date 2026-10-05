@@ -112,13 +112,12 @@ if( $order->has_status( 'cancelled' ) ){
 						<th><?php esc_html_e( 'Note:', 'woocommerce' ); ?></th>
 						<td><?php echo wp_kses_post( nl2br( wptexturize( $order->get_customer_note() ) ) ); ?></td>
 					</tr>
-				<?php endif; 
-				if('legacy-tq-layout' === $thankyou_layout) { ?>
-				</tbody>
-
-				<tfoot>
-				<?php } ?>
+				<?php endif; ?>
+			<?php if ( 'legacy-tq-layout' === $thankyou_layout ) { ?>
+			</tfoot>
+			<?php } else { ?>
 			</tbody>
+			<?php } ?>
 		</table>
 
 		<?php do_action( 'woocommerce_order_details_after_order_table', $order ); ?>

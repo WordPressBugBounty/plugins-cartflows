@@ -280,6 +280,79 @@ class Cartflows_Checkout_Fields {
 
 
 	/**
+	 * Example values shown in Instant Checkout's fields, keyed by field name without its address prefix.
+	 * Only fields whose format is worth demonstrating appear here; the rest are left empty.
+	 *
+	 * @since x.x.x
+	 * @return array<string, string>
+	 */
+	public function get_instant_checkout_placeholders() {
+
+		return apply_filters(
+			'cartflows_instant_checkout_field_placeholders',
+			array(
+				'email'      => __( 'you@example.com', 'cartflows' ),
+				'first_name' => __( 'Jane', 'cartflows' ),
+				'last_name'  => __( 'Doe', 'cartflows' ),
+				'phone'      => __( '+1 415 555 0142', 'cartflows' ),
+			)
+		);
+	}
+
+	/**
+	 * Whether a placeholder says nothing the visible label does not already say.
+	 *
+	 * @since x.x.x
+	 * @param string $placeholder placeholder text.
+	 * @param string $label       label text.
+	 * @return bool
+	 */
+	public function is_placeholder_echoing_label( $placeholder, $label ) {
+
+		if ( '' === $placeholder || '' === $label ) {
+			return false;
+		}
+
+		// Woo marks the label alone with "(optional)" or an asterisk, so compare what is left of the name.
+		$strip = static function ( $text ) {
+			$text = str_replace( array( '&nbsp;', '&#42;', '*' ), ' ', wp_strip_all_tags( (string) $text ) );
+			$text = preg_replace( '/\(\s*optional\s*\)/i', '', $text );
+			return strtolower( trim( (string) preg_replace( '/\s+/', ' ', (string) $text ) ) );
+		};
+
+		return $strip( $placeholder ) === $strip( $label );
+	}
+
+	/**
+	 * Placeholder for one Instant Checkout field: a merchant-set placeholder wins, an example
+	 * fills a blank or echoing one, and the label itself is the last resort so the box is never empty.
+	 *
+	 * @since x.x.x
+	 * @param string              $key   field key, with or without a billing/shipping prefix.
+	 * @param array<string,mixed> $field field definition.
+	 * @return string
+	 */
+	public function get_instant_checkout_placeholder( $key, $field ) {
+
+		$examples    = $this->get_instant_checkout_placeholders();
+		$name        = (string) preg_replace( '/^(?:billing|shipping)_/', '', (string) $key );
+		$placeholder = isset( $field['placeholder'] ) && is_string( $field['placeholder'] ) ? $field['placeholder'] : '';
+		$label       = isset( $field['label'] ) && is_string( $field['label'] ) ? $field['label'] : '';
+		$is_echo     = $this->is_placeholder_echoing_label( $placeholder, $label );
+
+		if ( isset( $examples[ $name ] ) && ( '' === $placeholder || $is_echo ) ) {
+			return $examples[ $name ];
+		}
+
+		if ( '' !== $placeholder && ! $is_echo ) {
+			return $placeholder;
+		}
+
+		// The modern-label skin's floating label is invisible until the field has a value, so it can never be the only visible name.
+		return $label;
+	}
+
+	/**
 	 * Prepare country locale.
 	 *
 	 * @param array $fields country locale fields.
@@ -324,10 +397,14 @@ class Cartflows_Checkout_Fields {
 
 				if ( 'modern-label' === $fields_skins ) {
 
+					$is_instant = Cartflows_Helper::is_instant_layout_enabled();
+
 					foreach ( $fields as $key => $props ) {
 
-						// Add label as placeholder if the placeholder value is empty.
-						if ( empty( $fields[ $key ]['placeholder'] ) && ! empty( $fields[ $key ]['label'] ) ) {
+						// Instant Checkout shows the label already, so the box carries an example or nothing.
+						if ( $is_instant ) {
+							$fields[ $key ]['placeholder'] = $this->get_instant_checkout_placeholder( $key, $fields[ $key ] );
+						} elseif ( empty( $fields[ $key ]['placeholder'] ) && ! empty( $fields[ $key ]['label'] ) ) {
 							$fields[ $key ]['placeholder'] = $fields[ $key ]['label'];
 						}
 
@@ -336,7 +413,7 @@ class Cartflows_Checkout_Fields {
 						}
 
 						// Add Asterisk mark to the placeholder text if the field is required.
-						if ( ! empty( $fields[ $key ]['placeholder'] ) && ( isset( $fields[ $key ]['required'] ) && $fields[ $key ]['required'] ) ) {
+						if ( ! $is_instant && ! empty( $fields[ $key ]['placeholder'] ) && ( isset( $fields[ $key ]['required'] ) && $fields[ $key ]['required'] ) ) {
 							$fields[ $key ]['placeholder'] = $fields[ $key ]['placeholder'] . '&nbsp;*';
 						}
 					}
@@ -587,6 +664,8 @@ class Cartflows_Checkout_Fields {
 
 		if ( 'modern-label' === $fields_skins ) {
 
+			$is_instant = Cartflows_Helper::is_instant_layout_enabled();
+
 			foreach ( $field_types as $type ) {
 
 				if ( isset( $fields[ $type ] ) && is_array( $fields[ $type ] ) ) {
@@ -595,8 +674,11 @@ class Cartflows_Checkout_Fields {
 						if ( ! empty( $fields[ $type ][ $key ]['type'] ) && 'file' === $fields[ $type ][ $key ]['type'] ) {
 							continue;
 						}
-						// Add label as placeholder if the placeholder value is empty.
-						if ( empty( $fields[ $type ][ $key ]['placeholder'] ) ) {
+
+						// Instant Checkout shows the label already, so the box carries an example or nothing.
+						if ( $is_instant ) {
+							$fields[ $type ][ $key ]['placeholder'] = $this->get_instant_checkout_placeholder( $key, $fields[ $type ][ $key ] );
+						} elseif ( empty( $fields[ $type ][ $key ]['placeholder'] ) ) {
 							$fields[ $type ][ $key ]['placeholder'] = $fields[ $type ][ $key ]['label'];
 						}
 
@@ -606,7 +688,7 @@ class Cartflows_Checkout_Fields {
 						}
 
 						// Add Asterisk mark to the placeholder text if the field is required.
-						if ( ! empty( $fields[ $type ][ $key ]['placeholder'] ) && ( isset( $fields[ $type ][ $key ]['required'] ) && $fields[ $type ][ $key ]['required'] ) ) {
+						if ( ! $is_instant && ! empty( $fields[ $type ][ $key ]['placeholder'] ) && ( isset( $fields[ $type ][ $key ]['required'] ) && $fields[ $type ][ $key ]['required'] ) ) {
 							$fields[ $type ][ $key ]['placeholder'] = $fields[ $type ][ $key ]['placeholder'] . '&nbsp;*';
 						}
 					}

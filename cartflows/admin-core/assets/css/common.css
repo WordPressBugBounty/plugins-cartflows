@@ -152,3 +152,11 @@
 .step-disabled div {
 	color: #d1d5db;
 }
+
+/* Input elements styles conflict fixes */
+.wcf-menu-page-wrapper input[type="text"],
+.wcf-menu-page-wrapper input[type="number"],
+.wcf-menu-page-wrapper input[type="email"],
+.wcf-menu-page-wrapper input[type="search"] {
+	min-height: 0;
+}

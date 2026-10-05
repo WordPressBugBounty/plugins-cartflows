@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 3.2.1
+Stable tag: 3.3.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,12 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.3.0 - Monday, 5th October 2026 =
+* New: Added the [wcf_frequently_bought_together] shortcode to place the Frequently Bought Together widget on page-builder product templates.
+* New: Added a "Redirect Add to Cart" option to the product's CartFlows tab to choose whether Add to Cart redirects to the selected funnel.
+* Improvement: Order Bump product search now ranks exact title matches first and also matches product descriptions on large catalogs.
+* Fix: Fixed Google Address Autocomplete not starting on sites without jQuery Migrate.
 
 = Version 3.2.1 - Wednesday, 23rd September 2026 =
 * Security Fix: Hardened the security of the plugin reported by PatchStack.

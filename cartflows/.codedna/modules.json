@@ -1,0 +1,175 @@
+{
+  "modules": [
+    {
+      "id": "admin-core",
+      "path": "admin-core",
+      "claude": "admin-core/CLAUDE.md",
+      "architecture": "admin-core/architecture.md",
+      "language": "ts",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "admin-legacy-core",
+      "path": "admin-legacy-core",
+      "claude": "admin-legacy-core/CLAUDE.md",
+      "architecture": "admin-legacy-core/architecture.md",
+      "language": "ts",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "classes",
+      "path": "classes",
+      "claude": "classes/CLAUDE.md",
+      "architecture": "classes/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "compatibilities",
+      "path": "compatibilities",
+      "claude": "compatibilities/CLAUDE.md",
+      "architecture": "compatibilities/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "beaver-builder",
+      "path": "modules/beaver-builder",
+      "claude": "modules/beaver-builder/CLAUDE.md",
+      "architecture": "modules/beaver-builder/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "bricks",
+      "path": "modules/bricks",
+      "claude": "modules/bricks/CLAUDE.md",
+      "architecture": "modules/bricks/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "checkout",
+      "path": "modules/checkout",
+      "claude": "modules/checkout/CLAUDE.md",
+      "architecture": "modules/checkout/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "content-generation",
+      "path": "modules/content-generation",
+      "claude": "modules/content-generation/CLAUDE.md",
+      "architecture": "modules/content-generation/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "elementor",
+      "path": "modules/elementor",
+      "claude": "modules/elementor/CLAUDE.md",
+      "architecture": "modules/elementor/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "email-report",
+      "path": "modules/email-report",
+      "claude": "modules/email-report/CLAUDE.md",
+      "architecture": "modules/email-report/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "flow",
+      "path": "modules/flow",
+      "claude": "modules/flow/CLAUDE.md",
+      "architecture": "modules/flow/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "frequently-bought-together",
+      "path": "modules/frequently-bought-together",
+      "claude": "modules/frequently-bought-together/CLAUDE.md",
+      "architecture": "modules/frequently-bought-together/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "cartflows",
+      "path": "modules/gutenberg",
+      "claude": "modules/gutenberg/CLAUDE.md",
+      "architecture": "modules/gutenberg/architecture.md",
+      "language": "ts",
+      "confidence": "high",
+      "reason": "manifest"
+    },
+    {
+      "id": "optin",
+      "path": "modules/optin",
+      "claude": "modules/optin/CLAUDE.md",
+      "architecture": "modules/optin/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "thankyou",
+      "path": "modules/thankyou",
+      "claude": "modules/thankyou/CLAUDE.md",
+      "architecture": "modules/thankyou/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "webhook",
+      "path": "modules/webhook",
+      "claude": "modules/webhook/CLAUDE.md",
+      "architecture": "modules/webhook/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "woo-dynamic-flow",
+      "path": "modules/woo-dynamic-flow",
+      "claude": "modules/woo-dynamic-flow/CLAUDE.md",
+      "architecture": "modules/woo-dynamic-flow/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "wizard",
+      "path": "wizard",
+      "claude": "wizard/CLAUDE.md",
+      "architecture": "wizard/architecture.md",
+      "language": "ts",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    },
+    {
+      "id": "woocommerce",
+      "path": "woocommerce",
+      "claude": "woocommerce/CLAUDE.md",
+      "architecture": "woocommerce/architecture.md",
+      "language": "php",
+      "confidence": "medium",
+      "reason": "source-cluster"
+    }
+  ]
+}

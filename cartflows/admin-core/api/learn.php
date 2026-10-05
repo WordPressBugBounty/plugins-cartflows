@@ -81,9 +81,8 @@ class Learn extends ApiBase {
 	 */
 	public function get_learn_sections( $request ) {
 
-		// Get completed modules from option.
-		$completed_modules = get_option( 'wcf_learn_data', array() );
-		$completed_modules = is_array( $completed_modules ) ? $completed_modules : array();
+		// Resolved completion state — manual checks plus auto-derived state.
+		$learn_progress = \Cartflows_Learn_Progress::get_instance();
 
 		$sections = array(
 			array(
@@ -104,7 +103,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'     => false,
 						'is_pro'        => false,
-						'completed'     => $this->is_module_completed( 'install-woocommerce', 'active' === \Cartflows_Helper::get_plugin_status( 'woocommerce/woocommerce.php', true ), $completed_modules ),
+						'completed'     => $learn_progress->is_completed( 'install-woocommerce' ),
 						'plugin_status' => \Cartflows_Helper::get_plugin_status( 'woocommerce/woocommerce.php', true ),
 					),
 					array(
@@ -119,7 +118,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/how-to-create-your-first-cartflows-funnel/', array( 'utm_campaign' => 'learn_how' ) ) ),
 						'is_pro'      => false,
-						'completed'   => $this->is_module_completed( 'create-your-first-funnel', intval( wp_count_posts( CARTFLOWS_FLOW_POST_TYPE )->publish ) > 0, $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'create-your-first-funnel' ),
 					),
 				),
 			),
@@ -140,7 +139,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/editing-and-customising-funnel-steps/', array( 'utm_campaign' => 'learn_how' ) ) ),
 						'is_pro'      => false,
-						'completed'   => $this->is_module_completed( 'edit-design-funnel-pages-steps', $this->has_step_been_edited(), $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'edit-design-funnel-pages-steps' ),
 					),
 				),
 			),
@@ -161,7 +160,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/how-to-add-products-in-woocommerce/', array( 'utm_campaign' => 'learn_how' ) ) ),
 						'is_pro'      => false,
-						'completed'   => $this->is_module_completed( 'add-products', intval( wp_count_posts( 'product' )->publish ) > 0, $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'add-products' ),
 					),
 					array(
 						'id'          => 'assign-products-to-checkout',
@@ -175,7 +174,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/how-to-add-assign-products-to-a-checkout-step-in-cartflows/', array( 'utm_campaign' => 'learn_how' ) ) ),
 						'is_pro'      => false,
-						'completed'   => $this->is_module_completed( 'assign-products-to-checkout', $this->is_checkout_product_is_assigned(), $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'assign-products-to-checkout' ),
 					),
 				),
 			),
@@ -196,7 +195,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => false,
 						'is_pro'      => false,
-						'completed'   => $this->is_module_completed( 'connect-payment-gateway', $this->check_supported_payment_gateway_used(), $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'connect-payment-gateway' ),
 					),
 				),
 			),
@@ -218,7 +217,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'     => false,
 						'is_pro'        => false,
-						'completed'     => $this->is_module_completed( 'enable-cart-abandonment-tracking', 'active' === \Cartflows_Helper::get_plugin_status( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php', true ), $completed_modules ),
+						'completed'     => $learn_progress->is_completed( 'enable-cart-abandonment-tracking' ),
 						'plugin_status' => \Cartflows_Helper::get_plugin_status( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php', true ),
 					),
 					array(
@@ -233,7 +232,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => false,
 						'is_pro'      => false,
-						'completed'   => $this->is_module_completed( 'setup-recovery-emails', $this->check_folloup_emails_created(), $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'setup-recovery-emails' ),
 					),
 				),
 			),
@@ -255,7 +254,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'     => false,
 						'is_pro'        => false,
-						'completed'     => $this->is_module_completed( 'enable-modern-cart', 'active' === \Cartflows_Helper::get_plugin_status( 'modern-cart/modern-cart.php', true ), $completed_modules ),
+						'completed'     => $learn_progress->is_completed( 'enable-modern-cart' ),
 						'plugin_status' => \Cartflows_Helper::get_plugin_status( 'modern-cart/modern-cart.php', true ),
 					),
 					array(
@@ -270,7 +269,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => false,
 						'is_pro'      => false,
-						'completed'   => $this->is_module_completed( 'setup-your-cart', $this->is_modern_cart_configured(), $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'setup-your-cart' ),
 					),
 				),
 			),
@@ -291,7 +290,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/how-to-add-order-bumps-to-woocommerce-sales-funnel/', array( 'utm_campaign' => 'learn_how' ) ) ),
 						'is_pro'      => ! _is_cartflows_pro(),
-						'completed'   => $this->is_module_completed( 'add-order-bump', $this->has_published_order_bump(), $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'add-order-bump' ),
 					),
 					array(
 						'id'          => 'setup-upsell-downsell-offers',
@@ -305,7 +304,7 @@ class Learn extends ApiBase {
 						),
 						'learn_how'   => esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/how-to-create-one-click-upsell-and-downsell-offers-in-cartflows/', array( 'utm_campaign' => 'learn_how' ) ) ),
 						'is_pro'      => ! _is_cartflows_pro(),
-						'completed'   => $this->is_module_completed( 'setup-upsell-downsell-offers', $this->has_published_offer_step(), $completed_modules ),
+						'completed'   => $learn_progress->is_completed( 'setup-upsell-downsell-offers' ),
 					),
 				),
 			),
@@ -315,279 +314,6 @@ class Learn extends ApiBase {
 		$response->set_status( 200 );
 
 		return $response;
-	}
-
-	/**
-	 * Check whether a module is completed.
-	 *
-	 * @param string $module_id         Module identifier.
-	 * @param bool   $is_auto_completed Whether the module is auto-completed.
-	 * @param array  $completed_modules Stored list of completed modules.
-	 *
-	 * @return bool Whether the module should be treated as completed.
-	 */
-	private function is_module_completed( $module_id, $is_auto_completed, $completed_modules ) {
-		
-		if ( $is_auto_completed ) {
-			return true;
-		}
-
-		return in_array( $module_id, $completed_modules, true );
-	}
-
-	/**
-	 * Checks if any checkout step has a product assigned.
-	 *
-	 * Iterates through recent checkout steps and determines
-	 * if at least one has an assigned product in the 'wcf-checkout-products' meta.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @return bool True if a checkout step has a product assigned, otherwise false.
-	 */
-	public function is_checkout_product_is_assigned() {
-
-		// Fetch the 10 most recently modified published checkout steps that have the 'wcf-checkout-products' meta key.
-		$steps = get_posts(
-			array(
-				'post_type'      => CARTFLOWS_STEP_POST_TYPE, // Only 'cartflows_step' post type.
-				'post_status'    => array( 'publish' ), // Only published posts.
-				'posts_per_page' => 10, // Limit to 10 results for performance.
-				'orderby'        => 'modified', // Order by last modified date.
-				'order'          => 'DESC', // Most recently modified first.
-				'fields'         => 'ids', // Only retrieve post IDs for efficiency.
-				'meta_query'     => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-					array(
-						'key'   => 'wcf-step-type', // Must be a checkout step.
-						'value' => 'checkout',
-					),
-					array(
-						'key'     => 'wcf-checkout-products', // Step must have checkout products assigned.
-						'compare' => 'EXISTS',
-					),
-				),
-			)
-		);
-
-		// If no eligible steps found, return false.
-		if ( empty( $steps ) ) {
-			return false;
-		}
-
-		// Loop through each checkout step.
-		foreach ( $steps as $step_id ) {
-			// Get assigned products for current step.
-			$products = get_post_meta( $step_id, 'wcf-checkout-products', true );
-
-			// Skip if there are no products or the first product entry is empty.
-			if ( ! is_array( $products ) || empty( $products ) || empty( $products[0]['product'] ) ) {
-				continue;
-			}
-
-			// Get the product ID of the first assigned product.
-			$product_id = $products[0]['product'];
-
-			// Check if a valid numeric product ID is assigned.
-			if ( is_numeric( $product_id ) && (int) $product_id > 0 ) {
-				return true; // A product has been assigned to at least one checkout step.
-			}
-		}
-
-		// If no checkout step with a valid product was found, return false.
-		return false;
-	}
-
-	/**
-	 * Check if a configured WooCommerce payment gateway is available.
-	 *
-	 * For the learn step we only need to know whether the store has at least one
-	 * payment gateway plugin that is installed, configured, and enabled in either
-	 * live or sandbox/test mode. WooCommerce's
-	 * WC_Payment_Gateways::get_available_payment_gateways() already returns only
-	 * gateways that are enabled and ready to use, so we can rely on that.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @return bool True if at least one gateway is available, otherwise false.
-	 */
-	public function check_supported_payment_gateway_used() {
-
-		// Ensure WooCommerce is active before checking gateways.
-		if ( ! function_exists( 'WC' ) ) {
-			return false;
-		}
-
-		$payment_gateways = WC()->payment_gateways();
-
-		if ( ! is_object( $payment_gateways ) || ! method_exists( $payment_gateways, 'get_available_payment_gateways' ) ) {
-			return false;
-		}
-
-		// Get gateways that are installed, configured, and enabled (live or sandbox).
-		$available_gateways = $payment_gateways->get_available_payment_gateways();
-
-		if ( empty( $available_gateways ) || ! is_array( $available_gateways ) ) {
-			return false;
-		}
-
-		// If at least one gateway is available, consider the requirement satisfied.
-		return true;
-	}
-
-	/**
-	 * Check if the user has created and activated follow-up recovery emails.
-	 *
-	 * First verifies that the Woo Cart Abandonment Recovery plugin is active.
-	 * If it is, queries the plugin's email templates table to confirm at least
-	 * one template exists with `is_activated = 1`.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @return bool True if at least one active follow-up email template exists, otherwise false.
-	 */
-	public function check_folloup_emails_created() {
-
-		// Bail early if the Cart Abandonment Recovery plugin is not active.
-		if ( 'active' !== \Cartflows_Helper::get_plugin_status( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php', true ) ) {
-			return false;
-		}
-
-		global $wpdb;
-
-		$template_table = $wpdb->prefix . 'cartflows_ca_email_templates';
-
-		// Check whether the table exists before querying it.
-		$table_exists = $wpdb->get_var( //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->prepare( 'SHOW TABLES LIKE %s', $template_table )
-		);
-
-		if ( ! $table_exists ) {
-			return false;
-		}
-
-		// Count active follow-up email templates.
-		$active_count = (int) $wpdb->get_var( //phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->prefix}cartflows_ca_email_templates WHERE is_activated = %d", //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				1
-			)
-		);
-
-		return $active_count > 0;
-	}
-
-	/**
-	 * Check if any published checkout step has at least one order bump configured.
-	 *
-	 * Queries published checkout steps for the presence of the 'wcf-order-bumps'
-	 * meta key. Only post IDs are retrieved for performance.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @return bool True if at least one published checkout step has an order bump, otherwise false.
-	 */
-	private function has_published_order_bump() {
-
-		// Look for any published checkout step that has an order bump configured.
-		$steps = get_posts(
-			array(
-				'post_type'      => CARTFLOWS_STEP_POST_TYPE,
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'meta_query'     => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-					array(
-						'key'   => 'wcf-step-type',
-						'value' => 'checkout',
-					),
-					array(
-						'key'     => 'wcf-order-bumps',
-						'compare' => 'EXISTS',
-					),
-				),
-			)
-		);
-
-		return ! empty( $steps );
-	}
-
-	/**
-	 * Check if any published offer step (upsell or downsell) exists.
-	 *
-	 * Queries published steps whose 'wcf-step-type' is 'upsell' or 'downsell'.
-	 * Only post IDs are retrieved for performance.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @return bool True if at least one published upsell or downsell step exists, otherwise false.
-	 */
-	private function has_published_offer_step() {
-
-		// Look for any published upsell or downsell step.
-		$offer_steps = get_posts(
-			array(
-				'post_type'      => CARTFLOWS_STEP_POST_TYPE,
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'meta_query'     => array( //phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-					array(
-						'key'     => 'wcf-step-type',
-						'value'   => array( 'upsell', 'downsell' ),
-						'compare' => 'IN',
-					),
-				),
-			)
-		);
-
-		return ! empty( $offer_steps );
-	}
-
-	/**
-	 * Check if any published CartFlows step exists.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @return bool True if at least one published step exists, otherwise false.
-	 */
-	private function has_step_been_edited() {
-		$steps = get_posts(
-			array(
-				'post_type'      => CARTFLOWS_STEP_POST_TYPE,
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-			)
-		);
-		return ! empty( $steps );
-	}
-
-	/**
-	 * Check if the Modern Cart plugin is active and has been configured by the user.
-	 *
-	 * Modern Cart only writes its settings options to the database when the user
-	 * explicitly saves the settings page. A fresh install has none of these options,
-	 * so their presence reliably indicates that the user has configured the plugin.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @return bool True if Modern Cart is active and at least one settings option exists, otherwise false.
-	 */
-	private function is_modern_cart_configured() {
-
-		if ( 'active' !== \Cartflows_Helper::get_plugin_status( 'modern-cart/modern-cart.php', true ) ) {
-			return false;
-		}
-
-		$setting_keys = array( 'moderncart_setting', 'moderncart_cart', 'moderncart_floating', 'moderncart_appearance' );
-
-		foreach ( $setting_keys as $key ) {
-			if ( false !== get_option( $key, false ) ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**

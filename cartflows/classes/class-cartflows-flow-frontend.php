@@ -82,6 +82,11 @@ class Cartflows_Flow_Frontend {
 	 */
 	public function footer_markup() {
 
+		// Keep onboarding template previews aspirational — no admin notices inside the iframe.
+		if ( isset( $_GET['wcf-load-onboarding-iframe'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return;
+		}
+
 		if ( wcf()->utils->is_step_post_type() ) {
 			$flow_id = wcf()->utils->get_flow_id();
 

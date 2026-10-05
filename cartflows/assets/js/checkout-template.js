@@ -874,6 +874,41 @@
 		},
 	};
 
+	const wcf_shipping_details_toggler = function () {
+		let is_expanded = false;
+
+		$( document ).on(
+			'click',
+			'.wcf-embed-checkout-form .wcf-shipping-toggle',
+			function ( e ) {
+				e.preventDefault();
+
+				const toggle = $( this );
+
+				is_expanded = 'true' !== toggle.attr( 'aria-expanded' );
+
+				toggle.attr( 'aria-expanded', is_expanded );
+				toggle
+					.closest( 'tr' )
+					.next( '.wcf-shipping-totals-details' )
+					.toggle( is_expanded );
+			}
+		);
+
+		// The order review table is re-rendered on every update, so restore the open state.
+		$( document.body ).on( 'updated_checkout', function () {
+			if ( ! is_expanded ) {
+				return;
+			}
+
+			$( '.wcf-embed-checkout-form .wcf-shipping-toggle' ).attr(
+				'aria-expanded',
+				true
+			);
+			$( '.wcf-embed-checkout-form .wcf-shipping-totals-details' ).show();
+		} );
+	};
+
 	$( function () {
 		wcf_persistent_data();
 
@@ -887,6 +922,7 @@
 
 		wcf_toggle_optimized_fields();
 		wcf_instant_checkout_coupon_field();
+		wcf_shipping_details_toggler();
 
 		$( document.body ).on(
 			'checkout_error updated_checkout',

@@ -31,8 +31,10 @@ $thankyou_layout = wcf()->options->get_thankyou_meta_value( $thankyou_id, 'wcf-t
                 <td><?php esc_html_e( 'Phone:', 'woocommerce' ); ?><p><?php echo esc_html( $order->get_billing_phone() ); ?></p></td>
             </tr>
             <tr class="cartflows-customer-details-table-address">
-                <td class="woocommerce-column--billing-address"><?php esc_html_e( 'Billing Address:', 'woocommerce' ); ?><p><?php echo wp_kses_post( nl2br( $order->get_formatted_billing_address( esc_html__( 'N/A', 'woocommerce' ) ) ) ); ?></p></td>
+                <td class="woocommerce-column--billing-address"<?php if ( ! $show_shipping ) : ?> colspan="2"<?php endif; ?>><?php esc_html_e( 'Billing Address:', 'woocommerce' ); ?><p><?php echo wp_kses_post( nl2br( $order->get_formatted_billing_address( esc_html__( 'N/A', 'woocommerce' ) ) ) ); ?></p></td>
+                <?php if ( $show_shipping ) : ?>
                 <td class="woocommerce-column--shipping-address"><?php esc_html_e( 'Shipping Address:', 'woocommerce' ); ?><p><?php echo wp_kses_post( nl2br( $order->get_formatted_shipping_address( esc_html__( 'N/A', 'woocommerce' ) ) ) ); ?></p></td>
+                <?php endif; ?>
             </tr>
         </table>
     </div>

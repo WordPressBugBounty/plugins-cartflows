@@ -59,8 +59,17 @@ class Cartflows_Wd_Flow_Product_Actions {
 				// Return the default redirect URL if flow is deleted permanently or not published.
 				if ( false === $funnel_status || 'publish' !== $funnel_status ) {
 					if ( false === $funnel_status ) {
-						$product->delete_meta_data( 'cartflows_redirect_flow_id' ); // Delete the selected flow ID option from the product meta.
+						// Delete the selected flow ID option from the product meta. WooCommerce
+						// CRUD only stages the change, so it has to be saved or the stale meta
+						// survives and this lookup repeats on every add-to-cart.
+						$product->delete_meta_data( 'cartflows_redirect_flow_id' );
+						$product->save();
 					}
+					return $redirect_url;
+				}
+
+				// The merchant kept the funnel for other features but switched the redirect off.
+				if ( 'no' === $product->get_meta( 'cartflows_redirect_add_to_cart' ) ) {
 					return $redirect_url;
 				}
 

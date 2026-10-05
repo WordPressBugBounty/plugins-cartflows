@@ -51,8 +51,12 @@ class WizardCore {
 			add_action( 'admin_init', array( $this, 'hide_notices' ) );
 			add_action( 'admin_notices', array( $this, 'show_setup_wizard' ) );
 			add_action( 'woocommerce_installed', array( $this, 'disable_woo_setup_redirect' ) );
-			// We are hiding admin bar intentionally for setup wizard.
-			add_filter( 'show_admin_bar', '__return_false', 1 ); //phpcs:ignore WordPressVIPMinimum.UserExperience.AdminBarRemoval.RemovalDetected
+			// We are hiding admin bar intentionally, only on the setup wizard page. This
+			// constructor runs on every is_admin() request, so an unscoped filter removed
+			// the toolbar from the whole of wp-admin.
+			if ( isset( $_GET['page'] ) && 'cartflow-setup' === $_GET['page'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				add_filter( 'show_admin_bar', '__return_false', 1 ); //phpcs:ignore WordPressVIPMinimum.UserExperience.AdminBarRemoval.RemovalDetected, WordPressVIPMinimum.UserExperience.AdminBarRemoval.HidingDetected
+			}
 
 			add_action( 'init', array( $this, 'load_scripts' ) );
 			add_action( 'admin_print_styles', array( $this, 'load_admin_media_styles' ) );
@@ -315,7 +319,7 @@ class WizardCore {
 				'status' => $this->get_plugin_status( 'woocommerce/woocommerce.php' ),
 			),
 			array(
-				'name'   => 'Cart Abandonment',
+				'name'   => 'Cart Abandonment Recovery for WooCommerce',
 				'slug'   => 'woo-cart-abandonment-recovery',
 				'status' => $this->get_plugin_status( 'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php' ),
 			),

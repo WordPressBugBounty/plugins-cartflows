@@ -324,7 +324,7 @@ const CartFlowsAjaxQueue = ( function () {
 					site_logo: selected_site_logo,
 				},
 			} )
-				.success( function ( res ) {
+				.done( function ( res ) {
 					if ( res.success && true === res.data.success ) {
 						console.log( 'Funnels imported successfully.' );
 
@@ -342,9 +342,9 @@ const CartFlowsAjaxQueue = ( function () {
 				.fail( function () {
 					has_error.detail.is_error = true;
 					has_error.detail.errorMsg =
-						cartflows_wizard.template_import_errors.api.title;
+						cartflows_wizard.template_import_errors.api_errors.title;
 					has_error.detail.callToAction =
-						cartflows_wizard.template_import_errors.api.msg;
+						cartflows_wizard.template_import_errors.api_errors.msg;
 					document.dispatchEvent( has_error );
 				} );
 		},
@@ -480,7 +480,7 @@ const CartFlowsAjaxQueue = ( function () {
 				page_builder: plugin_slug,
 			},
 		} )
-			.success( function () {
+			.done( function () {
 				console.log( 'Option Saved Successfully.' );
 
 				document.dispatchEvent(

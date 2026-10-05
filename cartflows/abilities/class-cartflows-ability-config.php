@@ -2869,25 +2869,29 @@ class Cartflows_Ability_Config {
 				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
-						'product_id'       => array(
+						'product_id'           => array(
 							'type'        => 'integer',
 							'description' => __( 'Product ID.', 'cartflows' ),
 						),
-						'product_title'    => array(
+						'product_title'        => array(
 							'type'        => 'string',
 							'description' => __( 'Product title.', 'cartflows' ),
 						),
-						'flow_id'          => array(
+						'flow_id'              => array(
 							'type'        => 'integer',
 							'description' => __( 'Mapped flow ID (0 if none).', 'cartflows' ),
 						),
-						'flow_title'       => array(
+						'flow_title'           => array(
 							'type'        => 'string',
 							'description' => __( 'Mapped flow title (empty if none).', 'cartflows' ),
 						),
-						'add_to_cart_text' => array(
+						'add_to_cart_text'     => array(
 							'type'        => 'string',
 							'description' => __( 'Custom add-to-cart button text (empty if default).', 'cartflows' ),
+						),
+						'redirect_add_to_cart' => array(
+							'type'        => 'boolean',
+							'description' => __( 'Whether the single-product Add to Cart button redirects to the mapped flow. False when no published flow with steps is mapped or the merchant switched the redirect off.', 'cartflows' ),
 						),
 					),
 				),
@@ -2943,25 +2947,29 @@ class Cartflows_Ability_Config {
 							'items'       => array(
 								'type'       => 'object',
 								'properties' => array(
-									'product_id'       => array(
+									'product_id'           => array(
 										'type'        => 'integer',
 										'description' => __( 'Product ID.', 'cartflows' ),
 									),
-									'product_title'    => array(
+									'product_title'        => array(
 										'type'        => 'string',
 										'description' => __( 'Product title.', 'cartflows' ),
 									),
-									'flow_id'          => array(
+									'flow_id'              => array(
 										'type'        => 'integer',
 										'description' => __( 'Mapped flow ID.', 'cartflows' ),
 									),
-									'flow_title'       => array(
+									'flow_title'           => array(
 										'type'        => 'string',
 										'description' => __( 'Mapped flow title.', 'cartflows' ),
 									),
-									'add_to_cart_text' => array(
+									'add_to_cart_text'     => array(
 										'type'        => 'string',
 										'description' => __( 'Custom button text.', 'cartflows' ),
+									),
+									'redirect_add_to_cart' => array(
+										'type'        => 'boolean',
+										'description' => __( 'Whether the single-product Add to Cart button redirects to the mapped flow.', 'cartflows' ),
 									),
 								),
 							),

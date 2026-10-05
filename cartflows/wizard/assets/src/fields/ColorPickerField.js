@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from '@wordpress/element';
 import reactCSS from 'reactcss';
 import './ColorPickerField.scss';
 import { __ } from '@wordpress/i18n';

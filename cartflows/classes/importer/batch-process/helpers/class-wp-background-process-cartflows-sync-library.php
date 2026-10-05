@@ -41,9 +41,12 @@ if ( ! class_exists( 'WP_Background_Process_Cartflows_Sync_Library' ) && class_e
 		 */
 		protected function task( $object ) {
 
-			$process = $object['instance'];
-			$method  = $object['method'];
- 
+			// Resolve the instance here instead of reading it from the queue item, as the
+			// queue is sent as the async request body and must stay free of objects.
+			/** @var Cartflows_Batch_Processing_Sync_Library $process */
+			$process = Cartflows_Batch_Processing_Sync_Library::get_instance();
+			$method  = isset( $object['method'] ) ? $object['method'] : '';
+
 			if ( 'import_sites' === $method ) {
 				wcf()->logger->sync_log( '-------- Importing Sites --------' );
 				$page = $object['page'];

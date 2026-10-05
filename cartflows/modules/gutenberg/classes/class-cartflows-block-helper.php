@@ -39,8 +39,7 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 				( isset( $attr['borderWidth'] ) ? $attr['borderWidth'] : '' ),
 				( isset( $attr['borderRadius'] ) ? $attr['borderRadius'] : '' ),
 				( isset( $attr['borderColor'] ) ? $attr['borderColor'] : '' ),
-				( isset( $attr['borderStyle'] ) ? $attr['borderStyle'] : '' ),
-				( isset( $attr['borderHColor'] ) ? $attr['borderHColor'] : '' )
+				( isset( $attr['borderStyle'] ) ? $attr['borderStyle'] : '' )
 			);
 			$border_css_tablet = self::generate_border_css( $attr, 'btn', 'tablet' );
 			$border_css_mobile = self::generate_border_css( $attr, 'btn', 'mobile' );
@@ -517,8 +516,7 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 				( isset( $attr['fieldBorderWidth'] ) ? $attr['fieldBorderWidth'] : '' ),
 				( isset( $attr['fieldBorderRadius'] ) ? $attr['fieldBorderRadius'] : '' ),
 				( isset( $attr['fieldBorderColor'] ) ? $attr['fieldBorderColor'] : '' ),
-				( isset( $attr['fieldBorderStyle'] ) ? $attr['fieldBorderStyle'] : '' ),
-				( isset( $attr['fieldBorderHColor'] ) ? $attr['fieldBorderHColor'] : '' )
+				( isset( $attr['fieldBorderStyle'] ) ? $attr['fieldBorderStyle'] : '' )
 			);
 			$input_field_border_css_tablet = self::generate_border_css( $attr, 'field', 'tablet' );
 			$input_field_border_css_mobile = self::generate_border_css( $attr, 'field', 'mobile' );
@@ -732,8 +730,7 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 				( isset( $attr['inputFieldBorderWidth'] ) ? $attr['inputFieldBorderWidth'] : '' ),
 				( isset( $attr['inputFieldBorderRadius'] ) ? $attr['inputFieldBorderRadius'] : '' ),
 				( isset( $attr['inputFieldBorderColor'] ) ? $attr['inputFieldBorderColor'] : '' ),
-				( isset( $attr['inputFieldBorderStyle'] ) ? $attr['inputFieldBorderStyle'] : '' ),
-				( isset( $attr['inputFieldBorderHColor'] ) ? $attr['inputFieldBorderHColor'] : '' )
+				( isset( $attr['inputFieldBorderStyle'] ) ? $attr['inputFieldBorderStyle'] : '' )
 			);
 			$input_field_border_css_tablet = self::generate_border_css( $attr, 'inputField', 'tablet' );
 			$input_field_border_css_mobile = self::generate_border_css( $attr, 'inputField', 'mobile' );
@@ -744,8 +741,7 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 				( isset( $attr['submitButtonBorderWidth'] ) ? $attr['submitButtonBorderWidth'] : '' ),
 				( isset( $attr['submitButtonBorderRadius'] ) ? $attr['submitButtonBorderRadius'] : '' ),
 				( isset( $attr['submitButtonBorderColor'] ) ? $attr['submitButtonBorderColor'] : '' ),
-				( isset( $attr['submitButtonBorderStyle'] ) ? $attr['submitButtonBorderStyle'] : '' ),
-				( isset( $attr['submitButtonBorderHColor'] ) ? $attr['submitButtonBorderHColor'] : '' )
+				( isset( $attr['submitButtonBorderStyle'] ) ? $attr['submitButtonBorderStyle'] : '' )
 			);
 			$submit_button_border_css_tablet = self::generate_border_css( $attr, 'submitButton', 'tablet' );
 			$submit_button_border_css_mobile = self::generate_border_css( $attr, 'submitButton', 'mobile' );
@@ -853,7 +849,7 @@ if ( ! class_exists( 'Cartflows_Block_Helper' ) ) {
 					$gen_border_css['border-right-width']  = self::get_css_value( $attr[ $prefix . 'BorderRightWidthMobile' ], 'px' );
 					$gen_border_css['border-bottom-width'] = self::get_css_value( $attr[ $prefix . 'BorderBottomWidthMobile' ], 'px' );
 				}
-				$gen_border_unit_mobile                       = isset( $attr[ $prefix . 'BorderTopLeftRadiusMobile' ] ) ? $attr[ $prefix . 'BorderTopLeftRadiusMobile' ] : 'px';
+				$gen_border_unit_mobile                       = isset( $attr[ $prefix . 'BorderRadiusUnitMobile' ] ) ? $attr[ $prefix . 'BorderRadiusUnitMobile' ] : 'px';
 				$gen_border_css['border-top-left-radius']     = self::get_css_value( $attr[ $prefix . 'BorderTopLeftRadiusMobile' ], $gen_border_unit_mobile );
 				$gen_border_css['border-top-right-radius']    = self::get_css_value( $attr[ $prefix . 'BorderTopRightRadiusMobile' ], $gen_border_unit_mobile );
 				$gen_border_css['border-bottom-left-radius']  = self::get_css_value( $attr[ $prefix . 'BorderBottomLeftRadiusMobile' ], $gen_border_unit_mobile );

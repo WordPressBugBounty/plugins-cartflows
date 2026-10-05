@@ -128,6 +128,8 @@ class Cartflows_Wd_Flow_Product_Meta {
 	 */
 	public function add_tab_content() {
 
+		$product_id = absint( get_the_ID() );
+
 		echo '<div id="cartflows_product_data" class="panel woocommerce_options_panel hidden">';
 
 		$this->woocommerce_select2(
@@ -135,11 +137,32 @@ class Cartflows_Wd_Flow_Product_Meta {
 				'id'          => 'cartflows_redirect_flow_id',
 				'name'        => 'cartflows_redirect_flow_id',
 				'value'       => get_post_meta( get_the_ID(), 'cartflows_redirect_flow_id', true ),
-				'label'       => __( 'Select the Flow', 'cartflows' ),
+				'label'       => __( 'Select the Funnel', 'cartflows' ),
 				'class'       => '',
 				'placeholder' => __( 'Type to search a funnel...', 'cartflows' ),
 			)
 		);
+
+		// A missing value reads as on, so products saved before this setting keep redirecting.
+		woocommerce_wp_checkbox(
+			array(
+				'id'          => 'cartflows_redirect_add_to_cart',
+				'value'       => 'no' === get_post_meta( $product_id, 'cartflows_redirect_add_to_cart', true ) ? 'no' : 'yes',
+				'label'       => __( 'Redirect Add to Cart', 'cartflows' ),
+				'description' => __( 'Send shoppers to this funnel when they click Add to Cart.', 'cartflows' ),
+			)
+		);
+
+		// Tells the save handler this form carried the checkbox, since an unticked one is not posted.
+		echo '<input type="hidden" name="cartflows_redirect_add_to_cart_present" value="1">';
+
+		/**
+		 * Fires after the funnel options in the product's CartFlows tab.
+		 *
+		 * @since x.x.x
+		 * @param int $product_id Product being edited.
+		 */
+		do_action( 'cartflows_product_tab_after_flow_field', $product_id );
 
 		woocommerce_wp_text_input(
 			array(
@@ -201,12 +224,22 @@ class Cartflows_Wd_Flow_Product_Meta {
 	public function save_product_meta( $post_id ) {
 
 		$product = wc_get_product( $post_id );
+
+		if ( ! $product ) {
+			return;
+		}
+
 		// Calling this function on WooCommerce action. So no need for nonce verification.
-		$next_step        = isset( $_POST['cartflows_redirect_flow_id'] ) ? intval( $_POST['cartflows_redirect_flow_id'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$next_step        = isset( $_POST['cartflows_redirect_flow_id'] ) ? strval( intval( $_POST['cartflows_redirect_flow_id'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$add_to_cart_text = isset( $_POST['cartflows_add_to_cart_text'] ) ? sanitize_text_field( $_POST['cartflows_add_to_cart_text'] ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		$product->update_meta_data( 'cartflows_redirect_flow_id', $next_step );
 		$product->update_meta_data( 'cartflows_add_to_cart_text', $add_to_cart_text );
+
+		// Only a form that rendered the checkbox may switch the redirect off.
+		if ( isset( $_POST['cartflows_redirect_add_to_cart_present'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$product->update_meta_data( 'cartflows_redirect_add_to_cart', isset( $_POST['cartflows_redirect_add_to_cart'] ) ? 'yes' : 'no' ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		}
 
 		$product->save();
 	}

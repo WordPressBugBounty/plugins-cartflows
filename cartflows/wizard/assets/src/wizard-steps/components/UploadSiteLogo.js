@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from '@wordpress/element';
 import { Tooltip } from '@WizardFields';
 import { addFilter } from '@wordpress/hooks';
 import { sendPostMessage } from '@Utils/Helpers';
