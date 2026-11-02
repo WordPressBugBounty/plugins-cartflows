@@ -2013,4 +2013,109 @@ class Cartflows_Helper {
 		}
 		return isset( $flags[ $key ] ) ? $flags[ $key ] : $default;
 	}
+
+	/**
+	 * Escape rendered HTML so a later the_content do_shortcode() pass cannot run shortcodes from customer data.
+	 * Text and attributes get encoded brackets; script and style keep their code with only shortcode openers escaped.
+	 *
+	 * @since x.x.x
+	 * @param string $html Rendered HTML.
+	 * @return string
+	 */
+	public static function escape_shortcode_brackets( $html ) {
+
+		if ( ! is_string( $html ) ) {
+			return $html;
+		}
+
+		// A builder's own do_shortcode() turns &#91; and &#93; back into brackets, so pad them first as core does.
+		if ( false !== strpos( $html, '&#9' ) ) {
+			$html = strtr(
+				$html,
+				array(
+					'&#91;' => '&#091;',
+					'&#93;' => '&#093;',
+				)
+			);
+		}
+
+		if ( false === strpbrk( $html, '[]' ) ) {
+			return $html;
+		}
+
+		// The zero-padded form survives do_shortcode(), which turns &#91; and &#93; back into brackets.
+		$brackets = array(
+			'[' => '&#091;',
+			']' => '&#093;',
+		);
+
+		$escaped = '';
+		$pos     = 0;
+		$from    = 0;
+		$raw_end = 0;
+
+		// One split of the whole string, as do_shortcode() makes it, decides what is a comment; odd parts are tags.
+		foreach ( wp_html_split( $html ) as $i => $part ) {
+			$start = $pos;
+			$pos  += strlen( $part );
+
+			// Text and ordinary tags are escaped in bulk, as is the rest of a tag that a script or style closes inside.
+			if ( 0 === $i % 2 || $start < $raw_end || ! isset( $part[1] ) || ( '!' !== $part[1] && 's' !== $part[1] && 'S' !== $part[1] ) ) {
+				continue;
+			}
+
+			// do_shortcode() never runs shortcodes in comments or CDATA, and browsers do not decode entities there.
+			if ( 0 === strpos( $part, '<!--' ) || 0 === strpos( $part, '<![CDATA[' ) ) {
+				$escaped .= strtr( substr( $html, $from, $start - $from ), $brackets ) . $part;
+				$from     = $pos;
+				continue;
+			}
+
+			if ( ! preg_match( '/^<(script|style)(?=[\s\/>]|$)/i', $part, $raw ) ) {
+				continue;
+			}
+
+			// Script and style text runs to the closing tag a browser would see, and entities are not decoded in it.
+			$raw_end  = preg_match( '#</' . $raw[1] . '(?=[\s/>]|$)#i', $html, $close, PREG_OFFSET_CAPTURE, $pos ) ? $close[0][1] : strlen( $html );
+			$escaped .= strtr( substr( $html, $from, $pos - $from ), $brackets ) . self::escape_shortcode_openers( substr( $html, $pos, $raw_end - $pos ), 'script' === strtolower( $raw[1] ) ? '\\u005b' : '\5b ' );
+			$from     = $raw_end;
+		}
+
+		return $escaped . strtr( substr( $html, $from ), $brackets );
+	}
+
+	/**
+	 * Replace each "[" that opens a registered shortcode, using the tag-name boundary of get_shortcode_regex().
+	 *
+	 * @since x.x.x
+	 * @param string $text        Script or style text.
+	 * @param string $replacement JavaScript or CSS escape for "[".
+	 * @return string
+	 */
+	private static function escape_shortcode_openers( $text, $replacement ) {
+		global $shortcode_tags;
+
+		if ( false === strpos( $text, '[' ) || empty( $shortcode_tags ) || ! is_array( $shortcode_tags ) ) {
+			return $text;
+		}
+
+		// Same shortcut as do_shortcode(): only registered tags that appear in the text are looked for.
+		preg_match_all( '@\[([^<>&/\[\]\x00-\x20=]++)@', $text, $found );
+		$tagnames = array();
+		foreach ( array_intersect( array_keys( $shortcode_tags ), $found[1] ) as $tagname ) {
+			$tagnames[] = preg_quote( (string) $tagname, '/' );
+		}
+
+		if ( empty( $tagnames ) ) {
+			return $text;
+		}
+
+		return (string) preg_replace_callback(
+			'/\[(?=(?:' . implode( '|', $tagnames ) . ')(?![\w-]))/',
+			function () use ( $replacement ) {
+				return $replacement;
+			},
+			$text
+		);
+	}
 }

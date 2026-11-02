@@ -15,3 +15,5 @@ Ownership stops at the WooCommerce cart/session/order objects themselves — it 
 The module's real behaviour is not in its call graph. It is in hook registration *timing*: WooCommerce bakes checkout field definitions on first call to `get_checkout_fields()`, which can happen before `wp`, so two filters here are registered directly in constructors rather than on hooks. Deferring them to `init` or `wp` silently drops all field customization.
 
 The rest follows the same pattern — wrapper divs opened and closed across four hooks at hand-tuned priorities, a cross-tab cart restore driven by cookie plus transient, and post-meta-cached CSS with version-only invalidation. Each constraint exists because a simpler version lost a race.
+
+URL pre-fill is guarded at both ends. Values are read only for `billing_*`/`shipping_*` keys and without brackets, and the rendered form is escaped on the way out, because builders render the checkout inside `the_content` before its `do_shortcode()` pass.

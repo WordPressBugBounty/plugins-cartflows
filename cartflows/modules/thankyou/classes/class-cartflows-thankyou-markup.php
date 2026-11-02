@@ -295,6 +295,9 @@ class Cartflows_Thankyou_Markup {
 				}
 			}
 
+			// Notices are buffered too: a guest can queue one holding shortcode text, e.g. an unknown coupon code.
+			ob_start();
+
 			// Empty awaiting payment session.
 			unset( WC()->session->order_awaiting_payment );
 
@@ -315,8 +318,6 @@ class Cartflows_Thankyou_Markup {
 			}
 
 			do_action( 'cartflows_thankyou_details_before', $order );
-
-			ob_start();
 
 			$default_data = array(
 				'order'         => array( 'order' => $order ),
@@ -345,7 +346,7 @@ class Cartflows_Thankyou_Markup {
 				echo '</div>';
 			}
 
-			$output = ob_get_clean();
+			$output = Cartflows_Helper::escape_shortcode_brackets( (string) ob_get_clean() );
 		}
 
 		return $output;

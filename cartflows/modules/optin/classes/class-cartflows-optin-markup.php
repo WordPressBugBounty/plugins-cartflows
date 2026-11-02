@@ -43,6 +43,9 @@ class Cartflows_Optin_Markup {
 
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_optin_fields' ), 10, 2 );
 
+		// Reject an optin checkout whose cart has a charged item or a non-zero total.
+		add_action( 'woocommerce_after_checkout_validation', array( $this, 'validate_optin_checkout_cart' ), 10, 2 );
+
 		/* Optin Shortcode */
 		add_shortcode( 'cartflows_optin', array( $this, 'optin_shortcode_markup' ) );
 
@@ -280,7 +283,7 @@ class Cartflows_Optin_Markup {
 
 		$output .= ob_get_clean();
 
-		return $output;
+		return Cartflows_Helper::escape_shortcode_brackets( $output );
 	}
 
 	/**
@@ -402,7 +405,6 @@ class Cartflows_Optin_Markup {
 		remove_all_actions( 'woocommerce_checkout_before_order_review' );
 		remove_all_actions( 'woocommerce_checkout_order_review' );
 		remove_all_actions( 'woocommerce_checkout_after_order_review' );
-		add_filter( 'woocommerce_cart_needs_payment', '__return_false' );
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'disable_payment_gateways' ) );
 
 		/* Paypal Expresss remove */
@@ -440,6 +442,66 @@ class Cartflows_Optin_Markup {
 		}
 
 		return $available_gateways;
+	}
+
+	/**
+	 * Reject an optin checkout whose cart has a charged item or a non-zero total.
+	 *
+	 * The optin cart is only rebuilt on page load, so a checkout request can carry any cart.
+	 *
+	 * @since x.x.x
+	 * @param array<string, mixed> $data   Posted checkout data.
+	 * @param WP_Error             $errors Checkout validation errors.
+	 * @return void
+	 */
+	public function validate_optin_checkout_cart( $data, $errors ) {
+
+		$optin_id = _get_wcf_optin_id();
+
+		if ( ! $optin_id && _is_wcf_doing_optin_ajax() ) {
+			$optin_id = wcf()->utils->get_optin_id_from_post_data();
+		}
+
+		if ( ! $optin_id ) {
+			return;
+		}
+
+		if ( ! $this->is_free_cart( WC()->cart ) ) {
+			$errors->add( 'wcf_optin_invalid_cart', __( 'This form could not be submitted. Please reload the page and try again.', 'cartflows' ) );
+		}
+	}
+
+	/**
+	 * Check that no cart line is charged and the cart total is 0.
+	 *
+	 * A line is free when its product is priced 0 or a discount brings the line to 0, as with gift coupons.
+	 *
+	 * @since x.x.x
+	 * @param WC_Cart|null $cart Cart object.
+	 * @return bool
+	 */
+	public function is_free_cart( $cart ) {
+
+		if ( ! $cart instanceof WC_Cart || $cart->is_empty() ) {
+			return false;
+		}
+
+		foreach ( $cart->get_cart() as $cart_item ) {
+
+			if ( ! $cart_item['data'] instanceof WC_Product ) {
+				return false;
+			}
+
+			$is_priced  = 0 < (float) $cart_item['data']->get_price();
+			$is_charged = ! isset( $cart_item['line_total'] ) || 0 < (float) $cart_item['line_total'];
+
+			// Checked per line so a negative fee can't offset a charged line.
+			if ( $is_priced && $is_charged ) {
+				return false;
+			}
+		}
+
+		return 0 >= (float) $cart->get_total( 'edit' );
 	}
 
 	/**

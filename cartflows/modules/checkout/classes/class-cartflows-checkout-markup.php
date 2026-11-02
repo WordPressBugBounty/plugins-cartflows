@@ -649,7 +649,7 @@ class Cartflows_Checkout_Markup {
 			_doing_it_wrong( __METHOD__, esc_html__( 'The cartflows_checkout_layout_template filter must return a .php file inside a plugin, mu-plugin, or theme directory.', 'cartflows' ), '3.2.1' );
 		}
 
-		return $output;
+		return Cartflows_Helper::escape_shortcode_brackets( $output );
 	}
 
 	/**
@@ -1207,7 +1207,7 @@ class Cartflows_Checkout_Markup {
 			$shipping_fields = isset( $checkout_fields['shipping'] ) ? $checkout_fields['shipping'] : array();
 
 			foreach ( $billing_fields as $key => $field ) {
-				$field_value = isset( $_GET[ $key ] ) && ! empty( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : '';
+				$field_value = $this->get_url_prefill_value( $key );
 
 				if ( ! empty( $field_value ) ) {
 					$checkout_fields['billing'][ $key ]['default'] = $field_value;
@@ -1215,7 +1215,7 @@ class Cartflows_Checkout_Markup {
 			}
 
 			foreach ( $shipping_fields as $key => $field ) {
-				$field_value = isset( $_GET[ $key ] ) && ! empty( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : '';
+				$field_value = $this->get_url_prefill_value( $key );
 
 				if ( ! empty( $field_value ) ) {
 					$checkout_fields['shipping'][ $key ]['default'] = $field_value;
@@ -1226,11 +1226,9 @@ class Cartflows_Checkout_Markup {
 			// initialize_checkout_fields(). If that ran before our early-registered
 			// woocommerce_checkout_get_value filter could return the URL param country,
 			// the wrong country's states would be used. Override it here.
-			$billing_country = isset( $_GET['billing_country'] ) && ! empty( $_GET['billing_country'] )
-				? sanitize_text_field( wp_unslash( $_GET['billing_country'] ) ) : '';
+			$billing_country = $this->get_url_prefill_value( 'billing_country' );
 
-			$shipping_country = isset( $_GET['shipping_country'] ) && ! empty( $_GET['shipping_country'] )
-				? sanitize_text_field( wp_unslash( $_GET['shipping_country'] ) ) : '';
+			$shipping_country = $this->get_url_prefill_value( 'shipping_country' );
 
 			if ( $billing_country && isset( $checkout_fields['billing']['billing_state'] ) ) {
 				$checkout_fields['billing']['billing_state']['country'] = $billing_country;
@@ -1259,17 +1257,33 @@ class Cartflows_Checkout_Markup {
 	 * @return mixed URL param value when present, original $value otherwise.
 	 */
 	public function prefill_checkout_get_value( $value, $input ) {
-		//phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( is_auto_prefill_checkout_fields_enabled() && ! empty( $_GET[ $input ] ) ) {
-			return sanitize_text_field( wp_unslash( $_GET[ $input ] ) );
+		// Only billing and shipping fields, the ones Checkout Links offer, may be taken from the URL.
+		if ( ! is_auto_prefill_checkout_fields_enabled() || ( 0 !== strpos( $input, 'billing_' ) && 0 !== strpos( $input, 'shipping_' ) ) ) {
+			return $value;
 		}
-		//phpcs:enable WordPress.Security.NonceVerification.Recommended
-		return $value;
+
+		$prefill_value = $this->get_url_prefill_value( $input );
+
+		return '' !== $prefill_value ? $prefill_value : $value;
+	}
+
+	/**
+	 * Read a checkout field value from the URL for pre-filling.
+	 *
+	 * @since x.x.x
+	 * @param string $key Checkout field key.
+	 * @return string Sanitized value without square brackets, or an empty string when absent.
+	 */
+	private function get_url_prefill_value( $key ) {
+		$value = isset( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		// Brackets are dropped so a crafted link cannot plant a shortcode in the rendered form.
+		return str_replace( array( '[', ']' ), '', $value );
 	}
 
 	/**
 	 * Pre-check the "Ship to a different address?" checkbox when any shipping_*
-	 * URL parameter is present, so the pre-filled shipping fields are visible
+	 * URL parameter has a value to pre-fill, so the pre-filled shipping fields are visible
 	 * on page load instead of hidden inside the collapsed section.
 	 *
 	 * @since x.x.x
@@ -1280,7 +1294,7 @@ class Cartflows_Checkout_Markup {
 		//phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( is_auto_prefill_checkout_fields_enabled() ) {
 			foreach ( array_keys( $_GET ) as $key ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				if ( 0 === strpos( $key, 'shipping_' ) && ! empty( $_GET[ $key ] ) ) {
+				if ( 0 === strpos( $key, 'shipping_' ) && '' !== $this->get_url_prefill_value( $key ) ) {
 					return 1;
 				}
 			}

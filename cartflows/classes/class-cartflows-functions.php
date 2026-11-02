@@ -212,7 +212,13 @@ function _is_wcf_doing_optin_ajax() {
 		if ( isset( $_GET['wc-ajax'] ) &&
 			isset( $_POST['_wcf_optin_id'] )
 		) {
-			return true;
+			// Trust the posted ID only when it is a published optin step, or one the user can read.
+			$optin_id = intval( $_POST['_wcf_optin_id'] );
+
+			return $optin_id > 0
+				&& CARTFLOWS_STEP_POST_TYPE === get_post_type( $optin_id )
+				&& 'optin' === get_post_meta( $optin_id, 'wcf-step-type', true )
+				&& ( 'publish' === get_post_status( $optin_id ) || current_user_can( 'read_post', $optin_id ) );
 		}
 	}
 	//phpcs:enable WordPress.Security.NonceVerification

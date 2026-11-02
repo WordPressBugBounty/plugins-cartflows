@@ -1,3 +1,6 @@
+Version 3.3.1 - Monday, 2nd November 2026
+- Security Fix: Hardened the security of the plugin reported by PatchStack.
+
 Version 3.3.0 - Monday, 5th October 2026
 - New: Added the [wcf_frequently_bought_together] shortcode to place the Frequently Bought Together widget on page-builder product templates.
 - New: Added a "Redirect Add to Cart" option to the product's CartFlows tab to choose whether Add to Cart redirects to the selected funnel.

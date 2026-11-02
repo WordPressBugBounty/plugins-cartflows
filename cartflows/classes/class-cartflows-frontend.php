@@ -40,7 +40,8 @@ class Cartflows_Frontend {
 		add_action( 'wp', array( $this, 'init_actions' ), 1 );
 
 		add_action( 'init', array( $this, 'debug_data_setting_actions' ) );
-		add_action( 'init', array( $this, 'setup_optin_checkout_filter' ) );
+		// After the step post type registers on init 10, since the optin check uses read_post.
+		add_action( 'init', array( $this, 'setup_optin_checkout_filter' ), 11 );
 		/* Enqueue global required scripts */
 		add_action( 'wp', array( $this, 'wp_actions' ), 55 );
 

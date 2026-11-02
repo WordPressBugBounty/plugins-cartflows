@@ -14,4 +14,6 @@ Ownership stops at the order object itself (WooCommerce), the step-meta storage 
 
 The module's public surface is a shortcode with destructive, non-idempotent side effects — it clears the cart and session because a thank-you page is the end of a purchase and the cart must not survive it. That is correct on the real flow and dangerous everywhere else, which is why the same shortcode wipes a live cart when previewed.
 
+Everything the shortcode prints, WooCommerce notices included, is buffered and returned escaped instead of echoed. Builders render it inside `the_content` before that filter's `do_shortcode()` pass, and both order data and notices can carry shortcode text a guest typed.
+
 The `wcf-tq-layout` string is effectively an undeclared enum branched on across six conditionals in three files with no default, so introducing a fourth layout means finding every one of them.

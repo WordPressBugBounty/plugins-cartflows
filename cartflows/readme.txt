@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,9 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.3.1 - Monday, 2nd November 2026 =
+* Security Fix: Hardened the security of the plugin reported by PatchStack.
 
 = Version 3.3.0 - Monday, 5th October 2026 =
 * New: Added the [wcf_frequently_bought_together] shortcode to place the Frequently Bought Together widget on page-builder product templates.
