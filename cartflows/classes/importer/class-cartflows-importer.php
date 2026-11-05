@@ -183,7 +183,10 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 		public function import_single_flow_from_json( $flow = array(), $return = false ) {
 
 			$default_page_builder = Cartflows_Helper::get_common_setting( 'default_page_builder' );
-			
+
+			// Read before the delete below, whose hook clears this option.
+			$old_global_checkout = get_option( '_cartflows_old_global_checkout', false );
+
 			// Check if this is a store checkout flow.
 			if ( isset( $flow['flow_type'] ) && 'store-checkout' === $flow['flow_type'] ) {
 				// Get the current store checkout ID.
@@ -223,8 +226,7 @@ if ( ! class_exists( 'CartFlows_Importer' ) ) :
 			// If this is a store checkout flow, update the global setting.
 			if ( isset( $flow['flow_type'] ) && 'store-checkout' === $flow['flow_type'] ) {
 				update_option( '_cartflows_store_checkout', $flow_id );
-				$old_global_checkout = get_option( '_cartflows_old_global_checkout', false );
-				$checkout_id         = $old_global_checkout ? absint( $old_global_checkout ) : $flow_id;
+				$checkout_id = $old_global_checkout ? absint( $old_global_checkout ) : $flow_id;
 				
 				// Reset global checkout on store checkout creation.
 				$common_settings                    = \Cartflows_Helper::get_common_settings();

@@ -2416,7 +2416,8 @@ body.cartflows_step-template .select2-container--default .select2-search--dropdo
 }
 
 .wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce form .wcf-customer-info__notice a,
-.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce form #customer_details .woocommerce-account-fields {
+.wcf-embed-checkout-form.wcf-embed-checkout-form-modern-checkout .woocommerce form #customer_details .woocommerce-account-fields,
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce form #customer_details .woocommerce-account-fields {
 	display: none;
 }
 
@@ -2828,6 +2829,55 @@ body .hdpi .pac-icon {
 body .pac-placeholder {
 	color: #808080;
 }
+/* Places API (New) suggestion list under the address field. */
+#billing_address_1_field,
+#shipping_address_1_field {
+	position: relative;
+}
+
+.wcf-address-suggestions {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 9999;
+	margin: 2px 0 0;
+	padding: 4px 0;
+	list-style: none;
+	background: var( --wcf-field-bg-color, #fff );
+	border: 1px solid var( --wcf-field-border-color, #d1d5db );
+	border-radius: 4px;
+	box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.12 );
+	max-height: 260px;
+	overflow-y: auto;
+}
+
+.wcf-address-suggestions .wcf-address-suggestion {
+	margin: 0;
+	padding: 8px 12px;
+	font-size: 14px;
+	line-height: 1.4;
+	color: var( --wcf-field-text-color, #1f2937 );
+	cursor: pointer;
+}
+
+.wcf-address-suggestions .wcf-address-suggestion:hover {
+	background: rgba( 0, 0, 0, 0.05 );
+}
+
+.wcf-address-suggestions .wcf-address-suggestion[aria-selected="true"] {
+	background: rgba( 0, 0, 0, 0.08 );
+	outline: 2px solid var( --wcf-field-text-color, #1f2937 );
+	outline-offset: -2px;
+}
+
+.wcf-address-autocomplete-error {
+	display: block;
+	margin-top: 6px;
+	font-size: 12px;
+	color: #b91c1c;
+}
+
 /* Google Places Dropdown CSS */
 
 /* Checkout Plugin - Stripe for WooCommerce Smart Button box CSS */
@@ -2857,32 +2907,34 @@ body .pac-placeholder {
 }
 /* Official - Stripe for WooCommerce Smart Button box CSS */
 
-/* Collapsible shipping row in the order review table. */
+/* Collapsible shipping row in the order review table; !important beats the builders' #order_review button styles. */
 .wcf-embed-checkout-form table.shop_table button.wcf-shipping-toggle {
 	-js-display: inline-flex;
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	border-radius: 0;
-	background: none;
-	box-shadow: none;
-	color: inherit;
-	font: inherit;
-	letter-spacing: inherit;
+	width: auto !important;
+	min-height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: none !important;
+	box-shadow: none !important;
+	color: inherit !important;
+	font: inherit !important;
+	letter-spacing: inherit !important;
 	text-align: inherit;
-	text-transform: inherit;
+	text-transform: inherit !important;
 	cursor: pointer;
 }
 
 .wcf-embed-checkout-form table.shop_table button.wcf-shipping-toggle:hover,
 .wcf-embed-checkout-form table.shop_table button.wcf-shipping-toggle:focus,
 .wcf-embed-checkout-form table.shop_table button.wcf-shipping-toggle:active {
-	background: none;
-	box-shadow: none;
-	color: inherit;
+	background: none !important;
+	box-shadow: none !important;
+	color: inherit !important;
 }
 
 .wcf-embed-checkout-form table.shop_table .wcf-shipping-toggle-icon {
@@ -3620,6 +3672,35 @@ button {
 	margin: 0 auto;
 }
 
+/* Keep content hooked before the checkout form inset, and carry the column backgrounds up behind it. */
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-ic-before-checkout-form {
+	--wcf-ic-column-split: max( calc( 42rem + 1px ), calc( 50% + 4rem ) );
+	display: flow-root;
+	padding: 0 calc( max( 0px, 100% - var( --wcf-ic-column-split ) - 34rem ) + 1.5rem ) 0 calc( var( --wcf-ic-column-split ) - 42rem - 1px + 2.5rem );
+	background: linear-gradient( to right, var( --wcf-ic-left-column-bg-color ) calc( var( --wcf-ic-column-split ) - 1px ), #dedede calc( var( --wcf-ic-column-split ) - 1px ), #dedede var( --wcf-ic-column-split ), var( --wcf-ic-right-column-bg-color ) var( --wcf-ic-column-split ) );
+}
+
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-ic-before-checkout-form:has( > :not( :empty ) ) {
+	padding-top: 1.5rem;
+}
+
+/* Desktop shows Power Coupons' progress bar in the order summary instead of full width. */
+@media only screen and ( min-width: 1025px ) {
+	.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce:has( .wcf-ic-order-summary-progress ) .wcf-ic-before-checkout-form > .power-coupons-progress-container {
+		display: none !important;
+	}
+
+	.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce:has( .wcf-ic-order-summary-progress ) .wcf-ic-before-checkout-form:not( :has( > :not( :empty ):not( .power-coupons-progress-container ) ) ) {
+		padding-top: 0;
+	}
+}
+
+@media only screen and ( max-width: 1024px ) {
+	.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .wcf-ic-order-summary-progress {
+		display: none;
+	}
+}
+
 .wcf-embed-checkout-form-instant-checkout .woocommerce .woocommerce-form-login-toggle {
 	display: none !important;
 }
@@ -3837,6 +3918,11 @@ button {
 }
 
 .wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce form table.shop_table tr.cart-shipping td label {
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce form table.shop_table tr.cart-shipping td label .woocommerce-Price-amount {
 	white-space: nowrap;
 }
 
@@ -4009,6 +4095,12 @@ ul#wcf-ic-breadcrumbs {
 		padding: 0 20px;
 		background-color: var( --wcf-ic-left-column-bg-color );
 		width: 100%;
+	}
+
+	.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce .wcf-ic-before-checkout-form {
+		padding-left: 0;
+		padding-right: 0;
+		background: none;
 	}
 
 	.wcf-embed-checkout-form.wcf-embed-checkout-form-instant-checkout .woocommerce-checkout .wcf-order-wrap {

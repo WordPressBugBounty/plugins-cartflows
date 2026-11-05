@@ -119,6 +119,18 @@
 	color: #aaa;
 }
 
+.wcf-fbt-widget-price del {
+	color: #767676;
+	font-weight: 400;
+	margin-right: 4px;
+}
+
+.wcf-fbt-widget-price ins {
+	background: none;
+	text-decoration: none;
+	font-weight: 600;
+}
+
 .wcf-fbt-widget-row.is-unavailable {
 	opacity: 0.55;
 	cursor: not-allowed;
@@ -217,7 +229,7 @@
 
 .wcf-fbt-widget-footer {
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: space-between;
 	gap: 12px;
 	padding-top: 16px;
@@ -230,9 +242,50 @@
 	color: #666;
 }
 
+.wcf-fbt-widget-total-row {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+}
+
 .wcf-fbt-widget-total {
 	font-size: 19px;
 	font-weight: 700;
+}
+
+.wcf-fbt-widget-total-old {
+	font-size: 13px;
+	color: #767676;
+}
+
+.wcf-fbt-widget-saving {
+	margin-top: 2px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #067647;
+}
+
+.wcf-fbt-widget-saving-short {
+	display: none;
+}
+
+.wcf-fbt-widget-total-old[hidden],
+.wcf-fbt-widget-saving[hidden],
+.wcf-fbt-widget .screen-reader-text[hidden] {
+	display: none;
+}
+
+/* Fallback for themes that dequeue WooCommerce's stylesheet — the a11y price text must never render. */
+.wcf-fbt-widget .screen-reader-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect( 0, 0, 0, 0 );
+	white-space: nowrap;
+	border: 0;
 }
 
 .wcf-fbt-widget .wcf-fbt-widget-footer button.wcf-fbt-widget-add {
@@ -274,5 +327,14 @@
 
 	.wcf-fbt-widget-variation {
 		margin-left: 71px;
+	}
+
+	/* The parenthetical is what wraps here, and the amount already carries the message. */
+	.wcf-fbt-widget-saving-full {
+		display: none;
+	}
+
+	.wcf-fbt-widget-saving-short {
+		display: inline;
 	}
 }

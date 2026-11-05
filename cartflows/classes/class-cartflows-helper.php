@@ -197,11 +197,96 @@ class Cartflows_Helper {
 
 		$value = get_option( $key, false );
 
+		// A store checkout removed outside CartFlows leaves a dangling ID; treat it as unset.
+		if ( '_cartflows_store_checkout' === $key && is_numeric( $value ) && ! self::is_live_flow( (int) $value ) ) {
+			// Heal, once and in admin only, a site whose option dangled before the cleanup hooks existed.
+			if ( is_admin() ) {
+				self::clear_store_checkout( (int) $value );
+			}
+
+			$value = false;
+		}
+
 		if ( empty( $value ) && isset( $default_global[ $key ] ) ) {
 			$value = $default_global[ $key ];
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Whether the given ID is an existing, non-trashed flow.
+	 *
+	 * @param int $flow_id Flow ID.
+	 * @return bool
+	 */
+	public static function is_live_flow( $flow_id ) {
+		$flow = get_post( $flow_id );
+
+		return $flow instanceof WP_Post && CARTFLOWS_FLOW_POST_TYPE === $flow->post_type && 'trash' !== $flow->post_status;
+	}
+
+	/**
+	 * Unset the store checkout when the given flow is the store checkout.
+	 *
+	 * @param int  $flow_id  Flow ID being trashed or deleted.
+	 * @param bool $remember Keep the settings on the flow so restoring it from the trash brings them back.
+	 * @return void
+	 */
+	public static function clear_store_checkout( $flow_id, $remember = false ) {
+		$store_checkout_id = get_option( '_cartflows_store_checkout', false );
+
+		if ( ! is_numeric( $store_checkout_id ) || (int) $store_checkout_id !== (int) $flow_id ) {
+			return;
+		}
+
+		$common_settings = self::get_common_settings();
+
+		if ( $remember ) {
+			update_post_meta(
+				$flow_id,
+				'wcf-store-checkout-backup',
+				array(
+					'old_global_checkout'      => get_option( '_cartflows_old_global_checkout', false ),
+					'global_checkout'          => $common_settings['global_checkout'] ?? '',
+					'override_global_checkout' => $common_settings['override_global_checkout'] ?? 'disable',
+				)
+			);
+		}
+
+		delete_option( '_cartflows_store_checkout' );
+		delete_option( '_cartflows_old_global_checkout' );
+
+		$common_settings['global_checkout']          = '';
+		$common_settings['override_global_checkout'] = 'disable';
+		self::update_admin_settings_option( '_cartflows_common', $common_settings, false );
+	}
+
+	/**
+	 * Make a flow restored from the trash the store checkout again, if it was one and the slot is still free.
+	 *
+	 * @param int $flow_id Flow ID restored from the trash.
+	 * @return void
+	 */
+	public static function restore_store_checkout( $flow_id ) {
+		$backup = get_post_meta( $flow_id, 'wcf-store-checkout-backup', true );
+
+		delete_post_meta( $flow_id, 'wcf-store-checkout-backup' );
+
+		if ( ! is_array( $backup ) || ! empty( self::get_global_setting( '_cartflows_store_checkout' ) ) ) {
+			return;
+		}
+
+		update_option( '_cartflows_store_checkout', $flow_id );
+
+		if ( ! empty( $backup['old_global_checkout'] ) ) {
+			update_option( '_cartflows_old_global_checkout', $backup['old_global_checkout'] );
+		}
+
+		$common_settings                             = self::get_common_settings();
+		$common_settings['global_checkout']          = $backup['global_checkout'] ?? '';
+		$common_settings['override_global_checkout'] = $backup['override_global_checkout'] ?? 'disable';
+		self::update_admin_settings_option( '_cartflows_common', $common_settings, false );
 	}
 
 	/**
@@ -838,6 +923,15 @@ class Cartflows_Helper {
 			$google_ads_settings_data = self::get_admin_settings_option( '_cartflows_google_ads', false, true );
 
 			$google_ads_settings_data = wp_parse_args( $google_ads_settings_data, $google_ads_settings_default );
+
+			// Trim so the tag and every event use the same ID and label.
+			$google_ads_settings_data['google_ads_id']    = trim( (string) $google_ads_settings_data['google_ads_id'] );
+			$google_ads_settings_data['google_ads_label'] = trim( (string) $google_ads_settings_data['google_ads_label'] );
+
+			// Without a Conversion ID there is no tag to load or send events to, so treat tracking as off everywhere (PHP, localized JS, Pro).
+			if ( '' === $google_ads_settings_data['google_ads_id'] ) {
+				$google_ads_settings_data['google_ads_tracking'] = 'disable';
+			}
 
 			if ( ! did_action( 'wp' ) ) {
 				return $google_ads_settings_data;
@@ -1986,16 +2080,38 @@ class Cartflows_Helper {
 	 * @return bool True if the flag was set, false if it already existed.
 	 */
 	public static function set_analytics_flag( $key, $value = true, $force = false ) {
+		return self::set_analytics_flags( array( $key => $value ), $force );
+	}
+
+	/**
+	 * Set several analytics flags with a single read and write of cf_analytics_flags.
+	 *
+	 * Without $force, keys that already hold a value are left untouched.
+	 *
+	 * @since x.x.x
+	 * @param array<string, mixed> $values Flag key => value pairs.
+	 * @param bool                 $force  Whether to overwrite existing values. Default false.
+	 * @return bool True if the option was updated, false if nothing changed.
+	 */
+	public static function set_analytics_flags( $values, $force = false ) {
 		$flags = get_option( 'cf_analytics_flags', array() );
 		if ( ! is_array( $flags ) ) {
 			$flags = array();
 		}
-		if ( ! $force && ! empty( $flags[ $key ] ) ) {
-			return false;
+
+		$changed = false;
+		foreach ( $values as $key => $value ) {
+			if ( ! $force && ! empty( $flags[ $key ] ) ) {
+				continue;
+			}
+			$flags[ $key ] = $value;
+			$changed       = true;
 		}
-		$flags[ $key ] = $value;
-		update_option( 'cf_analytics_flags', $flags, false );
-		return true;
+
+		if ( $changed ) {
+			update_option( 'cf_analytics_flags', $flags, false );
+		}
+		return $changed;
 	}
 
 	/**

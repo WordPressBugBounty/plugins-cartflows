@@ -395,7 +395,8 @@ class Cartflows_Init_Blocks {
 				return;
 			}
 
-			if ( Cartflows_Helper::is_gcp_styling_enabled( (int) $flow_id ) ) {
+			// The editor helper only styles the block editor colour picker, so skip it on the front end.
+			if ( is_admin() && Cartflows_Helper::is_gcp_styling_enabled( (int) $flow_id ) ) {
 
 				$gcp_vars = Cartflows_Helper::generate_gcp_css_style( (int) $flow_id );
 

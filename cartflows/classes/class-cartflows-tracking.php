@@ -629,7 +629,7 @@ class Cartflows_Tracking {
 		$gads_tracking_id       = sanitize_text_field( self::$gads_settings['google_ads_id'] );
 		$gads_conversion_label  = sanitize_text_field( self::$gads_settings['google_ads_label'] );
 		$purchase_data          = array(
-			'send_to'         => $gads_tracking_id . '/' . $gads_conversion_label,
+			'send_to'         => '' !== $gads_conversion_label ? $gads_tracking_id . '/' . $gads_conversion_label : $gads_tracking_id,
 			'event_category'  => 'Enhanced-Ecommerce',
 			'transaction_id'  => $order_id,
 			'affiliation'     => get_bloginfo( 'name' ),
@@ -700,11 +700,11 @@ class Cartflows_Tracking {
 
 		$items = WC()->cart->get_cart();
 
-		$items_data            = $this->get_required_product_data_for_ga( $items );
-		$gads_tracking_id      = sanitize_text_field( self::$gads_settings['google_ads_id'] );
-		$gads_conversion_label = sanitize_text_field( self::$gads_settings['google_ads_label'] );
-		$cart_data             = array(
-			'send_to'         => $gads_tracking_id . '/' . $gads_conversion_label,
+		$items_data       = $this->get_required_product_data_for_ga( $items );
+		$gads_tracking_id = sanitize_text_field( self::$gads_settings['google_ads_id'] );
+		$cart_data        = array(
+			// Non-purchase events go to the Conversion ID only, so they don't count as conversions.
+			'send_to'         => $gads_tracking_id,
 			'event_category'  => 'Enhanced-Ecommerce',
 			'currency'        => get_woocommerce_currency(),
 			'coupon'          => WC()->cart->get_applied_coupons(),
@@ -1103,7 +1103,8 @@ class Cartflows_Tracking {
 					window.dataLayer = window.dataLayer || [];
 					function gtag(){dataLayer.push(arguments);}
 					gtag( "js", new Date() );
-					gtag("config","' . esc_js( $gads_tracking_id ) . '");
+					gtag("config","' . esc_js( $gads_tracking_id ) . '", { "send_page_view": false });
+					gtag("event","page_view", { "send_to": "' . esc_js( $gads_tracking_id ) . '" });
 				</script>
 
 			<!-- Google Ads Script By CartFlows -->
@@ -1111,12 +1112,9 @@ class Cartflows_Tracking {
 
 			//phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
-			if ( 'enable' === self::$gads_settings['google_ads_for_site'] ) {
+			// One explicit page_view to the Conversion ID only, so it never counts as a conversion and doesn't rely on gtag's automatic one.
+			if ( 'enable' === self::$gads_settings['google_ads_for_site'] || wcf()->utils->is_step_post_type() ) {
 				echo $gads_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$this->trigger_gads_viewcontent_events();
-			} elseif ( wcf()->utils->is_step_post_type() ) {
-				echo $gads_script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$this->trigger_gads_viewcontent_events();
 			}
 
 			// Trigger other events on CartFlows pages only.
@@ -1448,22 +1446,6 @@ class Cartflows_Tracking {
 			</div>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Trigger the View Content events for gads tracking.
-	 *
-	 * @since 2.1.0
-	 * @return void
-	 */
-	public function trigger_gads_viewcontent_events() {
-		$gads_tracking_id      = esc_js( sanitize_text_field( self::$gads_settings['google_ads_id'] ) );
-		$gads_conversion_label = esc_js( sanitize_text_field( self::$gads_settings['google_ads_label'] ) );
-		$script                = "<script type='text/javascript'>
-					gtag( 'event', 'page_view',{ 'send_to': '" . $gads_tracking_id . '/' . $gads_conversion_label . "'} );
-			 		</script>";
-
-		echo $script; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

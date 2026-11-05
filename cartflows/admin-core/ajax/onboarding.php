@@ -61,6 +61,7 @@ class Onboarding extends AjaxBase {
 			'import_store_checkout',
 			'onboarding_completed',
 			'onboarding_exit',
+			'onboarding_step_viewed',
 		);
 
 		$this->init_ajax_events( $ajax_events );
@@ -111,6 +112,37 @@ class Onboarding extends AjaxBase {
 
 		update_option( 'wcf_setup_skipped', true );
 		update_option( 'wcf_exit_setup_step', $step );
+		\Cartflows_Analytics::record_onboarding_exit( 'topbar' );
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Record the onboarding step the user is on, for drop-off analytics.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function onboarding_step_viewed() {
+
+		if ( ! check_ajax_referer( 'cartflows_onboarding_step_viewed', 'security', false ) ) {
+			wp_send_json_error( array( 'message' => $this->get_error_msg( 'nonce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => $this->get_error_msg( 'permission' ) ) );
+		}
+
+		// Progress is final once setup is complete; a skipped setup can still be resumed.
+		if ( get_option( 'wcf_setup_complete', false ) ) {
+			wp_send_json_success();
+		}
+
+		$step = isset( $_POST['step'] ) ? sanitize_key( wp_unslash( $_POST['step'] ) ) : '';
+
+		if ( ! \Cartflows_Analytics::record_onboarding_step( $step ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid onboarding step.', 'cartflows' ) ) );
+		}
 
 		wp_send_json_success();
 	}

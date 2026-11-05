@@ -83,10 +83,16 @@ class Debugger extends AjaxBase {
 
 		check_ajax_referer( 'cartflows_sync_kb_docs', 'security' );
 
-		$docs_json = json_decode( wp_remote_retrieve_body( wp_remote_get( 'https://cartflows.com//wp-json/powerful-docs/v1/get-docs' ) ) );
+		// Shared with the scheduled callback, so an upstream error can no longer overwrite a good payload.
+		if ( ! \Cartflows_Knowledge_Base::update_docs_data() ) {
 
-		// Never autoload — this payload runs to hundreds of KB and only the Knowledge Base screen reads it.
-		update_option( 'cartflows_docs_data', $docs_json, false );
+			$response_data = array(
+				'message' => __( 'Could not sync the knowledge base right now. Please try again later.', 'cartflows' ),
+				'status'  => false,
+			);
+
+			wp_send_json_error( $response_data );
+		}
 
 		$response_data = array(
 			'message' => __( 'Sync Success.', 'cartflows' ),

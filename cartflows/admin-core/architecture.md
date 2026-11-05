@@ -8,7 +8,7 @@ module: admin-core
 
 Owns the entire CartFlows 3.0 admin UI surface: the WP admin menu and pages, the React SPA bundles for the settings/editor/onboarding apps, and the two server transports those apps talk to — `wp_ajax_*` handlers under `ajax/` and `cartflows/v1` REST controllers under `api/` — plus the settings and meta field *schemas* and the shared read/write helpers.
 
-Ownership stops at the data layer: every handler delegates domain work to plugin-root classes, and the module has no bootstrap of its own. It owns no front-end funnel rendering.
+Ownership stops at the data layer: every handler delegates domain work to plugin-root classes, and the module has no bootstrap of its own. It owns no front-end funnel rendering. The onboarding drop-off recorder follows that rule: its handler only validates the request and hands the step to `Cartflows_Analytics`, which owns the storage and the events.
 
 ## Why it is this way
 

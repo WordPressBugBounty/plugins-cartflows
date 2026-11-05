@@ -142,20 +142,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->list_flows( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://flows',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://flows',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -249,20 +244,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_flow( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://flows/{id}',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://flows/{id}',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -335,20 +325,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_step( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://steps/{id}',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://steps/{id}',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -432,20 +417,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_flow_stats( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://analytics/flow-stats',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://analytics/flow-stats',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -1167,20 +1147,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_general_settings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://settings/general',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://settings/general',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -1221,20 +1196,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_store_checkout( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://settings/store-checkout',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://settings/store-checkout',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -1270,20 +1240,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_permalink_settings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://settings/permalink',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://settings/permalink',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -1338,20 +1303,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_integration_settings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://settings/integrations',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://settings/integrations',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -1553,20 +1513,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_checkout_settings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://steps/checkout/{id}/settings',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://steps/checkout/{id}/settings',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -1641,20 +1596,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_checkout_products( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://steps/checkout/{id}/products',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://steps/checkout/{id}/products',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -1706,20 +1656,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_checkout_fields( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://steps/checkout/{id}/fields',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://steps/checkout/{id}/fields',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -2110,20 +2055,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_thankyou_settings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://steps/thankyou/{id}/settings',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://steps/thankyou/{id}/settings',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -2447,20 +2387,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_optin_settings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://steps/optin/{id}/settings',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://steps/optin/{id}/settings',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -2710,20 +2645,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_landing_settings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://steps/landing/{id}/settings',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://steps/landing/{id}/settings',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -2764,20 +2694,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_email_report_settings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://settings/email-report',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://settings/email-report',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -2898,20 +2823,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->get_product_flow_mapping( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://woo-dynamic-flow/mapping/{product_id}',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://woo-dynamic-flow/mapping/{product_id}',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -2991,20 +2911,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->list_product_flow_mappings( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://woo-dynamic-flow/mappings',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://woo-dynamic-flow/mappings',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => false,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -3357,20 +3272,15 @@ class Cartflows_Ability_Config {
 				'execute_callback'    => function ( $input ) use ( $cf ) {
 					return $cf->list_flow_templates( $input );
 				},
-				'meta'                => array(
-					'uri'          => 'cartflows://templates',
-					'annotations'  => array(
+				'meta'                => self::resource_meta(
+					'cartflows://templates',
+					array(
 						'priority'        => 1.0,
 						'readOnlyHint'    => true,
 						'destructiveHint' => false,
 						'idempotentHint'  => true,
 						'openWorldHint'   => true,
-					),
-					'show_in_rest' => true,
-					'mcp'          => array(
-						'public' => true,
-						'type'   => 'resource',
-					),
+					)
 				),
 			),
 
@@ -3484,6 +3394,28 @@ class Cartflows_Ability_Config {
 		self::$abilities = $abilities;
 
 		return $abilities;
+	}
+
+	/**
+	 * Build the meta array for an ability exposed as an MCP resource.
+	 *
+	 * @param string               $uri         Resource URI.
+	 * @param array<string, mixed> $annotations Resource annotations.
+	 * @return array<string, mixed>
+	 */
+	private static function resource_meta( $uri, $annotations ) {
+		return array(
+			// Top-level keys serve MCP Adapter < 0.5.0 (bundled in WooCommerce); mcp.* serves 0.5.0+ without deprecation notices.
+			'uri'          => $uri,
+			'annotations'  => $annotations,
+			'show_in_rest' => true,
+			'mcp'          => array(
+				'public'      => true,
+				'type'        => 'resource',
+				'uri'         => $uri,
+				'annotations' => $annotations,
+			),
+		);
 	}
 
 	/**

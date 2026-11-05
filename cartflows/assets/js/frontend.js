@@ -230,15 +230,19 @@
 			if (
 				cartflows.is_checkout_page &&
 				'enable' ===
-					cartflows.gads_setting.enable_google_ads_add_payment_info
+					cartflows.gads_setting.enable_google_ads_add_payment_info &&
+				cartflows.gads_add_payment_info_data
 			) {
 				jQuery( 'form.woocommerce-checkout' ).on(
 					'submit',
 					function () {
+						if ( 'function' !== typeof gtag ) {
+							return;
+						}
 						gtag(
 							'event',
 							'add_payment_info',
-							JSON.parse( cartflows.add_payment_info_data )
+							JSON.parse( cartflows.gads_add_payment_info_data )
 						);
 					}
 				);

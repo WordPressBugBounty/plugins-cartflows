@@ -37,6 +37,9 @@ class Cartflows_Wd_Flow_Product_Actions {
 
 		add_filter( 'woocommerce_add_to_cart_redirect', array( $this, 'redirect_to_next_flow_step' ), 99, 2 );
 
+		// Modern Cart's AJAX add to cart applies its own redirect filter instead of the WooCommerce one.
+		add_filter( 'moderncart_woocommerce_add_to_cart_redirect', array( $this, 'redirect_to_next_flow_step' ), 99, 2 );
+
 		add_filter( 'woocommerce_product_single_add_to_cart_text', array( $this, 'change_add_to_cart_button_text' ), 10, 2 );
 	}
 
@@ -48,7 +51,8 @@ class Cartflows_Wd_Flow_Product_Actions {
 	 */
 	public function redirect_to_next_flow_step( $redirect_url, $product ) {
 
-		if ( $product ) {
+		// Modern Cart's product lookup is filterable and can pass false, so only act on real products.
+		if ( $product instanceof WC_Product ) {
 
 			$flow_id = intval( $product->get_meta( 'cartflows_redirect_flow_id' ) );
 

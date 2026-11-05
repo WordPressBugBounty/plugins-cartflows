@@ -8,7 +8,7 @@
  *
  * @package cartflows
  * @var array<int, WC_Product>                                                                                                                                              $products     Companion products, stock-filtered by the caller.
- * @var array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>} $fbt_settings Full FBT settings blob.
+ * @var array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>, discount_type: string, discount_value: string} $fbt_settings Full FBT settings blob.
  * @var int                                                                                                                                                                                                                  $fbt_product_id Source product ID supplied by the renderer.
  */
 
@@ -62,7 +62,7 @@ $fbt_button_class = wp_is_block_theme()
 	? 'wcf-fbt-widget-add wp-element-button'
 	: 'wcf-fbt-widget-add button alt single_add_to_cart_button';
 ?>
-<section class="wcf-fbt-widget<?php echo 'single' === $fbt_settings['selection'] ? ' is-single' : ''; ?><?php echo $fbt_extras > 0 ? ' is-collapsed' : ''; ?>" data-source-id="<?php echo esc_attr( (string) $fbt_source_id ); ?>">
+<section class="wcf-fbt-widget<?php echo 'single' === $fbt_settings['selection'] ? ' is-single' : ''; ?><?php echo $fbt_extras > 0 ? ' is-collapsed' : ''; ?>" data-source-id="<?php echo esc_attr( (string) $fbt_source_id ); ?>" data-discount-type="<?php echo esc_attr( $fbt_settings['discount_type'] ); ?>" data-discount-value="<?php echo esc_attr( (string) $fbt_settings['discount_value'] ); ?>">
 	<h3 class="wcf-fbt-widget-title"><?php esc_html_e( 'Frequently bought together', 'cartflows' ); ?></h3>
 	<div class="wcf-fbt-widget-list">
 		<?php
@@ -83,9 +83,18 @@ $fbt_button_class = wp_is_block_theme()
 		</button>
 	<?php endif; ?>
 	<div class="wcf-fbt-widget-footer">
-		<div class="wcf-fbt-widget-total-wrap">
+		<?php // One atomic polite region, so a tick announces the whole footer once instead of four fragments. ?>
+		<div class="wcf-fbt-widget-total-wrap" aria-live="polite" aria-atomic="true">
 			<div class="wcf-fbt-widget-total-label" data-role="wcf-fbt-label"><?php echo esc_html( sprintf( /* translators: %d: item count. */ _n( 'Total for %d item', 'Total for %d items', 1, 'cartflows' ), 1 ) ); ?></div>
-			<div class="wcf-fbt-widget-total" data-role="wcf-fbt-total"><?php echo wp_kses_post( (string) wc_price( $fbt_source_price ) ); ?></div>
+			<div class="wcf-fbt-widget-total-row">
+				<del class="wcf-fbt-widget-total-old" data-role="wcf-fbt-total-old" aria-hidden="true" hidden></del>
+				<span class="screen-reader-text" data-role="wcf-fbt-total-old-sr" hidden></span>
+				<div class="wcf-fbt-widget-total" data-role="wcf-fbt-total"><?php echo wp_kses_post( (string) wc_price( $fbt_source_price ) ); ?></div>
+			</div>
+			<div class="wcf-fbt-widget-saving" data-role="wcf-fbt-saving" hidden>
+				<span class="wcf-fbt-widget-saving-full" data-role="wcf-fbt-saving-full"></span>
+				<span class="wcf-fbt-widget-saving-short" data-role="wcf-fbt-saving-short"></span>
+			</div>
 		</div>
 		<button type="button" class="<?php echo esc_attr( $fbt_button_class ); ?>"><?php esc_html_e( 'Add to cart', 'cartflows' ); ?></button>
 	</div>

@@ -88,24 +88,31 @@ class Cartflows_Fbt_Product_Meta {
 			return;
 		}
 
+		$style  = 'assets/css/fbt-admin.css';
+		$script = 'assets/js/fbt-admin.js';
+
 		wp_enqueue_style(
 			'wcf-fbt-admin',
-			CARTFLOWS_FBT_URL . 'assets/css/fbt-admin.css',
+			CARTFLOWS_FBT_URL . $style,
 			array(),
-			CARTFLOWS_VER
+			Cartflows_Fbt::asset_version( $style )
 		);
 
 		wp_enqueue_script(
 			'wcf-fbt-admin',
-			CARTFLOWS_FBT_URL . 'assets/js/fbt-admin.js',
+			CARTFLOWS_FBT_URL . $script,
 			// wc-admin-meta-boxes binds the product tab clicks the focus deep-link triggers.
 			array( 'jquery', 'jquery-ui-sortable', 'wc-enhanced-select', 'wp-api-fetch', 'wc-admin-meta-boxes' ),
-			CARTFLOWS_VER,
+			Cartflows_Fbt::asset_version( $script ),
 			true
 		);
 
 		global $post;
 		$product_id = isset( $post->ID ) ? absint( $post->ID ) : 0;
+
+		// get_option() is mixed, so narrow before it reaches the localized array.
+		$currency_pos_raw = get_option( 'woocommerce_currency_pos', 'left' );
+		$currency_pos     = is_string( $currency_pos_raw ) ? $currency_pos_raw : 'left';
 
 		wp_localize_script(
 			'wcf-fbt-admin',
@@ -114,6 +121,13 @@ class Cartflows_Fbt_Product_Meta {
 				'ajax_url'          => admin_url( 'admin-ajax.php' ),
 				'product_id'        => $product_id,
 				'max_products'      => Cartflows_Fbt::max_products( $product_id ),
+				'currency_symbol'   => html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) ),
+				'price_format'      => array(
+					'decimal_sep'  => wc_get_price_decimal_separator(),
+					'thousand_sep' => wc_get_price_thousand_separator(),
+					'decimals'     => wc_get_price_decimals(),
+					'position'     => $currency_pos,
+				),
 				'placeholder_thumb' => (string) wc_placeholder_img_src( 'thumbnail' ),
 				'auth_connected'    => Cartflows_Ai_Auth::get_instance()->get_auth_status(),
 				'tab_badge'         => Cartflows_Fbt_Nudges::get_instance()->is_badge_active() ? __( 'New', 'cartflows' ) : '',
@@ -150,6 +164,13 @@ class Cartflows_Fbt_Product_Meta {
 					'connect_title'          => __( 'Unlock Auto Suggest with CartFlows Pro', 'cartflows' ),
 					'connect_desc'           => __( 'Automatically suggest relevant products that customers are likely to buy with this product.', 'cartflows' ),
 					'connect_btn'            => __( 'Connect your account', 'cartflows' ),
+					'discount_none'          => Cartflows_Fbt::discount_none_label(),
+					/* translators: %s: a product's original price. */
+					'price_original'         => __( 'Original price was: %s.', 'cartflows' ),
+					/* translators: %s: a product's discounted price. */
+					'price_current'          => __( 'Current price is: %s.', 'cartflows' ),
+					'discount_hint_off'      => __( 'No discount. The widget total is a plain sum, as today.', 'cartflows' ),
+					'discount_hint_on'       => __( 'Applied to companion products when the shopper selects at least one. Same discount types as order bumps.', 'cartflows' ),
 				),
 			)
 		);
@@ -172,7 +193,12 @@ class Cartflows_Fbt_Product_Meta {
 
 		$product_id = absint( $post->ID );
 		$settings   = Cartflows_Fbt::get_settings( $product_id );
-		$cards_html = $this->build_product_cards( $settings['product_ids'], $settings['product_qty'], 'yes' === $settings['custom_qty'] );
+		$cards_html = $this->build_product_cards( $settings['product_ids'], $settings['product_qty'], 'yes' === $settings['custom_qty'], $settings );
+
+		// The discount is bundle-wide, so the panel shows the amount once instead of per row.
+		$discount_amount = Cartflows_Fbt::has_discount( $settings )
+			? Cartflows_Fbt::format_discount_amount( $settings['discount_type'], $settings['discount_value'] )
+			: Cartflows_Fbt::discount_none_label();
 
 		include CARTFLOWS_FBT_DIR . 'templates/admin-product-panel.php';
 	}
@@ -221,6 +247,10 @@ class Cartflows_Fbt_Product_Meta {
 		$position       = isset( $_POST['_cartflows_fbt_position'] ) ? sanitize_key( wp_unslash( $_POST['_cartflows_fbt_position'] ) ) : 'after_atc_button';
 		$custom_qty     = isset( $_POST['_cartflows_fbt_custom_qty'] ) && 'yes' === $_POST['_cartflows_fbt_custom_qty'] ? 'yes' : 'no';
 
+		// Bundle discount — helper clamps the amount against the type it arrives with.
+		$discount_type  = isset( $_POST['_cartflows_fbt_discount_type'] ) ? sanitize_key( wp_unslash( $_POST['_cartflows_fbt_discount_type'] ) ) : '';
+		$discount_value = isset( $_POST['_cartflows_fbt_discount_value'] ) ? sanitize_text_field( wp_unslash( $_POST['_cartflows_fbt_discount_value'] ) ) : '';
+
 		// Per-product qty map — absint keys + values.
 		$product_qty = array();
 		if ( isset( $_POST['_cartflows_fbt_product_qty'] ) && is_array( $_POST['_cartflows_fbt_product_qty'] ) ) {
@@ -251,6 +281,8 @@ class Cartflows_Fbt_Product_Meta {
 				'custom_qty'     => $custom_qty,
 				'product_qty'    => $product_qty,
 				'ai_product_ids' => $ai_product_ids,
+				'discount_type'  => $discount_type,
+				'discount_value' => $discount_value,
 			)
 		);
 
@@ -293,14 +325,17 @@ class Cartflows_Fbt_Product_Meta {
 			wp_send_json_error( array( 'message' => __( 'Product not found.', 'cartflows' ) ), 404 );
 		}
 
-		$status   = $product->get_stock_status();
-		$price    = (float) $product->get_price();
+		$status        = $product->get_stock_status();
+		$display_price = (float) wc_get_price_to_display( $product );
+		// A variable product prices as a range, so it never renders a sale figure.
+		$price    = $product->is_type( 'variable' ) ? 0.0 : $display_price;
 		$image_id = (int) $product->get_image_id();
 
 		wp_send_json_success(
 			array(
+				'price'       => $price,
 				// wc_price encodes the currency symbol as &#36;; decode after stripping tags for a clean single-line label.
-				'price_html'  => $price > 0 ? html_entity_decode( wp_strip_all_tags( (string) wc_price( $price ) ), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) ) : '',
+				'price_html'  => $display_price > 0 ? html_entity_decode( wp_strip_all_tags( (string) wc_price( $display_price ) ), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) ) : '',
 				'stock_label' => $this->stock_label( $status ),
 				'stock_class' => $this->stock_badge_class( $status ),
 				'thumb_url'   => $image_id > 0 ? (string) wp_get_attachment_image_url( $image_id, 'thumbnail' ) : (string) wc_placeholder_img_src( 'thumbnail' ),
@@ -311,16 +346,21 @@ class Cartflows_Fbt_Product_Meta {
 	/**
 	 * Builds the product picker rows HTML for currently-saved FBT products.
 	 *
-	 * @param array<int, int> $product_ids Currently-selected product IDs.
-	 * @param array<int, int> $product_qty Per-product qty map (product_id => qty).
-	 * @param bool            $show_qty    When true, the qty column is visible.
+	 * @param array<int, int>      $product_ids Currently-selected product IDs.
+	 * @param array<int, int>      $product_qty Per-product qty map (product_id => qty).
+	 * @param bool                 $show_qty    When true, the qty column is visible.
+	 * @param array<string, mixed> $settings    Full FBT settings, read for the bundle discount columns.
 	 * @return string
 	 */
-	private function build_product_cards( $product_ids, $product_qty = array(), $show_qty = false ) {
+	private function build_product_cards( $product_ids, $product_qty = array(), $show_qty = false, $settings = array() ) {
 
 		if ( empty( $product_ids ) ) {
 			return '';
 		}
+
+		$discount_type  = isset( $settings['discount_type'] ) && is_string( $settings['discount_type'] ) ? $settings['discount_type'] : '';
+		$discount_value = isset( $settings['discount_value'] ) && is_numeric( $settings['discount_value'] ) ? $settings['discount_value'] : '';
+		$has_discount   = Cartflows_Fbt::has_discount( $settings );
 
 		$out = '';
 		foreach ( $product_ids as $id ) {
@@ -348,7 +388,14 @@ class Cartflows_Fbt_Product_Meta {
 			$out .= '<div class="wcf-fbt-picker-info">';
 			$out .= '<p class="wcf-fbt-picker-name">' . esc_html( $name ) . '</p>';
 			$out .= '</div>';
-			$out .= '<span class="wcf-fbt-picker-price">' . wp_kses_post( $price_html ) . '</span>';
+			// A variable product prices as a range, so it shows its own price HTML and no sale figure.
+			$base_price      = $product->is_type( 'variable' ) ? 0.0 : (float) wc_get_price_to_display( $product );
+			$original_markup = wp_kses_post( $price_html );
+			$price_markup    = $has_discount && $base_price > 0
+				? wp_kses_post( (string) wc_format_sale_price( (string) $base_price, (string) Cartflows_Fbt::apply_discount( $base_price, $discount_type, $discount_value ) ) )
+				: $original_markup;
+			// The original markup is kept so the JS can restore the exact server-rendered cell, sale price and all, when the discount is switched off.
+			$out .= '<span class="wcf-fbt-picker-price" data-base-price="' . esc_attr( (string) $base_price ) . '" data-original-html="' . esc_attr( $original_markup ) . '">' . $price_markup . '</span>';
 			$out .= '<span class="wcf-fbt-picker-stock">';
 			if ( '' !== $stock_label ) {
 				$out .= '<span class="wcf-fbt-badge ' . esc_attr( $stock_class ) . '">' . esc_html( $stock_label ) . '</span>';

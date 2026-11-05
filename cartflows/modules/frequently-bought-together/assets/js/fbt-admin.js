@@ -14,6 +14,9 @@
 	// Same wait as Pro's fbt-tour.js, for the same unsettled metabox.
 	const FOCUS_SETTLE_DELAY = 400;
 
+	// Long enough to swallow a burst of keystrokes, short enough to feel live.
+	const REPAINT_DELAY = 150;
+
 	let $panel;
 	let $chooser;
 	let $values;
@@ -33,6 +36,25 @@
 	let $drawerMeta;
 	let lastFocused = null;
 	let drawerContext = null;
+	// Incremented per drawer request so a slow response cannot paint over a newer one.
+	let drawerRequestId = 0;
+	let $liveRegion = null;
+	let announceTimer = null;
+
+	// Badge colour for a tone Pro sends with a row; unknown tones fall back to gray.
+	const BADGE_TONE_CLASS = {
+		warning: 'wcf-fbt-badge-yellow',
+		success: 'wcf-fbt-badge-green',
+		info: 'wcf-fbt-badge-brand',
+		neutral: 'wcf-fbt-badge-gray',
+	};
+
+	// Labels for fallback sources when Pro sends no badge of its own.
+	const FALLBACK_BADGE_LABELS = {
+		category: 'badge_popular',
+		popular: 'badge_popular',
+		recent: 'badge_new',
+	};
 
 	function init() {
 		maybeCaptureAccessKey();
@@ -59,6 +81,7 @@
 			bindEnable();
 			bindCustomQty();
 			bindPosition();
+			bindDiscount();
 			bindTabs();
 			bindChooser();
 			bindCards();
@@ -226,6 +249,204 @@
 		} );
 	}
 
+	function bindDiscount() {
+		const $type = $panel.find( '#_cartflows_fbt_discount_type' );
+		const $value = $panel.find( '#_cartflows_fbt_discount_value' );
+		if ( ! $type.length || ! $value.length ) {
+			return;
+		}
+
+		const $amount = $panel.find( '.wcf-fbt-discount-amount' );
+		const $unit = $panel.find( '.wcf-fbt-discount-unit' );
+		const $hint = $panel.find( '.wcf-fbt-discount-hint' );
+
+		function sync() {
+			const type = $type.val();
+			const isPercent = 'discount_percent' === type;
+
+			$amount.toggleClass( 'hidden', '' === type );
+			$unit.text( isPercent ? '%' : $unit.data( 'currency' ) || '' );
+			// Percent shares the order-bump ceiling; price off has none.
+			$value.attr( 'max', isPercent ? 100 : null );
+			$hint.text(
+				'' === type
+					? wcf_fbt.i18n.discount_hint_off
+					: wcf_fbt.i18n.discount_hint_on
+			);
+			clampValue();
+			syncDiscountDisplay();
+		}
+
+		function clampValue() {
+			if (
+				'discount_percent' === $type.val() &&
+				parseFloat( $value.val() ) > 100
+			) {
+				$value.val( 100 );
+			}
+		}
+
+		let repaintTimer = null;
+
+		function repaintSoon() {
+			clampValue();
+			window.clearTimeout( repaintTimer );
+			repaintTimer = window.setTimeout(
+				syncDiscountDisplay,
+				REPAINT_DELAY
+			);
+		}
+
+		function repaintNow() {
+			window.clearTimeout( repaintTimer );
+			clampValue();
+			syncDiscountDisplay();
+		}
+
+		$type.on( 'change', sync );
+		$value.on( 'input', repaintSoon );
+		$value.on( 'change', repaintNow );
+		sync();
+	}
+
+	/**
+	 * Read the panel's current bundle discount.
+	 *
+	 * @return {{type: string, value: number, active: boolean}} Current discount state.
+	 */
+	function readDiscount() {
+		const type = $panel.find( '#_cartflows_fbt_discount_type' ).val() || '';
+		const raw = parseFloat(
+			$panel.find( '#_cartflows_fbt_discount_value' ).val()
+		);
+		const value = isNaN( raw ) ? 0 : Math.max( 0, raw );
+
+		return { type, value, active: '' !== type && value > 0 };
+	}
+
+	/**
+	 * Format a number the way wc_price() would, from the store's localized number format.
+	 *
+	 * @param {number} value Amount to render.
+	 * @return {string} Formatted price.
+	 */
+	function formatPrice( value ) {
+		const format = wcf_fbt.price_format || {};
+		const decimals = parseInt( format.decimals, 10 );
+		const fixed = Math.abs( value ).toFixed(
+			isNaN( decimals ) ? 2 : decimals
+		);
+		const parts = fixed.split( '.' );
+		let number = parts[ 0 ].replace(
+			/\B(?=(\d{3})+(?!\d))/g,
+			format.thousand_sep || ''
+		);
+		if ( parts[ 1 ] ) {
+			number += ( format.decimal_sep || '.' ) + parts[ 1 ];
+		}
+
+		const symbol = wcf_fbt.currency_symbol || '';
+		const sign = value < 0 ? '-' : '';
+
+		if ( 'right' === format.position ) {
+			return sign + number + symbol;
+		}
+		if ( 'right_space' === format.position ) {
+			return sign + number + '\u00a0' + symbol;
+		}
+		if ( 'left_space' === format.position ) {
+			return sign + symbol + '\u00a0' + number;
+		}
+
+		return sign + symbol + number;
+	}
+
+	/**
+	 * Render a number with at most two decimals and no trailing zeros.
+	 *
+	 * @param {number} value Amount to render.
+	 * @return {string} Trimmed number.
+	 */
+	function trimDecimal( value ) {
+		return String( parseFloat( value.toFixed( 2 ) ) );
+	}
+
+	/**
+	 * Repaint the topbar discount chip and every picker row's Price cell.
+	 *
+	 * @return {void}
+	 */
+	function syncDiscountDisplay() {
+		const discount = readDiscount();
+
+		$panel
+			.find( '[data-role="picker-discount"]' )
+			.text(
+				discount.active
+					? amountLabel( discount )
+					: wcf_fbt.i18n.discount_none
+			);
+
+		$grid.find( '.wcf-fbt-picker-row' ).each( function () {
+			const $price = $( this ).find( '.wcf-fbt-picker-price' );
+			const base = parseFloat( $price.attr( 'data-base-price' ) ) || 0;
+
+			// A zero base is a variable product or a price we never resolved — leave its own markup alone.
+			if ( ! discount.active || base <= 0 ) {
+				const original = $price.attr( 'data-original-html' );
+				if ( undefined !== original ) {
+					$price.html( original );
+				}
+				return;
+			}
+
+			const sale =
+				'discount_percent' === discount.type
+					? base - ( base * Math.min( 100, discount.value ) ) / 100
+					: base - discount.value;
+
+			$price.html( salePriceHtml( base, Math.max( 0, sale ) ) );
+		} );
+	}
+
+	/**
+	 * Render a discount amount the way Cartflows_Fbt::format_discount_amount() does.
+	 *
+	 * @param {{type: string, value: number}} discount Current discount state.
+	 * @return {string} Amount label, e.g. "10%" or "$5.00".
+	 */
+	function amountLabel( discount ) {
+		return 'discount_percent' === discount.type
+			? trimDecimal( discount.value ) + '%'
+			: formatPrice( discount.value );
+	}
+
+	/**
+	 * Build strikethrough price markup matching wc_format_sale_price()'s a11y affordances.
+	 *
+	 * @param {number} base Original price.
+	 * @param {number} sale Discounted price.
+	 * @return {string} Price cell HTML.
+	 */
+	function salePriceHtml( base, sale ) {
+		const original = formatPrice( base );
+		const current = formatPrice( sale );
+
+		return (
+			'<del aria-hidden="true">' +
+			escapeHtml( original ) +
+			'</del> <span class="screen-reader-text">' +
+			escapeHtml(
+				wcf_fbt.i18n.price_original.replace( '%s', original )
+			) +
+			'</span><ins aria-hidden="true">' +
+			escapeHtml( current ) +
+			'</ins><span class="screen-reader-text">' +
+			escapeHtml( wcf_fbt.i18n.price_current.replace( '%s', current ) ) +
+			'</span>'
+		);
+	}
+
 	function bindEnable() {
 		$enable.on( 'change', function () {
 			$panel.toggleClass( 'is-widget-enabled', $enable.is( ':checked' ) );
@@ -376,9 +597,10 @@
 				return;
 			}
 			if ( response.data.price_html ) {
-				$row.find( '.wcf-fbt-picker-price' ).text(
-					response.data.price_html
-				);
+				$row.find( '.wcf-fbt-picker-price' )
+					.attr( 'data-base-price', response.data.price || 0 )
+					.attr( 'data-original-html', response.data.price_html )
+					.text( response.data.price_html );
 			}
 			if ( response.data.stock_label ) {
 				$row.find( '.wcf-fbt-picker-stock' ).html(
@@ -395,6 +617,7 @@
 					response.data.thumb_url
 				);
 			}
+			syncDiscountDisplay();
 		} );
 	}
 
@@ -421,7 +644,7 @@
 			'<div class="wcf-fbt-picker-info">',
 			'<p class="wcf-fbt-picker-name">' + escapeHtml( name ) + '</p>',
 			'</div>',
-			'<span class="wcf-fbt-picker-price"></span>',
+			'<span class="wcf-fbt-picker-price" data-base-price="0"></span>',
 			'<span class="wcf-fbt-picker-stock"></span>',
 			'<span class="wcf-fbt-picker-qty">',
 			'<input type="number" min="1" step="1" class="wcf-fbt-picker-qty-input" name="_cartflows_fbt_product_qty[' +
@@ -438,6 +661,7 @@
 		$grid.append( html );
 		syncEmpty();
 		syncCounter();
+		syncDiscountDisplay();
 	}
 
 	function removeCard( id ) {
@@ -522,34 +746,88 @@
 		showAiLoading();
 		fetchSuggestions( force, 'fbt', exclude )
 			.then( function ( result ) {
-				renderAiResults( result.products, result.basis );
+				renderAiResults(
+					result.products,
+					result.message,
+					result.notice
+				);
 			} )
 			.catch( function ( error ) {
-				showAiError( errorMessageFor( error ) );
+				showAiStatus( errorMessageFor( error ), true );
 			} );
 	}
 
-	function fetchSuggestions( force, context, exclude ) {
-		let path =
-			'/cartflows-pro/v1/frequently-bought-together/?product_ids=' +
+	// Upsell and cross-sell have their own endpoints so their logic can diverge.
+	const SUGGEST_ROUTES = {
+		fbt: '/cartflows-pro/v1/frequently-bought-together/',
+		upsell: '/cartflows-pro/v1/upsell-suggestions/',
+		crosssell: '/cartflows-pro/v1/cross-sell-suggestions/',
+	};
+
+	const SHARED_SUGGEST_ROUTE = SUGGEST_ROUTES.fbt;
+
+	// Per context: a Pro may ship one dedicated route and not the other, so a 404 for
+	// cross-sell must not downgrade upsell as well.
+	const sharedRouteOnly = {};
+
+	function suggestQuery( force, context, exclude, route ) {
+		let query =
+			'?product_ids=' +
 			encodeURIComponent( wcf_fbt.product_id ) +
-			'&limit=4&context=' +
-			encodeURIComponent( context || 'fbt' );
+			'&limit=4&include_alternatives=1';
+		if ( route === SHARED_SUGGEST_ROUTE ) {
+			query += '&context=' + encodeURIComponent( context );
+		}
 		if ( exclude && exclude.length ) {
-			path += '&exclude=' + encodeURIComponent( exclude.join( ',' ) );
+			query += '&exclude=' + encodeURIComponent( exclude.join( ',' ) );
 		}
 		if ( force ) {
-			path += '&force=1&_ts=' + Date.now();
+			query += '&force=1&_ts=' + Date.now();
 		}
-		return wp.apiFetch( { path } ).then( function ( response ) {
-			if ( ! response || ! response.success ) {
-				return Promise.reject( new Error( 'no-success' ) );
-			}
-			return {
-				products: response.products || [],
-				basis: response.basis || '',
-			};
-		} );
+		return query;
+	}
+
+	function unwrapSuggestions( response ) {
+		if ( ! response || ! response.success ) {
+			return Promise.reject( new Error( 'no-success' ) );
+		}
+		return {
+			products: response.products || [],
+			message: response.message || '',
+			notice: response.notice || '',
+		};
+	}
+
+	function fetchSuggestions( force, context, exclude ) {
+		const key = context || 'fbt';
+		const route =
+			sharedRouteOnly[ key ] || ! SUGGEST_ROUTES[ key ]
+				? SHARED_SUGGEST_ROUTE
+				: SUGGEST_ROUTES[ key ];
+		const isShared = route === SHARED_SUGGEST_ROUTE;
+
+		return wp
+			.apiFetch( {
+				path: route + suggestQuery( force, key, exclude, route ),
+			} )
+			.catch( function ( error ) {
+				// A newer free can meet an older Pro with no dedicated route, so retry the shared one before reporting Pro missing.
+				if ( isShared || ! error || 'rest_no_route' !== error.code ) {
+					return Promise.reject( error );
+				}
+				sharedRouteOnly[ key ] = true;
+				return wp.apiFetch( {
+					path:
+						SHARED_SUGGEST_ROUTE +
+						suggestQuery(
+							force,
+							key,
+							exclude,
+							SHARED_SUGGEST_ROUTE
+						),
+				} );
+			} )
+			.then( unwrapSuggestions );
 	}
 
 	function collectShownIds( $scope ) {
@@ -568,6 +846,66 @@
 		return wcf_fbt.i18n.ai_error;
 	}
 
+	/**
+	 * Markup for one status line.
+	 *
+	 * @param {string} message Text to show.
+	 * @param {string} tone    '' for neutral, or 'error' / 'warning'.
+	 * @return {string} HTML.
+	 */
+	function statusHtml( message, tone ) {
+		return (
+			'<div class="wcf-fbt-status' +
+			( tone ? ' is-' + tone : '' ) +
+			'">' +
+			escapeHtml( message ) +
+			'</div>'
+		);
+	}
+
+	/**
+	 * Read text out through the live region.
+	 *
+	 * @param {string} message Text to announce.
+	 */
+	function announce( message ) {
+		// Clearing first makes a repeat of the same text count as a change, and drops a stale notice.
+		clearAnnouncement();
+		if ( ! $liveRegion || ! message ) {
+			return;
+		}
+		announceTimer = setTimeout( function () {
+			$liveRegion.text( message );
+		}, 100 );
+	}
+
+	/**
+	 * Empty the live region and cancel a pending announcement.
+	 */
+	function clearAnnouncement() {
+		clearTimeout( announceTimer );
+		if ( $liveRegion ) {
+			$liveRegion.text( '' );
+		}
+	}
+
+	/**
+	 * The notice line plus the suggestion rows.
+	 *
+	 * @param {Array}  products Suggestions to render.
+	 * @param {string} notice   Warning from Pro about these results, or ''.
+	 * @return {string} HTML.
+	 */
+	function resultsListHtml( products, notice ) {
+		let html = notice ? statusHtml( notice, 'warning' ) : '';
+		html += '<div class="wcf-fbt-ai-list">';
+		let i;
+		for ( i = 0; i < products.length; i++ ) {
+			html += renderAiRow( products[ i ] );
+		}
+		return html + '</div>';
+	}
+
 	function showAiLoading() {
 		let rows = '';
 		let i;
@@ -575,21 +913,25 @@
 			rows += '<div class="wcf-fbt-skeleton-row"></div>';
 		}
 		$aiPane.html(
-			'<div class="wcf-fbt-status">' +
-				escapeHtml( wcf_fbt.i18n.ai_loading ) +
-				'</div>' +
+			statusHtml( wcf_fbt.i18n.ai_loading, '' ) +
 				'<div class="wcf-fbt-skeleton-list">' +
 				rows +
 				'</div>'
 		);
 	}
 
-	function showAiError( message ) {
+	/**
+	 * Render a status line in the AI pane.
+	 *
+	 * The hero always comes back with it: it carries the only Generate button, and
+	 * the pane's content is entirely JS-owned, so omitting it strands the admin.
+	 *
+	 * @param {string}  message Text to show.
+	 * @param {boolean} isError Whether to use the error styling.
+	 */
+	function showAiStatus( message, isError ) {
 		$aiPane.html(
-			'<div class="wcf-fbt-status is-error">' +
-				escapeHtml( message ) +
-				'</div>' +
-				renderAiHero()
+			statusHtml( message, isError ? 'error' : '' ) + renderAiHero()
 		);
 	}
 
@@ -608,9 +950,9 @@
 		].join( '' );
 	}
 
-	function renderAiResults( products ) {
+	function renderAiResults( products, message, notice ) {
 		if ( ! products || ! products.length ) {
-			showAiError( wcf_fbt.i18n.ai_none );
+			showAiStatus( message || wcf_fbt.i18n.ai_none, false );
 			return;
 		}
 		const toolbar = [
@@ -621,13 +963,7 @@
 				'</button>',
 			'</div>',
 		].join( '' );
-		let list = '<div class="wcf-fbt-ai-list">';
-		let i;
-		for ( i = 0; i < products.length; i++ ) {
-			list += renderAiRow( products[ i ] );
-		}
-		list += '</div>';
-		$aiPane.html( toolbar + list );
+		$aiPane.html( toolbar + resultsListHtml( products, notice ) );
 	}
 
 	function renderAiRow( item ) {
@@ -637,17 +973,21 @@
 			'%s',
 			Math.round( percent ) + '%'
 		);
-		const fallbackLabels = {
-			category: wcf_fbt.i18n.badge_popular,
-			popular: wcf_fbt.i18n.badge_popular,
-			recent: wcf_fbt.i18n.badge_new,
-		};
+		const fallbackKey = FALLBACK_BADGE_LABELS[ item.source ];
 		// A 0% match is a normalization artifact — show no badge rather than a misleading number.
 		let badge = '';
-		if ( fallbackLabels[ item.source ] ) {
+		if ( item.badge && item.badge.label ) {
+			badge =
+				'<span class="wcf-fbt-badge ' +
+				( BADGE_TONE_CLASS[ item.badge.tone ] ||
+					'wcf-fbt-badge-gray' ) +
+				'">' +
+				escapeHtml( item.badge.label ) +
+				'</span>';
+		} else if ( fallbackKey ) {
 			badge =
 				'<span class="wcf-fbt-badge wcf-fbt-badge-gray">' +
-				escapeHtml( fallbackLabels[ item.source ] ) +
+				escapeHtml( wcf_fbt.i18n[ fallbackKey ] ) +
 				'</span>';
 		} else if ( Math.round( percent ) > 0 ) {
 			badge =
@@ -695,6 +1035,10 @@
 		$drawerBody = $drawerRoot.find( '.wcf-fbt-drawer-body' );
 		$drawerTitle = $drawerRoot.find( '.wcf-fbt-drawer-title' );
 		$drawerMeta = $drawerRoot.find( '.wcf-fbt-drawer-meta' );
+		// Inside the aria-modal dialog, which hides everything else, and beside the body, which .html() replaces.
+		$liveRegion = $(
+			'<div class="screen-reader-text" role="status" aria-live="polite" aria-atomic="true"></div>'
+		).insertAfter( $drawerBody );
 
 		relocateSuggestButtons();
 
@@ -780,6 +1124,10 @@
 			.prop( 'hidden', true )
 			.removeClass( 'is-open is-empty is-disconnected' );
 		drawerContext = null;
+		++drawerRequestId;
+		// A response dropped as stale never reaches the code that would clear this.
+		clearRegenerating();
+		clearAnnouncement();
 		if ( lastFocused && lastFocused.focus ) {
 			lastFocused.focus();
 		}
@@ -799,14 +1147,37 @@
 		const exclude = chosen.concat(
 			force ? collectShownIds( $drawerBody ) : []
 		);
+		const requestContext = drawerContext;
+		// Every writer of drawerContext bumps this id in the same step, so the id
+		// alone identifies a superseded response. Keep that invariant if you add one.
+		const requestId = ++drawerRequestId;
+		const isStale = function () {
+			return requestId !== drawerRequestId;
+		};
 		showDrawerLoading();
-		fetchSuggestions( force, drawerContext, exclude )
+		fetchSuggestions( force, requestContext, exclude )
 			.then( function ( result ) {
-				renderDrawerResults( result.products, result.basis );
+				if ( isStale() ) {
+					return;
+				}
+				renderDrawerResults(
+					result.products,
+					result.message,
+					result.notice
+				);
 			} )
 			.catch( function ( error ) {
-				showDrawerError( errorMessageFor( error ) );
+				if ( isStale() ) {
+					return;
+				}
+				showDrawerStatus( errorMessageFor( error ), true );
 			} );
+	}
+
+	function clearRegenerating() {
+		$drawerRoot
+			.find( '.wcf-fbt-drawer-regen' )
+			.removeClass( 'wcf-fbt-is-regenerating' );
 	}
 
 	function showDrawerConnect() {
@@ -835,43 +1206,37 @@
 			rows += '<div class="wcf-fbt-skeleton-row"></div>';
 		}
 		$drawerRoot.removeClass( 'is-empty' );
+		clearAnnouncement();
 		$drawerBody.html(
-			'<div class="wcf-fbt-status">' +
-				escapeHtml( wcf_fbt.i18n.ai_loading ) +
-				'</div>' +
+			statusHtml( wcf_fbt.i18n.ai_loading, '' ) +
 				'<div class="wcf-fbt-skeleton-list">' +
 				rows +
 				'</div>'
 		);
 	}
 
-	function showDrawerError( message ) {
-		$drawerRoot
-			.find( '.wcf-fbt-drawer-regen' )
-			.removeClass( 'wcf-fbt-is-regenerating' );
-		$drawerBody.html(
-			'<div class="wcf-fbt-status is-error">' +
-				escapeHtml( message ) +
-				'</div>'
-		);
+	/**
+	 * Render a status line in the drawer body.
+	 *
+	 * @param {string}  message Text to show.
+	 * @param {boolean} isError Whether to use the error styling.
+	 */
+	function showDrawerStatus( message, isError ) {
+		clearRegenerating();
+		// The meta line advertises a cached result, which no longer describes what is shown.
+		$drawerMeta.text( '' );
+		$drawerBody.html( statusHtml( message, isError ? 'error' : '' ) );
 	}
 
-	function renderDrawerResults( products ) {
-		$drawerRoot
-			.removeClass( 'is-disconnected' )
-			.find( '.wcf-fbt-drawer-regen' )
-			.removeClass( 'wcf-fbt-is-regenerating' );
+	function renderDrawerResults( products, message, notice ) {
+		$drawerRoot.removeClass( 'is-disconnected' );
+		clearRegenerating();
 		if ( ! products || ! products.length ) {
-			showDrawerError( wcf_fbt.i18n.ai_none );
+			showDrawerStatus( message || wcf_fbt.i18n.ai_none, false );
 			return;
 		}
-		let list = '<div class="wcf-fbt-ai-list">';
-		let i;
-		for ( i = 0; i < products.length; i++ ) {
-			list += renderAiRow( products[ i ] );
-		}
-		list += '</div>';
-		$drawerBody.html( list );
+		$drawerBody.html( resultsListHtml( products, notice ) );
+		announce( notice );
 		$drawerMeta.text( wcf_fbt.i18n.ai_cached );
 	}
 

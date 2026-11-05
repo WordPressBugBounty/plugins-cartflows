@@ -232,12 +232,14 @@ class Cartflows_Fbt_Nudges {
 
 		wp_enqueue_style( 'cartflows-custom-notices', CARTFLOWS_URL . 'admin/assets/css/notices.css', array(), CARTFLOWS_VER );
 
+		$style = 'assets/css/fbt-nudges.css';
+
 		// Depends on the shared sheet so these scoped overrides land after it.
 		wp_enqueue_style(
 			'wcf-fbt-nudges',
-			CARTFLOWS_FBT_URL . 'assets/css/fbt-nudges.css',
+			CARTFLOWS_FBT_URL . $style,
 			array( 'cartflows-custom-notices' ),
-			CARTFLOWS_VER
+			Cartflows_Fbt::asset_version( $style )
 		);
 	}
 

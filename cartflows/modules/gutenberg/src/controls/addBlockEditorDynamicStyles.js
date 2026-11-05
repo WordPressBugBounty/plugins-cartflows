@@ -84,17 +84,20 @@ const addBlockEditorDynamicStyles = ( styleTagId, styling ) => {
 		// Desktop ends.
 
 		// Tablet / Mobile Starts.
+		const editorCanvasIframe = document.querySelector( 'iframe[name="editor-canvas"]' );
 		const tabletPreview = document.getElementsByClassName( 'is-tablet-preview' );
 		const mobilePreview = document.getElementsByClassName( 'is-mobile-preview' );
 		const twentyTwentyEditorIframe = document.getElementsByClassName( 'edit-site-visual-editor__editor-canvas' );
 
-		if ( 0 !== tabletPreview.length || 0 !== mobilePreview.length || 0 !== twentyTwentyEditorIframe.length ) {
+		if ( editorCanvasIframe || 0 !== tabletPreview.length || 0 !== mobilePreview.length || 0 !== twentyTwentyEditorIframe.length ) {
 
 			const preview = tabletPreview[0] || mobilePreview[0];
 
 			let iframe = false;
 
-			if ( 0 !== twentyTwentyEditorIframe.length ) {
+			if ( editorCanvasIframe ) {
+				iframe = editorCanvasIframe;
+			} else if ( 0 !== twentyTwentyEditorIframe.length ) {
 				iframe = twentyTwentyEditorIframe[0];
 			} else if ( preview ) {
 				iframe = preview.getElementsByTagName( 'iframe' )[0];
@@ -154,7 +157,7 @@ const addBlockEditorDynamicStyles = ( styleTagId, styling ) => {
 
 			if ( null === iframeElement || undefined === iframeElement ) {
 
-				const $style = document.createElement( 'style' );
+				const $style = iframeDocument.createElement( 'style' );
 				$style.setAttribute(
 					'id',
 					styleTagId

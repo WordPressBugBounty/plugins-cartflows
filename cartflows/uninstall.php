@@ -35,6 +35,9 @@ if ( 'enable' === $is_delete ) {
 		'cartflows-legacy-admin',
 		'cartflows-legacy-meta-show-design-options',
 		'cartflows-assets-version',
+		'cartflows-kb-failed-actions-cleaned',
+		'cartflows-kb-docs-immediate-start',
+		'cartflows_docs_data',
 
 		'_cartflows_common',
 		'_cartflows_permalink',
@@ -58,7 +61,16 @@ if ( 'enable' === $is_delete ) {
 	// removes the meta for every user in one query.
 	delete_metadata( 'user', 0, 'cartflows-switch-to-new-ui-notice', '', true );
 
-	if ( function_exists( 'as_next_scheduled_action' ) && as_next_scheduled_action( 'cartflows_send_report_summary_email' ) ) {
-		as_unschedule_all_actions( 'cartflows_send_report_summary_email' );
+	if ( function_exists( 'as_unschedule_all_actions' ) ) {
+
+		$scheduled_hooks = array(
+			'cartflows_send_report_summary_email',
+			'cartflows_update_knowledge_base_data',
+			'cartflows_cleanup_failed_knowledge_base_actions',
+		);
+
+		foreach ( $scheduled_hooks as $scheduled_hook ) {
+			as_unschedule_all_actions( $scheduled_hook );
+		}
 	}
 }

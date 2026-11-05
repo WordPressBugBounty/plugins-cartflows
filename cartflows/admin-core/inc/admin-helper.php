@@ -439,6 +439,11 @@ class AdminHelper {
 
 		$google_ads_settings_data = wp_parse_args( $google_ads_settings_data, $google_ads_settings_default );
 
+		// Match the front end, which turns tracking off when there is no Conversion ID.
+		if ( '' === trim( (string) $google_ads_settings_data['google_ads_id'] ) ) {
+			$google_ads_settings_data['google_ads_tracking'] = 'disable';
+		}
+
 		foreach ( $google_ads_settings_data as $key => $data ) {
 			$options[ '_cartflows_google_ads[' . $key . ']' ] = $data;
 		}

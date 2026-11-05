@@ -37,6 +37,22 @@ class Cartflows_Analytics {
 	private static $events = null;
 
 	/**
+	 * Onboarding step slugs in wizard order — the index is the drop-off depth.
+	 *
+	 * @since x.x.x
+	 * @var string[]
+	 */
+	const ONBOARDING_STEPS = array( 'welcome', 'page-builder', 'plugin-install', 'store-checkout', 'optin', 'ready' );
+
+	/**
+	 * Seconds without a step view before an unfinished onboarding counts as abandoned.
+	 *
+	 * @since x.x.x
+	 * @var int
+	 */
+	const ONBOARDING_IDLE_LIMIT = 3 * DAY_IN_SECONDS;
+
+	/**
 	 * Initiator
 	 *
 	 * @since 2.2.4
@@ -110,6 +126,76 @@ class Cartflows_Analytics {
 
 		// BSF stores the literal string 'no' on opt-out, which a bare bool cast would treat as opted in.
 		return (bool) apply_filters( 'cartflows_enable_non_sensitive_data_tracking', 'yes' === get_site_option( 'cf_usage_optin', false ) );
+	}
+
+	/**
+	 * Zero-based position of an onboarding step in the wizard.
+	 *
+	 * @since x.x.x
+	 * @param mixed $step Onboarding step slug.
+	 * @return int|false Zero-based index, or false for an unknown slug.
+	 */
+	private static function get_onboarding_step_index( $step ) {
+		return array_search( $step, self::ONBOARDING_STEPS, true );
+	}
+
+	/**
+	 * Onboarding progress properties shared by the drop-off events — all values are strings.
+	 *
+	 * @since x.x.x
+	 * @return array<string, string>
+	 */
+	private function get_onboarding_progress_props() {
+		$last_step     = Cartflows_Helper::get_analytics_flag( 'onboarding_last_step', '' );
+		$furthest_step = Cartflows_Helper::get_analytics_flag( 'onboarding_furthest_step', '' );
+		$furthest_idx  = self::get_onboarding_step_index( $furthest_step );
+
+		return array(
+			'last_step'           => is_string( $last_step ) ? sanitize_key( $last_step ) : '',
+			'furthest_step'       => is_string( $furthest_step ) ? sanitize_key( $furthest_step ) : '',
+			'furthest_step_index' => false === $furthest_idx ? '0' : (string) ( $furthest_idx + 1 ),
+		);
+	}
+
+	/**
+	 * Record an onboarding step view into the local analytics flags.
+	 *
+	 * Stored for every site; it only leaves the site through the opted-in stats payload.
+	 *
+	 * @since x.x.x
+	 * @param string $step Onboarding step slug.
+	 * @return bool False when the slug is not a known onboarding step.
+	 */
+	public static function record_onboarding_step( $step ) {
+		$step_idx = self::get_onboarding_step_index( $step );
+		if ( false === $step_idx ) {
+			return false;
+		}
+
+		$values = array(
+			'onboarding_last_step'    => $step,
+			'onboarding_last_step_at' => time(),
+		);
+
+		$furthest_idx = self::get_onboarding_step_index( Cartflows_Helper::get_analytics_flag( 'onboarding_furthest_step', '' ) );
+		if ( false === $furthest_idx || $step_idx > $furthest_idx ) {
+			$values['onboarding_furthest_step'] = $step;
+		}
+
+		Cartflows_Helper::set_analytics_flags( $values, true );
+
+		return true;
+	}
+
+	/**
+	 * Record how the user left the onboarding wizard, for drop-off analytics.
+	 *
+	 * @since x.x.x
+	 * @param string $source Exit source: 'topbar' or 'notice'.
+	 * @return void
+	 */
+	public static function record_onboarding_exit( $source ) {
+		Cartflows_Helper::set_analytics_flag( 'onboarding_exit_source', $source, true );
 	}
 
 	/**
@@ -216,7 +302,26 @@ class Cartflows_Analytics {
 			'pro_license_key_exists'     => $this->check_pro_license_key_exists() ? true : false,
 			// Resolved count — includes auto-completed modules the option never stores.
 			'learn_modules_completed'    => Cartflows_Learn_Progress::get_instance()->get_completed_count(),
+			// Slug of an installed Buy Now plugin, empty when none; read from local constants only.
+			'buy_now_conflict_plugin'    => $this->get_buy_now_conflict_slug(),
 		);
+	}
+
+	/**
+	 * Slug of the first detected Buy Now or direct-checkout plugin, empty when none.
+	 *
+	 * @since x.x.x
+	 * @return string
+	 */
+	private function get_buy_now_conflict_slug() {
+
+		if ( ! class_exists( '\CartflowsAdmin\AdminCore\Inc\InstantCheckoutNudge' ) ) {
+			return '';
+		}
+
+		$competitor = \CartflowsAdmin\AdminCore\Inc\InstantCheckoutNudge::detect_competitor();
+
+		return $competitor ? $competitor['slug'] : '';
 	}
 
 	/**
@@ -695,18 +800,38 @@ class Cartflows_Analytics {
 		}
 
 		// onboarding_completed.
-		if ( get_option( 'wcf_setup_complete', false ) ) {
-			$events->track( 'onboarding_completed' );
+		$onboarding_complete = (bool) get_option( 'wcf_setup_complete', false );
+		$onboarding_skipped  = (bool) get_option( 'wcf_setup_skipped', false );
+		// A sent onboarding_abandoned event cannot be undone, so later exits carry a marker to subtract it.
+		$after_abandoned = $events->is_tracked( 'onboarding_abandoned' ) ? 'yes' : 'no';
+
+		if ( $onboarding_complete ) {
+			$events->track( 'onboarding_completed', '', array( 'after_abandoned' => $after_abandoned ) );
 		}
 
-		// onboarding_skipped.
-		if ( get_option( 'wcf_setup_skipped', false ) ) {
-			$exit_step = get_option( 'wcf_exit_setup_step', '' );
+		// onboarding_skipped — guarded by complete because exiting from the ready step sets both.
+		if ( $onboarding_skipped && ! $onboarding_complete ) {
+			$exit_step   = get_option( 'wcf_exit_setup_step', '' );
+			$exit_source = Cartflows_Helper::get_analytics_flag( 'onboarding_exit_source', '' );
 			$events->track(
 				'onboarding_skipped',
 				'',
-				array( 'exit_step' => sanitize_text_field( (string) $exit_step ) )
+				array_merge(
+					array(
+						'exit_step'       => sanitize_text_field( (string) $exit_step ),
+						'exit_source'     => is_string( $exit_source ) && '' !== $exit_source ? sanitize_key( $exit_source ) : 'unknown',
+						'after_abandoned' => $after_abandoned,
+					),
+					$this->get_onboarding_progress_props()
+				)
 			);
+		}
+
+		// onboarding_abandoned — wizard left open or closed without exiting or finishing.
+		$last_step_at = Cartflows_Helper::get_analytics_flag( 'onboarding_last_step_at', 0 );
+		$last_step_at = is_numeric( $last_step_at ) ? (int) $last_step_at : 0;
+		if ( $last_step_at > 0 && ! $onboarding_complete && ! $onboarding_skipped && ( time() - $last_step_at ) >= self::ONBOARDING_IDLE_LIMIT ) {
+			$events->track( 'onboarding_abandoned', '', $this->get_onboarding_progress_props() );
 		}
 
 		// pro_license_activated.
@@ -842,6 +967,15 @@ class Cartflows_Analytics {
 				'',
 				array( 'item_count' => (string) absint( $fbt_atc['item_count'] ?? 0 ) )
 			);
+		}
+
+		// Instant Checkout nudge engagement (flags set in admin-core/inc/instant-checkout-nudge.php).
+		if ( class_exists( '\CartflowsAdmin\AdminCore\Inc\InstantCheckoutNudge' ) ) {
+			foreach ( \CartflowsAdmin\AdminCore\Inc\InstantCheckoutNudge::get_tracked_flags() as $icp_flag ) {
+				if ( Cartflows_Helper::get_analytics_flag( $icp_flag ) ) {
+					$events->track( $icp_flag );
+				}
+			}
 		}
 
 		// ---- Engagement events ----

@@ -380,6 +380,12 @@ class CommonSettings extends AjaxBase {
 			if ( 'enable' === $legacy_admin && ! $prev_was_enabled ) {
 				$this->pending_redirect = admin_url( 'admin.php?page=' . CARTFLOWS_SLUG );
 			}
+
+			// Leaving the legacy admin leaves a weekly refresh nothing reads, and is_legacy_admin() re-reads the option because the constant froze before this write.
+			if ( ! \Cartflows_Knowledge_Base::is_legacy_admin() ) {
+				\Cartflows_Knowledge_Base::unschedule_docs_job();
+				delete_option( 'cartflows_docs_data' );
+			}
 		}
 	}
 

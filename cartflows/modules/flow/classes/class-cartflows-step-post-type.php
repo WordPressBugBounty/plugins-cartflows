@@ -59,6 +59,33 @@ class Cartflows_Step_Post_Type {
 	}
 
 	/**
+	 * Get the template file for a step's page template, including Instant Layout swaps via `cartflows_page_template_file`.
+	 * Side-effect free, so compatibilities can predict the swap before `template_include` runs.
+	 *
+	 * @since x.x.x
+	 * @param string $page_template Step page template, from Cartflows_Helper::get_current_page_template().
+	 * @return string Template file path, or '' when there is none.
+	 */
+	public function get_page_template_file( $page_template ) {
+
+		switch ( $page_template ) {
+			case 'cartflows-default':
+				$file = CARTFLOWS_FLOW_DIR . 'templates/template-default.php';
+				break;
+			case 'cartflows-canvas':
+				$file = CARTFLOWS_FLOW_DIR . 'templates/template-canvas.php';
+				break;
+			default:
+				$file = locate_template( array( 'page.php' ) );
+				break;
+		}
+
+		$file = apply_filters( 'cartflows_page_template_file', $file );
+
+		return is_string( $file ) ? $file : '';
+	}
+
+	/**
 	 * Trys to load page.php for a header, footer or part theme layout.
 	 *
 	 * @since 1.0.0
@@ -90,42 +117,17 @@ class Cartflows_Step_Post_Type {
 
 			$page_template = Cartflows_Helper::get_current_page_template();
 
-			$file = '';
-
-			switch ( $page_template ) {
-
-				case 'cartflows-default':
-					$file                 = CARTFLOWS_FLOW_DIR . 'templates/template-default.php';
-					$this->body_classes[] = $page_template;
-					break;
-				case 'cartflows-canvas':
-					$file                 = CARTFLOWS_FLOW_DIR . 'templates/template-canvas.php';
-					$this->body_classes[] = $page_template;
-					break;
-				default:
-					/**
-					 * Remove Next/Prev Navigation
-					 */
-					add_filter( 'next_post_link', '__return_empty_string' );
-					add_filter( 'previous_post_link', '__return_empty_string' );
-
-					$page = locate_template( array( 'page.php' ) );
-
-					if ( ! empty( $page ) ) {
-						$file = $page;
-					}
-
-					break;
-
+			if ( in_array( $page_template, array( 'cartflows-default', 'cartflows-canvas' ), true ) ) {
+				$this->body_classes[] = $page_template;
+			} else {
 				/**
-				* Default:
-				* $file  = CARTFLOWS_FLOW_DIR . 'templates/template-default.php';
-				* $this->body_classes[] = 'cartflows-default';
-				* break;
-				*/
+				 * Remove Next/Prev Navigation
+				 */
+				add_filter( 'next_post_link', '__return_empty_string' );
+				add_filter( 'previous_post_link', '__return_empty_string' );
 			}
 
-			$file               = apply_filters( 'cartflows_page_template_file', $file );
+			$file               = $this->get_page_template_file( $page_template );
 			$this->body_classes = apply_filters( 'cartflows_page_template_body_classes', $this->body_classes );
 
 

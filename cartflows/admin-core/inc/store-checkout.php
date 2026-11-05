@@ -111,16 +111,7 @@ class StoreCheckout {
 			wp_send_json_error( $response_data );
 		}
 
-		if ( absint( \Cartflows_Helper::get_global_setting( '_cartflows_store_checkout' ) ) !== $flow_id ) {
-			return;
-		}
-
-		delete_option( '_cartflows_store_checkout' );
-		delete_option( '_cartflows_old_global_checkout' );
-		$common_settings                             = \Cartflows_Helper::get_common_settings();
-		$common_settings['global_checkout']          = '';
-		$common_settings['override_global_checkout'] = 'disable';
-		AdminHelper::update_admin_settings_option( '_cartflows_common', $common_settings, false );
+		\Cartflows_Helper::clear_store_checkout( $flow_id );
 	}
 
 	/**

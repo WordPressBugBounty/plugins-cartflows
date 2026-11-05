@@ -38,6 +38,9 @@ class Cartflows_Wd_Flow_Actions {
 
 		add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'add_cf_hidden_fields' ) );
 		add_filter( 'woocommerce_add_to_cart_redirect', array( $this, 'redirect_to_next_flow_step' ), 10, 2 );
+
+		// Modern Cart's AJAX add to cart applies its own redirect filter instead of the WooCommerce one.
+		add_filter( 'moderncart_woocommerce_add_to_cart_redirect', array( $this, 'redirect_to_next_flow_step' ), 10, 2 );
 	}
 
 	/**

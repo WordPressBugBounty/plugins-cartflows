@@ -68,7 +68,6 @@ class Cartflows_Admin {
 		add_action( 'wp_dashboard_setup', array( $this, 'dashboard_widget' ) );
 
 		add_action( 'init', array( $this, 'run_scheduled_docs_job' ) );
-		add_action( 'cartflows_update_knowledge_base_data', array( $this, 'cartflows_update_knowledge_base_data' ) );
 		add_action( 'admin_post_cartflows_rollback', array( $this, 'post_cartflows_rollback' ) );
 
 		$this->do_not_cache_admin_pages_actions();
@@ -91,6 +90,7 @@ class Cartflows_Admin {
 
 	/**
 	 * Run scheduled job for CartFLows knowledge base data.
+	 * The callback itself is registered by Cartflows_Knowledge_Base, which loads on every request.
 	 *
 	 * @since 2.0.0
 	 * @return void
@@ -107,21 +107,33 @@ class Cartflows_Admin {
 		}
 
 		if ( false === as_next_scheduled_action( 'cartflows_update_knowledge_base_data' ) ) {
-			as_schedule_recurring_action( time(), WEEK_IN_SECONDS, 'cartflows_update_knowledge_base_data' );
+			as_schedule_recurring_action( self::docs_job_start_timestamp(), WEEK_IN_SECONDS, 'cartflows_update_knowledge_base_data' );
 		}
 	}
 
 	/**
-	 * Cartflows's REST knowledge base data.
+	 * First run for the docs refresh: immediate while the screen has nothing valid to show, a week out otherwise.
+	 * Immediate starts are throttled, so a callback that fatals costs one row per window, not one per request.
 	 *
-	 * @since 2.0.0
-	 * @return mixed
+	 * @since x.x.x
+	 * @return int
 	 */
-	public static function cartflows_update_knowledge_base_data() {
-		$docs_json = json_decode( wp_remote_retrieve_body( wp_remote_get( 'https://cartflows.com//wp-json/powerful-docs/v1/get-docs' ) ) );
+	public static function docs_job_start_timestamp() {
 
-		// Never autoload — this payload runs to hundreds of KB and only the Knowledge Base screen reads it.
-		update_option( 'cartflows_docs_data', $docs_json, false );
+		if ( ! class_exists( 'Cartflows_Knowledge_Base' ) ) {
+			return time() + WEEK_IN_SECONDS;
+		}
+
+		// dev and the unguarded manual sync both stored REST error bodies, so presence is not enough.
+		if ( Cartflows_Knowledge_Base::has_valid_docs_payload() ) {
+			return time() + WEEK_IN_SECONDS;
+		}
+
+		if ( ! Cartflows_Knowledge_Base::claim_immediate_docs_start() ) {
+			return time() + WEEK_IN_SECONDS;
+		}
+
+		return time();
 	}
 
 	/**

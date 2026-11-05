@@ -10,6 +10,7 @@ const statuses = {
 	loading: 'loading',
 };
 const noop = () => {};
+const iframeLoadedFonts = new WeakMap();
 
 const WebfontLoader = ( props ) => {
 	const [ value, setValue ] = useState( [] );
@@ -60,25 +61,35 @@ const WebfontLoader = ( props ) => {
 			addFont( props.config.google.families[ 0 ] );
 		}
 
+		const editorCanvasIframe = document.querySelector( 'iframe[name="editor-canvas"]' );
 		const tabletPreview = document.getElementsByClassName( 'is-tablet-preview' );
 		const mobilePreview = document.getElementsByClassName( 'is-mobile-preview' );
 
-		if ( 0 !== tabletPreview.length || 0 !== mobilePreview.length ) {
+		let iframe = editorCanvasIframe;
+
+		if ( ! iframe && ( 0 !== tabletPreview.length || 0 !== mobilePreview.length ) ) {
 
 			const preview = tabletPreview[0] || mobilePreview[0];
 
-			const iframe = preview.getElementsByTagName( 'iframe' )[0];
+			iframe = preview.getElementsByTagName( 'iframe' )[0];
+		}
 
-			if ( iframe ) {
+		if ( iframe && iframe.contentDocument ) {
+
+			const fontFamily = props.config.google.families[ 0 ];
+			const loadedFonts = iframeLoadedFonts.get( iframe.contentDocument ) || [];
+
+			if ( ! loadedFonts.includes( fontFamily ) ) {
 
 				WebFont.load( {
 					...props.config,
 					loading: handleLoading,
 					active: handleActive,
 					inactive: handleInactive,
-					context: iframe?.contentWindow
+					context: iframe.contentWindow
 				} );
-				addFont( props.config.google.families[ 0 ] );
+				loadedFonts.push( fontFamily );
+				iframeLoadedFonts.set( iframe.contentDocument, loadedFonts );
 			}
 		}
 	};

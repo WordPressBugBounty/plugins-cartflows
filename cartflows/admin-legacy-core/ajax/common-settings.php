@@ -90,6 +90,10 @@ class CommonSettings extends AjaxBase {
 
 		delete_option( 'cartflows-legacy-admin' );
 
+		// The new UI renders no Knowledge Base screen, so the weekly refresh and its payload serve nobody.
+		\Cartflows_Knowledge_Base::unschedule_docs_job();
+		delete_option( 'cartflows_docs_data' );
+
 		wp_send_json_success(
 			array(
 				'redirect_to' => admin_url( 'admin.php?page=' . CARTFLOWS_SLUG ),
@@ -367,6 +371,12 @@ class CommonSettings extends AjaxBase {
 			if ( 'enable' === $switch_to_new_ui ) {
 				delete_option( 'cartflows-legacy-admin' );
 				$this->pending_redirect = admin_url( 'admin.php?page=' . CARTFLOWS_SLUG );
+
+				// Leaving the legacy admin leaves a weekly refresh nothing reads, and is_legacy_admin() re-reads the option because the constant froze before this write.
+				if ( ! \Cartflows_Knowledge_Base::is_legacy_admin() ) {
+					\Cartflows_Knowledge_Base::unschedule_docs_job();
+					delete_option( 'cartflows_docs_data' );
+				}
 			}
 		}
 	}

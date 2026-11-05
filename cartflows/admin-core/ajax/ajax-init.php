@@ -75,6 +75,7 @@ class AjaxInit {
 			'CartflowsAdmin\AdminCore\Ajax\Debugger',
 			'CartflowsAdmin\AdminCore\Ajax\Learn',
 			'CartflowsAdmin\AdminCore\Ajax\Onboarding',
+			'CartflowsAdmin\AdminCore\Ajax\InstantCheckoutNudge',
 		);
 
 		foreach ( $controllers as $controller ) {

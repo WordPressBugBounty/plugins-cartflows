@@ -50,6 +50,13 @@ class Cartflows_Fbt_Frontend {
 	private static $assets_enqueued = array();
 
 	/**
+	 * Companion line products this hook repriced => the price it replaced and the price it set, this request.
+	 *
+	 * @var SplObjectStorage<WC_Product, array{base: float, set: string}>|null
+	 */
+	private $base_prices = null;
+
+	/**
 	 * Initiator.
 	 *
 	 * @return self
@@ -94,6 +101,8 @@ class Cartflows_Fbt_Frontend {
 		add_filter( 'woocommerce_get_item_data', array( $this, 'filter_cart_item_data' ), 10, 2 );
 		add_action( 'woocommerce_cart_item_removed', array( $this, 'remove_bundle_companions' ), 10, 2 );
 		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'add_order_item_attribution' ), 10, 4 );
+		add_action( 'woocommerce_add_to_cart', array( $this, 'credit_bundle_units' ), 10, 6 );
+		add_action( 'woocommerce_before_calculate_totals', array( $this, 'apply_bundle_discount' ), 9999 );
 	}
 
 	/**
@@ -213,20 +222,23 @@ class Cartflows_Fbt_Frontend {
 			return;
 		}
 
+		$style = 'assets/css/fbt-frontend.css';
+
 		wp_register_style(
 			'wcf-fbt-frontend',
-			CARTFLOWS_FBT_URL . 'assets/css/fbt-frontend.css',
+			CARTFLOWS_FBT_URL . $style,
 			array(),
-			CARTFLOWS_VER
+			Cartflows_Fbt::asset_version( $style )
 		);
 
+		$script      = 'assets/js/fbt-frontend.js';
 		$script_deps = (array) apply_filters( 'cartflows_fbt_frontend_script_deps', array( 'jquery' ) );
 
 		wp_register_script(
 			'wcf-fbt-frontend',
-			CARTFLOWS_FBT_URL . 'assets/js/fbt-frontend.js',
+			CARTFLOWS_FBT_URL . $script,
 			$script_deps,
-			CARTFLOWS_VER,
+			Cartflows_Fbt::asset_version( $script ),
 			true
 		);
 
@@ -242,6 +254,9 @@ class Cartflows_Fbt_Frontend {
 				'currency_symbol' => html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) ),
 				'decimal_sep'     => wc_get_price_decimal_separator(),
 				'thousand_sep'    => wc_get_price_thousand_separator(),
+				// The JS formatter mirrors wc_price(), so it needs every input wc_price() reads.
+				'price_decimals'  => wc_get_price_decimals(),
+				'currency_pos'    => get_option( 'woocommerce_currency_pos', 'left' ),
 				'i18n'            => array(
 					'added'          => __( 'Added to cart', 'cartflows' ),
 					'error'          => __( 'Could not add to cart. Please try again.', 'cartflows' ),
@@ -256,6 +271,14 @@ class Cartflows_Fbt_Frontend {
 					/* translators: %d: total items in the bundle. */
 					'button_all'     => __( 'Add all %d items to cart', 'cartflows' ),
 					'select_options' => __( 'Select options to continue', 'cartflows' ),
+					/* translators: %s: total amount saved. */
+					'save_amount'    => __( 'You save %s', 'cartflows' ),
+					/* translators: 1: total amount saved, 2: discount percentage. */
+					'save_percent'   => __( 'You save %1$s (%2$s off add-ons)', 'cartflows' ),
+					/* translators: %s: a companion's price before the bundle discount. */
+					'price_original' => __( 'Original price was: %s.', 'cartflows' ),
+					/* translators: %s: a companion's price after the bundle discount. */
+					'price_current'  => __( 'Current price is: %s.', 'cartflows' ),
 					'show_fewer'     => __( 'Show fewer', 'cartflows' ),
 					/* translators: %d: number of additional companion products. */
 					'show_more'      => __( 'Show %d more', 'cartflows' ),
@@ -1132,6 +1155,144 @@ class Cartflows_Fbt_Frontend {
 			if ( isset( $item['_wcf_fbt_bundle_key'] ) && $item['_wcf_fbt_bundle_key'] === $bundle_key ) {
 				$cart->remove_cart_item( $key );
 			}
+		}
+	}
+
+	/**
+	 * Counts the units a widget or Buy Now add put on a companion line; only these units are discounted.
+	 * Kept off the cart item data passed to add_to_cart(), so it never changes the line's key.
+	 *
+	 * @param string               $cart_item_key  Key of the line that was added to or merged into.
+	 * @param int                  $product_id     Product ID.
+	 * @param int                  $quantity       Units just added.
+	 * @param int                  $variation_id   Variation ID.
+	 * @param array<string, mixed> $variation      Chosen attributes.
+	 * @param array<string, mixed> $cart_item_data Cart item data the add was made with.
+	 * @return void
+	 */
+	public function credit_bundle_units( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
+
+		if ( empty( $cart_item_data['_wcf_fbt_parent_id'] ) || null === WC()->cart || ! isset( WC()->cart->cart_contents[ $cart_item_key ] ) ) {
+			return;
+		}
+
+		$line = WC()->cart->cart_contents[ $cart_item_key ];
+
+		WC()->cart->cart_contents[ $cart_item_key ]['_wcf_fbt_discount_qty'] = self::line_count( $line, '_wcf_fbt_discount_qty' ) + absint( $quantity );
+
+		// How many units of this companion one bundle carries — 1 unless the shopper set a custom qty.
+		WC()->cart->cart_contents[ $cart_item_key ]['_wcf_fbt_units_per_parent'] = max( self::line_count( $line, '_wcf_fbt_units_per_parent' ), absint( $quantity ) );
+	}
+
+	/**
+	 * Reads one of the bundle counts this module keeps on a cart line; 0 when it is missing or malformed.
+	 *
+	 * @param array<string, mixed> $line Cart line.
+	 * @param string               $key  Count key.
+	 * @return int
+	 */
+	private static function line_count( $line, $key ) {
+		return isset( $line[ $key ] ) && is_numeric( $line[ $key ] ) ? absint( $line[ $key ] ) : 0;
+	}
+
+	/**
+	 * Charges the bundle discount on credited companion units, capped by how many of the parent are in the cart.
+	 * Worked out on every totals pass, so it follows the current settings and the cart's contents.
+	 *
+	 * @param WC_Cart $cart The cart being totalled.
+	 * @return void
+	 */
+	public function apply_bundle_discount( $cart ) {
+
+		if ( ! $cart instanceof WC_Cart ) {
+			return;
+		}
+
+		if ( null === $this->base_prices ) {
+			$this->base_prices = new SplObjectStorage();
+		}
+
+		$contents = $cart->get_cart_contents();
+
+		// Units of each product in the cart, however they got there — a parent added as another bundle's companion still counts.
+		$in_cart = array();
+		foreach ( $contents as $line ) {
+			if ( isset( $line['product_id'], $line['quantity'] ) ) {
+				$in_cart_id             = absint( $line['product_id'] );
+				$in_cart[ $in_cart_id ] = ( isset( $in_cart[ $in_cart_id ] ) ? $in_cart[ $in_cart_id ] : 0 ) + absint( $line['quantity'] );
+			}
+		}
+
+		$settings_by_source = array();
+		$allowed_by_source  = array();
+		$budgets            = array();
+
+		foreach ( $contents as $line ) {
+
+			// Another CartFlows offer surface owns a line carrying custom_price.
+			if ( empty( $line['_wcf_fbt_parent_id'] ) || isset( $line['custom_price'] ) || ! isset( $line['data'] ) || ! $line['data'] instanceof WC_Product ) {
+				continue;
+			}
+
+			$product = $line['data'];
+
+			// Still holding the price this hook set means it is ours, so start from the price it replaced; anything else was repriced since.
+			$record  = $this->base_prices->contains( $product ) ? $this->base_prices->offsetGet( $product ) : null;
+			$touched = null !== $record && (string) $product->get_price( 'edit' ) === $record['set'];
+			$base    = $touched ? $record['base'] : (float) $product->get_price();
+
+			$source       = is_numeric( $line['_wcf_fbt_parent_id'] ) ? absint( $line['_wcf_fbt_parent_id'] ) : 0;
+			$product_id   = isset( $line['product_id'] ) ? absint( $line['product_id'] ) : 0;
+			$variation_id = isset( $line['variation_id'] ) ? absint( $line['variation_id'] ) : 0;
+			$qty          = isset( $line['quantity'] ) ? absint( $line['quantity'] ) : 0;
+			$stored       = self::line_count( $line, '_wcf_fbt_discount_qty' );
+			$per_parent   = max( 1, self::line_count( $line, '_wcf_fbt_units_per_parent' ) );
+
+			// Each parent unit carries one bundle's worth of this companion, shared across its variation lines.
+			$budget_key = $source . ':' . $product_id;
+			if ( ! isset( $budgets[ $budget_key ] ) ) {
+				$budgets[ $budget_key ] = ( isset( $in_cart[ $source ] ) ? $in_cart[ $source ] : 0 ) * $per_parent;
+			}
+
+			// Capped per pass and never written back, so a parent missing for one pass pauses the discount instead of losing it.
+			$credited                = min( $qty, $stored, $budgets[ $budget_key ] );
+			$budgets[ $budget_key ] -= $credited;
+
+			if ( ! isset( $settings_by_source[ $source ] ) ) {
+				$settings_by_source[ $source ] = Cartflows_Fbt::get_settings( $source );
+
+				// Same membership rule as build_add_queue(), so a companion dropped from the list loses its discount.
+				$allowed_by_source[ $source ] = array_map( 'absint', (array) apply_filters( 'cartflows_fbt_allowed_companion_ids', $settings_by_source[ $source ]['product_ids'], $source ) );
+			}
+			$settings = $settings_by_source[ $source ];
+			$allowed  = $allowed_by_source[ $source ];
+			$member   = in_array( $product_id, $allowed, true ) || ( $variation_id > 0 && in_array( $variation_id, $allowed, true ) );
+
+			$eligible = $credited > 0 && 'yes' === $settings['enabled'] && $member && Cartflows_Fbt::has_discount( $settings );
+
+			if ( ! $eligible ) {
+				// Undo only this hook's own change; a price nobody here set belongs to whoever set it.
+				if ( $touched ) {
+					$product->set_price( wc_float_to_string( $base ) );
+				}
+				$this->base_prices->detach( $product );
+				continue;
+			}
+
+			// The widget discounts the displayed price, so do the same and scale back, or a price-off differs by tax.
+			$display = (float) wc_get_price_to_display( $product, array( 'price' => $base ) );
+			$price   = $display > 0 ? $base * Cartflows_Fbt::apply_discount( $display, $settings['discount_type'], $settings['discount_value'] ) / $display : $base;
+
+			// A line holding uncredited units charges a blended unit price, so the line total is exact.
+			$product->set_price( wc_float_to_string( ( $credited * $price + ( $qty - $credited ) * $base ) / $qty ) );
+
+			$this->base_prices->attach(
+				$product,
+				array(
+					'base' => $base,
+					'set'  => (string) $product->get_price( 'edit' ),
+				)
+			);
 		}
 	}
 

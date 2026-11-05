@@ -157,6 +157,8 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 						return 'yes';
 					}
 				);
+
+				add_action( 'wp_head', array( $this, 'skip_modern_cart_auto_open_on_flow_redirect' ) );
 			}
 
 			$page_builder = Cartflows_Helper::get_common_setting( 'default_page_builder' );
@@ -188,6 +190,24 @@ if ( ! class_exists( 'Cartflows_Compatibility' ) ) {
 			if ( defined( 'WC_STRIPE_VERSION' ) ) {
 				require_once CARTFLOWS_DIR . 'compatibilities/plugins/gateways/class-cartflows-wc-stripe-compatibility.php';
 			}
+		}
+
+		/**
+		 * Keep the Modern Cart tray closed on a step reached through the CartFlows add to cart redirect.
+		 * Prints in the head, so it runs on every step (cart.js is not loaded on checkout) and before Modern Cart's load handler.
+		 *
+		 * @since x.x.x
+		 * @return void
+		 */
+		public function skip_modern_cart_auto_open_on_flow_redirect() {
+
+			// The redirect lands with a GET; a step's own add to cart form posts back to the same URL.
+			if ( ! isset( $_GET['cf-redirect'] ) || ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD'] || ! is_singular( CARTFLOWS_STEP_POST_TYPE ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				return;
+			}
+
+			// Key is private to Modern Cart (set and read in modern-cart/assets/js/cart.js); keep in sync if it changes.
+			wp_print_inline_script_tag( "try{localStorage.removeItem('moderncart_single_add_to_cart_clicked');}catch(e){}" );
 		}
 
 		/**

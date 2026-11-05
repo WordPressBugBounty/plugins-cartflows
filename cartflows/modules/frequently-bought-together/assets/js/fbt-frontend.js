@@ -299,11 +299,47 @@
 
 			if ( row.unresolved ) {
 				$price.text( $price.data( 'from' ) ).addClass( 'is-from' );
-			} else {
-				$price
-					.text( wcf_fbt_format_price( row.price ) )
-					.removeClass( 'is-from' );
+				return;
 			}
+
+			const discount = wcf_fbt_read_discount( $widget );
+			$price.removeClass( 'is-from' );
+
+			if ( ! discount.active || row.price <= 0 ) {
+				$price
+					.removeClass( 'is-discounted' )
+					.text( wcf_fbt_format_price( row.price ) );
+				return;
+			}
+
+			const original = wcf_fbt_format_price( row.price );
+			const current = wcf_fbt_format_price(
+				wcf_fbt_apply_discount( row.price, discount )
+			);
+
+			// Same shape as wc_format_sale_price(), so both render paths read alike.
+			$price
+				.addClass( 'is-discounted' )
+				.empty()
+				.append( $( '<del aria-hidden="true" />' ).text( original ) )
+				.append( ' ' )
+				.append(
+					$( '<span class="screen-reader-text" />' ).text(
+						wcf_fbt_price_sr_text(
+							wcf_fbt_frontend.i18n.price_original,
+							original
+						)
+					)
+				)
+				.append( $( '<ins aria-hidden="true" />' ).text( current ) )
+				.append(
+					$( '<span class="screen-reader-text" />' ).text(
+						wcf_fbt_price_sr_text(
+							wcf_fbt_frontend.i18n.price_current,
+							current
+						)
+					)
+				);
 		} );
 	}
 
@@ -314,9 +350,12 @@
 	 */
 	function wcf_fbt_recalc( $widget ) {
 		let total = 0;
+		let base = 0;
 		let count = 0;
 		let companions = 0;
 		let unresolved = 0;
+
+		const discount = wcf_fbt_read_discount( $widget );
 
 		// A variable main product without a chosen variation blocks the bundle the same way an unresolved companion does.
 		const $variations_form = wcf_fbt_source_form(
@@ -348,24 +387,63 @@
 				return;
 			}
 
-			total += row.price * row.qty;
+			base += row.price * row.qty;
+			// A disabled box is the main row — the bundle discount only ever buys the companions.
+			total += row.disabled
+				? row.price * row.qty
+				: wcf_fbt_apply_discount( row.price, discount ) * row.qty;
 			count += 1;
 			if ( ! row.disabled ) {
 				companions += 1;
 			}
 		} );
 
+		const saving = Math.max( 0, base - total );
+
 		const template =
 			1 === count
 				? wcf_fbt_frontend.i18n.label_single
 				: wcf_fbt_frontend.i18n.label_plural;
 
+		const old_total = wcf_fbt_format_price( base );
+		const savings = wcf_fbt_saving_labels( saving, discount );
+
+		wcf_fbt_set_text(
+			$widget.find( '[data-role="wcf-fbt-label"]' ),
+			template.replace( '%d', count )
+		);
+		wcf_fbt_set_text(
+			$widget.find( '[data-role="wcf-fbt-total"]' ),
+			wcf_fbt_format_price( total )
+		);
+
+		wcf_fbt_set_text(
+			$widget
+				.find( '[data-role="wcf-fbt-total-old"]' )
+				.prop( 'hidden', saving <= 0 ),
+			old_total
+		);
+		wcf_fbt_set_text(
+			$widget
+				.find( '[data-role="wcf-fbt-total-old-sr"]' )
+				.prop( 'hidden', saving <= 0 ),
+			wcf_fbt_price_sr_text(
+				wcf_fbt_frontend.i18n.price_original,
+				old_total
+			)
+		);
+
 		$widget
-			.find( '[data-role="wcf-fbt-label"]' )
-			.text( template.replace( '%d', count ) );
-		$widget
-			.find( '[data-role="wcf-fbt-total"]' )
-			.text( wcf_fbt_format_price( total ) );
+			.find( '[data-role="wcf-fbt-saving"]' )
+			.prop( 'hidden', saving <= 0 );
+		wcf_fbt_set_text(
+			$widget.find( '[data-role="wcf-fbt-saving-full"]' ),
+			savings.full
+		);
+		wcf_fbt_set_text(
+			$widget.find( '[data-role="wcf-fbt-saving-short"]' ),
+			savings.short
+		);
 
 		const $companions = $widget.find(
 			'.wcf-fbt-widget-row input[type="checkbox"]:not(:disabled)'
@@ -565,14 +643,131 @@
 	}
 
 	/**
-	 * Format a numeric total with the currency symbol from localized data.
+	 * Read the bundle discount the renderer stamped on the widget root.
+	 *
+	 * @param {jQuery} $widget The widget root.
+	 * @return {{type: string, value: number, active: boolean}} Discount state.
+	 */
+	function wcf_fbt_read_discount( $widget ) {
+		const type = $widget.attr( 'data-discount-type' ) || '';
+		const raw = parseFloat( $widget.attr( 'data-discount-value' ) );
+		const value = isNaN( raw ) ? 0 : Math.max( 0, raw );
+
+		return { type, value, active: '' !== type && value > 0 };
+	}
+
+	/**
+	 * Apply a bundle discount to one price. Mirrors Cartflows_Fbt::apply_discount().
+	 *
+	 * @param {number} price    Original price.
+	 * @param {Object} discount Discount state from wcf_fbt_read_discount().
+	 * @return {number} Discounted price, never below zero.
+	 */
+	function wcf_fbt_apply_discount( price, discount ) {
+		if ( ! discount.active || price <= 0 ) {
+			return price;
+		}
+
+		const off =
+			'discount_percent' === discount.type
+				? ( price * Math.min( 100, discount.value ) ) / 100
+				: discount.value;
+
+		return Math.max( 0, price - off );
+	}
+
+	/**
+	 * Render a number to at most two decimals, without trailing zeros.
+	 *
+	 * @param {number} value Raw number.
+	 * @return {string} Shortest decimal string, e.g. "18" or "17.5".
+	 */
+	function wcf_fbt_trim_decimals( value ) {
+		return String( parseFloat( value.toFixed( 2 ) ) );
+	}
+
+	/**
+	 * Build both footer saving lines: the full one, and the short one narrow
+	 * viewports show instead so the parenthetical cannot wrap mid-phrase.
+	 *
+	 * @param {number} saving   Total amount saved.
+	 * @param {Object} discount Discount state from wcf_fbt_read_discount().
+	 * @return {{full: string, short: string}} Localized saving labels.
+	 */
+	function wcf_fbt_saving_labels( saving, discount ) {
+		const amount = wcf_fbt_format_price( saving );
+		const brief = wcf_fbt_frontend.i18n.save_amount.replace( '%s', amount );
+
+		if ( 'discount_percent' !== discount.type ) {
+			return { full: brief, short: brief };
+		}
+
+		return {
+			full: wcf_fbt_frontend.i18n.save_percent
+				.replace( '%1$s', amount )
+				.replace(
+					'%2$s',
+					wcf_fbt_trim_decimals( discount.value ) + '%'
+				),
+			short: brief,
+		};
+	}
+
+	/**
+	 * Format a numeric total the way wc_price() would, from localized store settings.
 	 *
 	 * @param {number} value Numeric total to render.
 	 * @return {string} Formatted price string.
 	 */
 	function wcf_fbt_format_price( value ) {
+		const decimals = parseInt( wcf_fbt_frontend.price_decimals, 10 );
+		const places = isNaN( decimals ) ? 2 : Math.max( 0, decimals );
+		const parts = Math.abs( value ).toFixed( places ).split( '.' );
+
+		parts[ 0 ] = parts[ 0 ].replace(
+			/\B(?=(\d{3})+(?!\d))/g,
+			wcf_fbt_frontend.thousand_sep
+		);
+
+		const amount =
+			( value < 0 ? '-' : '' ) +
+			parts.join( wcf_fbt_frontend.decimal_sep );
 		const symbol = wcf_fbt_frontend.currency_symbol || '';
-		return symbol + value.toFixed( 2 );
+
+		switch ( wcf_fbt_frontend.currency_pos ) {
+			case 'right':
+				return amount + symbol;
+			case 'right_space':
+				return amount + ' ' + symbol;
+			case 'left_space':
+				return symbol + ' ' + amount;
+			default:
+				return symbol + amount;
+		}
+	}
+
+	/**
+	 * Fill a WooCommerce-style price a11y sentence, e.g. "Original price was: $5.00.".
+	 *
+	 * @param {string} template Localized sentence carrying one %s.
+	 * @param {string} amount   Formatted price to name.
+	 * @return {string} The finished sentence.
+	 */
+	function wcf_fbt_price_sr_text( template, amount ) {
+		return String( template || '' ).replace( '%s', amount );
+	}
+
+	/**
+	 * Write text only when it actually differs, so the polite live region
+	 * announces real changes rather than every recalc pass.
+	 *
+	 * @param {jQuery} $el  Target element.
+	 * @param {string} text Text to render.
+	 */
+	function wcf_fbt_set_text( $el, text ) {
+		if ( $el.text() !== text ) {
+			$el.text( text );
+		}
 	}
 
 	/**

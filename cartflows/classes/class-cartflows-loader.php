@@ -143,7 +143,7 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			define( 'CARTFLOWS_DIR', plugin_dir_path( CARTFLOWS_FILE ) );
 			define( 'CARTFLOWS_URL', plugins_url( '/', CARTFLOWS_FILE ) );
 
-			define( 'CARTFLOWS_VER', '3.3.1' );
+			define( 'CARTFLOWS_VER', '3.3.2' );
 			define( 'CARTFLOWS_SLUG', 'cartflows' );
 			define( 'CARTFLOWS_SETTINGS', 'cartflows_settings' );
 			define( 'CARTFLOWS_NAME', 'CartFlows' );
@@ -465,6 +465,9 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 			// bsf_core_stats filter is registered for both frontend and admin transmissions.
 			include_once CARTFLOWS_DIR . 'classes/class-cartflows-analytics.php';
 
+			// Knowledge Base docs — loaded on every request so the Action Scheduler callbacks are registered for WP-Cron queue runs too.
+			include_once CARTFLOWS_DIR . 'classes/class-cartflows-knowledge-base.php';
+
 			if ( is_admin() ) {
 
 				/* Admin helper */
@@ -723,6 +726,14 @@ if ( ! class_exists( 'Cartflows_Loader' ) ) {
 		 * Deactivation Reset
 		 */
 		public function deactivation_reset() {
+
+			// WooCommerce keeps running Action Scheduler once CartFlows is gone, so a hook left queued here fails on every queue run (#2290).
+			if ( ! function_exists( 'as_unschedule_all_actions' ) || ! class_exists( 'Cartflows_Knowledge_Base' ) ) {
+				return;
+			}
+
+			as_unschedule_all_actions( Cartflows_Knowledge_Base::DOCS_HOOK );
+			as_unschedule_all_actions( Cartflows_Knowledge_Base::CLEANUP_HOOK );
 		}
 
 		/**

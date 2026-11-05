@@ -7,6 +7,7 @@
  *
  * @package cartflows
  * @var array{id: int, name: string, image: string, available: bool, is_main: bool, is_extra: bool, show_qty: bool, qty: int, price: float, price_html: string, from_label: string, requires_options: bool, permalink: string, variations: array<int, array{id: int, price: float, label: string}>} $fbt_row Row display data from Cartflows_Fbt_Frontend::get_row_data().
+ * @var array{discount_type: string, discount_value: string} $fbt_settings Full FBT settings blob, from the includer's scope.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,6 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $fbt_is_variable = ! empty( $fbt_row['variations'] );
 $fbt_needs_page  = ! empty( $fbt_row['requires_options'] ) && '' !== $fbt_row['permalink'];
+
+// The bundle discount buys companions the widget can actually add — never the main row, never a "Select options" row.
+$fbt_row_discounted = ! $fbt_row['is_main'] && ! $fbt_needs_page && $fbt_row['price'] > 0 && Cartflows_Fbt::has_discount( $fbt_settings );
 
 $fbt_row_class = 'wcf-fbt-widget-row';
 if ( $fbt_row['is_main'] ) {
@@ -55,6 +59,8 @@ if ( $fbt_row['is_extra'] && ! $fbt_is_variable ) {
 	<?php endif; ?>
 	<?php if ( $fbt_is_variable ) : ?>
 		<span class="wcf-fbt-widget-price is-from" data-from="<?php echo esc_attr( $fbt_row['from_label'] ); ?>"><?php echo esc_html( $fbt_row['from_label'] ); ?></span>
+	<?php elseif ( $fbt_row_discounted ) : ?>
+		<span class="wcf-fbt-widget-price is-discounted"><?php echo wp_kses_post( wc_format_sale_price( (string) $fbt_row['price'], (string) Cartflows_Fbt::apply_discount( $fbt_row['price'], $fbt_settings['discount_type'], $fbt_settings['discount_value'] ) ) ); ?></span>
 	<?php else : ?>
 		<span class="wcf-fbt-widget-price"><?php echo wp_kses_post( $fbt_row['price_html'] ); ?></span>
 	<?php endif; ?>

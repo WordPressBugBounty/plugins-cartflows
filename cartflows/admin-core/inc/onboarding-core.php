@@ -57,7 +57,6 @@ class OnboardingCore {
 			}
 
 			add_action( 'init', array( $this, 'load_scripts' ) );
-			add_action( 'admin_print_styles', array( $this, 'load_admin_media_styles' ) );
 
 			add_action( 'admin_init', array( $this, 'redirect_to_onboarding' ) );
 			add_filter( 'before_cp_load_popup', array( $this, 'hide_convert_pro_popups' ), 10, 1 ); // Disable the render of Convert Pro popups in onboarding wizard.
@@ -88,27 +87,6 @@ class OnboardingCore {
 
 
 	/**
-	 * Load styles.
-	 */
-	public function load_admin_media_styles() {
-
-		$ary_libs               = array(
-			'common',
-			'forms',
-		);
-		$admin_media_styles_url = add_query_arg(
-			array(
-				'c'      => 0,
-				'dir'    => ! is_rtl() ? 'ltr' : 'rtl',
-				'load[]' => implode( ',', $ary_libs ),
-				'ver'    => 'you_wp_version',
-			),
-			admin_url() . 'load-styles.php'
-		);
-		echo "<link rel='stylesheet' id='admin_styles_for_media-css' href='" . esc_url( $admin_media_styles_url ) . "' type='text/css' media='all' />";
-	}
-
-	/**
 	 * Load media.
 	 */
 	public function load_scripts() {
@@ -137,6 +115,7 @@ class OnboardingCore {
 
 		if ( $wcf_hide_notice && $_wcf_notice_nonce && wp_verify_nonce( sanitize_text_field( wp_unslash( $_wcf_notice_nonce ) ), 'wcf_hide_notices_nonce' ) ) {
 			update_option( 'wcf_setup_skipped', true );
+			\Cartflows_Analytics::record_onboarding_exit( 'notice' );
 		}
 	}
 
@@ -287,6 +266,10 @@ class OnboardingCore {
 		);
 
 		wp_enqueue_script( $handle );
+		// Core styles queue before the app CSS, since the standalone view skips admin-header.php.
+		wp_enqueue_media();
+		wp_enqueue_style( 'common' );
+		wp_enqueue_style( 'forms' );
 		wp_enqueue_style( $handle );
 		wp_style_add_data( $handle, 'rtl', 'replace' );
 
@@ -298,7 +281,6 @@ class OnboardingCore {
 			true
 		);
 		wp_enqueue_script( 'wcf-onboarding-helper' );
-		wp_enqueue_media();
 		wp_enqueue_script( 'jquery-ui' );
 	}
 
@@ -424,6 +406,7 @@ class OnboardingCore {
 				),
 			),
 			'is_store_checkout_imported' => 'yes' === get_option( '_cartflows_wizard_store_checkout_set', 'no' ),
+			'is_setup_complete'          => (bool) get_option( 'wcf_setup_complete', false ),
 			'is_pro'                     => _is_cartflows_pro(),
 			'cf_pro_type'                => defined( 'CARTFLOWS_PRO_PLUGIN_TYPE' ) ? CARTFLOWS_PRO_PLUGIN_TYPE : 'free',
 			'woocommerce_status'         => $this->get_plugin_status( 'woocommerce/woocommerce.php' ),

@@ -373,7 +373,7 @@ class GlobalSettings {
 						'label'      => '',
 						'name'       => 'pixel-not-work-doc',
 						/* translators: %1$1s: link html start, %2$12: link html end*/
-						'content'    => sprintf( __( 'Facebook Pixel not working correctly? %1$1s Click here %2$2s to know more.', 'cartflows' ), '<a href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/facebook-pixel-support/' ) ) . '" target="_blank">', '</a>' ),
+						'content'    => sprintf( __( 'Facebook Pixel not working correctly? %1$1sClick here%2$2s to know more.', 'cartflows' ), '<a href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/facebook-pixel-support/' ) ) . '" target="_blank">', '</a>' ),
 						'conditions' => array(
 							'fields' => array(
 								array(
@@ -563,7 +563,7 @@ class GlobalSettings {
 						'label'      => '',
 						'name'       => 'ga-not-work-doc',
 						/* translators: %1$1s: link html start, %2$12: link html end*/
-						'content'    => sprintf( __( 'Google Analytics not working correctly? %1$1s Click here %2$2s to know more.', 'cartflows' ), '<a href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/troubleshooting-google-analytics-tracking-issues/' ) ) . '" target="_blank">', '</a>' ),
+						'content'    => sprintf( __( 'Google Analytics not working correctly? %1$1sClick here%2$2s to know more.', 'cartflows' ), '<a href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/troubleshooting-google-analytics-tracking-issues/' ) ) . '" target="_blank">', '</a>' ),
 						'conditions' => array(
 							'fields' => array(
 								array(
@@ -588,7 +588,7 @@ class GlobalSettings {
 						'afterIcon' => 'dashicons dashicons-hidden',
 						'iconclick' => 'show_field_value',
 						/* translators: %1$1s: link html start, %2$12: link html end*/
-						'desc'      => sprintf( __( 'Check this %1$1s article %2$2s to setup and find an API key.', 'cartflows' ), '<a href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/enabling-google-address-autocompletes/' ) ) . '" target="_blank">', '</a>' ),
+						'desc'      => sprintf( __( 'Enable "Places API (New)" and "Maps JavaScript API" for this key in Google Cloud Console. Check this %1$1s article %2$2s to setup and find an API key.', 'cartflows' ), '<a href="' . esc_url( \Cartflows_Helper::get_kb_doc_link( 'https://cartflows.com/docs/enabling-google-address-autocompletes/' ) ) . '" target="_blank">', '</a>' ),
 					),
 				),
 			),
@@ -1038,7 +1038,7 @@ class GlobalSettings {
 						'name'       => '_cartflows_google_ads[google_ads_label]',
 						'class'      => 'input-field',
 						/* translators: %1$1s: link html start, %2$12: link html end*/
-						'desc'       => sprintf( __( 'Log into your %1$1s Google Ads account %2$2s to find your conversion label.', 'cartflows' ), '<a href="https://ads.google.com/home/" target="_blank">', '</a>' ),
+						'desc'       => sprintf( __( 'Enter the label of your purchase conversion action. It is only sent with the Purchase event. Log into your %1$1s Google Ads account %2$2s to find it.', 'cartflows' ), '<a href="https://ads.google.com/home/" target="_blank">', '</a>' ),
 						'conditions' => array(
 							'fields' => array(
 								array(
@@ -1095,21 +1095,6 @@ class GlobalSettings {
 						'type'       => 'checkbox',
 						'label'      => __( 'Add To Cart', 'cartflows' ),
 						'name'       => '_cartflows_google_ads[enable_google_ads_add_to_cart]',
-						'conditions' => array(
-							'fields' => array(
-								array(
-									'name'     => '_cartflows_google_ads[google_ads_tracking]',
-									'operator' => '===',
-									'value'    => 'enable',
-								),
-							),
-						),
-						'backComp'   => true,
-					),
-					'google-ads-event-view-content'      => array(
-						'type'       => 'checkbox',
-						'label'      => __( 'View Content', 'cartflows' ),
-						'name'       => '_cartflows_google_ads[enable_google_ads_view_content]',
 						'conditions' => array(
 							'fields' => array(
 								array(

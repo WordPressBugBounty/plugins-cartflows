@@ -147,6 +147,51 @@ class Cartflows_Instant_Checkout {
 		// Order Review template — closes the right-column wrapper div.
 		add_action( 'woocommerce_checkout_after_order_review', array( $this, 'show_collapsed_order_summary' ), 11, 1 );
 		add_filter( 'cartflows_get_order_review_template_path', array( $this, 'update_path_for_order_review_template' ), 10, 2 );
+
+		// Wrap third-party output on woocommerce_before_checkout_form so it follows the layout's inset instead of rendering full-bleed.
+		add_action( 'woocommerce_before_checkout_form', array( $this, 'before_checkout_form_wrapper_start' ), PHP_INT_MIN );
+		add_action( 'woocommerce_before_checkout_form', array( $this, 'before_checkout_form_wrapper_end' ), PHP_INT_MAX );
+
+		// Repeat Power Coupons' progress bar atop the order summary; CSS shows this copy on desktop only.
+		add_action( 'cartflows_woocommerce_checkout_before_order_heading', array( $this, 'order_summary_progress_bar' ), 5 );
+	}
+
+	/**
+	 * Print Power Coupons' cart progress bar at the top of the order summary column.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function order_summary_progress_bar() {
+
+		// Older Power Coupons Pro has no such hook, so the bar stays full width.
+		if ( ! has_action( 'power_coupons_render_progress_bar' ) ) {
+			return;
+		}
+
+		echo '<div class="wcf-ic-order-summary-progress">';
+		do_action( 'power_coupons_render_progress_bar' );
+		echo '</div>';
+	}
+
+	/**
+	 * Open the wrapper for content hooked into woocommerce_before_checkout_form.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function before_checkout_form_wrapper_start() {
+		echo '<div class="wcf-ic-before-checkout-form">';
+	}
+
+	/**
+	 * Close the wrapper for content hooked into woocommerce_before_checkout_form.
+	 *
+	 * @since x.x.x
+	 * @return void
+	 */
+	public function before_checkout_form_wrapper_end() {
+		echo '</div>';
 	}
 
 	/**

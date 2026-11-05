@@ -59,7 +59,6 @@ class WizardCore {
 			}
 
 			add_action( 'init', array( $this, 'load_scripts' ) );
-			add_action( 'admin_print_styles', array( $this, 'load_admin_media_styles' ) );
 
 			add_action( 'admin_init', array( $this, 'redirect_to_onboarding' ) );
 			add_filter( 'before_cp_load_popup', array( $this, 'hide_convert_pro_popups' ), 10, 1 ); // Disable the render of Convert Pro popups in onboarding wizard.
@@ -87,27 +86,6 @@ class WizardCore {
 		exit();
 	}
 
-
-	/**
-	 * Load styles.
-	 */
-	public function load_admin_media_styles() {
-
-		$ary_libs               = array(
-			'common',
-			'forms',
-		);
-		$admin_media_styles_url = add_query_arg(
-			array(
-				'c'      => 0,
-				'dir'    => ! is_rtl() ? 'ltr' : 'rtl',
-				'load[]' => implode( ',', $ary_libs ),
-				'ver'    => 'you_wp_version',
-			),
-			admin_url() . 'load-styles.php'
-		);
-		echo "<link rel='stylesheet' id='admin_styles_for_media-css' href='" . esc_url( $admin_media_styles_url ) . "' type='text/css' media='all' />";
-	}
 
 	/**
 	 * Load media.
@@ -251,6 +229,10 @@ class WizardCore {
 		);
 
 		wp_enqueue_script( $handle );
+		// Core styles queue before the app CSS, since the standalone view skips admin-header.php.
+		wp_enqueue_media();
+		wp_enqueue_style( 'common' );
+		wp_enqueue_style( 'forms' );
 		wp_enqueue_style( $handle );
 		wp_style_add_data( $handle, 'rtl', 'replace' );
 
@@ -262,7 +244,6 @@ class WizardCore {
 			true
 		);
 		wp_enqueue_script( 'cartflows-setup-helper' );
-		wp_enqueue_media();
 		wp_enqueue_script( 'jquery-ui' );
 	}
 

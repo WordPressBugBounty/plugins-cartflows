@@ -183,6 +183,11 @@ if ( ! class_exists( 'Cartflows_Update' ) ) :
 				$this->migrate_knowledge_base_docs_storage();
 			}
 
+			// Until x.x.x the docs callback was registered inside the admin-only class, so every WP-Cron run left a failed row behind.
+			if ( is_string( $saved_version ) ) {
+				$this->cleanup_failed_knowledge_base_actions();
+			}
+
 			// Update auto saved version number.
 			update_option( 'cartflows-version', CARTFLOWS_VER );
 
@@ -422,6 +427,27 @@ if ( ! class_exists( 'Cartflows_Update' ) ) :
 			}
 
 			return $migrated;
+		}
+
+		/**
+		 * Queue the purge of the failed Knowledge Base docs actions this install accumulated.
+		 * Queued rather than run inline because affected installs carry tens of thousands of rows.
+		 *
+		 * @since x.x.x
+		 * @return void
+		 */
+		public function cleanup_failed_knowledge_base_actions() {
+
+			if ( ! class_exists( 'Cartflows_Knowledge_Base' ) ) {
+				return;
+			}
+
+			// Gated on the completion flag, not on a version, so a chain aborted mid-backlog resumes on the next upgrade.
+			if ( Cartflows_Knowledge_Base::is_cleanup_complete() ) {
+				return;
+			}
+
+			Cartflows_Knowledge_Base::schedule_cleanup( time() );
 		}
 
 		/**

@@ -691,7 +691,10 @@
 								'.wcf-create-account-section .create-account label.checkbox'
 							).show();
 
-							$( '.wcf-create-account-section' ).show();
+							// Drop the hidden attribute too: a global [hidden] { display: none !important; } rule (e.g. Spectra) overrides show().
+							$( '.wcf-create-account-section' )
+								.prop( 'hidden', false )
+								.show();
 
 							$(
 								'.woocommerce-billing-fields__customer-login-label'

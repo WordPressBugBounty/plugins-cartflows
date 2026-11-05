@@ -7,8 +7,9 @@
  *
  * @package cartflows
  * @var int                                                                                                                                                                                    $product_id Current product ID.
- * @var array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>} $settings   Sanitised FBT settings.
+ * @var array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>, discount_type: string, discount_value: string} $settings   Sanitised FBT settings.
  * @var string                                                                                                                                                                                 $cards_html Pre-built product-row markup.
+ * @var string                                                                                                                                                                                 $discount_amount Bundle-wide discount amount, or the none placeholder.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -56,6 +57,19 @@ $default_ai_pane = '' === $fbt_cta ? '' : '<div class="wcf-fbt-ai-hero">'
 
 /* translators: %d: current selected count. */
 $products_label = sprintf( __( 'Products (%d)', 'cartflows' ), $card_count );
+
+// Labels mirror the Order Bump discount select so the two offer surfaces read the same.
+$discount_type_labels = array(
+	''                 => __( 'No Discount', 'cartflows' ),
+	'discount_percent' => __( 'Percentage off', 'cartflows' ),
+	'discount_price'   => __( 'Price off', 'cartflows' ),
+);
+
+$fbt_currency      = html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) );
+$fbt_discount_unit = 'discount_percent' === $settings['discount_type'] ? '%' : $fbt_currency;
+$fbt_discount_hint = '' === $settings['discount_type']
+	? __( 'No discount. The widget total is a plain sum, as today.', 'cartflows' )
+	: __( 'Applied to companion products when the shopper selects at least one. Same discount types as order bumps.', 'cartflows' );
 
 $position_labels = array(
 	'after_atc_button' => __( 'After Add-to-Cart button', 'cartflows' ),
@@ -115,6 +129,7 @@ $position_labels = array(
 						<select id="_cartflows_fbt_product_search" class="wc-product-search wcf-fbt-picker-chooser" multiple="multiple" style="width:100%;" data-placeholder="<?php esc_attr_e( 'Search for a product…', 'cartflows' ); ?>" data-action="woocommerce_json_search_products_and_variations" data-exclude="<?php echo esc_attr( $exclude_attr ); ?>"></select>
 					</div>
 					<span class="wcf-fbt-picker-count"><strong data-role="picker-count"><?php echo esc_html( (string) $card_count ); ?></strong> <?php esc_html_e( 'selected', 'cartflows' ); ?></span>
+					<span class="wcf-fbt-picker-discount"><?php esc_html_e( 'Bundle discount', 'cartflows' ); ?> <strong data-role="picker-discount"><?php echo esc_html( $discount_amount ); ?></strong></span>
 				</div>
 
 				<div class="wcf-fbt-picker-values" hidden>
@@ -190,6 +205,22 @@ $position_labels = array(
 					<label for="_cartflows_fbt_custom_qty"><?php esc_html_e( 'Custom quantity', 'cartflows' ); ?></label>
 					<input type="checkbox" class="checkbox" id="_cartflows_fbt_custom_qty" name="_cartflows_fbt_custom_qty" value="yes" <?php checked( $settings['custom_qty'], 'yes' ); ?> />
 					<?php echo wp_kses_post( wc_help_tip( __( 'Show a quantity box for each product.', 'cartflows' ) ) ); ?>
+				</p>
+
+				<p class="form-field _cartflows_fbt_discount_field">
+					<label for="_cartflows_fbt_discount_type"><?php esc_html_e( 'Bundle discount', 'cartflows' ); ?></label>
+					<span class="wcf-fbt-discount-controls">
+						<select id="_cartflows_fbt_discount_type" name="_cartflows_fbt_discount_type" class="select short">
+							<?php foreach ( $discount_type_labels as $discount_value_slug => $discount_label ) : ?>
+								<option value="<?php echo esc_attr( $discount_value_slug ); ?>" <?php selected( $settings['discount_type'], $discount_value_slug ); ?>><?php echo esc_html( $discount_label ); ?></option>
+							<?php endforeach; ?>
+						</select>
+						<span class="wcf-fbt-discount-amount<?php echo '' === $settings['discount_type'] ? ' hidden' : ''; ?>">
+							<input type="number" id="_cartflows_fbt_discount_value" name="_cartflows_fbt_discount_value" min="0" step="any" value="<?php echo esc_attr( $settings['discount_value'] ); ?>" aria-label="<?php esc_attr_e( 'Discount amount', 'cartflows' ); ?>" aria-describedby="wcf_fbt_discount_unit" />
+							<span class="wcf-fbt-discount-unit" id="wcf_fbt_discount_unit" data-currency="<?php echo esc_attr( $fbt_currency ); ?>"><?php echo esc_html( $fbt_discount_unit ); ?></span>
+						</span>
+					</span>
+					<span class="wcf-fbt-discount-hint"><?php echo esc_html( $fbt_discount_hint ); ?></span>
 				</p>
 
 				<p class="form-field _cartflows_fbt_position_field">

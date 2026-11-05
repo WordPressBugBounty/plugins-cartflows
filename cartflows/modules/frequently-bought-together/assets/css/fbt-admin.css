@@ -169,6 +169,7 @@
 #cartflows_fbt_data .wcf-fbt-picker-topbar {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
 	gap: 12px;
 	padding: 12px 14px;
 	background: #fafbfc;
@@ -216,6 +217,92 @@
 
 #cartflows_fbt_data .wcf-fbt-picker-header-row .h-price {
 	text-align: right;
+}
+
+#cartflows_fbt_data .wcf-fbt-picker-discount {
+	font-size: 12px;
+	color: #6b7280;
+	white-space: nowrap;
+	background: #f3f4f6;
+	padding: 4px 10px;
+	border-radius: 999px;
+	border: 1px solid #e5e7eb;
+}
+
+#cartflows_fbt_data .wcf-fbt-picker-discount strong {
+	color: #111827;
+	font-weight: 600;
+}
+
+#cartflows_fbt_data .wcf-fbt-picker-price del {
+	color: #767676;
+	margin-right: 4px;
+}
+
+#cartflows_fbt_data .wcf-fbt-picker-price ins {
+	background: none;
+	color: #1e1e1e;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+/* Bundle discount row — select and amount sit on one line, hint drops below. */
+#cartflows_fbt_data .wcf-fbt-discount-controls {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+/* WC's .short caps the select too narrow for "Percentage off", let alone a translation. */
+#cartflows_fbt_data select#_cartflows_fbt_discount_type {
+	min-width: 180px;
+}
+
+#cartflows_fbt_data .wcf-fbt-discount-amount {
+	display: inline-flex;
+	align-items: center;
+	border: 1px solid #d1d5db;
+	border-radius: 4px;
+	background: #fff;
+	overflow: hidden;
+}
+
+#cartflows_fbt_data .wcf-fbt-discount-amount.hidden {
+	display: none;
+}
+
+#cartflows_fbt_data .wcf-fbt-discount-amount input[type="number"] {
+	width: 72px;
+	border: none;
+	box-shadow: none;
+	margin: 0;
+	padding: 4px 2px 4px 10px;
+	background: transparent;
+}
+
+#cartflows_fbt_data .wcf-fbt-discount-amount input[type="number"]:focus {
+	box-shadow: none;
+	outline: none;
+}
+
+#cartflows_fbt_data .wcf-fbt-discount-unit {
+	color: #6b7280;
+	font-size: 13px;
+	padding: 0 10px 0 2px;
+}
+
+/* Every .form-field label here is a 172px float pulled left by 150px, so it overhangs
+   the field's content edge by 22px and the controls start there. A block-level hint
+   ignores the float, so it needs the same 22px to sit under the control it describes. */
+#cartflows_fbt_data .wcf-fbt-discount-hint {
+	display: block;
+	margin-top: 8px;
+	margin-left: 22px;
+	max-width: 520px;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #6b7280;
 }
 
 #cartflows_fbt_data .wcf-fbt-picker-header-row .h-stock,
@@ -591,6 +678,12 @@
 	border-left-color: #b91c1c;
 }
 
+#cartflows_fbt_data .wcf-fbt-status.is-warning {
+	color: #854d0e;
+	background: #fefce8;
+	border-left-color: #ca8a04;
+}
+
 /* Linked Products tab — "Auto Suggest" button next to each WC field.
  * PHP renders both buttons together in .wcf-fbt-linked-buttons; JS lifts each
  * one into its matching .form-field row on init. This wrapper is only visible
@@ -924,6 +1017,12 @@
 	border-left-color: #b91c1c;
 }
 
+.wcf-fbt-drawer-body .wcf-fbt-status.is-warning {
+	color: #854d0e;
+	background: #fefce8;
+	border-left-color: #ca8a04;
+}
+
 /* Custom-qty column — reveal 80px slot when picker-shell has the .has-qty class. */
 
 #cartflows_fbt_data .wcf-fbt-picker-shell.has-qty .wcf-fbt-picker-header-row,
@@ -1075,4 +1174,24 @@
 
 #cartflows_fbt_data .wcf-fbt-callout-dismiss:hover {
 	color: #111827;
+}
+
+/* The name is the only flexible column, so narrow admin widths buy it back from gap and fixed slots. */
+@media screen and ( max-width: 960px ) {
+	#cartflows_fbt_data .wcf-fbt-picker-header-row,
+	#cartflows_fbt_data .wcf-fbt-picker-row {
+		grid-template-columns: 24px 44px 1fr 80px 90px 0 28px;
+		gap: 8px;
+		padding-right: 10px;
+		padding-left: 10px;
+	}
+
+	#cartflows_fbt_data .wcf-fbt-picker-shell.has-qty .wcf-fbt-picker-header-row,
+	#cartflows_fbt_data .wcf-fbt-picker-shell.has-qty .wcf-fbt-picker-row {
+		grid-template-columns: 24px 44px 1fr 80px 90px 64px 28px;
+	}
+
+	#cartflows_fbt_data .wcf-fbt-picker-qty-input {
+		width: 100%;
+	}
 }

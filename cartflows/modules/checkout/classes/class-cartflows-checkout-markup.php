@@ -147,6 +147,21 @@ class Cartflows_Checkout_Markup {
 				CARTFLOWS_VER,
 				true
 			);
+
+			wp_localize_script(
+				'wcf-google-places',
+				'wcf_google_places',
+				array(
+					'show_errors' => current_user_can( 'cartflows_manage_settings' ),
+					'i18n'        => array(
+						'new_api_failed'    => __( 'CartFlows address autocomplete: Places API (New) is not enabled for this Google API key, so the legacy Places API is being used. Enable "Places API (New)" in Google Cloud Console. Google said:', 'cartflows' ),
+						'auth_failed'       => __( 'CartFlows address autocomplete: Google rejected the API key. Check that the key is valid, billing is enabled and "Places API (New)" plus "Maps JavaScript API" are enabled.', 'cartflows' ),
+						'new_api_missing'   => __( 'CartFlows address autocomplete: the loaded Google Maps JavaScript API does not include Places API (New), so the legacy Places API is being used.', 'cartflows' ),
+						'request_failed'    => __( 'CartFlows address autocomplete: Google returned an error for the suggestions request:', 'cartflows' ),
+						'suggestions_label' => __( 'Address suggestions', 'cartflows' ),
+					),
+				)
+			);
 		}
 	}
 

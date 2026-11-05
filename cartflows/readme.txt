@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, sales funnels, upsell, order bump, lead generation
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 3.3.1
+Stable tag: 3.3.2
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -403,6 +403,26 @@ We take plugin security extremely seriously. If you discover a vulnerability, pl
 4. Quickly re-arrange the steps.
 
 == Changelog ==
+
+= Version 3.3.2 - Thursday, 5th November 2026 =
+* New: Added a bundle discount option to Frequently Bought Together that discounts the companion products in the widget and the cart.
+* Improvement: With CartFlows Pro, Upsell Auto Suggest now shows similar alternatives with a clear note when no higher-priced product is available.
+* Improvement: Google Address Autocomplete now works with API keys that use the Places API (New), and falls back to the legacy Places API for existing keys.
+* Improvement: Funnel steps no longer load block editor scripts on the front end when Global Styling is enabled, which speeds up page load.
+* Improvement: A trashed Store Checkout now appears in CartFlows > Funnels > Trash and becomes the Store Checkout again when restored.
+* Fix: Fixed a 410 console error on admin pages in WordPress 7.2 caused by a request to load-styles.php.
+* Fix: Fixed Google Ads counting page view, add to cart, begin checkout and add payment info events as purchase conversions.
+* Fix: Fixed failed or abandoned redirect payments, such as Afterpay, showing the order received message on the Thank You step.
+* Fix: Fixed the Store Checkout becoming unreachable after its funnel was trashed or deleted.
+* Fix: Fixed the Shipping toggle in the order summary taking the button styles set in page builder checkout widgets.
+* Fix: Fixed the Modern Cart tray opening on the funnel step after a Redirect Add to Cart.
+* Fix: Fixed Divi 5 funnel steps losing their styles when a Theme Builder header or footer is set.
+* Fix: Fixed CartFlows block style changes not showing, and button clicks reloading the editor, in the iframed block editor.
+* Fix: Fixed content above the checkout form spanning the full page width in the Instant checkout layout.
+* Fix: Fixed a duplicate "Create an account?" checkbox in the Instant checkout layout.
+* Fix: Fixed help notices with links splitting into separate columns in the admin settings.
+* Fix: Fixed the Knowledge Base scheduled action failing on every cron run on sites using the legacy admin UI.
+* Fix: Fixed MCP Adapter deprecation warnings filling debug.log for CartFlows abilities.
 
 = Version 3.3.1 - Monday, 2nd November 2026 =
 * Security Fix: Hardened the security of the plugin reported by PatchStack.

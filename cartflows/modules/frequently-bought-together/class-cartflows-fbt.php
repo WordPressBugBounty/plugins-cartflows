@@ -80,6 +80,22 @@ class Cartflows_Fbt {
 	const SELECTION_VALUES = array( 'multiple', 'single' );
 
 	/**
+	 * Whitelist for the 'discount_type' field. Slugs match order bumps and checkout products.
+	 *
+	 * @var array<int, string>
+	 */
+	const DISCOUNT_TYPE_VALUES = array( '', 'discount_percent', 'discount_price' );
+
+	/**
+	 * Label shown where a bundle discount could apply but none is set.
+	 *
+	 * @return string
+	 */
+	public static function discount_none_label() {
+		return __( 'None', 'cartflows' );
+	}
+
+	/**
 	 * Whitelist for the 'position' field. 'shortcode' has no hook — it renders only via [wcf_frequently_bought_together].
 	 *
 	 * @var array<int, string>
@@ -164,7 +180,7 @@ class Cartflows_Fbt {
 	 *
 	 * Callers can safely destructure the return value — every key is present.
 	 *
-	 * @return array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>}
+	 * @return array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>, discount_type: string, discount_value: string}
 	 */
 	public static function get_defaults() {
 		return array(
@@ -177,14 +193,111 @@ class Cartflows_Fbt {
 			'custom_qty'     => 'no',
 			'product_qty'    => array(),
 			'ai_product_ids' => array(),
+			'discount_type'  => '',
+			'discount_value' => '',
 		);
+	}
+
+	/**
+	 * Normalises a discount amount against its type: '' when the type is off or the
+	 * amount is not a number, clamped to 0-100 for percent and floored at 0 for price.
+	 *
+	 * @param string $type Discount type slug.
+	 * @param mixed  $raw  Whatever was stored or posted as the amount.
+	 * @return string
+	 */
+	private static function coerce_discount_value( $type, $raw ) {
+
+		if ( ! in_array( $type, self::DISCOUNT_TYPE_VALUES, true ) || '' === $type ) {
+			return '';
+		}
+
+		if ( ! is_numeric( $raw ) ) {
+			return '';
+		}
+
+		$value = max( 0.0, (float) $raw );
+		if ( 'discount_percent' === $type ) {
+			$value = min( 100.0, $value );
+		}
+
+		return (string) $value;
+	}
+
+	/**
+	 * Applies a discount to a price. Returns the price untouched when the discount is off.
+	 *
+	 * Mirrors Cartflows_Pro_Utils::get_calculated_discount() so the widget's arithmetic
+	 * matches every other CartFlows offer surface; never returns below zero.
+	 *
+	 * @param float  $price Original price.
+	 * @param string $type  Discount type slug.
+	 * @param mixed  $value Discount amount.
+	 * @return float
+	 */
+	public static function apply_discount( $price, $type, $value ) {
+
+		$price = (float) $price;
+		if ( $price <= 0 || ! is_numeric( $value ) ) {
+			return $price;
+		}
+
+		$value = (float) $value;
+		if ( $value <= 0 ) {
+			return $price;
+		}
+
+		if ( 'discount_percent' === $type ) {
+			return max( 0.0, $price - ( $price * min( 100.0, $value ) / 100 ) );
+		}
+
+		if ( 'discount_price' === $type ) {
+			return max( 0.0, $price - $value );
+		}
+
+		return $price;
+	}
+
+	/**
+	 * Renders a discount amount the way every FBT surface shows it: "10%" or "$5.00".
+	 *
+	 * @param string                $type  Discount type slug.
+	 * @param float|int|string|null $value Discount amount.
+	 * @return string
+	 */
+	public static function format_discount_amount( $type, $value ) {
+
+		if ( 'discount_percent' === $type ) {
+			// Trailing zeros read as false precision on a percentage.
+			return rtrim( rtrim( number_format( (float) $value, 2, '.', '' ), '0' ), '.' ) . '%';
+		}
+
+		if ( 'discount_price' === $type ) {
+			return html_entity_decode( wp_strip_all_tags( (string) wc_price( (float) $value ) ), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Whether a settings blob carries a discount that would actually change a price.
+	 *
+	 * @param array<string, mixed> $settings Full or partial settings blob.
+	 * @return bool
+	 */
+	public static function has_discount( $settings ) {
+
+		$type  = isset( $settings['discount_type'] ) && is_string( $settings['discount_type'] ) ? $settings['discount_type'] : '';
+		$value = isset( $settings['discount_value'] ) ? $settings['discount_value'] : '';
+
+		return in_array( $type, self::DISCOUNT_TYPE_VALUES, true ) && '' !== $type && is_numeric( $value ) && (float) $value > 0;
 	}
 
 	/**
 	 * Reads the FBT settings blob for a product with defaults merged in.
 	 *
 	 * @param int $product_id WC product post ID.
-	 * @return array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>}
+	 * @return array{enabled: string, source: string, product_ids: array<int, int>, add_separately: string, selection: string, position: string, custom_qty: string, product_qty: array<int, int>, ai_product_ids: array<int, int>, discount_type: string, discount_value: string}
 	 */
 	public static function get_settings( $product_id ) {
 
@@ -212,6 +325,8 @@ class Cartflows_Fbt {
 		$merged['custom_qty']     = in_array( $merged['custom_qty'], self::ENABLED_VALUES, true ) ? $merged['custom_qty'] : 'no';
 		$merged['product_qty']    = self::coerce_qty_map( $merged['product_qty'] );
 		$merged['ai_product_ids'] = is_array( $merged['ai_product_ids'] ) ? array_values( array_unique( array_filter( array_map( 'absint', $merged['ai_product_ids'] ) ) ) ) : array();
+		$merged['discount_type']  = in_array( $merged['discount_type'], self::DISCOUNT_TYPE_VALUES, true ) ? (string) $merged['discount_type'] : '';
+		$merged['discount_value'] = self::coerce_discount_value( $merged['discount_type'], $merged['discount_value'] );
 
 		return $merged;
 	}
@@ -303,6 +418,31 @@ class Cartflows_Fbt {
 	}
 
 	/**
+	 * Cache-busting version for a module asset.
+	 *
+	 * The plugin version alone is not enough: a build shipping under an unchanged version leaves every browser
+	 * holding the previous file for the lifetime of its Cache-Control header.
+	 *
+	 * @param string $relative_path Path below CARTFLOWS_FBT_DIR, e.g. 'assets/js/fbt-frontend.js'.
+	 * @return string
+	 */
+	public static function asset_version( $relative_path ) {
+
+		$file = CARTFLOWS_FBT_DIR . $relative_path;
+
+		// Existence, not readability: filemtime() stats the directory entry, so a file PHP may not read but the
+		// web server serves happily still gets a version rather than silently losing its cache-busting.
+		if ( ! file_exists( $file ) ) {
+			return CARTFLOWS_VER;
+		}
+
+		$modified = filemtime( $file );
+
+		// Compared against false, not truthiness: a build that normalises timestamps gives a real mtime of 0.
+		return false !== $modified ? CARTFLOWS_VER . '.' . $modified : CARTFLOWS_VER;
+	}
+
+	/**
 	 * Sanitises every recognised key in an incoming partial payload.
 	 *
 	 * Any key not in the whitelist is dropped. Silent drop is intentional — callers
@@ -354,6 +494,16 @@ class Cartflows_Fbt {
 		// Per-product qty map — sparse, absint keys + values.
 		if ( array_key_exists( 'product_qty', $partial ) ) {
 			$clean['product_qty'] = self::coerce_qty_map( $partial['product_qty'] );
+		}
+
+		// Discount type — same slugs as order bumps and checkout products.
+		if ( array_key_exists( 'discount_type', $partial ) ) {
+			$clean['discount_type'] = in_array( $partial['discount_type'], self::DISCOUNT_TYPE_VALUES, true ) ? (string) $partial['discount_type'] : '';
+		}
+
+		// Amount is normalised against the type in the same payload, so callers must send the pair.
+		if ( array_key_exists( 'discount_value', $partial ) ) {
+			$clean['discount_value'] = self::coerce_discount_value( isset( $clean['discount_type'] ) ? $clean['discount_type'] : '', $partial['discount_value'] );
 		}
 
 		// AI-sourced companion IDs — provenance only, same cap as product_ids.

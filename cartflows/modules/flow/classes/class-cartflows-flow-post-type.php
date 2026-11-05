@@ -53,6 +53,44 @@ class Cartflows_Flow_Post_Type {
 		add_filter( 'post_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
 		add_filter( 'preview_post_link', array( $this, 'preview_post_link' ), 10, 2 );
 		add_action( 'template_redirect', array( $this, 'redirect_to_step' ), 10 );
+
+		add_action( 'wp_trash_post', array( $this, 'trash_store_checkout' ) );
+		add_action( 'before_delete_post', array( $this, 'unset_store_checkout' ) );
+		add_action( 'untrashed_post', array( $this, 'restore_store_checkout' ) );
+	}
+
+	/**
+	 * Unset the store checkout when its flow is trashed from anywhere, remembering it for a restore.
+	 *
+	 * @param int $post_id Post ID being trashed.
+	 * @return void
+	 */
+	public function trash_store_checkout( $post_id ) {
+		Cartflows_Helper::clear_store_checkout( (int) $post_id, true );
+	}
+
+	/**
+	 * Unset the store checkout when its flow is permanently deleted from anywhere.
+	 *
+	 * @param int $post_id Post ID being deleted.
+	 * @return void
+	 */
+	public function unset_store_checkout( $post_id ) {
+		Cartflows_Helper::clear_store_checkout( (int) $post_id );
+	}
+
+	/**
+	 * Make a restored flow the store checkout again when it was one before it was trashed.
+	 *
+	 * @param int $post_id Post ID restored from the trash.
+	 * @return void
+	 */
+	public function restore_store_checkout( $post_id ) {
+		if ( CARTFLOWS_FLOW_POST_TYPE !== get_post_type( $post_id ) ) {
+			return;
+		}
+
+		Cartflows_Helper::restore_store_checkout( (int) $post_id );
 	}
 
 	/**

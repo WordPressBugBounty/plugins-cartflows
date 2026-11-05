@@ -291,6 +291,8 @@ class Cartflows_Frontend {
 				$_REQUEST['order-received'] = $wcf_order;
 
 				$wp->set_query_var( 'order-received', $wcf_order );
+				// Gateways verify redirect payments via get_query_var(), which reads the main query.
+				set_query_var( 'order-received', $wcf_order );
 			}
 		}
 	}

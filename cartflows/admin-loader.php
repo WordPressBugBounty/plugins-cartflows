@@ -10,6 +10,7 @@ namespace CartflowsAdmin;
 use CartflowsAdmin\AdminCore\Api\ApiInit;
 use CartflowsAdmin\AdminCore\Ajax\AjaxInit;
 use CartflowsAdmin\AdminCore\Inc\AdminMenu;
+use CartflowsAdmin\AdminCore\Inc\InstantCheckoutNudge;
 use CartflowsAdmin\AdminCore\Inc\OnboardingCore;
 use CartflowsAdmin\AdminCore\Inc\StoreCheckout;
 
@@ -113,6 +114,8 @@ class Admin_Loader {
 			AjaxInit::get_instance();
 
 			OnboardingCore::get_instance();
+
+			InstantCheckoutNudge::get_instance();
 		}
 	}
 }
